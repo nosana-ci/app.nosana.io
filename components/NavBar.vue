@@ -86,6 +86,10 @@ export default {
       padding: 10px 20px;
       text-align: center;
       font-size: .9rem;
+      color: $grey-light;
+      &:hover {
+        color: white;
+      }
 
       &:after {
         display: block;
