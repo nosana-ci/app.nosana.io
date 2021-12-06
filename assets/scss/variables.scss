@@ -21,6 +21,7 @@ $custom-colors: (
 );
 
 $text: white;
+$text-strong: white;
 
 //$link: $secondary;
 $link-hover: $accent;
@@ -41,3 +42,15 @@ $body-background-color: #010C04;
 $navbar-height: 5rem;
 $control-border-width: 2px;
 $footer-background-color: transparent;
+
+$scheme-main: $black;
+$scheme-main-bis: $black-bis;
+$scheme-main-ter: $black-ter;
+
+$hr-background-color: $secondary;
+$hr-height: 1px;
+$box-background-color: rgba($secondary, 0.1);
+
+$background: $black-ter;
+$tabs-link-active-color: $secondary;
+$tabs-link-active-border-bottom-color: $secondary;
