@@ -1,8 +1,8 @@
 <template>
   <section class="section">
     <div class="container">
-      <h1 class="title">
-        Nosana Platform
+      <h1 class="title is-4">
+        Recent pipelines for <b class="has-text-secondary">solana-labs/solana</b>
       </h1>
       <div class="table-container">
         <table class="table is-striped is-fullwidth is-hoverable">
