@@ -27,16 +27,16 @@
           <div class="navbar-end is-align-items-center">
             <div @click="mobileMenu = false">
               <nuxt-link class="navbar-item" to="/" exact-active-class="is-active">
-                <div>Home</div>
+                <div>Pipelines</div>
               </nuxt-link>
             </div>
-            <div class="navbar-item" exact-active-class="is-active" @click="mobileMenu = false">
+            <!-- <div class="navbar-item" exact-active-class="is-active" @click="mobileMenu = false">
               <a target="_blank" href="mailto:team@nosana.io" class="button is-accent is-outlined px-5 is-wide" to="/account" exact-active-class="is-active">
                 <div>
                   Contact
                 </div>
               </a>
-            </div>
+            </div> -->
           </div>
         </div>
       </div>
