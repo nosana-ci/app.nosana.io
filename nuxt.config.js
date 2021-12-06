@@ -24,6 +24,10 @@ export default {
     ]
   },
 
+  env: {
+    backendUrl: process.env.BACKEND_URL || 'https://demo.dev.nosana.ci'
+  },
+
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
     '@fortawesome/fontawesome-free/css/all.css',
@@ -45,6 +49,7 @@ export default {
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
+    '@nuxtjs/axios'
   ],
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
