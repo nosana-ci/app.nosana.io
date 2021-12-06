@@ -113,17 +113,4 @@ export default {
     }
   }
 }
-
-@media screen and (max-width: 1024px) {
-  .navbar {
-    .navbar-menu {
-      .navbar-item {
-        color: black;
-        &.is-active, &:hover {
-          color: black;
-        }
-      }
-    }
-  }
-}
 </style>
