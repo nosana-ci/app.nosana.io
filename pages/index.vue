@@ -16,7 +16,7 @@
           </thead>
           <tbody>
             <tr v-for="flow in flows" :key="flow.id" class="is-clickable" @click="$router.push('/flows/'+flow.id)">
-              <td>
+              <td class="py-4">
                 <span v-if="curFlow === null" class="tag">loading</span>
                 <span v-else-if="flow.id === curFlow.id" class="tag is-info">pending</span>
                 <span v-else class="tag is-success">passed</span>
@@ -66,5 +66,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
+ td {
+   vertical-align: middle;
+ }
 </style>

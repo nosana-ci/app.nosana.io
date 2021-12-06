@@ -79,7 +79,6 @@
         Loading..
       </div>
     </div>
-    </div>
   </section>
 </template>
 
