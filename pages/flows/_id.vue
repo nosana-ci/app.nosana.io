@@ -20,12 +20,12 @@
           {{ flow.results.input.commit.message.split('\n')[0] }}
         </h1>
         <div class="box">
-          <div>Pipeline total cost <b class="has-text-secondary">42.13 NOS<b /></b></div>
+          <div><i class="fas fa-coins mr-4 has-text-secondary" />Pipeline total cost <b class="has-text-secondary">42.13 NOS<b /></b></div>
           <hr>
-          <div>Nodes participated: <b>1</b></div>
+          <div><i class="fas fa-server mr-4 has-text-secondary" />Nodes participated: <b>1</b></div>
           <hr>
           <div class="has-overflow-ellipses">
-            Commit <a :href="flow.results.input.html_url" target="_blank" @click.stop>{{ flow.results.input.sha }}</a>
+            <i class="fab fa-git mr-4 has-text-secondary" />Commit <a :href="flow.results.input.html_url" target="_blank" @click.stop>{{ flow.results.input.sha }}</a>
           </div>
           <span style="white-space: pre-wrap">{{ flow.results.input.commit.message }}</span>
         </div>
@@ -52,7 +52,7 @@
                 was ran by <a :href="`https://explorer.solana.com/address/${'7E5nsBVPuPoRBsDzVjr2YKFNoqewo2EGitKq7cbhSSp4'}`" target="_blank">7E5nsBVPuPoRBsDzVjr2YKFNoqewo2EGitKq7cbhSSp4</a>
               </div>
               <div>
-                <i class="fas fa-chevron-down" :class="{'fa-chevron-down': step !== op.id, 'fa-chevron-up': step === op.id}" />
+                <i class="fas fa-chevron-down" :class="{'fa-chevron-up': step === op.id}" />
               </div>
             </div>
             <div v-if="step === op.id">
