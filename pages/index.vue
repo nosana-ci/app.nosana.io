@@ -2,7 +2,7 @@
   <section class="section">
     <div class="container">
       <h1 class="title is-4">
-        Recent pipelines for <b class="has-text-secondary">solana-labs/solana</b>
+        Recent pipelines for <b class="has-text-accent">solana-labs/solana</b>
       </h1>
       <div class="table-container">
         <table class="table is-striped is-fullwidth is-hoverable">
