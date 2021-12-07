@@ -10,7 +10,7 @@
           </div>
           <div class="mr-4">
             <span v-if="curFlow === null" class="tag">loading</span>
-            <span v-else-if="flow.id === curFlow.id" class="tag is-info">pending</span>
+            <span v-else-if="flow.id === curFlow[0]" class="tag is-info">pending</span>
             <span v-else class="tag is-success">passed</span>
           </div>
           <div>Flow <b>#{{ flow.id }}</b> triggered {{ $moment(flow.results.input.commit.committer.date).fromNow() }}</div>
@@ -95,6 +95,10 @@ export default {
   created () {
     this.getFlow(this.$route.params.id)
     this.getCurrentFlow()
+    setInterval(() => {
+      console.log('refreshing active flow..')
+      this.getCurrentFlow()
+    }, 5000)
   },
   methods: {
     async getFlow (id) {

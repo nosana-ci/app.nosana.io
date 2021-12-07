@@ -18,7 +18,7 @@
             <tr v-for="flow in flows" :key="flow.id" class="is-clickable" @click="$router.push('/flows/'+flow.id)">
               <td class="py-4">
                 <span v-if="curFlow === null" class="tag">loading</span>
-                <span v-else-if="flow.id === curFlow.id" class="tag is-info">pending</span>
+                <span v-else-if="flow.id === curFlow[0]" class="tag is-info">pending</span>
                 <span v-else class="tag is-success">passed</span>
               </td>
               <td>{{ flow.title }}</td>
@@ -51,6 +51,11 @@ export default {
   created () {
     this.getFlows()
     this.getCurrentFlow()
+    setInterval(() => {
+      console.log('refreshing flows..')
+      this.getFlows()
+      this.getCurrentFlow()
+    }, 2000)
   },
   methods: {
     async getFlows () {
