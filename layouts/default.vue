@@ -1,5 +1,8 @@
 <template>
   <div id="app">
+    <client-only>
+      <sol-wallet />
+    </client-only>
     <nav-bar />
     <Nuxt />
     <foot />
@@ -8,10 +11,12 @@
 
 <script>
 import NavBar from '@/components/NavBar'
+import SolWallet from '@/components/SolWallet'
 
 export default {
   components: {
-    NavBar
+    NavBar,
+    SolWallet
   }
 }
 </script>

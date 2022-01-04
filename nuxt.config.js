@@ -36,6 +36,7 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
+    { src: '@/plugins/sol.js', mode: 'client' }
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -55,6 +56,25 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
+    transpile: [
+      '@solana/wallet-adapter-base',
+      '@solana/wallet-adapter-sollet',
+      '@solana/wallet-adapter-bitkeep',
+      '@solana/wallet-adapter-bitpie',
+      '@solana/wallet-adapter-blocto',
+      '@solana/wallet-adapter-clover',
+      '@solana/wallet-adapter-coinhub',
+      '@solana/wallet-adapter-ledger',
+      '@solana/wallet-adapter-mathwallet',
+      '@solana/wallet-adapter-phantom',
+      '@solana/wallet-adapter-safepal',
+      '@solana/wallet-adapter-solflare',
+      '@solana/wallet-adapter-solong',
+      '@solana/wallet-adapter-tokenpocket',
+      '@solana/wallet-adapter-torus',
+      '@solana/wallet-adapter-coin98',
+      '@solana/wallet-adapter-slope'
+    ],
     loaders: {
       scss: {
         additionalData: "@import '~assets/scss/variables.scss';"
