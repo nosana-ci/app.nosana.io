@@ -55,7 +55,7 @@ export default {
       console.log('refreshing flows..')
       this.getFlows()
       this.getCurrentFlow()
-    }, 2000)
+    }, 20000)
   },
   methods: {
     async getFlows () {

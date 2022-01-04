@@ -10,9 +10,11 @@
         "
       />
       <div class="modal-card">
-        <div v-if="error" class="notification is-danger">
-          <button class="delete" @click="error = null" />
+        <div v-if="error || solError" class="notification is-danger">
+          <button class="delete" @click="error = null; solError = null" />
           {{ error }}
+          <h2 class="subtitle">{{ solError.name }}</h2>
+          <p v-html="solError.message" />
         </div>
         <header class="modal-card-head">
           <p class="modal-card-title">
@@ -65,7 +67,7 @@
                 <span class="icon mr-5">
                   <img :src="wallet.icon">
                 </span>
-                <span>{{ wallet.name }}</span>
+                <span><small v-if="wallet.readyState === 'NotDetected'" />{{ wallet.name }}</span>
               </div>
             </div>
           </div>
@@ -90,16 +92,23 @@ export default {
     },
     loggedIn () {
       return this.$sol && this.$sol.publicKey
+    },
+    solError () {
+      return this.$sol && this.$sol.error
     }
   },
 
   methods: {
-    async selectWallet (provider) {
-      try {
-        await this.$sol.connect(provider)
-        this.error = null
-      } catch (error) {
-        this.error = error
+    async selectWallet (adapter) {
+      if (adapter.readyState === 'NotfDetected') {
+        window.open(adapter.url)
+      } else {
+        try {
+          this.error = null
+          await this.$sol.connect(adapter)
+        } catch (error) {
+          this.error = error
+        }
       }
     }
   }

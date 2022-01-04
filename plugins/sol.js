@@ -14,7 +14,7 @@ const network = WalletAdapterNetwork.Mainnet
 
 // You can also provide a custom RPC endpoint
 const endpoint = clusterApiUrl(network)
-const web3 = new Connection(endpoint, commitment)
+const web3 = new Connection(endpoint, 'confirmed')
 
 // @solana/wallet-adapter-wallets includes all the adapters but supports tree shaking --
 // Only the wallets you configure here will be compiled into your application
@@ -25,10 +25,7 @@ const wallets = [
   new SolflareWalletAdapter(),
   new SlopeWalletAdapter()
 ]
-let connectingWallet = {
-  adapter: null,
-  name: null
-}
+let connectingAdapter
 let wallet
 
 export default (context, inject) => {
@@ -39,11 +36,10 @@ export default (context, inject) => {
         balance: null,
         publicKey: null,
         loginModal: false,
-        currentProvider: null,
-        walletConnected: false,
         web3,
         walletListenerId: null,
-        wallets
+        wallets,
+        error: null
       }
     },
     created () {
@@ -52,14 +48,11 @@ export default (context, inject) => {
     methods: {
       connect (adapter) {
         if (adapter) {
-          adapter.on('connect', () => { this.onConnect(adapter) })
+          adapter.on('connect', this.onConnect)
           adapter.on('disconnect', this.onDisconnect)
           adapter.on('error', this.onWalletError)
 
-          connectingWallet = {
-            name: adapter.name,
-            adapter
-          }
+          connectingAdapter = adapter
           adapter.connect()
 
           return () => {
@@ -93,10 +86,10 @@ export default (context, inject) => {
       },
 
       onConnect () {
-        const { name, adapter } = connectingWallet
+        const adapter = connectingAdapter
 
         if (adapter && adapter.publicKey) {
-          localStorage.setItem('WALLET_NAME', name)
+          localStorage.setItem('WALLET_NAME', adapter.name)
           wallet = adapter
           this.subWallet()
           this.getBalance()
@@ -111,97 +104,36 @@ export default (context, inject) => {
         }
       },
       onDisconnect () {
-        this.disconnect()
-      },
-      disconnect () {
-        connectingWallet = {
-          name: null,
-          adapter: null
-        }
-
-        /*
-    try {
-      Vue.prototype.$wallet.disconnect()
-    } catch (error) {}
-
-    Vue.prototype.$wallet = null
-*/
         this.unsubWallet()
-        /*
-    this.$accessor.wallet.setDisconnected()
-    this.$notify.warning({
-      message: 'Wallet disconnected',
-      description: ''
-    }) */
       },
       onWalletError (error) {
-        // TODO!
-        console.log(error)
-
-        /*
-   const { name } = this.connectingWallet
-
-    if (name) {
-      const info = this.wallets[name]
-
-      if (info) {
-        const { website, chromeUrl, firefoxUrl } = info
-
         if (['WalletNotFoundError', 'WalletNotInstalledError', 'WalletNotReadyError'].includes(error.name)) {
-          const errorName = error.name
+          const name = error.name
             .replace('Error', '')
             .split(/(?=[A-Z])/g)
             .join(' ')
-
-          this.$notify.error({
-            message: errorName,
-            description: (h) => {
-              const msg = [
-                `Please install and initialize ${name} wallet extension first, `,
-                h('a', { attrs: { href: website, target: '_blank' } }, 'click here to visit official website')
-              ]
-
-              if (chromeUrl || firefoxUrl) {
-                const installUrl = /Firefox/.test(navigator.userAgent) ? firefoxUrl : chromeUrl
-                if (installUrl) {
-                  msg.push(' or ')
-                  msg.push(h('a', { attrs: { href: installUrl, target: '_blank' } }, 'click here to install extension'))
-                }
-              }
-
-              return h('div', msg)
-            }
-          })
+          const message =
+                `Please install and initialize ${connectingAdapter.name} wallet extension first, <a href="${connectingAdapter.url}" target="_blank">click here to install extension</a>`
+          this.error = { name, message }
 
           return
         }
-      }
-    }
-
-    if (['SecurityError'].includes(error.name)) {
-      this.onConnect()
-      return
-    }
-
-    this.$notify.error({
-      message: 'Connect wallet failed',
-      description: `${error.name}`
-    })
-        */
+        if (['SecurityError'].includes(error.name)) {
+          this.onConnect()
+          return
+        }
+        this.error = { name: 'Connect wallet failed', message: error.name }
       },
 
       async getBalance () {
-        const conn = web3
-
         if (wallet && wallet.connected) {
-          this.balance = await conn.getBalance(wallet.publicKey, commitment)
+          this.balance = await web3.getBalance(wallet.publicKey, commitment)
         }
       },
 
       async requestPayment ({ to, lamports }) {
-        const conn = web3
         if (wallet && wallet.connected) {
-          const txid = await sendTransaction(conn, wallet, { destination: to, lamports })
+          const txid = await sendTransaction(web3, wallet, { destination: to, lamports })
           return txid
         }
         return false
@@ -222,18 +154,14 @@ export default (context, inject) => {
         await connection.confirmTransaction(signature, 'processed'); */
       },
 
-      logout () {
-        this.clear()
-        context.app.router.push('/')
-      },
-      async switch () {
-        if (wallet) {
-          await wallet.disconnect()
-          wallet = null
+      async logout () {
+        if (connectingAdapter) {
+          await connectingAdapter.disconnect()
+          connectingAdapter = null
           this.publicKey = null
         }
         this.clear()
-        this.loginModal = true
+        context.app.router.push('/')
       },
 
       clear () {
