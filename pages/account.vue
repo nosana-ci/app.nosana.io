@@ -16,7 +16,7 @@
         <a href="" @click.prevent="$sol.loginModal = true">Connect your Solana Wallet</a> to continue
       </div>
       <div v-if="publicKey" class="has-text-centered mt-6">
-        <a href="" class="button is-danger is-inverted" @click.prevent="$sol.logout">Logout</a>
+        <a href="" class="button is-danger" @click.prevent="$sol.logout">Logout</a>
       </div>
     </div>
   </section>
