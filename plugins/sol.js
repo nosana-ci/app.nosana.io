@@ -64,6 +64,8 @@ export default (context, inject) => {
       },
 
       onWalletChange (_accountInfo) {
+        this.publicKey = wallet.publicKey.toString()
+
         if (typeof _accountInfo.lamports === 'number') {
           this.balance = _accountInfo.lamports
         }

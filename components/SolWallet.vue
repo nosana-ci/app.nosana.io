@@ -100,7 +100,7 @@ export default {
 
   methods: {
     async selectWallet (adapter) {
-      if (adapter.readyState === 'NotfDetected') {
+      if (adapter.readyState === 'NotDetected') {
         window.open(adapter.url)
       } else {
         try {
