@@ -105,6 +105,7 @@ export default {
       } else {
         try {
           this.error = null
+          this.$sol.error = null
           await this.$sol.connect(adapter)
         } catch (error) {
           this.error = error
