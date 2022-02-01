@@ -25,7 +25,7 @@ export default {
   },
 
   env: {
-    backendUrl: process.env.BACKEND_URL || 'https://demo.dev.nosana.ci'
+    backendUrl: process.env.BACKEND_URL || 'http://localhost:4123'
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
@@ -36,7 +36,8 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
-    { src: '@/plugins/sol.js', mode: 'client' }
+    { src: '@/plugins/sol.js', mode: 'client' },
+    { src: '@/plugins/axios.js', mode: 'client' }
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components

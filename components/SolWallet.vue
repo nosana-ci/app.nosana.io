@@ -35,7 +35,35 @@
             <div class="loader is-loading" />
           </div>
           <div v-if="loggedIn">
-
+             <div v-if="!$sol.token" class="has-text-centered has-text-black">
+              <div class="block">
+                <b class="has-text-black">Selected account</b>
+                <a
+                  :href="$sol.explorer + '/address/' + publicKey"
+                  target="_blank"
+                  class="blockchain-address"
+                >{{ publicKey }}</a>
+                <a
+                  class="has-text-danger"
+                  @click="
+                    $sol.switch();
+                    error = null;
+                  "
+                >
+                  <small class="is-size-7">Switch Wallet</small>
+                </a>
+              </div>
+              <p class="block">
+                Login by verifying your address. This does not cost any
+                transaction fees
+              </p>
+              <div class="has-text-centered">
+                <a class="button is-secondary is-wide" @click="login" :disabled="isDisabled">
+                  <small class="is-size-7">Login</small>
+                </a>
+              </div>
+            </div>
+            <div v-else>
             <nuxt-link
               class="button is-accent px-5"
               to="/pieces"
@@ -53,9 +81,8 @@
                 class="has-text-danger is-small"
                 style="border-radius: 6px"
                 @click="$sol.logout()"
-              >
-                Logout
-              </a>
+              >Logout</a>
+            </div>
             </div>
           </div>
           <div v-else>
@@ -65,9 +92,12 @@
                 @click="selectWallet(wallet)"
               >
                 <span class="icon mr-5">
-                  <img :src="wallet.icon">
+                  <img :src="wallet.icon" />
                 </span>
-                <span><small v-if="wallet.readyState === 'NotDetected'" />{{ wallet.name }}</span>
+                <span>
+                  <small v-if="wallet.readyState === 'NotDetected'" />
+                  {{ wallet.name }}
+                </span>
               </div>
             </div>
           </div>
@@ -78,6 +108,8 @@
 </template>
 
 <script>
+import { PublicKey } from '@solana/web3.js'
+
 export default {
   data () {
     return {
@@ -99,6 +131,42 @@ export default {
   },
 
   methods: {
+    async login () {
+      this.isDisabled = true
+      try {
+        const timestamp = Math.floor(+new Date() / 1000)
+        const signature = await this.$sol.sign(timestamp)
+        const response = await this.$axios.post('/login', {
+          address: new PublicKey(this.publicKey).toBuffer(),
+          signature,
+          timestamp,
+          referrer: this.$route.query.ref
+        })
+        this.$sol.token = response.data.token
+        this.$axios.setToken(response.data.token, 'Bearer')
+        this.$sol.loginModal = false
+        this.error = null
+        if (this.$route.query.redirect) {
+          this.$router.push(this.$route.query.redirect)
+        } else {
+          this.$router.push('/') // todo change
+        }
+      } catch (error) {
+        console.error('ERR', error)
+        if (error.response && error.response.data) {
+          if (error.response.data.error) {
+            this.error = error.response.data.error
+          } else {
+            this.error = error.response.data
+          }
+        } else if (error.message) {
+          this.error = error.message
+        } else {
+          this.error = error
+        }
+      }
+      this.isDisabled = false
+    },
     async selectWallet (adapter) {
       if (adapter.readyState === 'NotDetected') {
         window.open(adapter.url)
@@ -117,7 +185,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .modal-card {
-    max-width: 400px;
-  }
+.modal-card {
+  max-width: 400px;
+}
 </style>

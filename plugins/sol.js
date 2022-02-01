@@ -39,7 +39,8 @@ export default (context, inject) => {
         web3,
         walletListenerId: null,
         wallets,
-        error: null
+        error: null,
+        token: null
       }
     },
     created () {
@@ -97,12 +98,12 @@ export default (context, inject) => {
           this.getBalance()
 
           this.publicKey = wallet.publicKey.toString()
-          this.loginModal = false
-          if (context.query.redirect) {
-            context.app.router.push(context.query.redirect)
-          } else {
-            context.app.router.push('/account')
-          }
+          // this.loginModal = false
+          // if (context.query.redirect) {
+          //   context.app.router.push(context.query.redirect)
+          // } else {
+          //   context.app.router.push('/account')
+          // }
         }
       },
       onDisconnect () {
@@ -115,7 +116,7 @@ export default (context, inject) => {
             .split(/(?=[A-Z])/g)
             .join(' ')
           const message =
-                `Please install and initialize ${connectingAdapter.name} wallet extension first, <a href="${connectingAdapter.url}" target="_blank">click here to install extension</a>`
+            `Please install and initialize ${connectingAdapter.name} wallet extension first, <a href="${connectingAdapter.url}" target="_blank">click here to install extension</a>`
           this.error = { name, message }
 
           return
@@ -154,6 +155,23 @@ export default (context, inject) => {
         const signature = await sendTransaction(transaction, connection);
 
         await connection.confirmTransaction(signature, 'processed'); */
+      },
+
+      async sign (message) {
+        const data = new TextEncoder().encode('nosana_' + message)
+        let signature
+        try {
+          const response = await connectingAdapter.signMessage(data)
+          signature = { type: 'Buffer', data: Object.values(response) }
+        } catch (e) {
+          if (e.message.includes('signMessage is not a function')) {
+            const response = await connectingAdapter.sign(data, 'utf8')
+            signature = response.signature
+          } else {
+            throw e
+          }
+        }
+        return signature
       },
 
       async logout () {
