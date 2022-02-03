@@ -1,36 +1,38 @@
 <template>
   <section class="section">
     <div class="container">
+      <nuxt-link to="/repositories/new" class="is-pulled-right button is-accent is-outlined">
+        Add new repository
+      </nuxt-link>
       <h1 class="title is-4">
-        Recent pipelines for <b class="has-text-accent">solana-labs/solana</b>
+        Repositories from <b class="has-text-accent">GitHub</b>
       </h1>
+
       <div class="table-container">
         <table class="table is-striped is-fullwidth is-hoverable">
           <thead>
             <tr>
               <th>Status</th>
-              <th>Flow</th>
+              <th>Repository</th>
               <th>Trigger</th>
               <th>Commit</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="flow in flows" :key="flow.id" class="is-clickable" @click="$router.push('/flows/'+flow.id)">
+            <tr v-for="repository in repositories" :key="repository.id" class="is-clickable" @click="$router.push('/repositories/'+repository.id)">
               <td class="py-4">
-                <span v-if="curFlow === null" class="tag">loading</span>
-                <span v-else-if="flow.id === curFlow[0]" class="tag is-info">pending</span>
-                <span v-else class="tag is-success">passed</span>
+                <span class="tag is-success">passed</span>
               </td>
-              <td>{{ flow.title }}</td>
-              <td>{{ flow.results.input.commit.message.split('\n')[0] }}</td>
-              <td><a :href="flow.results.input.html_url" target="_blank" @click.stop>{{ flow.results.input.sha.substring(0,7) }}</a></td>
+              <td>{{ repository.repository }}</td>
+              <td>{{ repository }}</td>
+              <td><a :href="'https://github.com/'+ repository.repository" target="_blank" @click.stop>{{ 'https://github.com/'+ repository.repository }}</a></td>
             </tr>
-            <tr v-if="!flows || !flows.length" class="has-text-centered has-text-weight-bold">
-              <td v-if="!flows" colspan="4">
-                Loading flows..
+            <tr v-if="!repositories || !repositories.length" class="has-text-centered has-text-weight-bold">
+              <td v-if="!repositories" colspan="4">
+                Loading repositories..
               </td>
               <td v-else colspan="4">
-                No flows
+                No repositories
               </td>
             </tr>
           </tbody>
@@ -44,27 +46,20 @@
 export default {
   data () {
     return {
-      flows: null,
-      curFlow: null
+      repositories: null
     }
   },
   created () {
-    this.getFlows()
-    this.getCurrentFlow()
+    this.getRepositories()
     setInterval(() => {
-      console.log('refreshing flows..')
-      this.getFlows()
-      this.getCurrentFlow()
+      console.log('refreshing repositories..')
+      this.getRepositories()
     }, 20000)
   },
   methods: {
-    async getFlows () {
-      const flows = await this.$axios.$get(`${process.env.backendUrl}/api/flows`)
-      this.flows = flows
-    },
-    async getCurrentFlow () {
-      const flow = await this.$axios.$get(`${process.env.backendUrl}/api/cur-flow`)
-      this.curFlow = flow
+    async getRepositories () {
+      const repositories = await this.$axios.$get(`${process.env.backendUrl}/repositories`)
+      this.repositories = repositories
     }
   }
 }
