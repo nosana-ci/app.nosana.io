@@ -35,7 +35,7 @@
             <div class="loader is-loading" />
           </div>
           <div v-if="loggedIn">
-             <div v-if="!$sol.token" class="has-text-centered has-text-black">
+            <div v-if="!$sol.token" class="has-text-centered has-text-black">
               <div class="block">
                 <b class="has-text-black">Selected account</b>
                 <a
@@ -58,31 +58,31 @@
                 transaction fees
               </p>
               <div class="has-text-centered">
-                <a class="button is-secondary is-wide" @click="login" :disabled="isDisabled">
+                <a class="button is-secondary is-wide" :disabled="isDisabled" @click="login">
                   <small class="is-size-7">Login</small>
                 </a>
               </div>
             </div>
             <div v-else>
-            <nuxt-link
-              class="button is-accent px-5"
-              to="/pieces"
-              exact-active-class="is-active"
-              @click="
-                $sol.loginModal = false;
-                error = null;
-              "
-            >
-              <div>My Account</div>
-            </nuxt-link>
+              <nuxt-link
+                class="button is-accent px-5"
+                to="/pieces"
+                exact-active-class="is-active"
+                @click="
+                  $sol.loginModal = false;
+                  error = null;
+                "
+              >
+                <div>My Account</div>
+              </nuxt-link>
 
-            <div class="has-text-right">
-              <a
-                class="has-text-danger is-small"
-                style="border-radius: 6px"
-                @click="$sol.logout()"
-              >Logout</a>
-            </div>
+              <div class="has-text-right">
+                <a
+                  class="has-text-danger is-small"
+                  style="border-radius: 6px"
+                  @click="$sol.logout()"
+                >Logout</a>
+              </div>
             </div>
           </div>
           <div v-else>
@@ -92,7 +92,7 @@
                 @click="selectWallet(wallet)"
               >
                 <span class="icon mr-5">
-                  <img :src="wallet.icon" />
+                  <img :src="wallet.icon">
                 </span>
                 <span>
                   <small v-if="wallet.readyState === 'NotDetected'" />
