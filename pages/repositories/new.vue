@@ -7,15 +7,15 @@
       <h1 class="title is-4">
         Add new <b class="has-text-accent">Repository</b>
       </h1>
-      <a href="https://github.com/login/oauth/authorize?client_id=382b493152debb760a28&scope=public_repo">
+      <a v-if="!githubToken" href="https://github.com/login/oauth/authorize?client_id=382b493152debb760a28&scope=public_repo">
         Connect to Github
       </a>
       <div v-for="repo in repositories" :key="repo.id">
-        {{ repo.full_name }}
+        <a @click.stop="repository=repo.full_name"> {{ repo.full_name }}</a>
       </div>
       <form @submit.prevent="addRepository">
-        <input v-model="repository" class="input" type="text" required>
-        <button type="submit" class="button is-accent mt-2">
+        <input v-model="repository" readonly class="input" type="text" required>
+        <button type="submit" class="button is-accent mt-2" :disabled="!repository">
           Add
         </button>
       </form>
