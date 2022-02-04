@@ -7,16 +7,23 @@
       <h1 class="title is-4">
         Add new <b class="has-text-accent">Repository</b>
       </h1>
-      <a v-if="!githubToken" href="https://github.com/login/oauth/authorize?client_id=382b493152debb760a28&scope=public_repo">
+
+      <div v-for="repo in repositories" :key="repo.id">
+        <a :class="{'has-text-accent': repository === repo.full_name}" @click.stop="repository=repo.full_name"> {{ repo.full_name }}</a>
+      </div>
+      <a v-if="!githubToken" class="button is-accent" href="https://github.com/login/oauth/authorize?client_id=382b493152debb760a28&scope=public_repo">
         Connect to Github
       </a>
-      <div v-for="repo in repositories" :key="repo.id">
-        <a @click.stop="repository=repo.full_name"> {{ repo.full_name }}</a>
+      <div v-else-if="!publicKey" class="navbar-item" exact-active-class="is-active" @click="mobileMenu = false">
+        <a class="button is-accent has-text-weight-semibold" exact-active-class="is-active" to="/account" @click="$sol.loginModal = true">
+          <div>
+            Connect Wallet
+          </div>
+        </a>
       </div>
-      <form @submit.prevent="addRepository">
-        <input v-model="repository" readonly class="input" type="text" required>
+      <form v-else @submit.prevent="addRepository">
         <button type="submit" class="button is-accent mt-2" :disabled="!repository">
-          Add
+          Add {{ repository }}
         </button>
       </form>
     </div>
@@ -32,6 +39,11 @@ export default {
       repository: null,
       githubToken: null,
       repositories: null
+    }
+  },
+  computed: {
+    publicKey () {
+      return (this.$sol) ? this.$sol.publicKey : null
     }
   },
   created () {
