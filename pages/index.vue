@@ -5,7 +5,7 @@
         Add new repository
       </nuxt-link>
       <h1 class="title is-4">
-        Repositories from <b class="has-text-accent">GitHub</b>
+        Pipelines from <b class="has-text-accent">GitHub</b>
       </h1>
 
       <div class="table-container">
