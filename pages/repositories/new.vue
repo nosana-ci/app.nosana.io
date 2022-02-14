@@ -71,11 +71,19 @@ export default {
       this.repositories = response.data
     },
     async addRepository () {
-      await this.$axios.$post(`${process.env.backendUrl}/repositories`, {
-        repository: this.repository,
-        type: 'GITHUB'
-      })
-      this.$router.push('/')
+      try {
+        await this.$axios.$post(`${process.env.backendUrl}/repositories`, {
+          repository: this.repository,
+          type: 'GITHUB'
+        })
+        this.$router.push('/')
+      } catch (error) {
+        this.$modal.show({
+          color: 'danger',
+          text: error,
+          title: 'Error'
+        })
+      }
     }
   }
 }

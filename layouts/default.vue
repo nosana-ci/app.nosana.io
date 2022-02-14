@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <modal />
     <client-only>
       <sol-wallet />
     </client-only>

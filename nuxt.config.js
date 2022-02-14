@@ -37,7 +37,8 @@ export default {
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
     { src: '@/plugins/sol.js', mode: 'client' },
-    { src: '@/plugins/axios.js', mode: 'client' }
+    { src: '@/plugins/axios.js', mode: 'client' },
+    '@/plugins/modal.js'
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
