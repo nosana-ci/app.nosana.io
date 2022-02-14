@@ -26,12 +26,14 @@
           Add {{ repository }}
         </button>
       </form>
+      {{ repository }}
     </div>
   </section>
 </template>
 
 <script>
 import axios from 'axios'
+let githubApi
 
 export default {
   data () {
@@ -60,28 +62,42 @@ export default {
         code
       })
       this.githubToken = response.access_token
-      this.getUserRepos()
-    },
-    async getUserRepos () {
-      const githubApi = axios.create({
+      githubApi = axios.create({
         baseURL: 'https://api.github.com',
         headers: { Authorization: 'token ' + this.githubToken }
       })
-      const response = await githubApi.get('/user/repos?per_page=100')
-      this.repositories = response.data
+      this.getUserRepos()
+    },
+    async getUserRepos () {
+      if (githubApi) {
+        const response = await githubApi.get('/user/repos?per_page=100')
+        this.repositories = response.data
+      }
     },
     async addRepository () {
       try {
-        await this.$axios.$post(`${process.env.backendUrl}/repositories`, {
+        const repo = await this.$axios.$post(`${process.env.backendUrl}/repositories`, {
           repository: this.repository,
           type: 'GITHUB'
         })
+        await this.addWebhook(repo)
         this.$router.push('/')
       } catch (error) {
         this.$modal.show({
           color: 'danger',
           text: error,
           title: 'Error'
+        })
+      }
+    },
+    async addWebhook (repo) {
+      if (githubApi && repo) {
+        await githubApi.post(`/repos/${repo.repository}/hooks`, {
+          config: {
+            content_type: 'json',
+            url: 'https://testnet.nosana.io/webhook/github/' + repo.id,
+            insecure_ssl: 1
+          }
         })
       }
     }
