@@ -4,6 +4,7 @@
       <nuxt-link to="/repositories/new" class="is-pulled-right button is-accent is-outlined">
         Add new repository
       </nuxt-link>
+      {{ projects }}
       <h1 class="title is-4">
         Pipelines from <b class="has-text-accent">GitHub</b>
       </h1>
@@ -46,20 +47,42 @@
 export default {
   data () {
     return {
-      repositories: null
+      repositories: null,
+      projects: null
     }
   },
   created () {
     this.getRepositories()
-    setInterval(() => {
-      console.log('refreshing repositories..')
-      this.getRepositories()
-    }, 20000)
+    this.getProjects()
+    // setInterval(() => {
+    //   console.log('refreshing repositories..')
+    //   this.getRepositories()
+    // }, 20000)
   },
   methods: {
     async getRepositories () {
-      const repositories = await this.$axios.$get(`${process.env.backendUrl}/repositories`)
-      this.repositories = repositories
+      try {
+        const repositories = await this.$axios.$get(`${process.env.backendUrl}/repositories`)
+        this.repositories = repositories
+      } catch (error) {
+        this.$modal.show({
+          color: 'danger',
+          text: error,
+          title: 'Error'
+        })
+      }
+    },
+    async getProjects () {
+      try {
+        const projects = await this.$axios.$get(`${process.env.backendUrl}/projects`)
+        this.projects = projects
+      } catch (error) {
+        this.$modal.show({
+          color: 'danger',
+          text: error,
+          title: 'Error'
+        })
+      }
     }
   }
 }
