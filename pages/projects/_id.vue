@@ -42,16 +42,16 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="repository in repositories" :key="repository.id" class="is-clickable" @click="$router.push('/repositories/'+repository.id)">
+            <tr v-for="repository in repositories" :key="repository.id" class="is-clickable" @click="$router.push(`/repositories/${repository.id}`)">
               <td class="py-4">
                 <span class="tag is-success">{{ repository.status }}</span>
               </td>
               <td><a :href="'https://github.com/'+ repository.repository" target="_blank" @click.stop>{{ repository.repository }}</a></td>
               <td>on commit to main/master branch</td>
               <td>
-                <nuxt-link class="button is-accent is-outlined has-text-weight-semibold" :to="$route.params.id + '/jobs'">
+                <div class="button is-accent is-outlined has-text-weight-semibold">
                   View Jobs
-                </nuxt-link>
+                </div>
               </td>
             </tr>
             <tr v-if="!repositories || !repositories.length" class="has-text-centered has-text-weight-bold">
