@@ -4,6 +4,9 @@
       <h1 class="title is-4">
         Your Account
       </h1>
+      <nuxt-link to="/repositories/new" class="is-pulled-right button is-accent is-outlined">
+        Add new repository
+      </nuxt-link>
       <div v-if="publicKey">
         <div class="title mt-4 blockchain-address">
           {{ publicKey }}

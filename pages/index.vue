@@ -1,14 +1,11 @@
 <template>
   <section class="section">
     <div class="container">
-      <nuxt-link to="/repositories/new" class="is-pulled-right button is-accent is-outlined">
-        Add new repository
-      </nuxt-link>
       <h1 class="title is-4">
         Projects on <b class="has-text-accent">TestNet</b>
       </h1>
-      <div class="columns">
-        <div v-for="project in projects" :key="project.id" class="column is-4">
+      <div v-if="projects" class="columns is-multiline" style="width: 100%">
+        <div v-for="project in projects" :key="project.id" class="column is-6 is-one-fifth-fullhd is-3-widescreen is-4-desktop">
           <div class="box is-clickable" @click="$router.push('/projects/'+project.id)">
             <div class="is-flex is-align-items-center">
               <img style="height: 32px" :src="project.image" class="mr-4">
@@ -66,6 +63,11 @@ export default {
       try {
         const projects = await this.$axios.$get(`${process.env.backendUrl}/projects`)
         this.projects = projects
+        // this.projects.push(...projects)
+        // this.projects.push(...projects)
+        // this.projects.push(...projects)
+        // this.projects.push(...projects)
+        // this.projects.push(...projects)
       } catch (error) {
         this.$modal.show({
           color: 'danger',
