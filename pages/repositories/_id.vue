@@ -24,23 +24,21 @@
         <table class="table is-striped is-fullwidth is-hoverable">
           <thead>
             <tr>
-              <th>Status</th>
+              <th>Job ID</th>
+              <th>Message</th>
               <th>Commit</th>
               <th>Transaction</th>
-              <th>Results</th>
+              <th>Status</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="commit in commits" :key="commit.id" class="is-clickable" @click="$router.push(`/jobs/${commit.id}`)">
+              <td> {{ commit.id }}</td>
+              <td>{{ commit.payload.message.split('\n')[0] }}</td>
+              <td><a :href="commit.payload.url" target="_blank" @click.stop>{{ commit.commit }}</a></td>
+              <td>{{ commit.tx }}</td>
               <td class="py-4">
                 <span class="tag is-success">{{ commit.status }}</span>
-              </td>
-              <td><a :href="'https://github.com/'+ commit.commit" target="_blank" @click.stop>{{ commit.commit }}</a></td>
-              <td>{{ commit.tx }}</td>
-              <td>
-                <div class="button is-accent is-outlined has-text-weight-semibold">
-                  View Result
-                </div>
               </td>
             </tr>
             <tr v-if="!commits || !commits.length" class="has-text-centered has-text-weight-bold">

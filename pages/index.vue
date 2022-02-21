@@ -26,7 +26,7 @@
                 <div v-if="!commits">
                   Loading..
                 </div>
-                <div v-else-if="repositories.filter(r => r.user_id === project.id).map(r => r.commits).length">
+                <div v-else-if="!repositories.filter(r => r.user_id === project.id).map(r => r.commits).flat().length">
                   no commits
                 </div>
                 <div
@@ -34,7 +34,7 @@
                   class="is-flex"
                 >
                   <div
-                    v-for="commit in repositories.filter(r => r.user_id === project.id).map(r => r.commits)"
+                    v-for="commit in repositories.filter(r => r.user_id === project.id).map(r => r.commits).flat()"
                     :key="commit.id"
                     @click.stop=""
                   >
