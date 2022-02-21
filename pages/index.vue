@@ -4,7 +4,10 @@
       <h1 class="title is-4">
         Projects on <b class="has-text-accent">TestNet</b>
       </h1>
-      <div v-if="projects" class="columns is-multiline" style="width: 100%">
+      <nuxt-link v-if="$sol && $sol.token" to="/repositories/new" class="button is-accent is-outlined">
+        Add new repository
+      </nuxt-link>
+      <div v-if="projects" class="columns is-multiline mt-4">
         <div v-for="project in projects" :key="project.id" class="column is-6 is-one-fifth-fullhd is-3-widescreen is-4-desktop">
           <div class="box is-clickable" @click="$router.push('/projects/'+project.id)">
             <div class="is-flex is-align-items-center">
@@ -20,8 +23,14 @@
               Repositories:
               <span v-if="repositories">
                 {{ repositories.filter(r => r.user_id === project.id).length }}
+                <div v-if="!commits">
+                  Loading..
+                </div>
+                <div v-else-if="!commits.filter(c => repositories.filter(r => r.user_id === project.id).map(r => r.id).includes(c.repository_id)).length">
+                  no commits
+                </div>
                 <div
-                  v-if="commits"
+                  v-else
                   class="is-flex"
                 >
                   <div

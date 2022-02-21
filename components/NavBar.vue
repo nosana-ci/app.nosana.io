@@ -31,11 +31,11 @@
               </nuxt-link>
             </div>
             <div v-if="!publicKey" class="navbar-item" exact-active-class="is-active" @click="mobileMenu = false">
-              <a class="button is-accent has-text-weight-semibold" exact-active-class="is-active" to="/account" @click="$sol.loginModal = true">
+              <nuxt-link class="button is-accent has-text-weight-semibold" exact-active-class="is-active" to="/account" @click="$sol.loginModal = true">
                 <div>
                   Connect Wallet
                 </div>
-              </a>
+              </nuxt-link>
             </div>
             <div v-else class="navbar-item" exact-active-class="is-active" @click="mobileMenu = false">
               <nuxt-link class="button is-accent has-text-weight-semibold" exact-active-class="is-active" to="/account">
