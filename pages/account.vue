@@ -4,9 +4,6 @@
       <h1 class="title is-4">
         Your Account
       </h1>
-      <nuxt-link to="/repositories/new" class="is-pulled-right button is-accent is-outlined">
-        Add new repository
-      </nuxt-link>
       <div v-if="publicKey">
         <div class="title mt-4 blockchain-address">
           {{ publicKey }}
@@ -57,6 +54,15 @@
           </p>
         </div>
       </div>
+      <div v-if="user">
+        <h2 class="subtitle">
+          Repositories
+        </h2>
+        <nuxt-link to="/repositories/new" class="button is-accent is-outlined">
+          Add new repository
+        </nuxt-link>
+        <repository-list :repositories="repositories" />
+      </div>
       <div v-if="publicKey" class="has-text-centered mt-6">
         <a href="" class="button is-danger" @click.prevent="$sol.logout">Logout</a>
       </div>
@@ -65,16 +71,19 @@
 </template>
 
 <script>
+import RepositoryList from '../components/RepositoryList.vue'
 import { formatLamportsAsSol } from '@/utils'
 
 export default {
+  components: { RepositoryList },
   data () {
     return {
       user: null,
       image: null,
       description: null,
       name: null,
-      editUser: false
+      editUser: false,
+      repositories: null
     }
   },
   computed: {
@@ -89,12 +98,14 @@ export default {
     '$sol.token' (token) {
       if (token) {
         this.getUser()
+        this.getRepositories()
       }
     }
   },
   created () {
     if (this.$sol.token) {
       this.getUser()
+      this.getRepositories()
     }
   },
   mounted () {
@@ -108,6 +119,18 @@ export default {
         this.description = user.description
         this.image = user.image
         this.user = user
+      } catch (error) {
+        this.$modal.show({
+          color: 'danger',
+          text: error,
+          title: 'Error'
+        })
+      }
+    },
+    async getRepositories () {
+      try {
+        const repositories = await this.$axios.$get(`${process.env.backendUrl}/user/repositories`)
+        this.repositories = repositories
       } catch (error) {
         this.$modal.show({
           color: 'danger',

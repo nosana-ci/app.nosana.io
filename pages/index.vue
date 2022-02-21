@@ -20,6 +20,17 @@
               Repositories:
               <span v-if="repositories">
                 {{ repositories.filter(r => r.user_id === project.id).length }}
+                <div
+                  v-if="commits"
+                  class="is-flex"
+                >
+                  <div
+                    v-for="commit in commits.filter(c => repositories.filter(r => r.user_id === project.id).map(r => r.id).includes(c.repository_id))"
+                    :key="commit.id"
+                  >
+                    <nuxt-link :to="`/jobs/${commit.id}`">{{ commit.status }}</nuxt-link>
+                  </div>
+                </div>
               </span>
               <span v-else>Loading..</span>
             </small>
@@ -35,12 +46,14 @@ export default {
   data () {
     return {
       repositories: null,
+      commits: null,
       projects: null
     }
   },
   created () {
     this.getRepositories()
     this.getProjects()
+    this.getCommits()
     // setInterval(() => {
     //   console.log('refreshing repositories..')
     //   this.getRepositories()
@@ -51,6 +64,18 @@ export default {
       try {
         const repositories = await this.$axios.$get(`${process.env.backendUrl}/repositories`)
         this.repositories = repositories
+      } catch (error) {
+        this.$modal.show({
+          color: 'danger',
+          text: error,
+          title: 'Error'
+        })
+      }
+    },
+    async getCommits () {
+      try {
+        const commits = await this.$axios.$get(`${process.env.backendUrl}/commits`)
+        this.commits = commits
       } catch (error) {
         this.$modal.show({
           color: 'danger',
