@@ -24,10 +24,11 @@
               <div
                 v-for="commit in commits.filter(c => repository.id === c.repository_id)"
                 :key="commit.id"
+                class="mx-1"
                 @click.stop=""
               >
                 <nuxt-link :to="`/jobs/${commit.id}`" class="has-tooltip-arrow" :data-tooltip="commit.commit">
-                  {{ commit.status }}
+                  <commit-status :status="commit.status" />
                 </nuxt-link>
               </div>
             </div>
