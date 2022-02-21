@@ -19,22 +19,43 @@
         <a href="" @click.prevent="$sol.loginModal = true">Connect your Solana Wallet</a> to continue
       </div>
       <div v-if="user">
-        <div v-if="user.name" class="is-flex is-align-items-center">
-          <img v-if="user.image" style="height: 32px" :src="user.image" class="mr-4">
-          <h2 class="title">
-            {{ user.name }}
-          </h2>
+        <div v-if="editUser">
+          <form @submit.prevent="updateUser">
+            <div class="field">
+              <label>Name:</label>
+              <input v-model="name" type="text" class="input">
+            </div>
+            <div class="field">
+              <label>Description:</label>
+              <textarea v-model="description" class="textarea" />
+            </div>
+            <div class="field">
+              <label>Icon URL:</label>
+              <input v-model="image" type="url" class="input">
+            </div>
+            <a class="button" @click.prevent="editUser = false">Cancel</a>
+            <input type="submit" class="button is-accent" value="Save">
+          </form>
         </div>
         <div v-else>
-          <a
-            href="https://bit.ly/NosanaBetaForm-hp"
-            class="button is-accent is-outlined has-text-weight-semibold"
-            target="_blank"
-          >Register a project</a>
+          <a @click.prevent="editUser = true">Edit Project info</a>
+          <div v-if="user.name" class="is-flex is-align-items-center">
+            <img v-if="user.image" style="height: 32px" :src="user.image" class="mr-4">
+            <h2 class="title">
+              {{ user.name }}
+            </h2>
+          </div>
+          <div v-else>
+            <a
+              href="https://bit.ly/NosanaBetaForm-hp"
+              class="button is-accent is-outlined has-text-weight-semibold"
+              target="_blank"
+            >Register a project</a>
+          </div>
+          <p v-if="user.description">
+            Description: {{ user.description }}
+          </p>
         </div>
-        <p v-if="user.description">
-          Description: {{ user.description }}
-        </p>
       </div>
       <div v-if="publicKey" class="has-text-centered mt-6">
         <a href="" class="button is-danger" @click.prevent="$sol.logout">Logout</a>
@@ -49,7 +70,11 @@ import { formatLamportsAsSol } from '@/utils'
 export default {
   data () {
     return {
-      user: null
+      user: null,
+      image: null,
+      description: null,
+      name: null,
+      editUser: false
     }
   },
   computed: {
@@ -79,7 +104,28 @@ export default {
     async getUser () {
       try {
         const user = await this.$axios.$get(`${process.env.backendUrl}/user`)
+        this.name = user.name
+        this.description = user.description
+        this.image = user.image
         this.user = user
+      } catch (error) {
+        this.$modal.show({
+          color: 'danger',
+          text: error,
+          title: 'Error'
+        })
+      }
+    },
+    async updateUser () {
+      try {
+        const user = await this.$axios.$post(`${process.env.backendUrl}/user`, {
+          name: this.name,
+          image: this.image,
+          description: this.description
+
+        })
+        this.user = user
+        this.editUser = false
       } catch (error) {
         this.$modal.show({
           color: 'danger',
