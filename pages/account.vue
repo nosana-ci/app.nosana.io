@@ -61,7 +61,7 @@
         <nuxt-link to="/repositories/new" class="button is-accent is-outlined">
           Add new repository
         </nuxt-link>
-        <repository-list :repositories="repositories" />
+        <repository-list :commits="commits" :repositories="repositories" />
       </div>
       <div v-if="publicKey" class="has-text-centered mt-6">
         <a href="" class="button is-danger" @click.prevent="$sol.logout">Logout</a>
@@ -83,7 +83,8 @@ export default {
       description: null,
       name: null,
       editUser: false,
-      repositories: null
+      repositories: null,
+      commits: null
     }
   },
   computed: {
@@ -99,19 +100,33 @@ export default {
       if (token) {
         this.getUser()
         this.getRepositories()
+        this.getCommits()
       }
     }
   },
   created () {
-    if (this.$sol.token) {
+    if (this.$sol && this.$sol.token) {
       this.getUser()
       this.getRepositories()
+      this.getCommits()
     }
   },
   mounted () {
     if (!this.publicKey) { this.$sol.loginModal = true }
   },
   methods: {
+    async getCommits () {
+      try {
+        const commits = await this.$axios.$get(`${process.env.backendUrl}/commits`)
+        this.commits = commits
+      } catch (error) {
+        this.$modal.show({
+          color: 'danger',
+          text: error,
+          title: 'Error'
+        })
+      }
+    },
     async getUser () {
       try {
         const user = await this.$axios.$get(`${process.env.backendUrl}/user`)

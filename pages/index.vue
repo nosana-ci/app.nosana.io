@@ -27,8 +27,9 @@
                   <div
                     v-for="commit in commits.filter(c => repositories.filter(r => r.user_id === project.id).map(r => r.id).includes(c.repository_id))"
                     :key="commit.id"
+                    @click.stop=""
                   >
-                    <nuxt-link :to="`/jobs/${commit.id}`">{{ commit.status }}</nuxt-link>
+                    <nuxt-link :to="`/jobs/${commit.id}`" class="has-tooltip-arrow" :data-tooltip="commit.commit">{{ commit.status }}</nuxt-link>
                   </div>
                 </div>
               </span>

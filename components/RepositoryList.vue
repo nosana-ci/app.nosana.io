@@ -17,8 +17,19 @@
           <td><a :href="'https://github.com/'+ repository.repository" target="_blank" @click.stop>{{ repository.repository }}</a></td>
           <td>on commit to main/master branch</td>
           <td>
-            <div class="button is-accent is-outlined has-text-weight-semibold">
-              View Jobs
+            <div
+              v-if="commits"
+              class="is-flex"
+            >
+              <div
+                v-for="commit in commits.filter(c => repository.id === c.repository_id)"
+                :key="commit.id"
+                @click.stop=""
+              >
+                <nuxt-link :to="`/jobs/${commit.id}`" class="has-tooltip-arrow" :data-tooltip="commit.commit">
+                  {{ commit.status }}
+                </nuxt-link>
+              </div>
             </div>
           </td>
         </tr>
