@@ -4,7 +4,7 @@
       <h1 class="title is-4">
         Projects on <b class="has-text-accent">TestNet</b>
       </h1>
-      <nuxt-link v-if="$sol && $sol.token" to="/repositories/new" class="button is-accent is-outlined">
+      <nuxt-link v-if="loggedIn" to="/repositories/new" class="button is-accent is-outlined">
         Add new repository
       </nuxt-link>
       <div v-if="projects" class="columns is-multiline mt-4">
@@ -26,7 +26,7 @@
                 <div v-if="!commits">
                   Loading..
                 </div>
-                <div v-else-if="!commits.filter(c => repositories.filter(r => r.user_id === project.id).map(r => r.id).includes(c.repository_id)).length">
+                <div v-else-if="repositories.filter(r => r.user_id === project.id).map(r => r.commits).length">
                   no commits
                 </div>
                 <div
@@ -34,7 +34,7 @@
                   class="is-flex"
                 >
                   <div
-                    v-for="commit in commits.filter(c => repositories.filter(r => r.user_id === project.id).map(r => r.id).includes(c.repository_id))"
+                    v-for="commit in repositories.filter(r => r.user_id === project.id).map(r => r.commits)"
                     :key="commit.id"
                     @click.stop=""
                   >
@@ -60,10 +60,14 @@ export default {
       projects: null
     }
   },
+  computed: {
+    loggedIn () {
+      return this.$sol && this.$sol.token
+    }
+  },
   created () {
     this.getRepositories()
     this.getProjects()
-    this.getCommits()
     // setInterval(() => {
     //   console.log('refreshing repositories..')
     //   this.getRepositories()
@@ -74,6 +78,7 @@ export default {
       try {
         const repositories = await this.$axios.$get(`${process.env.backendUrl}/repositories`)
         this.repositories = repositories
+        this.getCommits()
       } catch (error) {
         this.$modal.show({
           color: 'danger',
@@ -86,6 +91,9 @@ export default {
       try {
         const commits = await this.$axios.$get(`${process.env.backendUrl}/commits`)
         this.commits = commits
+        for (let i = 0; i < this.repositories.length; i++) {
+          this.$set(this.repositories[i], 'commits', commits.filter(c => c.repository_id === this.repositories[i].id))
+        }
       } catch (error) {
         this.$modal.show({
           color: 'danger',
