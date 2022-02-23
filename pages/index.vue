@@ -112,10 +112,23 @@
                 </div>
                 <div
                   v-else
-                  class="is-flex"
+                  class="is-flex is-align-items-flex-end"
                 >
+                  <div class="mr-2">
+                    <div
+                      class="tag is-small"
+                      :class="{
+                        'is-success': repository.commits.slice(-1)[0].status === 'DONE',
+                        'is-info': repository.commits.slice(-1)[0].status === 'RUNNING',
+                        'is-danger': repository.commits.slice(-1)[0].status === 'FAILED'
+                      }"
+                    >{{ repository.commits.slice(-1)[0].status }}</div>
+                    <div class="is-size-7">
+                      {{ $moment(repository.commits.slice(-1)[0].created_at ).fromNow() }}
+                    </div>
+                  </div>
                   <div
-                    v-for="commit in repository.commits"
+                    v-for="commit in repository.commits.slice(-6)"
                     :key="commit.id"
                     class="mx-1"
                     @click.stop=""

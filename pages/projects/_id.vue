@@ -2,7 +2,7 @@
   <section class="section">
     <div class="container">
       <nuxt-link to="/">
-        &lt; Back to projects
+        &lt; All repositories
       </nuxt-link>
       <div class="mt-2">
         <div v-if="project">

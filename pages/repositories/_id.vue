@@ -1,8 +1,8 @@
 <template>
   <section class="section">
     <div class="container">
-      <nuxt-link v-if="repository" :to="`/projects/${repository.user_id}`">
-        &lt; Back to repositories
+      <nuxt-link v-if="repository" to="/">
+        &lt; All repositories
       </nuxt-link>
       <div class="mt-2">
         <div v-if="repository">
