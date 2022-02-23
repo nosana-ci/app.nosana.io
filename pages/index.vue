@@ -48,7 +48,7 @@
               </nuxt-link>
             </div>
             <div class="column is-one-third">
-              <nuxt-link class="box is-secondary step" :class="{'has-background-white': user && repositories && repositories.filter(r => r.user_id === user.user_id).length, 'disabled': !(loggedIn && user && repositories && repositories.filter(r => r.user_id === user.user_id).length)}" to="/account">
+              <nuxt-link class="box is-secondary step" :class="{'has-background-white': user && repositories && repositories.filter(r => r.user_id === user.user_id).length, 'disabled': !(loggedIn && user && repositories && repositories.filter(r => r.user_id === user.user_id).length)}" to="/account?edit=true">
                 <div class="is-flex is-justify-content-space-between">
                   <div>3</div>
                   <div v-if="user && user.isApproved">

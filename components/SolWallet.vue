@@ -58,7 +58,7 @@
                 transaction fees
               </p>
               <div class="has-text-centered">
-                <a class="button is-secondary is-wide" :disabled="isDisabled" @click="login">
+                <a class="button is-accent is-wide" :disabled="isDisabled" @click="login">
                   <small class="is-size-7">Login</small>
                 </a>
               </div>

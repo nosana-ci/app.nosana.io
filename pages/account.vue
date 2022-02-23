@@ -16,29 +16,46 @@
         <a href="" @click.prevent="$sol.loginModal = true">Connect your Solana Wallet</a> to continue
       </div>
       <div v-if="user">
-        <div v-if="editUser">
-          <form @submit.prevent="updateUser">
-            <div class="field">
-              <label>Name:</label>
-              <input v-model="name" type="text" class="input">
-            </div>
-            <div class="field">
-              <label>Email:</label>
-              <input v-model="email" type="email" class="input">
-            </div>
-            <div class="field">
-              <label>Description:</label>
-              <textarea v-model="description" class="textarea" />
-            </div>
-            <div class="field">
-              <label>Icon URL:</label>
-              <input v-model="image" type="url" class="input">
-            </div>
-            <a class="button" @click.prevent="editUser = false">Cancel</a>
-            <input type="submit" class="button is-accent" value="Save">
-          </form>
+        <div class="modal" :class="{'is-active': editUser}">
+          <div class="modal-background" @click="editUser = false" />
+          <div class="modal-card">
+            <header class="modal-card-head">
+              <p class="modal-card-title">
+                Register Project
+              </p>
+            </header>
+            <form @submit.prevent="updateUser">
+              <section class="modal-card-body">
+                <div class="field">
+                  <label>Name:</label>
+                  <input v-model="name" required type="text" class="input">
+                </div>
+                <div class="field">
+                  <label>Email:</label>
+                  <input v-model="email" required type="email" class="input">
+                </div>
+                <div class="field">
+                  <label>Description:</label>
+                  <textarea v-model="description" class="textarea" />
+                </div>
+                <div class="field">
+                  <label>Icon URL:</label>
+                  <input v-model="image" type="url" class="input">
+                </div>
+              </section>
+
+              <footer class="modal-card-foot has-text-right">
+                <button class="button" @click.prevent="editUser = false">
+                  Cancel
+                </button>
+                <input type="submit" class="button is-accent" value="Save">
+              </footer>
+            </form>
+          </div>
+          <button class="modal-close is-large" aria-label="close" @click="editUser = false" />
         </div>
-        <div v-else>
+
+        <div v-if="!editUser">
           <a @click.prevent="editUser = true">Edit Project info</a>
           <div v-if="user.name" class="is-flex is-align-items-center">
             <img v-if="user.image" style="height: 32px" :src="user.image" class="mr-4">
@@ -117,6 +134,9 @@ export default {
       this.getUser()
       this.getRepositories()
       this.getCommits()
+    }
+    if (this.$route.query.edit) {
+      this.editUser = true
     }
   },
   mounted () {

@@ -174,13 +174,18 @@ export default (context, inject) => {
         return signature
       },
 
-      async logout () {
+      async switch () {
         if (connectingAdapter) {
           await connectingAdapter.disconnect()
           connectingAdapter = null
           this.publicKey = null
         }
         this.clear()
+        this.loginModal = true
+      },
+
+      async logout () {
+        await this.switch()
         context.app.router.push('/')
       },
 
