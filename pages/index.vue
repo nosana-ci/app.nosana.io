@@ -75,7 +75,7 @@
         <div style="max-width: 100%; width: 400px">
           <input v-model="search" class="input" placeholder="search repositories">
         </div>
-        <nuxt-link to="/repositories/new" class="button is-accent">
+        <nuxt-link to="/repositories/new" class="button is-accent is-small has-text-white">
           + Add new repository
         </nuxt-link>
       </div>
