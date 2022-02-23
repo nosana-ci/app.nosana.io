@@ -88,14 +88,6 @@ export default {
     margin-right: 8px;
   }
 
-  .navbar-brand {
-    .navbar-item {
-      &.is-active, &:hover {
-        color: white;
-      }
-    }
-  }
-
   .navbar-menu {
     margin-top: 8px;
     justify-content: center;
@@ -105,10 +97,6 @@ export default {
       padding: 10px 20px;
       text-align: center;
       font-size: .9rem;
-      color: $grey-light;
-      &:hover {
-        color: white;
-      }
 
       &:after {
         display: block;
@@ -117,12 +105,10 @@ export default {
         position: absolute;
         transition: width 0.5s;
         bottom: 10px;
-        background: white;
         content: "";
       }
 
       &.is-active {
-        color: white;
         font-weight: 700;
 
         &:after {
