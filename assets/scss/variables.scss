@@ -10,7 +10,7 @@ $family-headers: 'Space Mono', monospace;
 // Colors
 $primary: #1c282a;
 $secondary: #20cf8d;
-$accent: #5FFF00;
+$accent:  #04DE00;
 
 $secondary-invert: findColorInvert($secondary) !default;
 $accent-invert: findColorInvert($accent) !default;
@@ -20,8 +20,8 @@ $custom-colors: (
   "accent":($accent, $accent-invert),
 );
 
-$text: white;
-$text-strong: white;
+// $text: white;
+// $text-strong: white;
 
 $link: #4e9dff;
 $link-hover: $accent;
@@ -29,15 +29,15 @@ $link-focus: $accent;
 $link-active: $accent;
 
 $title-weight: 600;
-$title-color: white;
-$subtitle-color: white;
+// $title-color: white;
+// $subtitle-color: white;
 $title-family: $family-headers;
 //$subtitle-family: $family-headers;
 
 $body-line-height: 1.7;
 $button-padding-horizontal: 1.7em;
 
-$body-background-color: #010C04;
+$body-background-color: white;
 
 $navbar-height: 5rem;
 $control-border-width: 2px;
