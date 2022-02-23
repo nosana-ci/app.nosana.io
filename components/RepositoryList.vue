@@ -22,7 +22,7 @@
               class="is-flex"
             >
               <div
-                v-for="commit in commits.filter(c => repository.id === c.repository_id)"
+                v-for="commit in commits.filter(c => repository.id === c.repository_id).slice(-6)"
                 :key="commit.id"
                 class="mx-1"
                 @click.stop=""
