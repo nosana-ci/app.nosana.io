@@ -8,8 +8,8 @@ $family-sans-serif: 'Space Mono', monospace;
 $family-headers: 'Space Mono', monospace;
 
 // Colors
-$primary: #1c282a;
-$secondary: #20cf8d;
+$primary: white;
+$secondary: #F7F9F6;
 $accent:  #04DE00;
 
 $secondary-invert: findColorInvert($secondary) !default;
@@ -43,14 +43,13 @@ $navbar-height: 5rem;
 $control-border-width: 2px;
 $footer-background-color: transparent;
 
-$scheme-main: $black;
-$scheme-main-bis: $black-bis;
-$scheme-main-ter: $black-ter;
-
 $hr-background-color: $secondary;
 $hr-height: 1px;
-$box-background-color: rgba($secondary, 0.1);
+$box-background-color: $secondary;
+$box-shadow: 0 0 0 1px transparent;
+$box-shadow: 0 0 0 1px transparent;
+$box-link-hover-shadow: 0 0 0 1px $accent;
+$box-link-active-shadow: 0 0 0 1px $accent;
 
-$background: $black-ter;
 $tabs-link-active-color: $secondary;
 $tabs-link-active-border-bottom-color: $secondary;

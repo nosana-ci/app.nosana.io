@@ -135,7 +135,13 @@ a.card {
 
 .box {
   position: relative;
-  border: 1px solid $secondary;
+  border: 1px solid #DDE3DB;
+  &.disabled {
+    pointer-events: none;
+  }
+  &:hover {
+    color: $box-color;
+  }
   &.is-info {
     background: rgba($info, 0.2);
     border: 1px solid $info;
