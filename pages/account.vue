@@ -4,18 +4,122 @@
       <h1 class="title is-4">
         Your Account
       </h1>
-      <div v-if="publicKey">
-        <div class="title mt-4 blockchain-address">
-          {{ publicKey }}
-        </div>
-        <div>
-          Balance: {{ balance }} SOL
-        </div>
-      </div>
-      <div v-else>
+      <div v-if="!loggedIn">
         <a href="" @click.prevent="$sol.loginModal = true">Connect your Solana Wallet</a> to continue
       </div>
-      <div v-if="user">
+      <div v-else>
+        <div>
+          <div class="columns">
+            <div v-if="user" class="column is-4">
+              <div class="is-flex is-align-items-flex-start is-justify-content-flex-start">
+                <div v-if="user.image" class="project-icon mr-4">
+                  <img v-if="user.image" style="height: 32px" :src="user.image">
+                </div>
+                <div style="max-width: 100%;">
+                  <h2 v-if="user.name" class="title is-6 has-text-weight-semibold">
+                    {{ user.name }}
+                    <a @click.prevent="editUser = true"><i class="fas fa-edit" /></a>
+                  </h2>
+                  <h2 class="subtitle is-6 mb-1">
+                    <a target="_blank" :href="`https://solscan.io/address/${publicKey}`" class="blockchain-address" style="max-width: 140px;">
+                      {{ publicKey }}
+                    </a>
+                  </h2>
+                  <a v-if="!user.name" @click.prevent="editUser = true"><i class="fas fa-edit" /> Edit Project info</a>
+                  <p class="is-size-7 has-overflow-ellipses" style="height: 40px;">
+                    <span v-if="user.description">{{ user.description }}</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div v-if="!user || !user.name" class="column is-8">
+              <div class="columns">
+                <div class="column is-one-third">
+                  <a class="box is-secondary step" :class="{'has-background-white': loggedIn}" @click="$sol.loginModal = true">
+                    <div class="is-flex is-justify-content-space-between">
+                      <div>1</div>
+                      <div v-if="loggedIn">
+                        <img :src="require('@/assets/img/icons/done.svg')">
+                      </div>
+                      <div v-else>
+                        <img :src="require('@/assets/img/icons/pending.svg')">
+                      </div>
+                    </div>
+                    <div class="has-text-centered my-2">
+                      <img src="~assets/img/icons/wallet.svg">
+                      <p>Connect Wallet</p>
+                    </div>
+                  </a>
+                </div>
+                <div class="column is-one-third">
+                  <nuxt-link class="box is-secondary step" :class="{'has-background-white': user && repositories && repositories.filter(r => r.user_id === user.user_id).length, 'disabled': !loggedIn}" to="/repositories/new">
+                    <div class="is-flex is-justify-content-space-between">
+                      <div>2</div>
+                      <div v-if="user && repositories && repositories.filter(r => r.user_id === user.user_id).length">
+                        <img :src="require('@/assets/img/icons/done.svg')">
+                      </div>
+                      <div v-else>
+                        <img :src="require('@/assets/img/icons/pending.svg')">
+                      </div>
+                    </div>
+                    <div class="has-text-centered my-2">
+                      <img v-if="loggedIn" src="~assets/img/icons/repository.svg">
+                      <img v-else src="~assets/img/icons/repository_grey.svg">
+                      <p>Add Repository</p>
+                    </div>
+                  </nuxt-link>
+                </div>
+                <div class="column is-one-third">
+                  <a class="box is-secondary step" :class="{'has-background-white': user && repositories && repositories.filter(r => r.user_id === user.user_id).length, 'disabled': !(loggedIn && user && repositories && repositories.filter(r => r.user_id === user.user_id).length)}" @click.stop="editUser = true">
+                    <div class="is-flex is-justify-content-space-between">
+                      <div>3</div>
+                      <div v-if="user && user.isApproved">
+                        <img :src="require('@/assets/img/icons/done.svg')">
+                      </div>
+                      <div v-else-if="user && user.name">
+                        <img :src="require('@/assets/img/icons/running.svg')">
+                      </div>
+                      <div v-else>
+                        <img :src="require('@/assets/img/icons/pending.svg')">
+                      </div>
+                    </div>
+                    <div class="has-text-centered my-2">
+                      <img v-if="loggedIn && user && repositories && repositories.filter(r => r.user_id === user.user_id).length" src="~assets/img/icons/project.svg">
+                      <img v-else src="~assets/img/icons/project_grey.svg">
+                      <p>Request Funds</p>
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <template v-else>
+              <div class="column is-2">
+                <div class="box">
+                  <small>TestNet Balance</small>
+                  <div class="has-text-weight-semibold">
+                    {{ balance }} <span class="has-text-accent">NOS</span>
+                  </div>
+                </div>
+              </div>
+              <div class="column is-2">
+                <div class="box">
+                  <small>Used for Jobs</small>
+                  <div class="has-text-weight-semibold">
+                    {{ balance }} <span class="has-text-accent">NOS</span>
+                  </div>
+                </div>
+              </div>
+              <div class="column is-2">
+                <div class="box">
+                  <small>NOS Rewards</small>
+                  <div class="has-text-weight-semibold">
+                    {{ balance }} <span class="has-text-accent">NOS</span>
+                  </div>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
         <div class="modal" :class="{'is-active': editUser}">
           <div class="modal-background" @click="editUser = false" />
           <div class="modal-card">
@@ -54,41 +158,19 @@
           </div>
           <button class="modal-close is-large" aria-label="close" @click="editUser = false" />
         </div>
-
-        <div v-if="!editUser">
-          <a @click.prevent="editUser = true">Edit Project info</a>
-          <div v-if="user.name" class="is-flex is-align-items-center">
-            <img v-if="user.image" style="height: 32px" :src="user.image" class="mr-4">
-            <h2 class="title">
-              {{ user.name }}
-            </h2>
-          </div>
-          <div v-else>
-            <a
-              href="https://bit.ly/NosanaBetaForm-hp"
-              class="button is-accent is-outlined has-text-weight-semibold"
-              target="_blank"
-            >Register a project</a>
-          </div>
-          <p v-if="user.email">
-            Email: {{ user.email }}
-          </p>
-          <p v-if="user.description">
-            Description: {{ user.description }}
-          </p>
-        </div>
       </div>
-      <div v-if="user">
-        <h2 class="subtitle">
-          Repositories
-        </h2>
-        <nuxt-link to="/repositories/new" class="button is-accent is-outlined">
+      <div v-if="user" class="mt-6">
+        <nuxt-link to="/repositories/new" class="button is-accent is-outlined is-pulled-right">
           Add new repository
         </nuxt-link>
+        <h2 class="subtitle has-text-weight-semibold">
+          Repositories
+        </h2>
+
         <repository-list :commits="commits" :repositories="repositories" />
       </div>
       <div v-if="publicKey" class="has-text-centered mt-6">
-        <a href="" class="button is-danger" @click.prevent="$sol.logout">Logout</a>
+        <a class="has-text-danger" @click.prevent="$sol.logout">Logout</a>
       </div>
     </div>
   </section>
@@ -113,6 +195,9 @@ export default {
     }
   },
   computed: {
+    loggedIn () {
+      return (this.$sol) ? this.$sol.token : null
+    },
     publicKey () {
       return (this.$sol) ? this.$sol.publicKey : null
     },
@@ -205,3 +290,16 @@ export default {
 
 }
 </script>
+
+<style lang="scss" scoped>
+.project-icon {
+  border-radius: 100%;
+  background: $secondary;
+  display:flex;
+  justify-content: center;
+  min-width: 75px;
+  height: 75px;
+  align-items: center;
+  border: 1px solid grey;
+}
+</style>
