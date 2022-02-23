@@ -27,7 +27,7 @@
               <th>Job ID</th>
               <th>Message</th>
               <th>Commit</th>
-              <th>Transaction</th>
+              <th>Created</th>
               <th>Status</th>
             </tr>
           </thead>
@@ -36,9 +36,18 @@
               <td> {{ commit.id }}</td>
               <td>{{ commit.payload.message.split('\n')[0] }}</td>
               <td><a :href="commit.payload.url" target="_blank" @click.stop>{{ commit.commit }}</a></td>
-              <td>{{ commit.tx }}</td>
+              <td>{{ $moment(commit.created_at ).fromNow() }}</td>
               <td class="py-4">
-                <span class="tag is-success">{{ commit.status }}</span>
+                <div
+                  class="tag is-small"
+                  :class="{
+                    'is-success': commit.status === 'COMPLETED',
+                    'is-info': commit.status === 'RUNNING',
+                    'is-danger': commit.status === 'FAILED'
+                  }"
+                >
+                  {{ commit.status }}
+                </div>
               </td>
             </tr>
             <tr v-if="!commits || !commits.length" class="has-text-centered has-text-weight-bold">
