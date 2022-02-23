@@ -23,6 +23,10 @@
               <input v-model="name" type="text" class="input">
             </div>
             <div class="field">
+              <label>Email:</label>
+              <input v-model="email" type="email" class="input">
+            </div>
+            <div class="field">
               <label>Description:</label>
               <textarea v-model="description" class="textarea" />
             </div>
@@ -49,6 +53,9 @@
               target="_blank"
             >Register a project</a>
           </div>
+          <p v-if="user.email">
+            Email: {{ user.email }}
+          </p>
           <p v-if="user.description">
             Description: {{ user.description }}
           </p>
@@ -81,6 +88,7 @@ export default {
       user: null,
       image: null,
       description: null,
+      email: null,
       name: null,
       editUser: false,
       repositories: null,
@@ -132,6 +140,7 @@ export default {
         const user = await this.$axios.$get(`${process.env.backendUrl}/user`)
         this.name = user.name
         this.description = user.description
+        this.email = user.email
         this.image = user.image
         this.user = user
       } catch (error) {
@@ -159,8 +168,8 @@ export default {
         const user = await this.$axios.$post(`${process.env.backendUrl}/user`, {
           name: this.name,
           image: this.image,
-          description: this.description
-
+          description: this.description,
+          email: this.email
         })
         this.user = user
         this.editUser = false
