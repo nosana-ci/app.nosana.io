@@ -90,11 +90,12 @@
                 <img v-if="projects && projects.find(p => repository.user_id === p.id)" style="height: 32px" :src="projects.find(p => repository.user_id === p.id).image">
               </div>
               <div>
-                <h2 class="title is-5 has-text-weight-semibold">
-                  <span v-if="projects && projects.find(p => repository.user_id === p.id)">{{ projects.find(p => repository.user_id === p.id).name }}</span>
-                </h2>
-                <h2 class="subtitle is-7 mb-1" style="min-height: 30px">
+                <h2 class="title is-6 has-text-weight-semibold" style="min-height: 36px">
                   {{ repository.repository }}
+                </h2>
+                <h2 class="subtitle is-6 mb-1">
+                  <span v-if="projects && projects.find(p => repository.user_id === p.id)">{{ projects.find(p => repository.user_id === p.id).name }}</span>
+
                 </h2>
                 <p class="is-size-7 has-overflow-ellipses" style="height: 40px;">
                   <span v-if="projects && projects.find(p => repository.user_id === p.id)">{{ projects.find(p => repository.user_id === p.id).description }}</span>
