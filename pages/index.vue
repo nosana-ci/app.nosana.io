@@ -74,20 +74,20 @@
       <nuxt-link v-if="loggedIn" to="/repositories/new" class="button is-accent is-outlined">
         Add new repository
       </nuxt-link>
-      <div v-if="projects" class="columns is-multiline mt-4">
-        <div v-for="project in projects" :key="project.id" class="column is-6 is-one-fifth-fullhd is-3-widescreen is-4-desktop">
-          <a class="box has-background-white is-clickable" @click="$router.push('/projects/'+project.id)">
+      <div v-if="repositories && projects" class="columns is-multiline mt-4">
+        <div v-for="repository in repositories" :key="repository.id" class="column is-6 is-3-fullhd is-3-widescreen is-4-desktop">
+          <a class="box has-background-white is-clickable" @click="$router.push('/repositories/'+repository.id)">
             <div class="is-flex is-align-items-flex-start is-justify-content-flex-start">
-              <img style="height: 32px" :src="project.image" class="mr-4">
+              <img v-if="projects.find(p => repository.user_id === p.id)" style="height: 32px" :src="projects.find(p => repository.user_id === p.id).image" class="mr-4">
               <div>
                 <h2 class="title is-5 has-text-weight-semibold">
-                  {{ project.name }}
+                  {{ repository.repository }}
                 </h2>
                 <h2 class="subtitle is-6 mb-0">
-                  {{ project.name }}
+                  <span v-if="projects.find(p => repository.user_id === p.id)">{{ projects.find(p => repository.user_id === p.id).name }}</span>
                 </h2>
                 <p class="is-size-7">
-                  {{ project.description }}
+                  <span v-if="projects.find(p => repository.user_id === p.id)">{{ projects.find(p => repository.user_id === p.id).description }}</span>
                 </p>
               </div>
             </div>
@@ -97,7 +97,7 @@
                 <div v-if="!commits">
                   Loading..
                 </div>
-                <div v-else-if="!repositories.filter(r => r.user_id === project.id).map(r => r.commits).flat().length">
+                <div v-else-if="!repository.commits.length">
                   no pipelines
                 </div>
                 <div
@@ -105,7 +105,7 @@
                   class="is-flex"
                 >
                   <div
-                    v-for="commit in repositories.filter(r => r.user_id === project.id).map(r => r.commits).flat()"
+                    v-for="commit in repository.commits"
                     :key="commit.id"
                     class="mx-1"
                     @click.stop=""
