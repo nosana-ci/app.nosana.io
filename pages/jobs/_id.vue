@@ -4,12 +4,21 @@
       <div v-if="commit">
         <div class="is-flex is-align-items-center">
           <div class="mr-4">
-            <nuxt-link :to="`/repositories/${commit.repository_id}`" class="has-text-secondary is-size-5">
+            <nuxt-link :to="`/repositories/${commit.repository_id}`" class="is-size-5">
               <i class="fas fa-chevron-left" />
             </nuxt-link>
           </div>
           <div class="mr-4">
-            <span class="tag is-success">passed</span>
+            <div
+              class="tag is-small"
+              :class="{
+                'is-success': commit.status === 'COMPLETED',
+                'is-info': commit.status === 'RUNNING',
+                'is-danger': commit.status === 'FAILED'
+              }"
+            >
+              {{ commit.status }}
+            </div>
           </div>
           <div>Job <b>#{{ commit.id }}</b> triggered {{ $moment(commit.created_at).fromNow() }}</div>
         </div>
@@ -18,12 +27,12 @@
           {{ commit.payload.message.split('\n')[0] }}
         </h1>
         <div class="box">
-          <div><i class="fas fa-coins mr-4 has-text-secondary" />Pipeline total cost <b class="has-text-secondary">42.13 NOS<b /></b></div>
+          <div><i class="fas fa-coins mr-4 has-text-accent" />Pipeline total cost <b class="has-text-secondary">42.13 NOS<b /></b></div>
           <hr>
-          <div><i class="fas fa-server mr-4 has-text-secondary" />Nodes participated: <b>1</b></div>
+          <div><i class="fas fa-server mr-4 has-text-accent" />Nodes participated: <b>1</b></div>
           <hr>
           <div class="has-overresult-ellipses">
-            <i class="fab fa-git mr-4 has-text-secondary" />Commit <a :href="commit.payload.url" target="_blank" @click.stop>{{ commit.commit }}</a>
+            <i class="fab fa-git mr-4 has-text-accent" />Commit <a :href="commit.payload.url" target="_blank" @click.stop>{{ commit.commit }}</a>
           </div>
           <span style="white-space: pre-wrap">{{ commit.payload.message }}</span>
         </div>

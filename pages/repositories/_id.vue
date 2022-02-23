@@ -2,7 +2,7 @@
   <section class="section">
     <div class="container">
       <nuxt-link v-if="repository" to="/">
-        &lt; All repositories
+        <i class="fas fa-chevron-left" /> All repositories
       </nuxt-link>
       <div class="mt-2">
         <div v-if="repository">
