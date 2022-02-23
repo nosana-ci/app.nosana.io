@@ -71,23 +71,33 @@
           </div>
         </div>
       </div>
-      <nuxt-link v-if="loggedIn" to="/repositories/new" class="button is-accent is-outlined">
-        Add new repository
-      </nuxt-link>
-      <div v-if="repositories && projects" class="columns is-multiline mt-4">
-        <div v-for="repository in repositories" :key="repository.id" class="column is-6 is-3-fullhd is-3-widescreen is-4-desktop">
+      <div class="is-flex is-justify-content-space-between has-background-secondary columns p-2">
+        <div style="max-width: 100%; width: 400px">
+          <input v-model="search" class="input" placeholder="search repositories">
+        </div>
+        <nuxt-link to="/repositories/new" class="button is-accent">
+          + Add new repository
+        </nuxt-link>
+      </div>
+      <div v-if="repositories" class="columns is-multiline mt-4 has-background-secondary">
+        <div v-if="!filteredRepositories.length" class="has-text-centered subtitle">
+          No repositories found
+        </div>
+        <div v-for="repository in filteredRepositories" :key="repository.id" class="column is-6 is-3-fullhd is-3-widescreen is-4-desktop">
           <a class="box has-background-white is-clickable" @click="$router.push('/repositories/'+repository.id)">
             <div class="is-flex is-align-items-flex-start is-justify-content-flex-start">
-              <img v-if="projects.find(p => repository.user_id === p.id)" style="height: 32px" :src="projects.find(p => repository.user_id === p.id).image" class="mr-4">
+              <div class="project-icon mr-4">
+                <img v-if="projects && projects.find(p => repository.user_id === p.id)" style="height: 32px" :src="projects.find(p => repository.user_id === p.id).image">
+              </div>
               <div>
                 <h2 class="title is-5 has-text-weight-semibold">
+                  <span v-if="projects && projects.find(p => repository.user_id === p.id)">{{ projects.find(p => repository.user_id === p.id).name }}</span>
+                </h2>
+                <h2 class="subtitle is-7 mb-1" style="min-height: 30px">
                   {{ repository.repository }}
                 </h2>
-                <h2 class="subtitle is-6 mb-0">
-                  <span v-if="projects.find(p => repository.user_id === p.id)">{{ projects.find(p => repository.user_id === p.id).name }}</span>
-                </h2>
-                <p class="is-size-7">
-                  <span v-if="projects.find(p => repository.user_id === p.id)">{{ projects.find(p => repository.user_id === p.id).description }}</span>
+                <p class="is-size-7 has-overflow-ellipses" style="height: 40px;">
+                  <span v-if="projects && projects.find(p => repository.user_id === p.id)">{{ projects.find(p => repository.user_id === p.id).description }}</span>
                 </p>
               </div>
             </div>
@@ -132,12 +142,26 @@ export default {
       repositories: null,
       commits: null,
       projects: null,
-      user: null
+      user: null,
+      search: null
     }
   },
   computed: {
     loggedIn () {
       return this.$sol && this.$sol.token
+    },
+    filteredRepositories () {
+      let filteredRepositories = this.repositories
+      // Search campaigns
+      if (filteredRepositories && this.search !== null && this.projects) {
+        filteredRepositories = filteredRepositories.filter((r) => {
+          const project = this.projects.find(p => p.id === r.user_id)
+          return r.repository.toLowerCase().includes(this.search.toLowerCase()) ||
+            (project && project.name && project.name.toLowerCase().includes(this.search.toLowerCase()))
+        })
+      }
+
+      return filteredRepositories
     }
   },
   watch: {
@@ -224,7 +248,17 @@ export default {
 </script>
 
 <style lang="scss" scoped>
- .step {
+.project-icon {
+border-radius: 100%;
+background: $secondary;
+display:flex;
+justify-content: center;
+min-width: 75px;
+height: 75px;
+align-items: center;
+border: 1px solid grey;
+}
+.step {
    min-height: 160px;
  }
 </style>
