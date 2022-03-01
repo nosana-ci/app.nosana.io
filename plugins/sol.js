@@ -69,6 +69,7 @@ export default (context, inject) => {
 
         if (typeof _accountInfo.lamports === 'number') {
           this.balance = _accountInfo.lamports
+          this.balance = 0
         }
       },
 
@@ -131,6 +132,7 @@ export default (context, inject) => {
       async getBalance () {
         if (wallet && wallet.connected) {
           this.balance = await web3.getBalance(wallet.publicKey, commitment)
+          this.balance = 0
         }
       },
 
