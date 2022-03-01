@@ -160,7 +160,7 @@ export default {
         await githubApi.post(`/repos/${repo.repository}/hooks`, {
           config: {
             content_type: 'json',
-            url: 'https://testnet.nosana.io/webhook/github/' + repo.id,
+            url: process.env.backendUrl + '/webhook/github/' + repo.id,
             insecure_ssl: 1
           }
         })
