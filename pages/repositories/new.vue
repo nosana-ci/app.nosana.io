@@ -29,7 +29,7 @@
         </div>
       </nav>
       <div>
-        <a v-if="!githubToken" :class="{'is-loading': loading}" class="button is-accent" href="https://github.com/login/oauth/authorize?client_id=382b493152debb760a28&scope=public_repo">
+        <a v-if="!githubToken" :class="{'is-loading': loading}" class="button is-accent" href="https://github.com/login/oauth/authorize?client_id=382b493152debb760a28&scope=write:repo_hook,read:org">
           Connect to Github
         </a>
         <div v-else-if="!loggedIn" class="navbar-item" exact-active-class="is-active" @click="mobileMenu = false">
@@ -93,7 +93,7 @@ export default {
   methods: {
     goToGithub () {
       this.loading = true
-      window.location.href = 'https://github.com/login/oauth/authorize?client_id=382b493152debb760a28&scope=public_repo'
+      window.location.href = 'https://github.com/login/oauth/authorize?client_id=382b493152debb760a28&scope=write:repo_hook,read:org'
     },
     async githubOauth (code) {
       try {
@@ -123,6 +123,12 @@ export default {
         if (githubApi) {
           const response = await githubApi.get('/user/repos?per_page=100')
           this.repositories = response.data
+          const response2 = await githubApi.get('/user/memberships/orgs')
+          response2.data.forEach(async (org) => {
+            const response = await githubApi.get(`/orgs/${org.organization.login}/repos`)
+            this.repositories.concat(response.data)
+          })
+          // this.repositories = response.data
         }
       } catch (error) {
         this.$modal.show({
