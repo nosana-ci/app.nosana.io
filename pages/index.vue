@@ -83,67 +83,69 @@
         <div v-if="!filteredRepositories.length" class="has-text-centered subtitle">
           No repositories found
         </div>
-        <div v-for="repository in filteredRepositories" :key="repository.id" class="column is-6 is-3-fullhd is-3-widescreen is-4-desktop">
-          <a class="box has-background-white is-clickable" @click="$router.push('/repositories/'+repository.id)">
-            <div class="is-flex is-align-items-flex-start is-justify-content-flex-start">
-              <div class="project-icon mr-4">
-                <img v-if="projects && projects.find(p => repository.user_id === p.id)" style="height: 32px" :src="projects.find(p => repository.user_id === p.id).image">
-              </div>
-              <div>
-                <h2 class="title is-6 has-text-weight-semibold" style="min-height: 36px">
-                  {{ repository.repository }}
-                </h2>
-                <h2 class="subtitle is-6 mb-1">
-                  <span v-if="projects && projects.find(p => repository.user_id === p.id)">{{ projects.find(p => repository.user_id === p.id).name }}</span>
-
-                </h2>
-                <p class="is-size-7 has-overflow-ellipses" style="height: 40px;">
-                  <span v-if="projects && projects.find(p => repository.user_id === p.id)">{{ projects.find(p => repository.user_id === p.id).description }}</span>
-                </p>
-              </div>
-            </div>
-
-            <div class="mt-2">
-              <span v-if="repositories">
-                <div v-if="!commits">
-                  Loading..
+        <template v-for="repository in filteredRepositories">
+          <div v-if="commits && checkCommit(repository.commits)" :key="repository.id" class="column is-6 is-3-fullhd is-3-widescreen is-4-desktop">
+            <a class="box has-background-white is-clickable" @click="$router.push('/repositories/'+repository.id)">
+              <div class="is-flex is-align-items-flex-start is-justify-content-flex-start">
+                <div class="project-icon mr-4">
+                  <img v-if="projects && projects.find(p => repository.user_id === p.id)" style="height: 32px" :src="projects.find(p => repository.user_id === p.id).image">
                 </div>
-                <div v-else-if="!repository.commits.length">
-                  no pipelines
+                <div>
+                  <h2 class="title is-6 has-text-weight-semibold" style="min-height: 36px">
+                    {{ repository.repository }}
+                  </h2>
+                  <h2 class="subtitle is-6 mb-1">
+                    <span v-if="projects && projects.find(p => repository.user_id === p.id)">{{ projects.find(p => repository.user_id === p.id).name }}</span>
+
+                  </h2>
+                  <p class="is-size-7 has-overflow-ellipses" style="height: 40px;">
+                    <span v-if="projects && projects.find(p => repository.user_id === p.id)">{{ projects.find(p => repository.user_id === p.id).description }}</span>
+                  </p>
                 </div>
-                <div
-                  v-else
-                  class="is-flex is-align-items-flex-end"
-                >
-                  <div class="mr-2">
-                    <div
-                      class="tag is-small"
-                      :class="{
-                        'is-success': repository.commits.slice(-1)[0].status === 'COMPLETED',
-                        'is-info': repository.commits.slice(-1)[0].status === 'RUNNING',
-                        'is-danger': repository.commits.slice(-1)[0].status === 'FAILED'
-                      }"
-                    >{{ repository.commits.slice(-1)[0].status }}</div>
-                    <div class="is-size-7">
-                      {{ $moment(repository.commits.slice(-1)[0].created_at ).fromNow() }}
-                    </div>
+              </div>
+
+              <div class="mt-2">
+                <span v-if="repositories">
+                  <div v-if="!commits">
+                    Loading..
+                  </div>
+                  <div v-else-if="!repository.commits.length">
+                    no pipelines
                   </div>
                   <div
-                    v-for="commit in repository.commits.slice(-6)"
-                    :key="commit.id"
-                    class="mx-1"
-                    @click.stop=""
+                    v-else
+                    class="is-flex is-align-items-flex-end"
                   >
-                    <nuxt-link :to="`/jobs/${commit.id}`" class="has-tooltip-arrow" :data-tooltip="commit.commit">
-                      <commit-status :status="commit.status" />
-                    </nuxt-link>
+                    <div class="mr-2">
+                      <div
+                        class="tag is-small"
+                        :class="{
+                          'is-success': repository.commits.slice(-1)[0].status === 'COMPLETED',
+                          'is-info': repository.commits.slice(-1)[0].status === 'RUNNING',
+                          'is-danger': repository.commits.slice(-1)[0].status === 'FAILED'
+                        }"
+                      >{{ repository.commits.slice(-1)[0].status }}</div>
+                      <div class="is-size-7">
+                        {{ $moment(repository.commits.slice(-1)[0].created_at ).fromNow() }}
+                      </div>
+                    </div>
+                    <div
+                      v-for="commit in repository.commits.slice(-6)"
+                      :key="commit.id"
+                      class="mx-1"
+                      @click.stop=""
+                    >
+                      <nuxt-link :to="`/jobs/${commit.id}`" class="has-tooltip-arrow" :data-tooltip="commit.commit">
+                        <commit-status :status="commit.status" />
+                      </nuxt-link>
+                    </div>
                   </div>
-                </div>
-              </span>
-              <span v-else>Loading..</span>
-            </div>
-          </a>
-        </div>
+                </span>
+                <span v-else>Loading..</span>
+              </div>
+            </a>
+          </div>
+        </template>
       </div>
     </div>
   </section>
@@ -197,6 +199,9 @@ export default {
     // }, 20000)
   },
   methods: {
+    checkCommit (commits) {
+      return (commits && commits.length && commits.find(c => c.status !== 'PENDING'))
+    },
     async getUser () {
       try {
         const user = await this.$axios.$get(`${process.env.backendUrl}/user`)
