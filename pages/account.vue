@@ -131,11 +131,11 @@
             <form @submit.prevent="updateUser">
               <section class="modal-card-body">
                 <div class="field">
-                  <label>Name:</label>
+                  <label>Name*:</label>
                   <input v-model="name" required type="text" class="input">
                 </div>
                 <div class="field">
-                  <label>Email:</label>
+                  <label>Email*:</label>
                   <input v-model="email" required type="email" class="input">
                 </div>
                 <div class="field">
@@ -145,6 +145,10 @@
                 <div class="field">
                   <label>Icon URL:</label>
                   <input v-model="image" type="url" class="input">
+                </div>
+                <div class="field">
+                  <label>Discord Username:</label>
+                  <input v-model="discord" type="text" class="input">
                 </div>
               </section>
 
@@ -187,6 +191,7 @@ export default {
       user: null,
       image: null,
       description: null,
+      discord: null,
       email: null,
       name: null,
       editUser: false,
@@ -245,6 +250,7 @@ export default {
         const user = await this.$axios.$get(`${process.env.backendUrl}/user`)
         this.name = user.name
         this.description = user.description
+        this.discord = user.discord
         this.email = user.email
         this.image = user.image
         this.user = user
@@ -274,6 +280,7 @@ export default {
           name: this.name,
           image: this.image,
           description: this.description,
+          discord: this.discord,
           email: this.email
         })
         this.user = user
