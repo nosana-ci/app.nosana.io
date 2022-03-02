@@ -27,10 +27,12 @@
           {{ commit.payload.message.split('\n')[0] }}
         </h1>
         <div class="box">
-          <div><i class="fas fa-coins mr-4 has-text-accent" />Pipeline total cost <b class="has-text-secondary">42.13 NOS<b /></b></div>
-          <hr>
-          <div><i class="fas fa-server mr-4 has-text-accent" />Nodes participated: <b>1</b></div>
-          <hr>
+          <div v-if="result" class="mb-4">
+            <i class="fas fa-coins mr-4 has-text-accent" />Pipeline total cost <b class="has-text-accent">42.13 NOS<b /></b>
+          </div>
+          <div v-if="result" class="mb-4">
+            <i class="fas fa-server mr-4 has-text-accent" />Nodes participated: <b>1</b>
+          </div>
           <div class="has-overresult-ellipses">
             <i class="fab fa-git mr-4 has-text-accent" />Commit <a :href="commit.payload.url" target="_blank" @click.stop>{{ commit.commit }}</a>
           </div>
@@ -50,7 +52,10 @@
           </ul>
         </div>
         <div v-if="tab === 'steps'">
-          <div v-for="op in result.ops" :key="op.id" class="box is-info">
+          <div v-if="!result">
+            Waiting for result..
+          </div>
+          <div v-for="op in result.ops" v-else :key="op.id" class="box is-info">
             <div class="is-clickable is-flex is-flex-wrap-wrap is-align-items-center" @click="step !== op.id ? step = op.id : step = null">
               <h3 class="subtitle m-0">
                 {{ op.title }}
@@ -107,7 +112,7 @@ export default {
       try {
         const commit = await this.$axios.$get(`${process.env.backendUrl}/commits/${id}`)
         this.commit = commit
-        this.getResult(this.commit.id)
+        // this.getResult(this.commit.id)
       } catch (error) {
         this.$modal.show({
           color: 'danger',
