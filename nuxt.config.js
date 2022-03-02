@@ -10,14 +10,29 @@ export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     titleTemplate: '%s - Nosana Platform',
-    title: 'Nosana Platform',
+    title: 'Nosana Testnet',
     htmlAttrs: {
       lang: 'en'
     },
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: '' }
+      { hid: 'description', name: 'description', content: '' },
+      {
+        hid: 'og:title',
+        property: 'og:title',
+        content: 'Nosana Incentivized Testnet'
+      },
+      {
+        hid: 'og:description',
+        property: 'og:description',
+        content: 'The Testnet program is designed to put Nosana\'s CI features and tools to the test'
+      },
+      {
+        hid: 'og:image',
+        property: 'og:image',
+        content: 'https://testnet.nosana.io/img/screenshot.png'
+      }
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
