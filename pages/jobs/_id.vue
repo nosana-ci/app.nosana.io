@@ -53,7 +53,7 @@
         </div>
         <div v-if="tab === 'steps'">
           <div v-if="!result">
-            Waiting for result..
+            Not posted to blockchain yet..
           </div>
           <div v-for="op in result.ops" v-else :key="op.id" class="box is-info">
             <div class="is-clickable is-flex is-flex-wrap-wrap is-align-items-center" @click="step !== op.id ? step = op.id : step = null">
