@@ -82,6 +82,9 @@
       <p class="has-text-aligned is-horizontal-centered has-limited-width">
         Projects that want to run their pipelines on TestNet are being approved right now. Add your repositories and input your project information to request TestNet funds to be able to run jobs and earn NOS tokens for every pipeline that you are running!
       </p>
+      <p v-if="user && user.name" class="is-horizontal-centered has-limited-width mt-4 notification is-info">
+        Your request for TestNet funds to run pipelines is pending. Make sure your information is correct and your repositories are added.
+      </p>
       <div v-if="repositories" class="columns is-multiline mt-4 has-background-secondary">
         <div v-if="!filteredRepositories.length" class="has-text-centered subtitle">
           No repositories found
