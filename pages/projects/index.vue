@@ -17,12 +17,15 @@
                 <h2 class="title is-5 has-text-weight-semibold">
                   {{ project.name }}
                 </h2>
-                <h2 class="subtitle is-6 mb-0">
+                <h2 v-if="project.email" class="subtitle is-6 mb-0">
                   {{ project.email }}
                 </h2>
                 <p class="is-size-7">
                   {{ project.description }}
                 </p>
+                <i v-if="project.discord" class="is-size-7">
+                  Discord: <b>{{ project.discord }}</b>
+                </i>
               </div>
             </div>
 
