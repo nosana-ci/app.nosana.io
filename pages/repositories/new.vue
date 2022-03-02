@@ -146,7 +146,7 @@ export default {
           type: 'GITHUB'
         })
         await this.addWebhook(repo)
-        this.$router.push('/')
+        this.$router.push('/account')
       } catch (error) {
         this.$modal.show({
           color: 'danger',
