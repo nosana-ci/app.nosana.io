@@ -12,7 +12,7 @@
           <div class="columns">
             <div v-if="user" class="column is-4">
               <div class="is-flex is-align-items-flex-start is-justify-content-flex-start">
-                <div v-if="user.image" class="project-icon mr-4">
+                <div class="project-icon mr-4">
                   <img v-if="user.image" style="height: 32px" :src="user.image">
                 </div>
                 <div style="max-width: 100%;">
