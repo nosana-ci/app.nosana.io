@@ -32,7 +32,7 @@ export default (context, inject) => {
   const sol = new Vue({
     data () {
       return {
-        explorer: process.env.NUXT_ENV_SOL_EXPLORER,
+        explorer: 'https://solscan.io',
         balance: null,
         publicKey: null,
         loginModal: false,
