@@ -41,7 +41,7 @@
           </div>
           <span style="white-space: pre-wrap">{{ commit.payload.message }}</span>
         </div>
-        <div v-if="commit.job" class="level notification is-warning">
+        <div v-if="!commit.job" class="level notification is-warning">
           <div class="level-left">
             <div class="level-item">
               <span>Not posted to blockchain yet..</span>
@@ -49,7 +49,7 @@
           </div>
           <div class="level-right">
             <div class="level-item">
-              <button v-if="user && (user.id === commit.user_id || user.roles.includes('admin'))" class="button is-small is-danger" @click="postJob(commit.id)">
+              <button v-if="user && (user.roles.includes('admin'))" class="button is-small is-danger" @click="postJob(commit.id)">
                 Retry transaction
               </button>
             </div>
