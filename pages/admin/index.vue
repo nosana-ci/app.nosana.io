@@ -95,6 +95,7 @@
               <th />
               <th>Address</th>
               <th>Repos</th>
+              <th>Commits</th>
               <th>Name</th>
               <th>Email</th>
               <th>Description</th>
@@ -115,6 +116,7 @@
                 <span class="blockchain-address">{{ user.address }}</span>
               </td>
               <td>{{ user.repositories }}</td>
+              <td>{{ user.commits }}</td>
               <td>{{ user.name }}</td>
               <td>{{ user.email }}</td>
               <td>
