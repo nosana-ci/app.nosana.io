@@ -34,7 +34,7 @@
             <i class="fas fa-coins mr-4 has-text-accent" />Pipeline total cost <b class="has-text-accent">{{ parseInt(commit.jobInfo.tokens, 16) }} NOS</b>
           </div>
           <div v-if="commit.job && commit.jobInfo && commit.jobInfo.jobStatus > 0" class="mb-4">
-            <i class="fas fa-server mr-4 has-text-accent" />Nodes participated: <b>1</b>
+            <i class="fas fa-server mr-4 has-text-accent" />Node: <b>{{ commit.jobInfo.node }}</b>
           </div>
           <div class="has-overresult-ellipses">
             <i class="fab fa-git mr-4 has-text-accent" />Commit <a :href="commit.payload.url" target="_blank" @click.stop>{{ commit.commit }}</a>
@@ -47,9 +47,9 @@
               <span>Not posted to blockchain yet..</span>
             </div>
           </div>
-          <div class="level-right">
+          <div v-if="user && (user.roles.includes('admin'))" class="level-right">
             <div class="level-item">
-              <button v-if="user && (user.roles.includes('admin'))" class="button is-small is-danger" @click="postJob(commit.id)">
+              <button class="button is-small is-danger" @click="postJob(commit.id)">
                 Retry transaction
               </button>
             </div>
