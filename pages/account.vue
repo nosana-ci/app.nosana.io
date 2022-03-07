@@ -97,7 +97,7 @@
                 <div class="box">
                   <small>TestNet Balance</small>
                   <div class="has-text-weight-semibold">
-                    {{ balance }} <span class="has-text-accent">NOS</span>
+                    <span v-if="!balance && balance !== 0">...</span><span v-else>{{ balance.toFixed(4) }}</span> <span class="has-text-accent">NOS</span>
                   </div>
                 </div>
               </div>
@@ -105,7 +105,7 @@
                 <div class="box">
                   <small>Used for Jobs</small>
                   <div class="has-text-weight-semibold">
-                    {{ balance }} <span class="has-text-accent">NOS</span>
+                    {{ usedBalance }} <span class="has-text-accent">NOS</span>
                   </div>
                 </div>
               </div>
@@ -113,7 +113,7 @@
                 <div class="box">
                   <small>NOS Rewards</small>
                   <div class="has-text-weight-semibold">
-                    {{ balance }} <span class="has-text-accent">NOS</span>
+                    {{ reward }} <span class="has-text-accent">NOS</span>
                   </div>
                 </div>
               </div>
@@ -182,7 +182,6 @@
 
 <script>
 import RepositoryList from '../components/RepositoryList.vue'
-import { formatLamportsAsSol } from '@/utils'
 
 export default {
   components: { RepositoryList },
@@ -196,7 +195,8 @@ export default {
       name: null,
       editUser: false,
       repositories: null,
-      commits: null
+      commits: null,
+      balance: null
     }
   },
   computed: {
@@ -206,8 +206,25 @@ export default {
     publicKey () {
       return (this.$sol) ? this.$sol.publicKey : null
     },
-    balance () {
-      return this.$sol && typeof this.$sol.balance === 'number' && formatLamportsAsSol(this.$sol && this.$sol.balance, true)
+    usedBalance () {
+      let used = 0
+      if (this.commits && this.user && this.repositories) {
+        const repoIds = this.repositories.map(r => (r.user_id === this.user.user_id ? r.id : null))
+        this.commits.forEach((c) => {
+          if (repoIds.includes(c.repository_id) && c.status !== 'PENDING') {
+            used += 10
+          }
+        })
+      }
+      return used
+    },
+    reward () {
+      let reward = 0
+      if (this.balance > 0) {
+        reward += 500
+      }
+
+      return reward + this.usedBalance
     }
   },
   watch: {
@@ -254,6 +271,7 @@ export default {
         this.email = user.email
         this.image = user.image
         this.user = user
+        this.balance = (await this.$sol.getNosBalance(this.user.generated_address)).uiAmount
       } catch (error) {
         this.$modal.show({
           color: 'danger',

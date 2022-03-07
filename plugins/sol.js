@@ -7,10 +7,12 @@ import {
   SolflareWalletAdapter,
   SlopeWalletAdapter
 } from '@solana/wallet-adapter-wallets'
-import { clusterApiUrl, Connection } from '@solana/web3.js'
+import { clusterApiUrl, Connection, PublicKey } from '@solana/web3.js'
 import { commitment, sendTransaction } from '@/utils/web3'
 
-const network = WalletAdapterNetwork.Mainnet
+const network = WalletAdapterNetwork.Testnet
+
+const NOS_TOKEN_PROGRAM_ID = 'testsKbCqE8T1ndjY4kNmirvyxjajKvyp1QTDmdGwrp'
 
 // You can also provide a custom RPC endpoint
 const endpoint = clusterApiUrl(network)
@@ -128,6 +130,17 @@ export default (context, inject) => {
           return
         }
         this.error = { name: 'Connect wallet failed', message: error.name }
+      },
+
+      async getNosBalance (address) {
+        if (address) {
+          const publicKey = new PublicKey(address)
+          const response = await web3.getParsedTokenAccountsByOwner(publicKey, {
+            mint: new PublicKey(NOS_TOKEN_PROGRAM_ID)
+          })
+          if (!response.value[0]) { return { uiAmount: 0 } }
+          return response.value[0].account.data.parsed.info.tokenAmount
+        }
       },
 
       async getBalance () {

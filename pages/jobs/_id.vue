@@ -44,7 +44,7 @@
         <div v-if="!commit.job" class="level notification is-warning">
           <div class="level-left">
             <div class="level-item">
-              <span>Not posted to blockchain yet..</span>
+              <span>Not posted to blockchain..</span>
             </div>
           </div>
           <div v-if="user && (user.roles.includes('admin'))" class="level-right">
@@ -69,29 +69,28 @@
           </ul>
         </div>
         <div v-if="tab === 'result'">
-          <div v-if="!result">
-            No result yet..
-          </div>
-          <div v-for="op in result.ops" v-else :key="op.id" class="box is-info">
-            <div class="is-clickable is-flex is-flex-wrap-wrap is-align-items-center" @click="step !== op.id ? step = op.id : step = null">
-              <h3 class="subtitle m-0">
-                {{ op.title }}
-              </h3>
-              <div class="is-size-7 has-overresult-ellipses mr-4" style="margin-left: auto">
-                was ran by <a :href="`https://explorer.solana.com/address/${'7E5nsBVPuPoRBsDzVjr2YKFNoqewo2EGitKq7cbhSSp4'}`" target="_blank">7E5nsBVPuPoRBsDzVjr2YKFNoqewo2EGitKq7cbhSSp4</a>
-              </div>
+          <div v-if="commit.jobIpfs">
+            <div v-for="(command, index) in commit.jobIpfs.commands" :key="index" class="box is-info">
               <div>
-                <i class="fas fa-chevron-down" :class="{'fa-chevron-up': step === op.id}" />
-              </div>
-            </div>
-            <div v-if="step === op.id">
-              <div v-if="op.op === 'nos.git/ensure-repo'">
-                <pre>Cloning into {{ result.results[op.id] }}</pre>
-              </div>
-              <div v-else-if="op.op === 'sh'">
-                <pre v-if="result.results[op.id]">{{ result.results[op.id].out }}</pre>
-                <div v-else>
-                  Op is still pending
+                <div class="is-clickable is-flex is-flex-wrap-wrap is-align-items-center" @click="step !== index ? step = index : step = null">
+                  <h3 class="subtitle m-0">
+                    {{ command }}
+                  </h3>
+                  <div class="is-size-7 has-overresult-ellipses mr-4" style="margin-left: auto">
+                    <span v-if="result">node: {{ result['nos-id'] }}</span>
+                    <span v-else>pending</span>
+                  </div>
+                  <div>
+                    <i class="fas fa-chevron-down" :class="{'fa-chevron-up': step === index}" />
+                  </div>
+                </div>
+                <div v-if="step === index">
+                  <div>
+                    <pre v-if="result && result.results && result.results[`cmd-${index}`]">{{ result.results[`cmd-${index}`].out }}</pre>
+                    <div v-else>
+                      No results yet..
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -112,6 +111,8 @@
 </template>
 
 <script>
+import bs58 from 'bs58'
+
 export default {
   data () {
     return {
@@ -119,7 +120,8 @@ export default {
       result: null,
       step: null,
       tab: 'result',
-      user: null
+      user: null,
+      refreshInterval: null
     }
   },
   watch: {
@@ -129,8 +131,14 @@ export default {
       }
     }
   },
+  beforeDestroy () {
+    if (this.refreshInterval) {
+      clearInterval(this.refreshInterval)
+      this.refreshInterval = null
+    }
+  },
   created () {
-    this.getCommit(this.$route.params.id)
+    this.getCommit()
     if (this.$sol && this.$sol.token) {
       this.getUser()
     }
@@ -168,7 +176,7 @@ export default {
     async postJob (id) {
       try {
         await this.$axios.$post(`${process.env.backendUrl}/commits/${id}/job`)
-        this.getCommit(id)
+        this.getCommit()
       } catch (error) {
         this.$modal.show({
           color: 'danger',
@@ -177,180 +185,58 @@ export default {
         })
       }
     },
-    async getCommit (id) {
+    solHashToIpfsHash (hashArray) {
+      // Convert the ipfs bytes from a solana job to a CID
+      // It prepends the 0x1220 (18,32) to make it 34 bytes and Base58 encodes it.
+      // This result is IPFS addressable.
+      hashArray.unshift(18, 32)
+      return bs58.encode(Buffer.from(hashArray))
+    },
+    async retrieveIpfsContent (hash) {
+      const response = await fetch('https://gateway.pinata.cloud/ipfs/' + hash)
+      const json = await response.json()
+      return json
+    },
+    async getJobInfo (ipfsJob) {
+      const hash = this.solHashToIpfsHash(ipfsJob)
+      this.$set(this.commit, 'jobIpfsHash', hash)
+      this.$set(this.commit, 'jobIpfs', await this.retrieveIpfsContent(hash))
+    },
+    getResult (ipfsResult) {
+      this.result = { 'nos-id': 'IJnYh-qz3uCPTQUk9bCiF', 'finished-at': 1645545696, results: { 'cmd-0': { exit: 0, out: 'audited 1581 packages in 9.248s\n\n124 packages are looking for funding\n  run `npm fund` for details\n\nfound 44 vulnerabilities (2 low, 29 moderate, 13 high)\n  run `npm audit fix` to fix them, or `npm audit` for details\n', err: '' }, 'cmd-1': { exit: 0, out: "yarn run v1.21.1\n$ set -ex; npm run pretty; eslint . --ext .js,.ts\n\n> @solana/web3.js@0.0.0-development pretty\n> prettier --check '{,{src,test}/**/}*.{j,t}s'\n\nChecking formatting...\nAll matched files use Prettier code style!\nDone in 12.01s.\n", err: '+ npm run pretty\n+ eslint . --ext .js,.ts\n' }, 'cmd-2': { exit: 0, out: "yarn run v1.21.1\n$ mocha -r ts-node/register './test/**/*.test.ts'\n\n\n  Account\n    ✓ generate new account\n    ✓ account from secret key\n\n  AgentManager\n    ✓ works (5005ms)\n\n  Cluster Util\n    ✓ invalid\n    ✓ devnet\n\n  Connection\n    ✓ should pass HTTP headers to RPC\n    ✓ should allow middleware to augment request\n    ✓ should attribute middleware fatals to the middleware\n    ✓ should not attribute fetch errors to the middleware\n    ✓ get account info - not found\n    ✓ get multiple accounts info\n    ✓ get program accounts (140ms)\n    ✓ get balance\n    ✓ get inflation\n    ✓ get inflation reward\n    ✓ get epoch info\n    ✓ get epoch schedule\n    ✓ get leader schedule\n    ✓ get slot\n    ✓ get slot leader\n    ✓ get slot leaders\n    ✓ get cluster nodes\n    ✓ confirm transaction - error\n    ✓ get transaction count\n    ✓ get total supply\n    ✓ get minimum balance for rent exemption\n    ✓ get confirmed signatures for address\n    ✓ get signatures for address\n    ✓ get parsed confirmed transactions\n    ✓ get transaction\n    ✓ get confirmed transaction\n    ✓ get parsed confirmed transaction coerces public keys of inner instructions\n    ✓ get block\n    ✓ get confirmed block\n    ✓ get blocks between two slots\n    ✓ get blocks from starting slot\n    ✓ get block signatures\n    ✓ get recent blockhash\n    ✓ get latest blockhash\n    ✓ get fee calculator\n    ✓ get fee for message\n    ✓ get block time\n    ✓ get minimum ledger slot\n    ✓ get first available block\n    ✓ get supply\n    ✓ get supply without accounts\n    ✓ get performance samples\n    ✓ get performance samples limit too high\n    ✓ get largest accounts (82ms)\n    ✓ stake activation should throw when called for not delegated account\n    ✓ stake activation should only accept state with valid string literals\n    ✓ getVersion\n    ✓ getGenesisHash\n    ✓ request airdrop\n    ✓ transaction failure (123ms)\n\n  EpochSchedule\n    ✓ slot methods work\n\n  Keypair\n    ✓ new keypair\n    ✓ generate new keypair\n    ✓ create keypair from secret key\n    ✓ creating keypair from invalid secret key throws error\n    ✓ creating keypair from invalid secret key succeeds if validation is skipped\n    ✓ generate keypair from random seed\n\n  Nonce\n    ✓ create and query nonce account (83ms)\n    ✓ create and query nonce account with seed (51ms)\n\n  PublicKey\n    ✓ invalid\n    ✓ equals\n    ✓ toBase58\n    ✓ toJSON\n    ✓ toBuffer\n    ✓ equals (II)\n    ✓ createWithSeed\n    ✓ createProgramAddress\n    ✓ findProgramAddress\n    ✓ isOnCurve\n    ✓ canBeSerializedWithBorsh\n    ✓ canBeDeserializedUncheckedWithBorsh\n\n  shortvec\n    ✓ decodeLength\n    ✓ encodeLength\n\n  StakeProgram\n    ✓ createAccountWithSeed\n    ✓ createAccount\n    ✓ delegate\n    ✓ authorize\n    ✓ authorize with custodian\n    ✓ authorizeWithSeed\n    ✓ authorizeWithSeed with custodian\n    ✓ split\n    ✓ splitWithSeed\n    ✓ merge\n    ✓ withdraw\n    ✓ withdraw with custodian\n    ✓ deactivate\n    ✓ StakeInstructions\n\n  SystemProgram\n    ✓ createAccount\n    ✓ transfer\n    ✓ transferWithSeed\n    ✓ allocate\n    ✓ allocateWithSeed\n    ✓ assign\n    ✓ assignWithSeed\n    ✓ createAccountWithSeed\n    ✓ createNonceAccount\n    ✓ createNonceAccount with seed\n    ✓ nonceAdvance\n    ✓ nonceWithdraw\n    ✓ nonceAuthorize\n    ✓ non-SystemInstruction error\n\n  Transaction Payer\n    ✓ transaction-payer (97ms)\n\n  Transaction\n    ✓ partialSign (130ms)\n    ✓ transfer signatures (57ms)\n    ✓ dedup signatures\n    ✓ use nonce (62ms)\n    ✓ parse wire format and serialize (61ms)\n    ✓ populate transaction\n    ✓ serialize unsigned transaction\n    ✓ deprecated - externally signed stake delegate\n    ✓ externally signed stake delegate\n    ✓ can serialize, deserialize, and reserialize with a partial signer (85ms)\n    compileMessage\n      ✓ accountKeys are ordered (40ms)\n      ✓ payer is first account meta (61ms)\n      ✓ validation\n      ✓ payer is writable (67ms)\n    dedupe\n      ✓ setSigners\n      ✓ sign\n\n  ValidatorInfo\n    ✓ from config account data\n\n  VoteProgram\n    ✓ createAccount\n    ✓ initialize\n    ✓ authorize\n    ✓ withdraw\n\n\n  128 passing (7s)\n\nDone in 14.26s.\n", err: 'Transaction references a signature that is unnecessary, only the fee payer and instruction signer accounts should sign a transaction. This behavior is deprecated and will throw an error in the next major version release.\nTransaction references a signature that is unnecessary, only the fee payer and instruction signer accounts should sign a transaction. This behavior is deprecated and will throw an error in the next major version release.\nTransaction references a signature that is unnecessary, only the fee payer and instruction signer accounts should sign a transaction. This behavior is deprecated and will throw an error in the next major version release.\nTransaction references a signature that is unnecessary, only the fee payer and instruction signer accounts should sign a transaction. This behavior is deprecated and will throw an error in the next major version release.\nTransaction references a signature that is unnecessary, only the fee payer and instruction signer accounts should sign a transaction. This behavior is deprecated and will throw an error in the next major version release.\nTransaction references a signature that is unnecessary, only the fee payer and instruction signer accounts should sign a transaction. This behavior is deprecated and will throw an error in the next major version release.\nTransaction references a signature that is unnecessary, only the fee payer and instruction signer accounts should sign a transaction. This behavior is deprecated and will throw an error in the next major version release.\nTransaction references a signature that is unnecessary, only the fee payer and instruction signer accounts should sign a transaction. This behavior is deprecated and will throw an error in the next major version release.\nNo instructions provided\nNo instructions provided\nNo instructions provided\nNo instructions provided\n' } } }
+      // const hash = this.solHashToIpfsHash(ipfsResult)
+      // this.$set(this.commit, 'resultIpfsHash', hash)
+      // this.result =  await this.retrieveIpfsContent(hash)
+    },
+    async getCommit () {
+      const id = this.$route.params.id
       try {
         const commit = await this.$axios.$get(`${process.env.backendUrl}/commits/${id}`)
         this.commit = commit
-        // this.getResult(this.commit.id)
+        if (this.commit.status === 'RUNNING') {
+          if (!this.refreshInterval) {
+            // Refresh status every 10 seconds
+            this.refreshInterval = setInterval(this.getCommit, parseInt(10000, 10))
+          }
+        } else if (this.refreshInterval) {
+          clearInterval(this.refreshInterval)
+          this.refreshInterval = null
+        }
+        if (this.commit.jobInfo) {
+          // posted to blockchain, retrieve job
+          this.getJobInfo(this.commit.jobInfo.ipfsJob)
+          if (commit.jobInfo.jobStatus === 2) {
+            // completed, retrieve results
+            this.getResult(this.commit.jobInfo.ipfsResult)
+          }
+        }
+        this.commit = commit
       } catch (error) {
         this.$modal.show({
           color: 'danger',
           text: error,
           title: 'Error'
         })
-      }
-    },
-    getResult (id) {
-      this.result = {
-        id: 'EaaxIhragGiIOvaWoR985',
-        'execution-path': [],
-        results: {
-          input: {
-            html_url: 'https://github.com/solana-labs/solana/commit/d896ff74ec33ff92f08b2fee61d55fbcdac55dff',
-            committer: {
-              html_url: 'https://github.com/mvines',
-              gravatar_id: '',
-              followers_url: 'https://api.github.com/users/mvines/followers',
-              subscriptions_url: 'https://api.github.com/users/mvines/subscriptions',
-              site_admin: false,
-              following_url: 'https://api.github.com/users/mvines/following{/other_user}',
-              node_id: 'MDQ6VXNlcjEyODEwODI=',
-              type: 'User',
-              received_events_url: 'https://api.github.com/users/mvines/received_events',
-              login: 'mvines',
-              organizations_url: 'https://api.github.com/users/mvines/orgs',
-              id: 1281082,
-              events_url: 'https://api.github.com/users/mvines/events{/privacy}',
-              url: 'https://api.github.com/users/mvines',
-              repos_url: 'https://api.github.com/users/mvines/repos',
-              starred_url: 'https://api.github.com/users/mvines/starred{/owner}{/repo}',
-              gists_url: 'https://api.github.com/users/mvines/gists{/gist_id}',
-              avatar_url: 'https://avatars.githubusercontent.com/u/1281082?v=4'
-            },
-            node_id: 'C_kwDOBz19r9oAKGQ4OTZmZjc0ZWMzM2ZmOTJmMDhiMmZlZTYxZDU1ZmJjZGFjNTVkZmY',
-            author: {
-              html_url: 'https://github.com/mvines',
-              gravatar_id: '',
-              followers_url: 'https://api.github.com/users/mvines/followers',
-              subscriptions_url: 'https://api.github.com/users/mvines/subscriptions',
-              site_admin: false,
-              following_url: 'https://api.github.com/users/mvines/following{/other_user}',
-              node_id: 'MDQ6VXNlcjEyODEwODI=',
-              type: 'User',
-              received_events_url: 'https://api.github.com/users/mvines/received_events',
-              login: 'mvines',
-              organizations_url: 'https://api.github.com/users/mvines/orgs',
-              id: 1281082,
-              events_url: 'https://api.github.com/users/mvines/events{/privacy}',
-              url: 'https://api.github.com/users/mvines',
-              repos_url: 'https://api.github.com/users/mvines/repos',
-              starred_url: 'https://api.github.com/users/mvines/starred{/owner}{/repo}',
-              gists_url: 'https://api.github.com/users/mvines/gists{/gist_id}',
-              avatar_url: 'https://avatars.githubusercontent.com/u/1281082?v=4'
-            },
-            comments_url: 'https://api.github.com/repos/solana-labs/solana/commits/d896ff74ec33ff92f08b2fee61d55fbcdac55dff/comments',
-            commit: {
-              tree: {
-                url: 'https://api.github.com/repos/solana-labs/solana/git/trees/c6e8c2cd57394e690035eb555a5132fd17175976',
-                sha: 'c6e8c2cd57394e690035eb555a5132fd17175976'
-              },
-              committer: {
-                email: 'mvines@gmail.com',
-                date: '2021-12-21T16:30:36Z',
-                name: 'Michael Vines'
-              },
-              verification: {
-                payload: null,
-                signature: null,
-                reason: 'unsigned',
-                verified: false
-              },
-              author: {
-                email: 'mvines@gmail.com',
-                date: '2021-12-21T02:16:46Z',
-                name: 'Michael Vines'
-              },
-              comment_count: 0,
-              url: 'https://api.github.com/repos/solana-labs/solana/git/commits/d896ff74ec33ff92f08b2fee61d55fbcdac55dff',
-              message: 'Remove Apple M1 resolver workaround'
-            },
-            parents: [
-              {
-                html_url: 'https://github.com/solana-labs/solana/commit/ba8e15848e5b7d52cce133e541e92c5aec361a6a',
-                url: 'https://api.github.com/repos/solana-labs/solana/commits/ba8e15848e5b7d52cce133e541e92c5aec361a6a',
-                sha: 'ba8e15848e5b7d52cce133e541e92c5aec361a6a'
-              }
-            ],
-            url: 'https://api.github.com/repos/solana-labs/solana/commits/d896ff74ec33ff92f08b2fee61d55fbcdac55dff',
-            files: [
-              {
-                additions: 0,
-                raw_url: 'https://github.com/solana-labs/solana/raw/d896ff74ec33ff92f08b2fee61d55fbcdac55dff/Cargo.toml',
-                contents_url: 'https://api.github.com/repos/solana-labs/solana/contents/Cargo.toml?ref=d896ff74ec33ff92f08b2fee61d55fbcdac55dff',
-                patch: '@@ -85,8 +85,3 @@ members = [\n exclude = [\n     "programs/bpf",\n ]\n-\n-# TODO: Remove once the "simd-accel" feature from the reed-solomon-erasure\n-# dependency is supported on Apple M1. v2 of the feature resolver is needed to\n-# specify arch-specific features.\n-resolver = "2"',
-                blob_url: 'https://github.com/solana-labs/solana/blob/d896ff74ec33ff92f08b2fee61d55fbcdac55dff/Cargo.toml',
-                filename: 'Cargo.toml',
-                status: 'modified',
-                deletions: 5,
-                changes: 5,
-                sha: '6f33ee6816f89e1cec74620ad171ea3e3d3cd5b9'
-              }
-            ],
-            stats: {
-              additions: 0,
-              total: 5,
-              deletions: 5
-            },
-            sha: 'd896ff74ec33ff92f08b2fee61d55fbcdac55dff'
-          },
-          clone: '/tmp/repos/solana',
-          'sanity-check': {
-            exit: 0,
-            out: "--- git diff --check\n\n--- ci/nits.sh\n--- git --no-pager grep -n -eprint! -eprintln! -eeprint! -eeprintln! -edbg! -- :core/src/**.rs :^core/src/validator.rs :faucet/src/**.rs :ledger/src/**.rs :metrics/src/**.rs :net-utils/src/**.rs :runtime/src/**.rs :sdk/bpf/rust/rust-utils/**.rs :sdk/**.rs :^sdk/cargo-build-bpf/**.rs :^sdk/program/src/program_option.rs :^sdk/program/src/program_stubs.rs :programs/**.rs :^**bin**.rs :^**bench**.rs :^**test**.rs :^**/build.rs\n--- git --no-pager grep -n Default::default() -- *.rs\n--- git --no-pager grep -n --max-depth=0 -e XXX -e TBD -e FIXME -- *.rs *.sh *.md\n--- git --no-pager grep -n --max-depth=0 -e TODO -- *.rs *.sh *.md\nci/nits.sh:64:  #T\\ODO  # TODO: Disable TODOs once all other TODOs are purged\nci/nits.sh:71:# TODO: Remove this `git grep` once TODOs are banned above\nci/nits.sh:73:_ git --no-pager grep -n --max-depth=0 \"-e TODO\" -- '*.rs' '*.sh' '*.md' || true\nci/nits.sh:75:# END TODO\nclient/src/pubsub_client.rs:105:        // TODO: Add proper JSON RPC response/error handling...\nclient/src/pubsub_client.rs:140:        // TODO: Add proper JSON RPC response/error handling...\ncore/benches/retransmit_stage.rs:42:// TODO: The benchmark is ignored as it currently may indefinitely block.\ncore/src/ancestor_hashes_service.rs:392:            // TODO: In the case of DuplicateAncestorDecision::ContinueSearch\ncore/src/banking_stage.rs:825:        // TODO: Banking stage threads should be prioritized to complete faster then this queue\ncore/src/banking_stage.rs:1964:                // TODO use record_receiver\ncore/src/broadcast_stage.rs:220:                | Error::ClusterInfo(ClusterInfoError::NoPeers) => (), // TODO: Why are the unit-tests throwing hundreds of these?\ncore/src/broadcast_stage/standard_broadcast_run.rs:503:        // TODO: Confirm that last chunk of coding shreds\ncore/src/cluster_slots_service.rs:167:        // TODO: Should probably incorporate slots that were replayed on startup,\ncore/src/consensus.rs:328:        // TODO: populate_ancestor_voted_stakes only adds zeros. Comment why\ncore/src/consensus.rs:621:                // TODO: Handle if the last vote is on a dupe, and then we restart. The dupe won't be in\ncore/src/consensus.rs:638:                        // TODO: Properly handle this case\ncore/src/duplicate_repair_status.rs:114:    // TODO: Trie may be more efficient\ncore/src/latest_validator_votes_for_frozen_banks.rs:9:    // TODO: Clean outdated/unstaked pubkeys from this list.\ncore/src/repair_weight.rs:114:                    // TODO: Repair right now does not distinguish between votes for different\ncore/src/repair_weighted_traversal.rs:97:        // like duplicate slots. TODO: Account for duplicate slot may be in orphans, especially\ncore/src/replay_stage.rs:948:        // TODO: handle if alternate version of descendant also got confirmed after ancestor was\ncore/src/replay_stage.rs:1015:                // TODO: Send signal to repair to repair the correct version of\ncore/src/replay_stage.rs:1150:            // TODO: What about RPC queries that had already cloned the Bank for this slot\ncore/src/replay_stage.rs:1898:        // TODO: check the timestamp in this vote is correct, i.e. it shouldn't\ncore/src/retransmit_stage.rs:270:        // TODO: consider using root-bank here for leader lookup!\ncore/src/verified_vote_packets.rs:52:        // TODO: my_leader_bank.vote_accounts() may not contain zero-staked validators\ncore/src/verified_vote_packets.rs:75:        // TODO: Maybe prioritize by stake weight\nentry/src/entry.rs:420:    // TODO: make the CPU-to GPU crossover point dynamic, perhaps based on similar future\nentry/src/entry.rs:422:    // is introduced for that function (see TODO in sigverify::ed25519_verify)\ngossip/src/cluster_info.rs:118:// TODO: Update this to 26 once payload sizes are upgraded across fleet.\ngossip/src/cluster_info.rs:263:// TODO These messages should go through the gpu pipeline for spam filtering\ngossip/src/cluster_info.rs:272:    // TODO: Remove the redundant outer pubkey here,\ngossip/src/cluster_info.rs:496:    // TODO kill insert_info, only used by tests\ngossip/src/cluster_info.rs:830:    // TODO: This has a race condition if called from more than one thread.\ngossip/src/cluster_info.rs:853:    // TODO: If two threads call into this function then epoch_slot_index has a\ngossip/src/cluster_info.rs:1005:        // TODO: When there are more than one vote evicted from the tower, only\ngossip/src/cluster_info.rs:1686:                // TODO: Stakes are comming from the root-bank. Debug why/when\ngossip/src/cluster_info.rs:2631:                                // TODO: Pass through Exit here so\ngossip/src/cluster_info.rs:4486:    #[ignore] // TODO: debug why this is flaky on buildkite!\ngossip/src/contact_info.rs:192:        // TODO: boot loopback in production networks\ngossip/src/contact_info.rs:205:    // TODO: Replace this entirely with streamer SocketAddrSpace.\ngossip/src/crds_value.rs:34:// TODO: Remove this in favor of vote_state::MAX_LOCKOUT_HISTORY once\ngossip/src/crds_value.rs:146:        // TODO: Implement other kinds of CrdsData here.\ngossip/src/crds_value.rs:147:        // TODO: Assign ranges to each arm proportional to their frequency in\ngossip/src/duplicate_shred.rs:89:        // TODO: Should also allow two coding shreds with different indices but\ngossip/src/ping_pong.rs:78:        // TODO Add self.token.sanitize()?; when rust's\ngossip/src/weighted_shuffle.rs:199:// TODO: Remove in favor of rand::distributions::WeightedIndex.\ngossip/tests/cluster_info.rs:127:            // TODO: Ideally these should use the new methods in\nledger/src/blockstore.rs:1026:        // TODO should also compare first-coding-index once position field is\nledger/src/blockstore.rs:1080:        // TODO: handle_duplicate is not invoked and so duplicate shreds are\nledger/src/blockstore.rs:1462:        // TODO Shouldn't this use shred.parent() instead and update\nledger/src/blockstore.rs:1989:                // TODO: add support for versioned transactions\nledger/src/blockstore.rs:2291:            // TODO: support retrieving versioned transactions\nledger/src/blockstore/blockstore_purge.rs:338:                    // TODO: support purging mapped addresses from versioned transactions\nledger/src/blockstore_meta.rs:261:        // TODO remove this once cluster is upgraded to always populate\nledger/src/blockstore_meta.rs:280:        // TODO remove this once cluster is upgraded to always populate\nledger/src/shred.rs:507:            // TODO should be: self.index() - self.coding_header.position\nledger/src/shred.rs:544:                // TODO should use first_coding_index once position field is\nledger/src/shred.rs:874:                        // TODO: tie this more closely with\nperf/src/packet.rs:115:                // TODO: This should never happen. Instead the caller should\nperf/src/sigverify.rs:527:    // TODO: dynamically adjust this crossover\npoh/src/poh_recorder.rs:451:        // TODO: adjust the working_bank.start time based on number of ticks\npoh/src/poh_recorder.rs:561:                // TODO: a caller could possibly desire to reset or record while we're spinning here\nprogram-runtime/src/native_loader.rs:184:            // TODO: Remove these two copies (* deref is also a copy)\nprogram-test/src/lib.rs:235:        // TODO: Merge the business logic below with the BPF invoke path in\nprogram-test/src/lib.rs:246:        // TODO don't have the caller's keyed_accounts so can't validate writer or signer escalation or deescalation yet\nprogram-test/src/lib.rs:337:                    // TODO Figure out a better way to allow the System Program to set the account owner\nprogram-test/src/lib.rs:344:                // TODO: Figure out how to allow the System Program to resize the account data\nprogram-test/src/lib.rs:675:            // TODO: figure out why tests hang if a processor panics when running native code.\nprograms/bpf_loader/src/lib.rs:369:                    return Err(InstructionError::Immutable); // TODO better error code\nprograms/config/src/lib.rs:23:// TODO move ConfigState into `solana_program` to implement trait locally\nprograms/vote/src/vote_instruction.rs:50:    // TODO: figure out how to migrate these new errors\nprograms/vote/src/vote_state/mod.rs:705:            // TODO to think about: Note, people may be incentivized to set more\nrpc/src/rpc.rs:1422:            // TODO: Add bigtable_ledger_storage support as a part of\nrpc/src/rpc.rs:2370:        // TODO: Refactor `solana-validator wait-for-restart-window` to not require this method, so\nrpc/src/rpc.rs:2379:        // TODO: Refactor `solana-validator wait-for-restart-window` to not require this method, so\nrpc/src/rpc.rs:2499:        // TODO: Refactor `solana-validator wait-for-restart-window` to not require this method, so\nrpc/src/rpc.rs:2510:        // TODO: Refactor `solana-validator wait-for-restart-window` to not require this method, so\nrpc/src/rpc_service.rs:152:        // TODO: Is there any way to achieve the same on Windows?\nruntime/src/accounts_db.rs:2422:        // TODO: coalesce `purge_stats` and `reclaim_result` together into one option, as they\nruntime/src/accounts_index.rs:1168:        // TODO: expand to use mint index to find the `pubkey_list` below more efficiently\nruntime/src/bank.rs:1386:            // TODO: clean this up, so much special-case copying...\nruntime/src/bank.rs:3620:                            // TODO: support versioned messages\nruntime/src/bank.rs:8594:        // TODO: Transactions that fail to pay a fee could be dropped silently.\nruntime/src/bank.rs:9614:        // TODO: if we need to access rooted banks older than this,\nruntime/src/bank.rs:9633:        // TODO: if we need to access rooted banks older than this,\nruntime/src/builtins.rs:163:        // TODO when feature `prevent_calling_precompiles_as_programs` is\nruntime/src/commitment.rs:109:        // TODO: combine bank caches\nscripts/build-downstream-projects.sh:56:    # TODO: Build src/program-c/...\nstreamer/src/socket.rs:23:        // TODO: remove these once IpAddr::is_global is stable.\nstreamer/src/socket.rs:26:                // TODO: Consider excluding:\nstreamer/src/socket.rs:33:                // TODO: Consider excluding:\nvalidator/src/admin_rpc_service.rs:81:            // TODO: Debug why Exit doesn't always cause the validator to fully exit\nvalidator/src/bin/solana-test-validator.rs:377:    // TODO: Ideally test-validator should *only* allow private addresses.\nvalidator/src/main.rs:2047:    // TODO: Once entrypoints are updated to return shred-version, this should\n^^^ +++\n--- ci/check-ssh-keys.sh\n--- channel version check\nSkipped. CHANNEL_LATEST_TAG (CHANNEL=) unset\n--- ok\n",
-            err: "+ [[ -n '' ]]\n+ branch=master\n+ git fetch origin master\nFrom https://github.com/solana-labs/solana\n * branch                master     -> FETCH_HEAD\n++ git merge-base HEAD origin/master\n+ git diff d896ff74ec33ff92f08b2fee61d55fbcdac55dff --check --oneline\n"
-          },
-          'channel-info': {
-            exit: 0,
-            out: 'EDGE_CHANNEL=master\nBETA_CHANNEL=v1.9\nBETA_CHANNEL_LATEST_TAG=v1.9.1\nSTABLE_CHANNEL=v1.8\nSTABLE_CHANNEL_LATEST_TAG=v1.8.11\nCHANNEL=\nCHANNEL_LATEST_TAG=\n',
-            err: ''
-          }
-        },
-        title: 'solana-labs/solana',
-        description: 'Run the pipeline',
-        'sample-input': {
-          sha: '522062350b5358973c77919b4d1b6a43d30a36f6',
-          commit: {
-            message: 'Add commit message'
-          }
-        },
-        ops: [
-          {
-            op: 'nos.git/ensure-repo',
-            id: 'clone',
-            title: 'Clone repository',
-            args: [
-              'https://github.com/solana-labs/solana.git',
-              '/tmp/repos/solana'
-            ],
-            deps: []
-          },
-          {
-            op: 'sh',
-            id: 'sanity-check',
-            title: 'Check: sanity',
-            args: [
-              '/bin/sh',
-              '-c',
-              'cd /tmp/repos/solana && ./ci/test-sanity.sh'
-            ],
-            deps: [
-              'clone'
-            ]
-          },
-          {
-            op: 'sh',
-            id: 'channel-info',
-            title: 'Channel info',
-            args: [
-              '/bin/sh',
-              '-c',
-              'cd /tmp/repos/solana && ./ci/channel-info.sh'
-            ],
-            deps: [
-              'clone'
-            ]
-          }
-        ]
       }
     }
   }
