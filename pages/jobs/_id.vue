@@ -49,7 +49,7 @@
           </div>
           <div v-if="user && (user.roles.includes('admin'))" class="level-right">
             <div class="level-item">
-              <button class="button is-small is-danger" @click="postJob(commit.id)">
+              <button class="button is-small is-danger" style="display: none" @click="postJob(commit.id)">
                 Retry transaction
               </button>
             </div>
