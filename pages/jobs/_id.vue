@@ -41,7 +41,7 @@
           </div>
           <span style="white-space: pre-wrap">{{ commit.payload.message }}</span>
         </div>
-        <div v-if="commit.job" class="level notification is-warning">
+        <div v-if="!commit.job" class="level notification is-warning">
           <div class="level-left">
             <div class="level-item">
               <span>Not posted to blockchain yet..</span>
