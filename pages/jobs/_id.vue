@@ -20,17 +20,20 @@
               {{ commit.status }}
             </div>
           </div>
-          <div>Job <b>#{{ commit.id }}</b> triggered {{ $moment(commit.created_at).fromNow() }}</div>
+          <div>Job <b>#{{ commit.id }}</b> triggered by <a target="_blank" :href="'https://github.com/'+commit.payload.committer.username">{{ commit.payload.committer.name }}</a> {{ $moment(commit.created_at).fromNow() }}</div>
         </div>
         <hr class="my-4">
         <h1 class="title">
           {{ commit.payload.message.split('\n')[0] }}
         </h1>
         <div class="box">
-          <div v-if="result" class="mb-4">
-            <i class="fas fa-coins mr-4 has-text-accent" />Pipeline total cost <b class="has-text-accent">42.13 NOS<b /></b>
+          <div v-if="commit.job" class="mb-4">
+            <i class="fas fa-list mr-4 has-text-accent" />Smart Contract Job <a target="_blank" :href="$sol.explorer + '/address/' + commit.job" class="blockchain-address-inline">{{ commit.job }}</a>
           </div>
-          <div v-if="result" class="mb-4">
+          <div v-if="commit.job" class="mb-4">
+            <i class="fas fa-coins mr-4 has-text-accent" />Pipeline total cost <b class="has-text-accent">42.13 NOS</b>
+          </div>
+          <div v-if="commit.job" class="mb-4">
             <i class="fas fa-server mr-4 has-text-accent" />Nodes participated: <b>1</b>
           </div>
           <div class="has-overresult-ellipses">
@@ -38,22 +41,36 @@
           </div>
           <span style="white-space: pre-wrap">{{ commit.payload.message }}</span>
         </div>
+        <div v-if="commit.job" class="level notification is-warning">
+          <div class="level-left">
+            <div class="level-item">
+              <span>Not posted to blockchain yet..</span>
+            </div>
+          </div>
+          <div class="level-right">
+            <div class="level-item">
+              <button v-if="user && (user.id === commit.user_id || user.roles.includes('admin'))" class="button is-small is-danger" @click="postJob(commit.id)">
+                Retry transaction
+              </button>
+            </div>
+          </div>
+        </div>
         <div class="tabs is-medium">
           <ul>
-            <li :class="{'is-active': tab === 'steps'}">
-              <a @click.prevent="tab='steps'">Steps</a>
+            <li :class="{'is-active': tab === 'result'}">
+              <a @click.prevent="tab='result'">Result</a>
             </li>
             <li :class="{'is-active': tab === 'logs'}">
               <a @click.prevent="tab='logs'">Logs</a>
             </li>
-            <li :class="{'is-active': tab === 'network'}">
-              <a @click.prevent="tab='network'">Network</a>
+            <li :class="{'is-active': tab === 'payload'}">
+              <a @click.prevent="tab='payload'">Payload</a>
             </li>
           </ul>
         </div>
-        <div v-if="tab === 'steps'">
+        <div v-if="tab === 'result'">
           <div v-if="!result">
-            Not posted to blockchain yet..
+            No result yet..
           </div>
           <div v-for="op in result.ops" v-else :key="op.id" class="box is-info">
             <div class="is-clickable is-flex is-flex-wrap-wrap is-align-items-center" @click="step !== op.id ? step = op.id : step = null">
@@ -83,8 +100,8 @@
         <div v-else-if="tab === 'logs'">
           {{ result }}
         </div>
-        <div v-else>
-          Coming soon..
+        <div v-else-if="tab === 'payload'">
+          <pre>{{ commit.payload }}</pre>
         </div>
       </div>
       <div v-else>
@@ -101,13 +118,48 @@ export default {
       commit: null,
       result: null,
       step: null,
-      tab: 'steps'
+      tab: 'result',
+      user: null
+    }
+  },
+  watch: {
+    '$sol.token' (token) {
+      if (token) {
+        this.getUser()
+      }
     }
   },
   created () {
     this.getCommit(this.$route.params.id)
+    if (this.$sol && this.$sol.token) {
+      this.getUser()
+    }
   },
   methods: {
+    async getUser () {
+      try {
+        const user = await this.$axios.$get(`${process.env.backendUrl}/user`)
+        this.user = user
+      } catch (error) {
+        this.$modal.show({
+          color: 'danger',
+          text: error,
+          title: 'Error'
+        })
+      }
+    },
+    async postJob (id) {
+      try {
+        await this.$axios.$post(`${process.env.backendUrl}/commits/${id}/job`)
+        this.getCommit(id)
+      } catch (error) {
+        this.$modal.show({
+          color: 'danger',
+          text: error,
+          title: 'Error'
+        })
+      }
+    },
     async getCommit (id) {
       try {
         const commit = await this.$axios.$get(`${process.env.backendUrl}/commits/${id}`)

@@ -40,7 +40,8 @@ export default (context, inject) => {
         walletListenerId: null,
         wallets,
         error: null,
-        token: null
+        token: null,
+        user: null
       }
     },
     created () {
