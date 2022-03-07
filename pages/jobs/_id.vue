@@ -17,10 +17,10 @@
                 'is-danger': commit.status === 'FAILED'
               }"
             >
-              {{ commit.status }}
+              {{ getStatus(commit) }}
             </div>
           </div>
-          <div>Job <b>#{{ commit.id }}</b> triggered by <a target="_blank" :href="'https://github.com/'+commit.payload.committer.username">{{ commit.payload.committer.name }}</a> {{ $moment(commit.created_at).fromNow() }}</div>
+          <div>Job <b>#{{ commit.id }}</b> triggered by <a target="_blank" :href="'https://github.com/'+commit.payload.author.username">{{ commit.payload.author.name }}</a> {{ $moment(commit.created_at).fromNow() }}</div>
         </div>
         <hr class="my-4">
         <h1 class="title">
@@ -30,10 +30,10 @@
           <div v-if="commit.job" class="mb-4">
             <i class="fas fa-list mr-4 has-text-accent" />Smart Contract Job <a target="_blank" :href="$sol.explorer + '/address/' + commit.job" class="blockchain-address-inline">{{ commit.job }}</a>
           </div>
-          <div v-if="commit.job" class="mb-4">
-            <i class="fas fa-coins mr-4 has-text-accent" />Pipeline total cost <b class="has-text-accent">42.13 NOS</b>
+          <div v-if="commit.job && commit.jobInfo" class="mb-4">
+            <i class="fas fa-coins mr-4 has-text-accent" />Pipeline total cost <b class="has-text-accent">{{ parseInt(commit.jobInfo.tokens, 16) }} NOS</b>
           </div>
-          <div v-if="commit.job" class="mb-4">
+          <div v-if="commit.job && commit.jobInfo && commit.jobInfo.jobStatus > 0" class="mb-4">
             <i class="fas fa-server mr-4 has-text-accent" />Nodes participated: <b>1</b>
           </div>
           <div class="has-overresult-ellipses">
@@ -41,7 +41,7 @@
           </div>
           <span style="white-space: pre-wrap">{{ commit.payload.message }}</span>
         </div>
-        <div v-if="!commit.job" class="level notification is-warning">
+        <div v-if="commit.job" class="level notification is-warning">
           <div class="level-left">
             <div class="level-item">
               <span>Not posted to blockchain yet..</span>
@@ -136,6 +136,23 @@ export default {
     }
   },
   methods: {
+    getStatus (commit) {
+      let status = commit.status
+      if (commit.jobInfo) {
+        switch (commit.jobInfo.jobStatus) {
+          case 0:
+            status = 'QUEUED'
+            break
+          case 1:
+            status = 'RUNNING'
+            break
+          case 2:
+            status = 'COMPLETED'
+            break
+        }
+      }
+      return status
+    },
     async getUser () {
       try {
         const user = await this.$axios.$get(`${process.env.backendUrl}/user`)
