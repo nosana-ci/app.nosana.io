@@ -61,7 +61,7 @@
               <a @click.prevent="tab='result'">Result</a>
             </li>
             <li :class="{'is-active': tab === 'logs'}">
-              <a @click.prevent="tab='logs'">Logs</a>
+              <a @click.prevent="tab='logs'">Job Info</a>
             </li>
             <li :class="{'is-active': tab === 'payload'}">
               <a @click.prevent="tab='payload'">Payload</a>
@@ -98,7 +98,7 @@
           </div>
         </div>
         <div v-else-if="tab === 'logs'">
-          {{ result }}
+          <pre>{{ commit.jobInfo }}</pre>
         </div>
         <div v-else-if="tab === 'payload'">
           <pre>{{ commit.payload }}</pre>
