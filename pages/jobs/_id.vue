@@ -12,7 +12,7 @@
             <div
               class="tag is-small"
               :class="{
-                'is-success': calculatedStatus === 'COMPLETED',
+                'is-accent': calculatedStatus === 'COMPLETED',
                 'is-info': calculatedStatus === 'RUNNING',
                 'is-danger': calculatedStatus === 'FAILED'
               }"

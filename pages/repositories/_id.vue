@@ -41,7 +41,7 @@
                 <div
                   class="tag is-small"
                   :class="{
-                    'is-success': commit.status === 'COMPLETED',
+                    'is-accent': commit.status === 'COMPLETED',
                     'is-info': commit.status === 'RUNNING',
                     'is-danger': commit.status === 'FAILED'
                   }"

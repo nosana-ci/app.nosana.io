@@ -132,7 +132,7 @@
                       <div
                         class="tag is-small"
                         :class="{
-                          'is-success': repository.commits.slice(-1)[0].status === 'COMPLETED',
+                          'is-accent': repository.commits.slice(-1)[0].status === 'COMPLETED',
                           'is-info': repository.commits.slice(-1)[0].status === 'RUNNING',
                           'is-danger': repository.commits.slice(-1)[0].status === 'FAILED'
                         }"
