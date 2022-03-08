@@ -217,9 +217,6 @@ export default {
     async getUser () {
       try {
         const user = await this.$axios.$get(`${process.env.backendUrl}/user`)
-        this.name = user.name
-        this.description = user.description
-        this.image = user.image
         this.user = user
       } catch (error) {
         this.$modal.show({
