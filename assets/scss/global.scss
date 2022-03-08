@@ -161,3 +161,12 @@ a.card {
   overflow: hidden;
   display: block;
 }
+.blockchain-address-inline {
+  font-family: monospace;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  display: inline-block;
+  vertical-align: top;
+}
