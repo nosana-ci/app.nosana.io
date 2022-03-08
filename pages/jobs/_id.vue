@@ -138,7 +138,7 @@ export default {
   },
   computed: {
     calculatedStatus () {
-      if (!this.commit) { return null }
+      if (!this.commit) { return 'LOADING..' }
       let status = this.commit.status
       if (this.commit.jobInfo) {
         switch (this.commit.jobInfo.jobStatus) {
