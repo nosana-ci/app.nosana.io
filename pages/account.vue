@@ -97,7 +97,7 @@
                 <div class="box">
                   <small>TestNet Balance</small>
                   <div class="has-text-weight-semibold">
-                    <span v-if="!balance && balance !== 0">...</span><span v-else>{{ balance.toFixed(4) }}</span> <span class="has-text-accent">NOS</span>
+                    <span v-if="!balance && balance !== 0">...</span><span v-else>{{ Math.trunc(balance*10000)/10000 }}</span> <span class="has-text-accent">NOS</span>
                   </div>
                 </div>
               </div>

@@ -12,12 +12,12 @@
             <div
               class="tag is-small"
               :class="{
-                'is-success': commit.status === 'COMPLETED',
-                'is-info': commit.status === 'RUNNING',
-                'is-danger': commit.status === 'FAILED'
+                'is-success': calculatedStatus === 'COMPLETED',
+                'is-info': calculatedStatus === 'RUNNING',
+                'is-danger': calculatedStatus === 'FAILED'
               }"
             >
-              {{ getStatus(commit) }}
+              {{ calculatedStatus }}
             </div>
           </div>
           <div>Job <b>#{{ commit.id }}</b> triggered by <a target="_blank" :href="'https://github.com/'+commit.payload.author.username">{{ commit.payload.author.name }}</a> {{ $moment(commit.created_at).fromNow() }}</div>
@@ -31,7 +31,7 @@
             <i class="fas fa-list mr-4 has-text-accent" />Smart Contract Job <a target="_blank" :href="$sol.explorer + '/address/' + commit.job" class="blockchain-address-inline">{{ commit.job }}</a>
           </div>
           <div v-if="commit.job && commit.jobInfo" class="mb-4">
-            <i class="fas fa-coins mr-4 has-text-accent" />Pipeline total cost <b class="has-text-accent">{{ parseInt(commit.jobInfo.tokens, 16) }} NOS</b>
+            <i class="fas fa-coins mr-4 has-text-accent" />Pipeline total cost <b class="has-text-accent">{{ parseInt(commit.jobInfo.tokens, 16)/1e9 }} NOS</b>
           </div>
           <div v-if="commit.job && commit.jobInfo && commit.jobInfo.jobStatus > 0" class="mb-4">
             <i class="fas fa-server mr-4 has-text-accent" />Node: <b>{{ commit.jobInfo.node }}</b>
@@ -73,8 +73,16 @@
             <div v-for="(command, index) in commit.jobIpfs.commands" :key="index" class="box is-info">
               <div>
                 <div class="is-clickable is-flex is-flex-wrap-wrap is-align-items-center" @click="step !== index ? step = index : step = null">
-                  <h3 class="subtitle m-0">
-                    {{ command }}
+                  <h3
+                    class="subtitle m-0"
+                    :class="{
+                      'has-text-success': result && result.results && result.results[`cmd-${index}`] && result.results[`cmd-${index}`].exit === 0,
+                      'has-text-danger': result && result.results && result.results[`cmd-${index}`] && result.results[`cmd-${index}`].exit === 1
+                    }"
+                  >
+                    <i v-if="result && result.results && result.results[`cmd-${index}`] && result.results[`cmd-${index}`].exit === 1" class="fas fa-times" />
+                    <i v-else-if="result && result.results && result.results[`cmd-${index}`] && result.results[`cmd-${index}`].exit === 0" class="fas fa-check" />
+                    <span>{{ command }}</span>
                   </h3>
                   <div class="is-size-7 has-overresult-ellipses mr-4" style="margin-left: auto">
                     <span v-if="result">node: {{ result['nos-id'] }}</span>
@@ -124,6 +132,33 @@ export default {
       refreshInterval: null
     }
   },
+  computed: {
+    calculatedStatus () {
+      if (!this.commit) { return null }
+      let status = this.commit.status
+      if (this.commit.jobInfo) {
+        switch (this.commit.jobInfo.jobStatus) {
+          case 0:
+            status = 'QUEUED'
+            break
+          case 1:
+            status = 'RUNNING'
+            break
+          case 2:
+            status = 'COMPLETED'
+            if (this.result) {
+              Object.keys(this.result.results).forEach((key) => {
+                if (this.result.results[key].exit) {
+                  status = 'FAILED'
+                }
+              })
+            }
+            break
+        }
+      }
+      return status
+    }
+  },
   watch: {
     '$sol.token' (token) {
       if (token) {
@@ -144,23 +179,6 @@ export default {
     }
   },
   methods: {
-    getStatus (commit) {
-      let status = commit.status
-      if (commit.jobInfo) {
-        switch (commit.jobInfo.jobStatus) {
-          case 0:
-            status = 'QUEUED'
-            break
-          case 1:
-            status = 'RUNNING'
-            break
-          case 2:
-            status = 'COMPLETED'
-            break
-        }
-      }
-      return status
-    },
     async getUser () {
       try {
         const user = await this.$axios.$get(`${process.env.backendUrl}/user`)
