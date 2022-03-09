@@ -14,9 +14,9 @@ export default {
     }
   },
   data () {
-    let icon
-    if (this.status === 'PENDING') {
-      icon = require('@/assets/img/icons/pending.svg')
+    let icon = require('@/assets/img/icons/pending.svg')
+    if (this.status === 'QUEUED') {
+      icon = require('@/assets/img/icons/queued.svg')
     } else if (this.status === 'RUNNING') {
       icon = require('@/assets/img/icons/running.svg')
     } else if (this.status === 'COMPLETED') {

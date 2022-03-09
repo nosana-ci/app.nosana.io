@@ -43,6 +43,7 @@
                   :class="{
                     'is-accent': commit.status === 'COMPLETED',
                     'is-info': commit.status === 'RUNNING',
+                    'is-warning': commit.status === 'QUEUED',
                     'is-danger': commit.status === 'FAILED'
                   }"
                 >

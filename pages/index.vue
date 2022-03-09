@@ -134,6 +134,7 @@
                         :class="{
                           'is-accent': repository.commits.slice(-1)[0].status === 'COMPLETED',
                           'is-info': repository.commits.slice(-1)[0].status === 'RUNNING',
+                          'is-warning': repository.commits.slice(-1)[0].status === 'QUEUED',
                           'is-danger': repository.commits.slice(-1)[0].status === 'FAILED'
                         }"
                       >{{ repository.commits.slice(-1)[0].status }}</div>
