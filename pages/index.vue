@@ -148,8 +148,8 @@
                       class="mx-1"
                       @click.stop=""
                     >
-                      <nuxt-link :to="`/jobs/${commit.id}`" class="has-tooltip-arrow" :data-tooltip="commit.commit.substring(0,7)">
-                        <commit-status :status="commit.status" />
+                      <nuxt-link :to="`/jobs/${commit.id}`">
+                        <commit-status :status="commit.status" class="has-tooltip-arrow" :data-tooltip="commit.commit.substring(0,7)" />
                       </nuxt-link>
                     </div>
                   </div>
