@@ -15,7 +15,9 @@
             <span class="tag is-success">{{ repository.status }}</span>
           </td>
           <td><a :href="'https://github.com/'+ repository.repository" target="_blank" @click.stop>{{ repository.repository }}</a></td>
-          <td>on commit to main/master branch</td>
+          <td>
+            <span class="has-tooltip-arrow" :class="{'has-tooltip': repository.secret}" :data-tooltip="repository.secret ? ('Github Webhook:\n' + backendUrl + '/webhook/github/' + repository.secret) : null" @click.stop="repository.secret ? copyToClipboard(backendUrl + '/webhook/github/' + repository.secret) : $router.push(`/repositories/${repository.id}`)">on commit to main/master branch</span>
+          </td>
           <td>
             <div
               v-if="commits"
@@ -56,6 +58,18 @@ export default {
     commits: {
       type: Array,
       default: null
+    }
+  },
+  data () {
+    return {
+      backendUrl: process.env.backendUrl
+    }
+  },
+  methods: {
+    copyToClipboard (content) {
+      navigator.clipboard.writeText(content).then(() => {
+        alert('Webhook URL copied!')
+      })
     }
   }
 }
