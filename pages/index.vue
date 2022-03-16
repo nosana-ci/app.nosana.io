@@ -93,7 +93,7 @@
       </p>
       <div v-if="repositories" class="columns is-multiline mt-4 has-background-secondary">
         <div v-if="!filteredRepositories.length" class="has-text-centered subtitle">
-          No repositories found
+          We are currently selecting projects for Nosana Testnet
         </div>
         <template v-for="repository in filteredRepositories">
           <div :key="repository.id" class="column is-6 is-3-fullhd is-3-widescreen is-4-desktop">
@@ -179,11 +179,11 @@ export default {
     filteredRepositories () {
       let filteredRepositories = this.repositories
       // Search campaigns
-      if (filteredRepositories && this.search !== null && this.projects) {
+      if (filteredRepositories && this.search !== null) {
         filteredRepositories = filteredRepositories.filter((r) => {
-          const project = this.projects.find(p => p.id === r.user_id)
           return r.repository.toLowerCase().includes(this.search.toLowerCase()) ||
-            (project && project.name && project.name.toLowerCase().includes(this.search.toLowerCase()))
+            (r.repository.description && r.repository.description.toLowerCase().includes(this.search.toLowerCase())) ||
+            (r.repository.name && r.repository.name.toLowerCase().includes(this.search.toLowerCase()))
         })
       }
 
