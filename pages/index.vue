@@ -228,10 +228,10 @@ export default {
         })
       }
     },
-    async getActiveRepositories () {
+    getActiveRepositories () {
       try {
-        const repositories = await this.$axios.$get(`${process.env.backendUrl}/repositories/active`)
-        this.repositories = repositories
+        // const repositories = await this.$axios.$get(`${process.env.backendUrl}/repositories/active`)
+        this.repositories = []
       } catch (error) {
         this.$modal.show({
           color: 'danger',
