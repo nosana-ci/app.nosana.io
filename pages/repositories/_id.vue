@@ -98,8 +98,7 @@ export default {
     },
     async getRepository () {
       try {
-        const repositories = await this.$axios.$get(`${process.env.backendUrl}/repositories`)
-        this.repository = repositories.find(r => r.id === this.$route.params.id)
+        this.repository = await this.$axios.$get(`${process.env.backendUrl}/repositories/${this.$route.params.id}`)
       } catch (error) {
         this.$modal.show({
           color: 'danger',

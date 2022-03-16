@@ -96,32 +96,28 @@
           No repositories found
         </div>
         <template v-for="repository in filteredRepositories">
-          <div v-if="commits && checkCommit(repository.commits)" :key="repository.id" class="column is-6 is-3-fullhd is-3-widescreen is-4-desktop">
+          <div :key="repository.id" class="column is-6 is-3-fullhd is-3-widescreen is-4-desktop">
             <a class="box has-background-white is-clickable" @click="$router.push('/repositories/'+repository.id)">
               <div class="is-flex is-align-items-flex-start is-justify-content-flex-start">
                 <div class="project-icon mr-4">
-                  <img v-if="projects && projects.find(p => repository.user_id === p.id)" style="height: 32px" :src="projects.find(p => repository.user_id === p.id).image">
+                  <img style="height: 32px" :src="repository.image">
                 </div>
                 <div>
                   <h2 class="title is-6 has-text-weight-semibold" style="min-height: 36px">
                     {{ repository.repository }}
                   </h2>
                   <h2 class="subtitle is-6 mb-1">
-                    <span v-if="projects && projects.find(p => repository.user_id === p.id)">{{ projects.find(p => repository.user_id === p.id).name }}</span>
-
+                    <span>{{ repository.name }}</span>
                   </h2>
                   <p class="is-size-7 has-overflow-ellipses" style="height: 40px;">
-                    <span v-if="projects && projects.find(p => repository.user_id === p.id)">{{ projects.find(p => repository.user_id === p.id).description }}</span>
+                    <span>{{ repository.description }}</span>
                   </p>
                 </div>
               </div>
 
               <div class="mt-2">
                 <span v-if="repositories">
-                  <div v-if="!commits">
-                    Loading..
-                  </div>
-                  <div v-else-if="!repository.commits.length">
+                  <div v-if="!repository.commits.length">
                     no pipelines
                   </div>
                   <div
@@ -132,18 +128,18 @@
                       <div
                         class="tag is-small"
                         :class="{
-                          'is-accent': repository.commits.slice(-1)[0].status === 'COMPLETED',
-                          'is-info': repository.commits.slice(-1)[0].status === 'RUNNING',
-                          'is-warning': repository.commits.slice(-1)[0].status === 'QUEUED',
-                          'is-danger': repository.commits.slice(-1)[0].status === 'FAILED'
+                          'is-accent': repository.commits[0].status === 'COMPLETED',
+                          'is-info': repository.commits[0].status === 'RUNNING',
+                          'is-warning': repository.commits[0].status === 'QUEUED',
+                          'is-danger': repository.commits[0].status === 'FAILED'
                         }"
-                      >{{ repository.commits.slice(-1)[0].status }}</div>
+                      >{{ repository.commits[0].status }}</div>
                       <div class="is-size-7">
-                        {{ $moment(repository.commits.slice(-1)[0].created_at ).fromNow() }}
+                        {{ $moment(repository.commits[0].updated_at ).fromNow() }}
                       </div>
                     </div>
                     <div
-                      v-for="commit in repository.commits.slice(-6)"
+                      v-for="commit in repository.commits.slice().reverse()"
                       :key="commit.id"
                       class="mx-1"
                       @click.stop=""
@@ -172,7 +168,8 @@ export default {
       commits: null,
       projects: null,
       user: null,
-      search: null
+      search: null,
+      interval: null
     }
   },
   computed: {
@@ -201,20 +198,24 @@ export default {
     }
   },
   created () {
-    this.getRepositories()
-    this.getProjects()
     if (this.$sol && this.$sol.token) {
       this.getUser()
     }
-    // setInterval(() => {
-    //   console.log('refreshing repositories..')
-    //   this.getRepositories()
-    // }, 20000)
+    this.getActiveRepositories()
+    if (!this.interval) {
+      this.interval = setInterval(() => {
+        console.log('refreshing repositories..')
+        this.getActiveRepositories()
+      }, 20000)
+    }
+  },
+  beforeDestroy () {
+    if (this.interval) {
+      clearInterval(this.interval)
+      this.interval = null
+    }
   },
   methods: {
-    checkCommit (commits) {
-      return (commits && commits.length && commits.find(c => c.status !== 'PENDING'))
-    },
     async getUser () {
       try {
         const user = await this.$axios.$get(`${process.env.backendUrl}/user`)
@@ -227,43 +228,10 @@ export default {
         })
       }
     },
-    async getRepositories () {
+    async getActiveRepositories () {
       try {
-        const repositories = await this.$axios.$get(`${process.env.backendUrl}/repositories`)
+        const repositories = await this.$axios.$get(`${process.env.backendUrl}/repositories/active`)
         this.repositories = repositories
-        this.getCommits()
-      } catch (error) {
-        this.$modal.show({
-          color: 'danger',
-          text: error,
-          title: 'Error'
-        })
-      }
-    },
-    async getCommits () {
-      try {
-        const commits = await this.$axios.$get(`${process.env.backendUrl}/commits`)
-        this.commits = commits
-        for (let i = 0; i < this.repositories.length; i++) {
-          this.$set(this.repositories[i], 'commits', commits.filter(c => c.repository_id === this.repositories[i].id))
-        }
-      } catch (error) {
-        this.$modal.show({
-          color: 'danger',
-          text: error,
-          title: 'Error'
-        })
-      }
-    },
-    async getProjects () {
-      try {
-        const projects = await this.$axios.$get(`${process.env.backendUrl}/projects`)
-        this.projects = projects
-        // this.projects.push(...projects)
-        // this.projects.push(...projects)
-        // this.projects.push(...projects)
-        // this.projects.push(...projects)
-        // this.projects.push(...projects)
       } catch (error) {
         this.$modal.show({
           color: 'danger',

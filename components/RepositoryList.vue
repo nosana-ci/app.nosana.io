@@ -20,11 +20,11 @@
           </td>
           <td>
             <div
-              v-if="commits"
+              v-if="repository.commits"
               class="is-flex"
             >
               <div
-                v-for="commit in commits.filter(c => repository.id === c.repository_id).slice(-6)"
+                v-for="commit in repository.commits.slice().reverse()"
                 :key="commit.id"
                 class="mx-1"
                 @click.stop=""
@@ -52,10 +52,6 @@
 export default {
   props: {
     repositories: {
-      type: Array,
-      default: null
-    },
-    commits: {
       type: Array,
       default: null
     }

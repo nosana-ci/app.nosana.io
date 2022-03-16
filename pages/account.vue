@@ -171,7 +171,7 @@
           Repositories
         </h2>
 
-        <repository-list :commits="commits" :repositories="repositories" />
+        <repository-list :repositories="repositories" />
       </div>
       <div v-if="publicKey" class="has-text-centered mt-6">
         <a class="has-text-danger" @click.prevent="$sol.logout">Logout</a>
@@ -231,16 +231,14 @@ export default {
     '$sol.token' (token) {
       if (token) {
         this.getUser()
-        this.getRepositories()
-        this.getCommits()
+        this.getUserRepositories()
       }
     }
   },
   created () {
     if (this.$sol && this.$sol.token) {
       this.getUser()
-      this.getRepositories()
-      this.getCommits()
+      this.getUserRepositories()
     }
     if (this.$route.query.edit) {
       this.editUser = true
@@ -250,18 +248,6 @@ export default {
     if (!this.publicKey) { this.$sol.loginModal = true }
   },
   methods: {
-    async getCommits () {
-      try {
-        const commits = await this.$axios.$get(`${process.env.backendUrl}/commits`)
-        this.commits = commits
-      } catch (error) {
-        this.$modal.show({
-          color: 'danger',
-          text: error,
-          title: 'Error'
-        })
-      }
-    },
     async getUser () {
       try {
         const user = await this.$axios.$get(`${process.env.backendUrl}/user`)
@@ -280,7 +266,7 @@ export default {
         })
       }
     },
-    async getRepositories () {
+    async getUserRepositories () {
       try {
         const repositories = await this.$axios.$get(`${process.env.backendUrl}/user/repositories`)
         this.repositories = repositories
@@ -317,6 +303,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.modal-card{
+  overflow: auto;
+}
 .project-icon {
   border-radius: 100%;
   background: $secondary;

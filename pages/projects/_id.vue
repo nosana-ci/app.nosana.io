@@ -28,7 +28,7 @@
         </div>
       </div>
 
-      <repository-list :commits="commits" :repositories="repositories" />
+      <repository-list :repositories="repositories" />
     </div>
   </section>
 </template>
@@ -38,36 +38,17 @@ export default {
   data () {
     return {
       repositories: null,
-      project: null,
-      commits: null
+      project: null
     }
   },
   created () {
     this.getRepositories()
     this.getProject()
-    this.getCommits()
-    // setInterval(() => {
-    //   console.log('refreshing repositories..')
-    //   this.getRepositories()
-    // }, 20000)
   },
   methods: {
-    async getCommits () {
-      try {
-        const commits = await this.$axios.$get(`${process.env.backendUrl}/commits`)
-        this.commits = commits
-      } catch (error) {
-        this.$modal.show({
-          color: 'danger',
-          text: error,
-          title: 'Error'
-        })
-      }
-    },
     async getRepositories () {
       try {
-        const repositories = await this.$axios.$get(`${process.env.backendUrl}/repositories`)
-        this.repositories = repositories.filter(r => r.user_id === this.$route.params.id)
+        this.repositories = await this.$axios.$get(`${process.env.backendUrl}/user/${this.$route.params.id}/repositories`)
       } catch (error) {
         this.$modal.show({
           color: 'danger',
@@ -78,8 +59,7 @@ export default {
     },
     async getProject () {
       try {
-        const projects = await this.$axios.$get(`${process.env.backendUrl}/projects`)
-        this.project = projects.find(p => p.id === this.$route.params.id)
+        this.project = await this.$axios.$get(`${process.env.backendUrl}/user/${this.$route.params.id}`)
       } catch (error) {
         this.$modal.show({
           color: 'danger',
