@@ -40,7 +40,7 @@ export default {
   },
 
   env: {
-    backendUrl: process.env.BACKEND_URL || 'http://localhost:4123'
+    backendUrl: process.env.BACKEND_URL || 'https://app.nosana.io'
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
