@@ -1,5 +1,4 @@
 import Vue from 'vue'
-import { WalletAdapterNetwork } from '@solana/wallet-adapter-base'
 import {
   PhantomWalletAdapter,
   SolletExtensionWalletAdapter,
@@ -10,7 +9,7 @@ import {
 import { clusterApiUrl, Connection, PublicKey } from '@solana/web3.js'
 import { commitment, sendTransaction } from '@/utils/web3'
 
-const network = WalletAdapterNetwork.Testnet
+const network = process.env.NUXT_ENV_SOL_NETWORK
 
 const NOS_TOKEN_PROGRAM_ID = process.env.NUXT_ENV_NOS_TOKEN
 
