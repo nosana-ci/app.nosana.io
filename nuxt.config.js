@@ -1,3 +1,6 @@
+// eslint-disable-next-line nuxt/no-cjs-in-config
+require('./config.js')
+
 export default {
   // Target: https://go.nuxtjs.dev/config-target
   target: 'static',
@@ -40,10 +43,6 @@ export default {
       { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap' },
       { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap' }
     ]
-  },
-
-  env: {
-    backendUrl: process.env.BACKEND_URL || 'https://app.nosana.ci'
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css

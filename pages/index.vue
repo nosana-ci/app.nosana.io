@@ -218,7 +218,7 @@ export default {
   methods: {
     async getUser () {
       try {
-        const user = await this.$axios.$get(`${process.env.backendUrl}/user`)
+        const user = await this.$axios.$get('/user')
         this.user = user
       } catch (error) {
         this.$modal.show({
@@ -230,7 +230,7 @@ export default {
     },
     getActiveRepositories () {
       try {
-        // const repositories = await this.$axios.$get(`${process.env.backendUrl}/repositories/active`)
+        // const repositories = await this.$axios.$get('/repositories/active')
         this.repositories = []
       } catch (error) {
         this.$modal.show({

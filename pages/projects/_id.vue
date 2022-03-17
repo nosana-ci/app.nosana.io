@@ -48,7 +48,7 @@ export default {
   methods: {
     async getRepositories () {
       try {
-        this.repositories = await this.$axios.$get(`${process.env.backendUrl}/user/${this.$route.params.id}/repositories`)
+        this.repositories = await this.$axios.$get(`/user/${this.$route.params.id}/repositories`)
       } catch (error) {
         this.$modal.show({
           color: 'danger',
@@ -59,7 +59,7 @@ export default {
     },
     async getProject () {
       try {
-        this.project = await this.$axios.$get(`${process.env.backendUrl}/user/${this.$route.params.id}`)
+        this.project = await this.$axios.$get(`/user/${this.$route.params.id}`)
       } catch (error) {
         this.$modal.show({
           color: 'danger',

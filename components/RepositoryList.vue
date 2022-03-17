@@ -58,7 +58,7 @@ export default {
   },
   data () {
     return {
-      backendUrl: process.env.backendUrl
+      backendUrl: process.env.NUXT_ENV_BACKEND_URL
     }
   },
   methods: {

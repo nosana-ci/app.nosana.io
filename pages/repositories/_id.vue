@@ -86,7 +86,7 @@ export default {
   methods: {
     async getCommits () {
       try {
-        const commits = await this.$axios.$get(`${process.env.backendUrl}/repositories/${this.$route.params.id}/commits`)
+        const commits = await this.$axios.$get(`/repositories/${this.$route.params.id}/commits`)
         this.commits = commits
       } catch (error) {
         this.$modal.show({
@@ -98,7 +98,7 @@ export default {
     },
     async getRepository () {
       try {
-        this.repository = await this.$axios.$get(`${process.env.backendUrl}/repositories/${this.$route.params.id}`)
+        this.repository = await this.$axios.$get(`/repositories/${this.$route.params.id}`)
       } catch (error) {
         this.$modal.show({
           color: 'danger',

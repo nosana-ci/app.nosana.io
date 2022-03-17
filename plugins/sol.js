@@ -12,7 +12,7 @@ import { commitment, sendTransaction } from '@/utils/web3'
 
 const network = WalletAdapterNetwork.Testnet
 
-const NOS_TOKEN_PROGRAM_ID = 'testsKbCqE8T1ndjY4kNmirvyxjajKvyp1QTDmdGwrp'
+const NOS_TOKEN_PROGRAM_ID = process.env.NUXT_ENV_NOS_TOKEN
 
 // You can also provide a custom RPC endpoint
 const endpoint = clusterApiUrl(network)

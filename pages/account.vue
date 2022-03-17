@@ -250,7 +250,7 @@ export default {
   methods: {
     async getUser () {
       try {
-        const user = await this.$axios.$get(`${process.env.backendUrl}/user`)
+        const user = await this.$axios.$get('/user')
         this.name = user.name
         this.description = user.description
         this.discord = user.discord
@@ -268,7 +268,7 @@ export default {
     },
     async getUserRepositories () {
       try {
-        const repositories = await this.$axios.$get(`${process.env.backendUrl}/user/repositories`)
+        const repositories = await this.$axios.$get('/user/repositories')
         this.repositories = repositories
       } catch (error) {
         this.$modal.show({
@@ -280,7 +280,7 @@ export default {
     },
     async updateUser () {
       try {
-        const user = await this.$axios.$post(`${process.env.backendUrl}/user`, {
+        const user = await this.$axios.$post('/user', {
           name: this.name,
           image: this.image,
           description: this.description,

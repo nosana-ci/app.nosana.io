@@ -161,7 +161,7 @@ export default {
   methods: {
     async getUser () {
       try {
-        const user = await this.$axios.$get(`${process.env.backendUrl}/user`)
+        const user = await this.$axios.$get('/user')
         this.user = user
       } catch (error) {
         this.$modal.show({
@@ -173,7 +173,7 @@ export default {
     },
     async postJob (id) {
       try {
-        await this.$axios.$post(`${process.env.backendUrl}/commits/${id}/job`)
+        await this.$axios.$post(`/commits/${id}/job`)
         this.getCommit()
       } catch (error) {
         this.$modal.show({
@@ -210,7 +210,7 @@ export default {
     async getCommit () {
       const id = this.$route.params.id
       try {
-        const commit = await this.$axios.$get(`${process.env.backendUrl}/commits/${id}`)
+        const commit = await this.$axios.$get(`/commits/${id}`)
         this.commit = commit
         if (this.commit.status === 'RUNNING') {
           if (!this.refreshInterval) {

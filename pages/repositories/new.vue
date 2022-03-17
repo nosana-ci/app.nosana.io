@@ -98,7 +98,7 @@ export default {
     async githubOauth (code) {
       try {
         this.loading = true
-        const response = await this.$axios.$post(`${process.env.backendUrl}/github/callback`, {
+        const response = await this.$axios.$post('/github/callback', {
           code
         })
         this.githubToken = response.access_token
@@ -141,7 +141,7 @@ export default {
     },
     async addRepository () {
       try {
-        const repo = await this.$axios.$post(`${process.env.backendUrl}/repositories`, {
+        const repo = await this.$axios.$post('/repositories', {
           repository: this.repository,
           type: 'GITHUB'
         })
@@ -160,7 +160,7 @@ export default {
         await githubApi.post(`/repos/${repo.repository}/hooks`, {
           config: {
             content_type: 'json',
-            url: process.env.backendUrl + '/webhook/github/' + (repo.secret ? repo.secret : repo.id),
+            url: process.env.NUXT_ENV_BACKEND_URL + '/webhook/github/' + (repo.secret ? repo.secret : repo.id),
             insecure_ssl: 1
           }
         })
