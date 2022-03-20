@@ -170,3 +170,12 @@ a.card {
   display: inline-block;
   vertical-align: top;
 }
+
+.page-enter-active,
+.page-leave-active {
+  transition: opacity 0.3s;
+}
+.page-enter,
+.page-leave-to {
+  opacity: 0;
+}
