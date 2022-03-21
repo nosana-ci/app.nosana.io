@@ -126,7 +126,7 @@ export default {
           this.repositories = []
           do {
             response = await githubApi.get(`/user/repos?per_page=100&page=${page}`)
-            this.repositories.concat(response.data)
+            this.repositories = this.repositories.concat(response.data)
             page++
           } while (response && response.data.length >= 100)
           const response2 = await githubApi.get('/user/memberships/orgs')
@@ -134,7 +134,7 @@ export default {
             page = 1
             do {
               response = await githubApi.get(`/orgs/${org.organization.login}/repos?per_page=100&page=${page}`)
-              this.repositories.concat(response.data)
+              this.repositories = this.repositories.concat(response.data)
               page++
             } while (response && response.data.length >= 100)
           })
