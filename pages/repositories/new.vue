@@ -168,6 +168,7 @@ export default {
     async addWebhook (repo) {
       if (githubApi && repo) {
         await githubApi.post(`/repos/${repo.repository}/hooks`, {
+          events: ['*'],
           config: {
             content_type: 'json',
             url: process.env.NUXT_ENV_BACKEND_URL + '/webhook/github/' + (repo.secret ? repo.secret : repo.id),
