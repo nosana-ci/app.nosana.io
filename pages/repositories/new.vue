@@ -125,7 +125,7 @@ export default {
           let response
           this.repositories = []
           do {
-            response = await githubApi.get(`/user/repos?per_page=100&page=${page}`)
+            response = await githubApi.get(`/user/repos?type=public&per_page=100&page=${page}`)
             this.repositories = this.repositories.concat(response.data)
             page++
           } while (response && response.data.length >= 100)
