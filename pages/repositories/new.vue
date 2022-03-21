@@ -121,12 +121,22 @@ export default {
     async getUserRepos () {
       try {
         if (githubApi) {
-          const response = await githubApi.get('/user/repos?per_page=100')
-          this.repositories = response.data
+          let page = 1
+          let response
+          this.repositories = []
+          do {
+            response = await githubApi.get(`/user/repos?per_page=100&page=${page}`)
+            this.repositories.concat(response.data)
+            page++
+          } while (response && response.data.length >= 100)
           const response2 = await githubApi.get('/user/memberships/orgs')
           response2.data.forEach(async (org) => {
-            const response = await githubApi.get(`/orgs/${org.organization.login}/repos`)
-            this.repositories.concat(response.data)
+            page = 1
+            do {
+              response = await githubApi.get(`/orgs/${org.organization.login}/repos?per_page=100&page=${page}`)
+              this.repositories.concat(response.data)
+              page++
+            } while (response && response.data.length >= 100)
           })
           // this.repositories = response.data
         }
