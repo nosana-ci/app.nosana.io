@@ -12,7 +12,7 @@
       <tbody>
         <tr v-for="repository in repositories" :key="repository.id" class="is-clickable" @click="$router.push(`/repositories/${repository.id}`)">
           <td class="py-4">
-            <span class="tag is-success">{{ repository.status }}</span>
+            <span class="tag" :class="{'is-success': repository.status === 'ACTIVE', 'is-info': repository.status === 'PENDING'}">{{ repository.status }}</span>
           </td>
           <td><a :href="'https://github.com/'+ repository.repository" target="_blank" @click.stop>{{ repository.repository }}</a></td>
           <td>
