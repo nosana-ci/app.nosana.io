@@ -228,7 +228,7 @@ export default {
         })
       }
     },
-    getActiveRepositories () {
+    async getActiveRepositories () {
       try {
         const repositories = await this.$axios.$get('/repositories/active')
         this.repositories = repositories
