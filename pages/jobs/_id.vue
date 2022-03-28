@@ -73,8 +73,12 @@
         </div>
         <div v-if="tab === 'result'">
           <div v-if="commit.jobIpfs">
-            <small v-if="commit.cache_result">
-              Finished {{ $moment(commit.cache_result['finished-at']*1e3).fromNow() }}
+            <small v-if="commit.cache_blockchain && commit.cache_blockchain['timeEnd']">
+              Finished {{ $moment(parseInt(commit.cache_blockchain['timeEnd'],16)*1e3).fromNow() }}<br>
+              Duration {{ (parseInt(commit.cache_blockchain['timeEnd'],16)) - (parseInt(commit.cache_blockchain['timeStart'],16)) }} seconds
+            </small>
+            <small v-else-if="nowSeconds && commit.cache_blockchain && commit.cache_blockchain['timeStart']">
+              Running for {{ nowSeconds - (parseInt(commit.cache_blockchain['timeStart'],16)) }} seconds
             </small>
             <div v-for="(command, index) in commit.jobIpfs.commands" :key="index" class="box is-info">
               <div>
@@ -136,7 +140,9 @@ export default {
       step: null,
       tab: 'result',
       user: null,
-      refreshInterval: null
+      refreshInterval: null,
+      clockInterval: null,
+      nowSeconds: null
     }
   },
   watch: {
@@ -151,14 +157,25 @@ export default {
       clearInterval(this.refreshInterval)
       this.refreshInterval = null
     }
+    if (this.clockInterval) {
+      clearInterval(this.clockInterval)
+      this.clockInterval = null
+    }
   },
   created () {
     this.getCommit()
+    this.updateClock()
+    if (!this.clockInterval) {
+      this.clockInterval = setInterval(this.updateClock, 1000)
+    }
     if (this.$sol && this.$sol.token) {
       this.getUser()
     }
   },
   methods: {
+    updateClock () {
+      this.nowSeconds = parseInt((new Date()).getTime() / 1e3)
+    },
     async getUser () {
       try {
         const user = await this.$axios.$get('/user')
