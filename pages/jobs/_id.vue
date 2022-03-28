@@ -208,7 +208,7 @@ export default {
       return bs58.encode(Buffer.from(hashArray))
     },
     async retrieveIpfsContent (hash) {
-      const response = await fetch('https://gateway.pinata.cloud/ipfs/' + hash)
+      const response = await fetch('https://nosana.mypinata.cloud/ipfs/' + hash)
       const json = await response.json()
       return json
     },
