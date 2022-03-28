@@ -34,7 +34,7 @@
             <i class="fas fa-list mr-4 has-text-accent" />Smart Contract Job <a target="_blank" :href="$sol.explorer + '/address/' + commit.job" class="blockchain-address-inline">{{ commit.job }}</a>
           </div>
           <div v-if="commit.job && commit.cache_blockchain" class="mb-4">
-            <i class="fas fa-coins mr-4 has-text-accent" />Pipeline total cost <b class="has-text-accent">{{ parseInt(commit.cache_blockchain.tokens, 16)/1e9 }} NOS</b>
+            <i class="fas fa-coins mr-4 has-text-accent" />Pipeline total cost <b class="has-text-accent">{{ parseInt(commit.cache_blockchain.tokens, 16)/1e6 }} NOS</b>
           </div>
           <div v-if="commit.job && commit.cache_blockchain && commit.cache_blockchain.jobStatus > 0" class="mb-4">
             <i class="fas fa-server mr-4 has-text-accent" />Node: <a target="_blank" :href="$sol.explorer + '/address/' + commit.cache_blockchain.node" class="blockchain-address-inline">{{ commit.cache_blockchain.node }}</a>
