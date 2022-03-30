@@ -7,6 +7,9 @@ export default {
   generate: {
     fallback: true
   },
+  // server: {
+  //   port: 80 // default: 3000
+  // },
   // router: {
   //   base: '/frontend/'
   // },

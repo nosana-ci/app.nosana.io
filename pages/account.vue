@@ -196,7 +196,8 @@ export default {
       editUser: false,
       repositories: null,
       commits: null,
-      balance: null
+      balance: null,
+      usedBalance: null
     }
   },
   computed: {
@@ -206,25 +207,13 @@ export default {
     publicKey () {
       return (this.$sol) ? this.$sol.publicKey : null
     },
-    usedBalance () {
-      let used = 0
-      if (this.commits && this.user && this.repositories) {
-        const repoIds = this.repositories.map(r => (r.user_id === this.user.user_id ? r.id : null))
-        this.commits.forEach((c) => {
-          if (repoIds.includes(c.repository_id) && c.status !== 'PENDING') {
-            used += 10
-          }
-        })
-      }
-      return used
-    },
     reward () {
       let reward = 0
       if (this.balance > 0) {
         reward += 500
       }
 
-      return reward + this.usedBalance
+      return Math.min(reward + this.usedBalance, 10000)
     }
   },
   watch: {
@@ -232,6 +221,7 @@ export default {
       if (token) {
         this.getUser()
         this.getUserRepositories()
+        this.getUserJobPrices()
       }
     }
   },
@@ -239,6 +229,7 @@ export default {
     if (this.$sol && this.$sol.token) {
       this.getUser()
       this.getUserRepositories()
+      this.getUserJobPrices()
     }
     if (this.$route.query.edit) {
       this.editUser = true
@@ -258,6 +249,18 @@ export default {
         this.image = user.image
         this.user = user
         this.balance = (await this.$sol.getNosBalance(this.user.generated_address)).uiAmount
+      } catch (error) {
+        this.$modal.show({
+          color: 'danger',
+          text: error,
+          title: 'Error'
+        })
+      }
+    },
+    async getUserJobPrices () {
+      try {
+        const totalCosts = await this.$axios.$get('/user/jobs/price')
+        this.usedBalance = totalCosts / 1e6
       } catch (error) {
         this.$modal.show({
           color: 'danger',
