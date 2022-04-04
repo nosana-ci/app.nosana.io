@@ -72,7 +72,6 @@
           </ul>
         </div>
         <div v-if="tab === 'result'">
-          {{ commit.cache_result }}
           <div v-if="commit.job_content">
             <small v-if="commit.cache_blockchain && parseInt(commit.cache_blockchain['timeEnd'],16)">
               Finished {{ $moment(parseInt(commit.cache_blockchain['timeEnd'],16)*1e3).fromNow() }}<br>
