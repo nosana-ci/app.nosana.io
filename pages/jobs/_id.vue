@@ -72,6 +72,7 @@
           </ul>
         </div>
         <div v-if="tab === 'result'">
+          {{ commit.cache_result }}
           <div v-if="commit.job_content">
             <small v-if="commit.cache_blockchain && parseInt(commit.cache_blockchain['timeEnd'],16)">
               Finished {{ $moment(parseInt(commit.cache_blockchain['timeEnd'],16)*1e3).fromNow() }}<br>
@@ -80,6 +81,42 @@
             <small v-else-if="nowSeconds && commit.cache_blockchain && parseInt(commit.cache_blockchain['timeStart'],16)">
               Running for {{ nowSeconds - (parseInt(commit.cache_blockchain['timeStart'],16)) }} seconds
             </small>
+            <template v-for="gitCommand in ['clone', 'checkout']">
+              <div v-if="commit.cache_result && commit.cache_result.results[gitCommand]" :key="gitCommand" class="box is-info">
+                <div>
+                  <div class="is-clickable is-flex is-flex-wrap-wrap is-align-items-center" @click="step !== gitCommand ? step = gitCommand : step = null">
+                    <h3
+                      class="subtitle m-0"
+                      :class="{
+                        'has-text-success': !commit.cache_result.results[gitCommand][0].includes('error'),
+                        'has-text-danger': commit.cache_result.results[gitCommand][0].includes('error')
+                      }"
+                    >
+                      <i v-if="commit.cache_result.results[gitCommand][0].includes('error')" class="fas fa-times" />
+                      <i v-else class="fas fa-check" />
+                      <span>git {{ gitCommand }}</span>
+                    </h3>
+                    <div class="is-size-7 has-overresult-ellipses mr-4" style="margin-left: auto">
+                      <span v-if="commit.cache_result">node: {{ commit.cache_result['nos-id'] }}</span>
+                      <span v-else>pending</span>
+                    </div>
+                    <div>
+                      <i class="fas fa-chevron-down" :class="{'fa-chevron-up': step === gitCommand}" />
+                    </div>
+                  </div>
+                  <div v-if="step === gitCommand">
+                    <div>
+                      <template v-if="!commit.cache_result.results[gitCommand][0].includes('error')">
+                        <pre>{{ commit.cache_result.results[gitCommand] }}</pre>
+                      </template>
+                      <template v-else>
+                        <pre class="has-text-danger"><template v-for="(error, index) in commit.cache_result.results[gitCommand]"><p v-if="index !== 0" :key="error">{{ error }}</p></template></pre>
+                      </template>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </template>
             <div v-for="(command, index) in commit.job_content.commands" :key="index" class="box is-info">
               <div>
                 <div class="is-clickable is-flex is-flex-wrap-wrap is-align-items-center" @click="step !== index ? step = index : step = null">
@@ -87,10 +124,10 @@
                     class="subtitle m-0"
                     :class="{
                       'has-text-success': commit.cache_result && commit.cache_result.results && commit.cache_result.results[`cmd-${index}`] && commit.cache_result.results[`cmd-${index}`].exit === 0,
-                      'has-text-danger': commit.cache_result && commit.cache_result.results && commit.cache_result.results[`cmd-${index}`] && commit.cache_result.results[`cmd-${index}`].exit === 1
+                      'has-text-danger': commit.cache_result && commit.cache_result.results && commit.cache_result.results[`cmd-${index}`] && commit.cache_result.results[`cmd-${index}`].exit > 0
                     }"
                   >
-                    <i v-if="commit.cache_result && commit.cache_result.results && commit.cache_result.results[`cmd-${index}`] && commit.cache_result.results[`cmd-${index}`].exit === 1" class="fas fa-times" />
+                    <i v-if="commit.cache_result && commit.cache_result.results && commit.cache_result.results[`cmd-${index}`] && commit.cache_result.results[`cmd-${index}`].exit > 0" class="fas fa-times" />
                     <i v-else-if="commit.cache_result && commit.cache_result.results && commit.cache_result.results[`cmd-${index}`] && commit.cache_result.results[`cmd-${index}`].exit === 0" class="fas fa-check" />
                     <span>{{ command }}</span>
                   </h3>
@@ -104,8 +141,8 @@
                 </div>
                 <div v-if="step === index">
                   <div>
-                    <pre v-if="commit.cache_result && commit.cache_result.results && commit.cache_result.results[`cmd-${index}`]">{{ commit.cache_result.results[`cmd-${index}`].out }}</pre>
-                    <pre v-if="commit.cache_result && commit.cache_result.results && commit.cache_result.results[`cmd-${index}`]" class="has-text-danger">{{ commit.cache_result.results[`cmd-${index}`].err }}</pre>
+                    <pre v-if="commit.cache_result && commit.cache_result.results && commit.cache_result.results[`cmd-${index}`].out">{{ commit.cache_result.results[`cmd-${index}`].out }}</pre>
+                    <pre v-if="commit.cache_result && commit.cache_result.results && commit.cache_result.results[`cmd-${index}`].err" class="has-text-danger">{{ commit.cache_result.results[`cmd-${index}`].err }}</pre>
                     <div v-else>
                       No results yet..
                     </div>
