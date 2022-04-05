@@ -16,7 +16,7 @@
           </td>
           <td><a :href="'https://github.com/'+ repository.repository" target="_blank" @click.stop>{{ repository.repository }}</a></td>
           <td>
-            <span class="has-tooltip-arrow" :class="{'has-tooltip': repository.secret}" :data-tooltip="repository.secret ? ('Github Webhook:\n' + backendUrl + '/webhook/github/' + repository.secret) : null" @click.stop="repository.secret ? copyToClipboard(backendUrl + '/webhook/github/' + repository.secret) : $router.push(`/repositories/${repository.id}`)">on commit to main/master branch</span>
+            <span class="has-tooltip-arrow" :class="{'has-tooltip': repository.secret}" :data-tooltip="repository.secret ? ('Github Webhook:\n' + backendUrl + '/webhook/github/' + repository.secret) : null" @click.stop="repository.secret ? copyToClipboard(backendUrl + '/webhook/github/' + repository.secret) : $router.push(`/repositories/${repository.id}`)">on commit to {{ repository.branches }} branch(es)</span>
           </td>
           <td>
             <div
