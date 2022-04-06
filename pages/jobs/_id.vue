@@ -21,7 +21,7 @@
               {{ commit.status }}
             </div>
           </div>
-          <div>Job <b>#{{ commit.id }}</b> triggered by <a target="_blank" :href="'https://github.com/'+commit.payload.author.username">{{ commit.payload.author.name }}</a> {{ $moment(commit.created_at).fromNow() }}</div>
+          <div>Job <b>#{{ commit.id }}</b> triggered by <a target="_blank" :href="'https://github.com/'+commit.payload.author.username">{{ commit.payload.author.username }}</a> {{ $moment(commit.created_at).fromNow() }}</div>
         </div>
         <hr class="my-4">
         <h1 class="title">
@@ -66,9 +66,9 @@
             <li :class="{'is-active': tab === 'logs'}">
               <a @click.prevent="tab='logs'">Job Info</a>
             </li>
-            <li :class="{'is-active': tab === 'payload'}">
+            <!-- <li :class="{'is-active': tab === 'payload'}">
               <a @click.prevent="tab='payload'">Payload</a>
-            </li>
+            </li> -->
           </ul>
         </div>
         <div v-if="tab === 'result'">
