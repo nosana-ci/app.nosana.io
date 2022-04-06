@@ -79,7 +79,7 @@
           + Add new repository
         </nuxt-link>
       </div>
-      <p v-if="!loggedIn" class="has-text-aligned is-horizontal-centered has-limited-width">
+      <!-- <p v-if="!loggedIn" class="has-text-aligned is-horizontal-centered has-limited-width">
         Projects that want to run their pipelines on TestNet are being approved right now. Add your wallet, repositories and input your project information to request TestNet funds to be able to run jobs and earn NOS tokens for every pipeline that you are running! Selected projects will automatically receive 500 $NOS tokens for joining our Testnet. You can <b>earn up to 10.000 $NOS tokens</b> by running pipelines with our Testnet.
       </p>
       <p v-else-if="user && (!repositories || !repositories.filter(r => r.user_id === user.user_id).length)" class="has-text-aligned is-horizontal-centered has-limited-width">
@@ -90,7 +90,7 @@
       </p>
       <p v-else-if="user && user.name" class="is-horizontal-centered has-limited-width notification is-info">
         Thank you for your submission. You can add/change repositories and project information during your pending request. We will inform you via email as soon as your project is approved. Approved projects can run jobs and earn NOS tokens for every pipeline!
-      </p>
+      </p> -->
       <div v-if="repositories" class="columns is-multiline mt-4 has-background-secondary">
         <div v-if="!filteredRepositories.length" class="has-text-centered subtitle">
           We are currently selecting projects for Nosana Testnet
