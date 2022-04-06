@@ -1,34 +1,3 @@
-image: node:14
-
-stages:
-  - test
-  - deploy
-  - release
-
-test:
-  stage: test
-  script:
-    - npm ci
-    - npm run lint
-  only:
-    - merge_requests
-    - main
-
-pages:
-  stage: deploy
-  script:
-    - npm ci
-    - npm run generate
-    - mv dist public
-  artifacts:
-    paths:
-      - public
-  only:
-    - main
-
-release:
-  image: registry.gitlab.com/nosana-ci/tools/containers/semver
-  stage: release
-  script: release.sh
-  only:
-    - main
+include:
+  - project: nosana-ci/tools/cicd/gitlab-ci
+    file: nuxt.yml
