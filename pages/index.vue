@@ -1,5 +1,6 @@
 <template>
   <section class="section">
+    <editor />
     <div class="container">
       <div class="columns">
         <div class="column is-4">
