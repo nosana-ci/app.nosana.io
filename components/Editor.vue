@@ -1,7 +1,7 @@
 <template>
   <div>
     <client-only>
-      <prism-editor v-model="code" class="my-editor" :highlight="highlighter" line-numbers />
+      <prism-editor v-model="code" :readonly="readonly" class="my-editor" :highlight="highlighter" line-numbers />
     </client-only>
   </div>
 </template>
@@ -20,27 +20,19 @@ export default {
   components: {
     PrismEditor
   },
+  props: ['value', 'readonly'],
   data () {
     return {
-      code: `---
- doe: "a deer, a female deer"
- ray: "a drop of golden sun"
- pi: 3.14159
- xmas: true
- french-hens: 3
- calling-birds:
-   - huey
-   - dewey
-   - louie
-   - fred
- xmas-fifth-day:
-   calling-birds: four
-   french-hens: 3
-   golden-rings: 5
-   partridges:
-     count: 1
-     location: "a pear tree"
-   turtle-doves: two`
+    }
+  },
+  computed: {
+    code: {
+      get () {
+        return this.value
+      },
+      set (val) {
+        this.$emit('input', val)
+      }
     }
   },
   methods: {

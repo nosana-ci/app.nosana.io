@@ -116,7 +116,7 @@
                 </div>
               </div>
             </template>
-            <div v-for="(command, index) in commit.job_content.commands" :key="index" class="box is-info">
+            <div v-for="(command, index) in commit.job_content.pipeline.commands" :key="index" class="box is-info">
               <div>
                 <div class="is-clickable is-flex is-flex-wrap-wrap is-align-items-center" @click="step !== index ? step = index : step = null">
                   <h3
@@ -167,6 +167,7 @@
 
 <script>
 import bs58 from 'bs58'
+import { parse } from 'yaml'
 
 export default {
   data () {
@@ -253,6 +254,11 @@ export default {
       this.$set(this.commit, 'jobIpfsHash', hash)
       if (!this.commit.job_content) {
         this.commit.job_content = await this.retrieveIpfsContent(hash)
+      }
+      if (this.commit.job_content.pipeline) {
+        this.$set(this.commit.job_content, 'pipeline', parse(this.commit.job_content.pipeline))
+      } else {
+        this.$set(this.commit.job_content, 'pipeline', { commands: this.commit.job_content.commands })
       }
     },
     getResult (ipfsResult) {
