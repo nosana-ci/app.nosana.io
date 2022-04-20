@@ -11,15 +11,15 @@
 </template>
 
 <script>
-import NavBar from '@/components/NavBar'
-import SolWallet from '@/components/SolWallet'
+import NavBar from '@/components/NavBar';
+import SolWallet from '@/components/SolWallet';
 
 export default {
   components: {
     NavBar,
     SolWallet
   }
-}
+};
 </script>
 
 <style lang="scss">

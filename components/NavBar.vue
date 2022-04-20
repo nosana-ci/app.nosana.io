@@ -64,14 +64,14 @@ export default {
   data () {
     return {
       mobileMenu: false
-    }
+    };
   },
   computed: {
     publicKey () {
-      return (this.$sol) ? this.$sol.publicKey : null
+      return (this.$sol) ? this.$sol.publicKey : null;
     }
   }
-}
+};
 </script>
 
 <style lang="scss">

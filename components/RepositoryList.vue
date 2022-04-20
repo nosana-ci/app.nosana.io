@@ -59,14 +59,14 @@ export default {
   data () {
     return {
       backendUrl: process.env.NUXT_ENV_BACKEND_URL
-    }
+    };
   },
   methods: {
     copyToClipboard (content) {
       navigator.clipboard.writeText(content).then(() => {
-        alert('Webhook URL copied!')
-      })
+        alert('Webhook URL copied!');
+      });
     }
   }
-}
+};
 </script>

@@ -1,5 +1,5 @@
 // eslint-disable-next-line nuxt/no-cjs-in-config
-require('./config.js')
+require('./config.js');
 
 export default {
   // Target: https://go.nuxtjs.dev/config-target
@@ -102,8 +102,8 @@ export default {
     ],
     loaders: {
       scss: {
-        additionalData: "@import '~assets/scss/variables.scss';"
+        additionalData: '@import \'~assets/scss/variables.scss\';'
       }
     }
   }
-}
+};

@@ -170,78 +170,76 @@ export default {
       user: null,
       search: null,
       interval: null
-    }
+    };
   },
   computed: {
     loggedIn () {
-      return this.$sol && this.$sol.token
+      return this.$sol && this.$sol.token;
     },
     filteredRepositories () {
-      let filteredRepositories = this.repositories
+      let filteredRepositories = this.repositories;
       // Search campaigns
       if (filteredRepositories && this.search !== null) {
-        filteredRepositories = filteredRepositories.filter((r) => {
-          return r.repository.toLowerCase().includes(this.search.toLowerCase()) ||
+        filteredRepositories = filteredRepositories.filter(r => r.repository.toLowerCase().includes(this.search.toLowerCase()) ||
             (r.repository.description && r.repository.description.toLowerCase().includes(this.search.toLowerCase())) ||
-            (r.repository.name && r.repository.name.toLowerCase().includes(this.search.toLowerCase()))
-        })
+            (r.repository.name && r.repository.name.toLowerCase().includes(this.search.toLowerCase())));
       }
 
-      return filteredRepositories
+      return filteredRepositories;
     }
   },
   watch: {
     '$sol.token' (token) {
       if (token) {
-        this.getUser()
+        this.getUser();
       }
     }
   },
   created () {
     if (this.$sol && this.$sol.token) {
-      this.getUser()
+      this.getUser();
     }
-    this.getActiveRepositories()
+    this.getActiveRepositories();
     if (!this.interval) {
       this.interval = setInterval(() => {
-        console.log('refreshing repositories..')
-        this.getActiveRepositories()
-      }, 20000)
+        console.log('refreshing repositories..');
+        this.getActiveRepositories();
+      }, 20000);
     }
   },
   beforeDestroy () {
     if (this.interval) {
-      clearInterval(this.interval)
-      this.interval = null
+      clearInterval(this.interval);
+      this.interval = null;
     }
   },
   methods: {
     async getUser () {
       try {
-        const user = await this.$axios.$get('/user')
-        this.user = user
+        const user = await this.$axios.$get('/user');
+        this.user = user;
       } catch (error) {
         this.$modal.show({
           color: 'danger',
           text: error,
           title: 'Error'
-        })
+        });
       }
     },
     async getActiveRepositories () {
       try {
-        const repositories = await this.$axios.$get('/repositories/active')
-        this.repositories = repositories
+        const repositories = await this.$axios.$get('/repositories/active');
+        this.repositories = repositories;
       } catch (error) {
         this.$modal.show({
           color: 'danger',
           text: error,
           title: 'Error'
-        })
+        });
       }
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>

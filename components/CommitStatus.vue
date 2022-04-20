@@ -14,21 +14,21 @@ export default {
     }
   },
   data () {
-    let icon = require('@/assets/img/icons/pending.svg')
+    let icon = require('@/assets/img/icons/pending.svg');
     if (this.status === 'QUEUED') {
-      icon = require('@/assets/img/icons/queued.svg')
+      icon = require('@/assets/img/icons/queued.svg');
     } else if (this.status === 'RUNNING') {
-      icon = require('@/assets/img/icons/running.svg')
+      icon = require('@/assets/img/icons/running.svg');
     } else if (this.status === 'COMPLETED') {
-      icon = require('@/assets/img/icons/done.svg')
+      icon = require('@/assets/img/icons/done.svg');
     } else if (this.status === 'FAILED') {
-      icon = require('@/assets/img/icons/failed.svg')
+      icon = require('@/assets/img/icons/failed.svg');
     } else if (this.status === 'CANCELLED') {
-      icon = require('@/assets/img/icons/pending.svg')
+      icon = require('@/assets/img/icons/pending.svg');
     }
     return {
       icon
-    }
+    };
   }
-}
+};
 </script>

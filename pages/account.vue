@@ -181,7 +181,7 @@
 </template>
 
 <script>
-import RepositoryList from '../components/RepositoryList.vue'
+import RepositoryList from '../components/RepositoryList.vue';
 
 export default {
   components: { RepositoryList },
@@ -198,87 +198,87 @@ export default {
       commits: null,
       balance: null,
       usedBalance: null
-    }
+    };
   },
   computed: {
     loggedIn () {
-      return (this.$sol) ? this.$sol.token : null
+      return (this.$sol) ? this.$sol.token : null;
     },
     publicKey () {
-      return (this.$sol) ? this.$sol.publicKey : null
+      return (this.$sol) ? this.$sol.publicKey : null;
     },
     reward () {
-      let reward = 0
+      let reward = 0;
       if (this.balance > 0) {
-        reward += 500
+        reward += 500;
       }
 
-      return Math.min(reward + this.usedBalance, 10000)
+      return Math.min(reward + this.usedBalance, 10000);
     }
   },
   watch: {
     '$sol.token' (token) {
       if (token) {
-        this.getUser()
-        this.getUserRepositories()
-        this.getUserJobPrices()
+        this.getUser();
+        this.getUserRepositories();
+        this.getUserJobPrices();
       }
     }
   },
   created () {
     if (this.$sol && this.$sol.token) {
-      this.getUser()
-      this.getUserRepositories()
-      this.getUserJobPrices()
+      this.getUser();
+      this.getUserRepositories();
+      this.getUserJobPrices();
     }
     if (this.$route.query.edit) {
-      this.editUser = true
+      this.editUser = true;
     }
   },
   mounted () {
-    if (!this.publicKey) { this.$sol.loginModal = true }
+    if (!this.publicKey) { this.$sol.loginModal = true; }
   },
   methods: {
     async getUser () {
       try {
-        const user = await this.$axios.$get('/user')
-        this.name = user.name
-        this.description = user.description
-        this.discord = user.discord
-        this.email = user.email
-        this.image = user.image
-        this.user = user
-        this.balance = (await this.$sol.getNosBalance(this.user.generated_address)).uiAmount
+        const user = await this.$axios.$get('/user');
+        this.name = user.name;
+        this.description = user.description;
+        this.discord = user.discord;
+        this.email = user.email;
+        this.image = user.image;
+        this.user = user;
+        this.balance = (await this.$sol.getNosBalance(this.user.generated_address)).uiAmount;
       } catch (error) {
         this.$modal.show({
           color: 'danger',
           text: error,
           title: 'Error'
-        })
+        });
       }
     },
     async getUserJobPrices () {
       try {
-        const totalCosts = await this.$axios.$get('/user/jobs/price')
-        this.usedBalance = totalCosts / 1e6
+        const totalCosts = await this.$axios.$get('/user/jobs/price');
+        this.usedBalance = totalCosts / 1e6;
       } catch (error) {
         this.$modal.show({
           color: 'danger',
           text: error,
           title: 'Error'
-        })
+        });
       }
     },
     async getUserRepositories () {
       try {
-        const repositories = await this.$axios.$get('/user/repositories')
-        this.repositories = repositories
+        const repositories = await this.$axios.$get('/user/repositories');
+        this.repositories = repositories;
       } catch (error) {
         this.$modal.show({
           color: 'danger',
           text: error,
           title: 'Error'
-        })
+        });
       }
     },
     async updateUser () {
@@ -289,20 +289,20 @@ export default {
           description: this.description,
           discord: this.discord,
           email: this.email
-        })
-        this.user = user
-        this.editUser = false
+        });
+        this.user = user;
+        this.editUser = false;
       } catch (error) {
         this.$modal.show({
           color: 'danger',
           text: error,
           title: 'Error'
-        })
+        });
       }
     }
   }
 
-}
+};
 </script>
 
 <style lang="scss" scoped>

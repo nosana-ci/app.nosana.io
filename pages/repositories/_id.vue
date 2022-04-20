@@ -73,11 +73,11 @@ export default {
       commits: null,
       repository: null,
       project: null
-    }
+    };
   },
   created () {
-    this.getCommits()
-    this.getRepository()
+    this.getCommits();
+    this.getRepository();
     // setInterval(() => {
     //   console.log('refreshing repositories..')
     //   this.getCommits()
@@ -86,29 +86,29 @@ export default {
   methods: {
     async getCommits () {
       try {
-        const commits = await this.$axios.$get(`/repositories/${this.$route.params.id}/commits`)
-        this.commits = commits
+        const commits = await this.$axios.$get(`/repositories/${this.$route.params.id}/commits`);
+        this.commits = commits;
       } catch (error) {
         this.$modal.show({
           color: 'danger',
           text: error,
           title: 'Error'
-        })
+        });
       }
     },
     async getRepository () {
       try {
-        this.repository = await this.$axios.$get(`/repositories/${this.$route.params.id}`)
+        this.repository = await this.$axios.$get(`/repositories/${this.$route.params.id}`);
       } catch (error) {
         this.$modal.show({
           color: 'danger',
           text: error,
           title: 'Error'
-        })
+        });
       }
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>

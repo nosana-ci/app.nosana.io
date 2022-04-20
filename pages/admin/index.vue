@@ -214,28 +214,28 @@ export default {
       search: '',
       filter: '',
       repoFilter: ''
-    }
+    };
   },
   computed: {
     loggedIn () {
-      return (this.$sol && this.$sol.token)
+      return (this.$sol && this.$sol.token);
     },
     maxPage () {
-      return Math.ceil(this.userCount / 20)
+      return Math.ceil(this.userCount / 20);
     }
   },
   watch: {
     page () {
-      this.getUsers()
+      this.getUsers();
     }
   },
 
   mounted () {
     if (!this.loggedIn) {
-      this.$sol.loginModal = true
-      this.$router.push({ path: '/', query: { redirect: 'admin' } })
+      this.$sol.loginModal = true;
+      this.$router.push({ path: '/', query: { redirect: 'admin' } });
     } else {
-      this.getUsers()
+      this.getUsers();
     }
   },
   methods: {
@@ -246,38 +246,38 @@ export default {
           {
             status
           }
-        )
-        this.getUsers()
+        );
+        this.getUsers();
       } catch (e) {
-        console.error(e)
+        console.error(e);
       }
     },
     async getUser (id) {
-      this.loading = true
+      this.loading = true;
       try {
-        const response = await this.$axios.get(`/admin/user/${id}`)
-        this.user = response.data
-        window.open('/projects/' + id)
+        const response = await this.$axios.get(`/admin/user/${id}`);
+        this.user = response.data;
+        window.open('/projects/' + id);
       } catch (error) {
-        console.error(error)
+        console.error(error);
       }
-      this.loading = false
+      this.loading = false;
     },
     async getUsers () {
-      this.loading = true
+      this.loading = true;
       try {
         const response = await this.$axios.get(
           `/admin/users?page=${this.page}&q=${this.search}&f=${this.filter}&r=${this.repoFilter}`
-        )
-        this.users = response.data.users
-        this.userCount = response.data.count
+        );
+        this.users = response.data.users;
+        this.userCount = response.data.count;
       } catch (error) {
-        console.error(error)
+        console.error(error);
       }
-      this.loading = false
+      this.loading = false;
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>
