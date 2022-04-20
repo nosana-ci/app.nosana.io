@@ -1,5 +1,5 @@
 // we need our modal component
-import Vue from 'vue';
+import Vue2 from 'vue';
 import ModalComponent from '@/components/Modal.vue';
 import events from '@/plugins/events.js';
 
@@ -27,6 +27,6 @@ const Modal = {
     };
   }
 };
-Vue.use(Modal);
+Vue2.use(Modal);
 
 export default Modal;

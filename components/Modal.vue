@@ -10,6 +10,7 @@
           <!-- eslint-disable-next-line -->
           <li v-for="textValue in text" v-html="textValue" />
         </ul>
+        <!-- eslint-disable-next-line -->
         <h5 v-else style="white-space:pre-wrap" :class="{'has-text-white': color !== 'white'}" v-html="text" />
       </div>
       <div class="has-text-right">

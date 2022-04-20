@@ -31,7 +31,12 @@
               </nuxt-link>
             </div>
             <div v-if="!publicKey" class="navbar-item" exact-active-class="is-active" @click="mobileMenu = false">
-              <nuxt-link class="button is-accent is-outlined has-text-weight-semibold" exact-active-class="is-active" to="/account" @click="$sol.loginModal = true">
+              <nuxt-link
+                class="button is-accent is-outlined has-text-weight-semibold"
+                exact-active-class="is-active"
+                to="/account"
+                @click="$sol.loginModal = true"
+              >
                 <div>
                   Connect Wallet
                 </div>
@@ -45,7 +50,8 @@
               </nuxt-link>
             </div>
             <!-- <div class="navbar-item" exact-active-class="is-active" @click="mobileMenu = false">
-              <a target="_blank" href="mailto:team@nosana.io" class="button is-accent is-outlined px-5 is-wide" to="/account" exact-active-class="is-active">
+              <a target="_blank" href="mailto:team@nosana.io"
+              class="button is-accent is-outlined px-5 is-wide" to="/account" exact-active-class="is-active">
                 <div>
                   Contact
                 </div>

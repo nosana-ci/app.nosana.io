@@ -20,7 +20,13 @@
           </p>
         </div>
         <div style="max-height: 50vh; overflow-y: scroll">
-          <a v-for="repo in filteredRepositories" :key="repo.id" class="panel-block" :class="{'is-active': repository === repo.full_name}" @click.stop="repository=repo.full_name">
+          <a
+            v-for="repo in filteredRepositories"
+            :key="repo.id"
+            class="panel-block"
+            :class="{'is-active': repository === repo.full_name}"
+            @click.stop="repository=repo.full_name"
+          >
             <span class="panel-icon">
               <i class="fas fa-code-branch" aria-hidden="true" />
             </span>
@@ -33,7 +39,13 @@
           Connect to Github
         </a>
         <div v-else-if="!loggedIn" class="navbar-item" exact-active-class="is-active" @click="mobileMenu = false">
-          <a :class="{'is-loading': loading}" class="button is-accent has-text-weight-semibold" exact-active-class="is-active" to="/account" @click="$sol.loginModal = true">
+          <a
+            :class="{'is-loading': loading}"
+            class="button is-accent has-text-weight-semibold"
+            exact-active-class="is-active"
+            to="/account"
+            @click="$sol.loginModal = true"
+          >
             <div>
               Connect Wallet
             </div>
@@ -72,7 +84,8 @@ export default {
       let filteredRepositories = this.repositories;
       // Search repos
       if (filteredRepositories && this.search !== null) {
-        filteredRepositories = filteredRepositories.filter(r => r.full_name.toLowerCase().includes(this.search.toLowerCase()));
+        filteredRepositories =
+        filteredRepositories.filter(r => r.full_name.toLowerCase().includes(this.search.toLowerCase()));
       }
 
       return filteredRepositories;

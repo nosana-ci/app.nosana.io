@@ -32,7 +32,12 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="commit in commits" :key="commit.id" class="is-clickable" @click="$router.push(`/jobs/${commit.id}`)">
+            <tr
+              v-for="commit in commits"
+              :key="commit.id"
+              class="is-clickable"
+              @click="$router.push(`/jobs/${commit.id}`)"
+            >
               <td> {{ commit.id }}</td>
               <td>{{ commit.payload.message.split('\n')[0] }}</td>
               <td><a :href="commit.payload.url" target="_blank" @click.stop>{{ commit.commit }}</a></td>

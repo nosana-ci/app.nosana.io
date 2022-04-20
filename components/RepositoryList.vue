@@ -10,13 +10,29 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="repository in repositories" :key="repository.id" class="is-clickable" @click="$router.push(`/repositories/${repository.id}`)">
+        <tr
+          v-for="repository in repositories"
+          :key="repository.id"
+          class="is-clickable"
+          @click="$router.push(`/repositories/${repository.id}`)"
+        >
           <td class="py-4">
-            <span class="tag" :class="{'is-success': repository.status === 'ACTIVE', 'is-info': repository.status === 'PENDING'}">{{ repository.status }}</span>
+            <span
+              class="tag"
+              :class="{'is-success': repository.status === 'ACTIVE', 'is-info': repository.status === 'PENDING'}"
+            >{{ repository.status }}</span>
           </td>
           <td><a :href="'https://github.com/'+ repository.repository" target="_blank" @click.stop>{{ repository.repository }}</a></td>
           <td>
-            <span class="has-tooltip-arrow" :class="{'has-tooltip': repository.secret}" :data-tooltip="repository.secret ? ('Github Webhook:\n' + backendUrl + '/webhook/github/' + repository.secret) : null" @click.stop="repository.secret ? copyToClipboard(backendUrl + '/webhook/github/' + repository.secret) : $router.push(`/repositories/${repository.id}`)">on commit to {{ repository.branches }} branch(es)</span>
+            <span
+              class="has-tooltip-arrow"
+              :class="{'has-tooltip': repository.secret}"
+              :data-tooltip="repository.secret ?
+                ('Github Webhook:\n' + backendUrl + '/webhook/github/' + repository.secret) : null"
+              @click.stop="repository.secret ?
+                copyToClipboard(backendUrl + '/webhook/github/' + repository.secret)
+                : $router.push(`/repositories/${repository.id}`)"
+            >on commit to {{ repository.branches }} branch(es)</span>
           </td>
           <td>
             <div
@@ -30,7 +46,11 @@
                 @click.stop=""
               >
                 <nuxt-link :to="`/jobs/${commit.id}`">
-                  <commit-status :status="commit.status" class="has-tooltip-arrow" :data-tooltip="commit.commit.substring(0,7)" />
+                  <commit-status
+                    :status="commit.status"
+                    class="has-tooltip-arrow"
+                    :data-tooltip="commit.commit.substring(0,7)"
+                  />
                 </nuxt-link>
               </div>
             </div>

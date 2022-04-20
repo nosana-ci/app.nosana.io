@@ -35,7 +35,11 @@
             <div v-if="!user || !user.name" class="column is-8">
               <div class="columns">
                 <div class="column is-one-third">
-                  <a class="box is-secondary step" :class="{'has-background-white': loggedIn}" @click="$sol.loginModal = true">
+                  <a
+                    class="box is-secondary step"
+                    :class="{'has-background-white': loggedIn}"
+                    @click="$sol.loginModal = true"
+                  >
                     <div class="is-flex is-justify-content-space-between">
                       <div>1</div>
                       <div v-if="loggedIn">
@@ -52,7 +56,13 @@
                   </a>
                 </div>
                 <div class="column is-one-third">
-                  <nuxt-link class="box is-secondary step" :class="{'has-background-white': user && repositories && repositories.filter(r => r.user_id === user.user_id).length, 'disabled': !loggedIn}" to="/repositories/new">
+                  <nuxt-link
+                    class="box is-secondary step"
+                    :class="{'has-background-white': user && repositories
+                               && repositories.filter(r => r.user_id === user.user_id).length,
+                             'disabled': !loggedIn}"
+                    to="/repositories/new"
+                  >
                     <div class="is-flex is-justify-content-space-between">
                       <div>2</div>
                       <div v-if="user && repositories && repositories.filter(r => r.user_id === user.user_id).length">
@@ -70,7 +80,14 @@
                   </nuxt-link>
                 </div>
                 <div class="column is-one-third">
-                  <a class="box is-secondary step" :class="{'has-background-white': user && repositories && repositories.filter(r => r.user_id === user.user_id).length, 'disabled': !(loggedIn && user && repositories && repositories.filter(r => r.user_id === user.user_id).length)}" @click.stop="editUser = true">
+                  <a
+                    class="box is-secondary step"
+                    :class="{'has-background-white': user && repositories
+                               && repositories.filter(r => r.user_id === user.user_id).length,
+                             'disabled': !(loggedIn && user && repositories
+                               && repositories.filter(r => r.user_id === user.user_id).length)}"
+                    @click.stop="editUser = true"
+                  >
                     <div class="is-flex is-justify-content-space-between">
                       <div>3</div>
                       <div v-if="user && user.isApproved">
@@ -84,7 +101,11 @@
                       </div>
                     </div>
                     <div class="has-text-centered my-2">
-                      <img v-if="loggedIn && user && repositories && repositories.filter(r => r.user_id === user.user_id).length" src="~assets/img/icons/project.svg">
+                      <img
+                        v-if="loggedIn && user && repositories &&
+                          repositories.filter(r => r.user_id === user.user_id).length"
+                        src="~assets/img/icons/project.svg"
+                      >
                       <img v-else src="~assets/img/icons/project_grey.svg">
                       <p>Request Funds</p>
                     </div>
@@ -97,7 +118,10 @@
                 <div class="box">
                   <small>TestNet Balance</small>
                   <div class="has-text-weight-semibold">
-                    <span v-if="!balance && balance !== 0">...</span><span v-else>{{ Math.trunc(balance*10000)/10000 }}</span> <span class="has-text-accent">NOS</span>
+                    <span
+                      v-if="!balance && balance !== 0"
+                    >...</span>
+                    <span v-else>{{ Math.trunc(balance*10000)/10000 }}</span> <span class="has-text-accent">NOS</span>
                   </div>
                 </div>
               </div>

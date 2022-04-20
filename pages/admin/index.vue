@@ -106,28 +106,28 @@
           </thead>
           <tbody>
             <tr
-              v-for="user in users"
-              :key="user.id"
+              v-for="u in users"
+              :key="u.id"
               class="is-size-7"
-              @click="getUser(user.user_id)"
+              @click="getUser(u.user_id)"
             >
-              <td><img v-if="user.image" style="height: 20px; max-width: fit-content;" :src="user.image"></td>
+              <td><img v-if="u.image" style="height: 20px; max-width: fit-content;" :src="u.image"></td>
               <td>
-                <span class="blockchain-address">{{ user.address }}</span>
+                <span class="blockchain-address">{{ u.address }}</span>
               </td>
-              <td>{{ user.repositories }}</td>
-              <td>{{ user.commits }}</td>
-              <td>{{ user.name }}</td>
-              <td>{{ user.email }}</td>
+              <td>{{ u.repositories }}</td>
+              <td>{{ u.commits }}</td>
+              <td>{{ u.name }}</td>
+              <td>{{ u.email }}</td>
               <td>
                 <div class="description">
-                  {{ user.description }}
+                  {{ u.description }}
                 </div>
               </td>
-              <td>{{ user.discord }}</td>
-              <td>{{ user.created_at }}</td>
+              <td>{{ u.discord }}</td>
+              <td>{{ u.created_at }}</td>
               <td>
-                {{ user.status }}
+                {{ u.status }}
               </td>
             </tr>
           </tbody>

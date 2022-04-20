@@ -14,6 +14,7 @@
           <button class="delete" @click="error = null; solError = null" />
           {{ error }}
           <h2 class="subtitle">{{ solError.name }}</h2>
+          <!-- eslint-disable-next-line -->
           <p v-html="solError.message" />
         </div>
         <header class="modal-card-head">
