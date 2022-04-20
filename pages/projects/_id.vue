@@ -39,37 +39,37 @@ export default {
     return {
       repositories: null,
       project: null
-    }
+    };
   },
   created () {
-    this.getRepositories()
-    this.getProject()
+    this.getRepositories();
+    this.getProject();
   },
   methods: {
     async getRepositories () {
       try {
-        this.repositories = await this.$axios.$get(`/user/${this.$route.params.id}/repositories`)
+        this.repositories = await this.$axios.$get(`/user/${this.$route.params.id}/repositories`);
       } catch (error) {
         this.$modal.show({
           color: 'danger',
           text: error,
           title: 'Error'
-        })
+        });
       }
     },
     async getProject () {
       try {
-        this.project = await this.$axios.$get(`/user/${this.$route.params.id}`)
+        this.project = await this.$axios.$get(`/user/${this.$route.params.id}`);
       } catch (error) {
         this.$modal.show({
           color: 'danger',
           text: error,
           title: 'Error'
-        })
+        });
       }
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>

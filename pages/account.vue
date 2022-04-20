@@ -35,7 +35,11 @@
             <div v-if="!user || !user.name" class="column is-8">
               <div class="columns">
                 <div class="column is-one-third">
-                  <a class="box is-secondary step" :class="{'has-background-white': loggedIn}" @click="$sol.loginModal = true">
+                  <a
+                    class="box is-secondary step"
+                    :class="{'has-background-white': loggedIn}"
+                    @click="$sol.loginModal = true"
+                  >
                     <div class="is-flex is-justify-content-space-between">
                       <div>1</div>
                       <div v-if="loggedIn">
@@ -52,7 +56,13 @@
                   </a>
                 </div>
                 <div class="column is-one-third">
-                  <nuxt-link class="box is-secondary step" :class="{'has-background-white': user && repositories && repositories.filter(r => r.user_id === user.user_id).length, 'disabled': !loggedIn}" to="/repositories/new">
+                  <nuxt-link
+                    class="box is-secondary step"
+                    :class="{'has-background-white': user && repositories
+                               && repositories.filter(r => r.user_id === user.user_id).length,
+                             'disabled': !loggedIn}"
+                    to="/repositories/new"
+                  >
                     <div class="is-flex is-justify-content-space-between">
                       <div>2</div>
                       <div v-if="user && repositories && repositories.filter(r => r.user_id === user.user_id).length">
@@ -70,7 +80,14 @@
                   </nuxt-link>
                 </div>
                 <div class="column is-one-third">
-                  <a class="box is-secondary step" :class="{'has-background-white': user && repositories && repositories.filter(r => r.user_id === user.user_id).length, 'disabled': !(loggedIn && user && repositories && repositories.filter(r => r.user_id === user.user_id).length)}" @click.stop="editUser = true">
+                  <a
+                    class="box is-secondary step"
+                    :class="{'has-background-white': user && repositories
+                               && repositories.filter(r => r.user_id === user.user_id).length,
+                             'disabled': !(loggedIn && user && repositories
+                               && repositories.filter(r => r.user_id === user.user_id).length)}"
+                    @click.stop="editUser = true"
+                  >
                     <div class="is-flex is-justify-content-space-between">
                       <div>3</div>
                       <div v-if="user && user.isApproved">
@@ -84,7 +101,11 @@
                       </div>
                     </div>
                     <div class="has-text-centered my-2">
-                      <img v-if="loggedIn && user && repositories && repositories.filter(r => r.user_id === user.user_id).length" src="~assets/img/icons/project.svg">
+                      <img
+                        v-if="loggedIn && user && repositories &&
+                          repositories.filter(r => r.user_id === user.user_id).length"
+                        src="~assets/img/icons/project.svg"
+                      >
                       <img v-else src="~assets/img/icons/project_grey.svg">
                       <p>Request Funds</p>
                     </div>
@@ -97,7 +118,10 @@
                 <div class="box">
                   <small>TestNet Balance</small>
                   <div class="has-text-weight-semibold">
-                    <span v-if="!balance && balance !== 0">...</span><span v-else>{{ Math.trunc(balance*10000)/10000 }}</span> <span class="has-text-accent">NOS</span>
+                    <span
+                      v-if="!balance && balance !== 0"
+                    >...</span>
+                    <span v-else>{{ Math.trunc(balance*10000)/10000 }}</span> <span class="has-text-accent">NOS</span>
                   </div>
                 </div>
               </div>
@@ -181,7 +205,7 @@
 </template>
 
 <script>
-import RepositoryList from '../components/RepositoryList.vue'
+import RepositoryList from '../components/RepositoryList.vue';
 
 export default {
   components: { RepositoryList },
@@ -198,87 +222,87 @@ export default {
       commits: null,
       balance: null,
       usedBalance: null
-    }
+    };
   },
   computed: {
     loggedIn () {
-      return (this.$sol) ? this.$sol.token : null
+      return (this.$sol) ? this.$sol.token : null;
     },
     publicKey () {
-      return (this.$sol) ? this.$sol.publicKey : null
+      return (this.$sol) ? this.$sol.publicKey : null;
     },
     reward () {
-      let reward = 0
+      let reward = 0;
       if (this.balance > 0) {
-        reward += 500
+        reward += 500;
       }
 
-      return Math.min(reward + this.usedBalance, 10000)
+      return Math.min(reward + this.usedBalance, 10000);
     }
   },
   watch: {
     '$sol.token' (token) {
       if (token) {
-        this.getUser()
-        this.getUserRepositories()
-        this.getUserJobPrices()
+        this.getUser();
+        this.getUserRepositories();
+        this.getUserJobPrices();
       }
     }
   },
   created () {
     if (this.$sol && this.$sol.token) {
-      this.getUser()
-      this.getUserRepositories()
-      this.getUserJobPrices()
+      this.getUser();
+      this.getUserRepositories();
+      this.getUserJobPrices();
     }
     if (this.$route.query.edit) {
-      this.editUser = true
+      this.editUser = true;
     }
   },
   mounted () {
-    if (!this.publicKey) { this.$sol.loginModal = true }
+    if (!this.publicKey) { this.$sol.loginModal = true; }
   },
   methods: {
     async getUser () {
       try {
-        const user = await this.$axios.$get('/user')
-        this.name = user.name
-        this.description = user.description
-        this.discord = user.discord
-        this.email = user.email
-        this.image = user.image
-        this.user = user
-        this.balance = (await this.$sol.getNosBalance(this.user.generated_address)).uiAmount
+        const user = await this.$axios.$get('/user');
+        this.name = user.name;
+        this.description = user.description;
+        this.discord = user.discord;
+        this.email = user.email;
+        this.image = user.image;
+        this.user = user;
+        this.balance = (await this.$sol.getNosBalance(this.user.generated_address)).uiAmount;
       } catch (error) {
         this.$modal.show({
           color: 'danger',
           text: error,
           title: 'Error'
-        })
+        });
       }
     },
     async getUserJobPrices () {
       try {
-        const totalCosts = await this.$axios.$get('/user/jobs/price')
-        this.usedBalance = totalCosts / 1e6
+        const totalCosts = await this.$axios.$get('/user/jobs/price');
+        this.usedBalance = totalCosts / 1e6;
       } catch (error) {
         this.$modal.show({
           color: 'danger',
           text: error,
           title: 'Error'
-        })
+        });
       }
     },
     async getUserRepositories () {
       try {
-        const repositories = await this.$axios.$get('/user/repositories')
-        this.repositories = repositories
+        const repositories = await this.$axios.$get('/user/repositories');
+        this.repositories = repositories;
       } catch (error) {
         this.$modal.show({
           color: 'danger',
           text: error,
           title: 'Error'
-        })
+        });
       }
     },
     async updateUser () {
@@ -289,20 +313,20 @@ export default {
           description: this.description,
           discord: this.discord,
           email: this.email
-        })
-        this.user = user
-        this.editUser = false
+        });
+        this.user = user;
+        this.editUser = false;
       } catch (error) {
         this.$modal.show({
           color: 'danger',
           text: error,
           title: 'Error'
-        })
+        });
       }
     }
   }
 
-}
+};
 </script>
 
 <style lang="scss" scoped>

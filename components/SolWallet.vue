@@ -14,6 +14,7 @@
           <button class="delete" @click="error = null; solError = null" />
           {{ error }}
           <h2 class="subtitle">{{ solError.name }}</h2>
+          <!-- eslint-disable-next-line -->
           <p v-html="solError.message" />
         </div>
         <header class="modal-card-head">
@@ -108,7 +109,7 @@
 </template>
 
 <script>
-import { PublicKey } from '@solana/web3.js'
+import { PublicKey } from '@solana/web3.js';
 
 export default {
   data () {
@@ -116,70 +117,70 @@ export default {
       loading: false,
       error: null,
       isDisabled: false
-    }
+    };
   },
   computed: {
     publicKey () {
-      return this.$sol ? this.$sol.publicKey : null
+      return this.$sol ? this.$sol.publicKey : null;
     },
     loggedIn () {
-      return this.$sol && this.$sol.publicKey
+      return this.$sol && this.$sol.publicKey;
     },
     solError () {
-      return this.$sol && this.$sol.error
+      return this.$sol && this.$sol.error;
     }
   },
 
   methods: {
     async login () {
-      this.isDisabled = true
+      this.isDisabled = true;
       try {
-        const timestamp = Math.floor(+new Date() / 1000)
-        const signature = await this.$sol.sign(timestamp)
+        const timestamp = Math.floor(+new Date() / 1000);
+        const signature = await this.$sol.sign(timestamp);
         const response = await this.$axios.post('/login', {
           address: new PublicKey(this.publicKey).toBuffer(),
           signature,
           timestamp,
           referrer: this.$route.query.ref
-        })
-        this.$sol.token = response.data.token
-        this.$axios.setToken(response.data.token, 'Bearer')
-        this.$sol.loginModal = false
-        this.error = null
+        });
+        this.$sol.token = response.data.token;
+        this.$axios.setToken(response.data.token, 'Bearer');
+        this.$sol.loginModal = false;
+        this.error = null;
         if (this.$route.query.redirect) {
-          this.$router.push(this.$route.query.redirect)
+          this.$router.push(this.$route.query.redirect);
         }
       } catch (error) {
-        console.error('ERR', error)
+        console.error('ERR', error);
         if (error.response && error.response.data) {
           if (error.response.data.error) {
-            this.error = error.response.data.error
+            this.error = error.response.data.error;
           } else {
-            this.error = error.response.data
+            this.error = error.response.data;
           }
         } else if (error.message) {
-          this.error = error.message
+          this.error = error.message;
         } else {
-          this.error = error
+          this.error = error;
         }
       }
-      this.isDisabled = false
+      this.isDisabled = false;
     },
     async selectWallet (adapter) {
       if (adapter.readyState === 'NotDetected') {
-        window.open(adapter.url)
+        window.open(adapter.url);
       } else {
         try {
-          this.error = null
-          this.$sol.error = null
-          await this.$sol.connect(adapter)
+          this.error = null;
+          this.$sol.error = null;
+          await this.$sol.connect(adapter);
         } catch (error) {
-          this.error = error
+          this.error = error;
         }
       }
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>

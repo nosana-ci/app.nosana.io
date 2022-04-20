@@ -1,25 +1,25 @@
 <template>
   <div id="app">
-    <modal />
+    <modal-popup />
     <client-only>
       <sol-wallet />
     </client-only>
     <nav-bar />
     <Nuxt />
-    <foot />
+    <nos-foot />
   </div>
 </template>
 
 <script>
-import NavBar from '@/components/NavBar'
-import SolWallet from '@/components/SolWallet'
+import NavBar from '@/components/NavBar';
+import SolWallet from '@/components/SolWallet';
 
 export default {
   components: {
     NavBar,
     SolWallet
   }
-}
+};
 </script>
 
 <style lang="scss">

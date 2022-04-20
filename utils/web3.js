@@ -1,13 +1,13 @@
 import {
   Transaction,
   SystemProgram
-} from '@solana/web3.js'
+} from '@solana/web3.js';
 
-export const commitment = 'confirmed'
+export const commitment = 'confirmed';
 
 export async function sendTransaction (conn, wallet, { destination, lamports }) {
-  console.log({ destination, lamports })
-  const transaction = new Transaction()
+  console.log({ destination, lamports });
+  const transaction = new Transaction();
 
   transaction.add(
     SystemProgram.transfer({
@@ -15,28 +15,28 @@ export async function sendTransaction (conn, wallet, { destination, lamports }) 
       toPubkey: destination,
       lamports
     })
-  )
+  );
 
-  transaction.feePayer = wallet.publicKey
+  transaction.feePayer = wallet.publicKey;
 
-  transaction.recentBlockhash = (await conn.getRecentBlockhash()).blockhash
+  transaction.recentBlockhash = (await conn.getRecentBlockhash()).blockhash;
 
-  console.log(transaction)
+  console.log(transaction);
 
   try {
-    const signed = await wallet.signTransaction(transaction)
-    console.log('Got signature, submitting transaction')
-    const signature = await conn.sendRawTransaction(signed.serialize())
+    const signed = await wallet.signTransaction(transaction);
+    console.log('Got signature, submitting transaction');
+    const signature = await conn.sendRawTransaction(signed.serialize());
     console.log(
       'Submitted transaction ' + signature + ', awaiting confirmation'
-    )
-    const txid = await conn.confirmTransaction(signature)
-    console.log('Transaction ' + signature + ' confirmed')
+    );
+    const txid = await conn.confirmTransaction(signature);
+    console.log('Transaction ' + signature + ' confirmed');
 
-    return txid
+    return txid;
   } catch (err) {
-    console.warn(err)
-    console.log('Error: ' + JSON.stringify(err))
+    console.warn(err);
+    console.log('Error: ' + JSON.stringify(err));
   }
-  return false
+  return false;
 }
