@@ -1,6 +1,6 @@
 // we need our modal component
 import Vue2 from 'vue';
-import ModalComponent from '@/components/Modal.vue';
+import ModalComponent from '@/components/ModalPopup.vue';
 import events from '@/plugins/events.js';
 
 const Modal = {
@@ -8,7 +8,7 @@ const Modal = {
   // this method will run after Vue.use(<your-plugin-here>) is executed
   install (Vue) {
     // making our modal component global
-    Vue.component('Modal', ModalComponent);
+    Vue.component('ModalPopup', ModalComponent);
 
     // exposing global $modal object with method show()
     // method show() takes object params as argument

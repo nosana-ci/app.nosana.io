@@ -1,12 +1,12 @@
 <template>
   <div id="app">
-    <modal />
+    <modal-popup />
     <client-only>
       <sol-wallet />
     </client-only>
     <nav-bar />
     <Nuxt />
-    <foot />
+    <nos-foot />
   </div>
 </template>
 

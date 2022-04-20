@@ -119,7 +119,8 @@ export default (context, inject) => {
             .split(/(?=[A-Z])/g)
             .join(' ');
           const message =
-            `Please install and initialize ${connectingAdapter.name} wallet extension first, <a href="${connectingAdapter.url}" target="_blank">click here to install extension</a>`;
+            `Please install and initialize ${connectingAdapter.name} wallet extension first,
+            <a href="${connectingAdapter.url}" target="_blank">click here to install extension</a>`;
           this.error = { name, message };
 
           return;
