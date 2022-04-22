@@ -16,11 +16,12 @@
               :href="'https://github.com/' + repository.repository"
               target="_blank"
               @click.stop
-              >https://github.com/{{ repository.repository }}</a
-            >
+            >https://github.com/{{ repository.repository }}</a>
           </p>
         </div>
-        <div v-else>Loading..</div>
+        <div v-else>
+          Loading..
+        </div>
       </div>
 
       <div class="table-container">
@@ -67,8 +68,12 @@
               v-if="!commits || !commits.length"
               class="has-text-centered has-text-weight-bold"
             >
-              <td v-if="!commits" colspan="5">Loading commits..</td>
-              <td v-else colspan="5">No commits</td>
+              <td v-if="!commits" colspan="5">
+                Loading commits..
+              </td>
+              <td v-else colspan="5">
+                No commits
+              </td>
             </tr>
           </tbody>
         </table>
@@ -79,14 +84,14 @@
 
 <script>
 export default {
-  data() {
+  data () {
     return {
       commits: null,
       repository: null,
-      project: null,
+      project: null
     };
   },
-  created() {
+  created () {
     this.getCommits();
     this.getRepository();
     // setInterval(() => {
@@ -95,7 +100,7 @@ export default {
     // }, 20000)
   },
   methods: {
-    async getCommits() {
+    async getCommits () {
       try {
         const commits = await this.$axios.$get(
           `/repositories/${this.$route.params.id}/commits`
@@ -103,26 +108,26 @@ export default {
         this.commits = commits;
       } catch (error) {
         this.$modal.show({
-          color: "danger",
+          color: 'danger',
           text: error,
-          title: "Error",
+          title: 'Error'
         });
       }
     },
-    async getRepository() {
+    async getRepository () {
       try {
         this.repository = await this.$axios.$get(
           `/repositories/${this.$route.params.id}`
         );
       } catch (error) {
         this.$modal.show({
-          color: "danger",
+          color: 'danger',
           text: error,
-          title: "Error",
+          title: 'Error'
         });
       }
-    },
-  },
+    }
+  }
 };
 </script>
 
