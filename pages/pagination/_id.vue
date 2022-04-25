@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import CommitList from '../components/Pagination/CommitList.vue';
+import CommitList from '../../components/Pagination/CommitList.vue';
 export default {
   components: { CommitList },
   data () {

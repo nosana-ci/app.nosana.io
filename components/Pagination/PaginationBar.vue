@@ -9,62 +9,81 @@
         class="pagination-previous"
         :class="{'disabled': isPreviousButtonDisabled}"
         :disabled="isPreviousButtonDisabled"
+        nuxt-link-go-back
         @click="previousPage"
-      >Previous</a>
+      >
+        Previous
+      </a>
       <a
         class="pagination-next"
         :class="{'disabled': isNextButtonDisabled}"
         :disabled="isNextButtonDisabled"
         @click="nextPage"
-      >Next page</a>
+      >
+        Next page
+      </a>
       <ul class="pagination-list">
-        <li v-for="(page, index) in pages" :key="page">
+        <li v-for="(page, index) in totalPages" :key="index">
           <a
             class="pagination-link"
-            :class="{'is-current': currentPage === index + 1}"
+            :class="{'is-current': currentPage === index }"
             aria-label="Goto page 1"
             arie-current="page"
-          >{{ index + 1 }}</a>
+            @click="goToPage(index)"
+          >
+            {{ index }}
+          </a>
         </li>
         <!-- <li><span class="pagination-ellipsis">&hellip;</span></li> -->
       </ul>
     </nav>
     <p>CurrentPage: {{ currentPage }}</p>
-    <p>PageCount: {{ pageCount }}</p>
   </div>
 </template>
 
 <script>
 export default {
   props: {
-    pages: {
-      type: Object,
+    commits: {
+      type: Array,
       default () {
-        return {};
+        return [];
       }
+    },
+    commitsPerPage: {
+      type: Number,
+      default: 3
     }
   },
   data () {
     return {
-      currentPage: 1,
-      pageCount: 5
+      currentPage: 0
     };
   },
   computed: {
     isPreviousButtonDisabled () {
-      return this.currentPage === 1;
+      return this.currentPage === 0;
     },
     isNextButtonDisabled () {
-      return this.currentPage === this.pageCount;
+      return this.currentPage >= this.totalPages - 1;
+    },
+    totalPages () {
+      return Math.ceil(this.commits.length / this.commitsPerPage);
     }
   },
   watch: {},
   methods: {
     nextPage () {
       this.currentPage += 1;
+      this.$emit('goToPpage', this.currentPage);
     },
     previousPage () {
       this.currentPage -= 1;
+      this.$emit('goToPpage', this.currentPage);
+    },
+    goToPage (index) {
+      this.currentPage = index;
+      this.$emit('goToPpage', index, this.commitsPerPage);
     }
   }
 
