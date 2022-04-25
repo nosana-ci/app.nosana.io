@@ -37,7 +37,7 @@
           </thead>
           <tbody>
             <tr
-              v-for="commit in commits"
+              v-for="commit in displayedCommits"
               :key="commit.id"
               class="is-clickable"
               @click="$router.push(`/jobs/${commit.id}`)"
@@ -79,9 +79,8 @@
         </table>
       </div>
       <pagination-helper
-        :total-pages="11"
-        :total="113"
-        :per-page="10"
+        :total-pages="totalPages"
+        :per-page="commitsPerPage"
         :current-page="currentPage"
         @pagechanged="onPageChange"
       />
@@ -96,10 +95,19 @@ export default {
   data () {
     return {
       currentPage: 1,
-      commits: null,
+      commitsPerPage: 10,
+      commits: [],
       repository: null,
       project: null
     };
+  },
+  computed: {
+    totalPages () {
+      return Math.ceil(this.commits.length / this.commitsPerPage);
+    },
+    displayedCommits () {
+      return this.paginate(this.commits);
+    }
   },
   created () {
     this.getCommits();
@@ -110,8 +118,14 @@ export default {
     // }, 20000)
   },
   methods: {
+    paginate (commits) {
+      const page = this.currentPage;
+      const perPage = this.commitsPerPage;
+      const from = (page * perPage) - perPage;
+      const to = (page * perPage);
+      return commits.slice(from, to);
+    },
     onPageChange (page) {
-      console.log(page);
       this.currentPage = page;
     },
     async getCommits () {

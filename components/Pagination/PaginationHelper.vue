@@ -1,70 +1,68 @@
 <template>
-  <section class="section">
-    <div class="container">
-      <nav class="pagination is-centered" role="navigation" aria-label="pagination">
-        <a
-          class="pagination-previous"
-          type="button"
-          :disabled="isInFirstPage"
-          aria-label="Go to previous page"
-          :class="{'disabled': isInFirstPage}"
-          @click="onClickFirstPage"
-        >
-          First
-        </a>
-        <a
-          class="pagination-next"
-          type="button"
-          :disabled="isInLastPage"
-          aria-label="Go to next page"
-          :class="{'disabled': isInLastPage}"
-          @click="onClickLastPage"
-        >
-          Last
-        </a>
-        <ul class="pagination-list">
-          <li>
-            <a
-              class="pagination-link"
-              :class="{'disabled': isInFirstPage}"
-              type="button"
-              :disabled="isInFirstPage"
-              aria-label="Go to first page"
-              @click="onClickPreviousPage"
-            >
-              Previous
-            </a>
-          </li>
+  <div class="container">
+    <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+      <a
+        class="pagination-previous"
+        type="button"
+        :disabled="isInFirstPage"
+        aria-label="Go to previous page"
+        :class="{'disabled': isInFirstPage}"
+        @click="onClickFirstPage"
+      >
+        First
+      </a>
+      <a
+        class="pagination-next"
+        type="button"
+        :disabled="isInLastPage"
+        aria-label="Go to next page"
+        :class="{'disabled': isInLastPage}"
+        @click="onClickLastPage"
+      >
+        Last
+      </a>
+      <ul class="pagination-list">
+        <li>
+          <a
+            class="pagination-link"
+            :class="{'disabled': isInFirstPage}"
+            type="button"
+            :disabled="isInFirstPage"
+            aria-label="Go to first page"
+            @click="onClickPreviousPage"
+          >
+            Previous
+          </a>
+        </li>
 
-          <li v-for="(page, index) in pages" :key="index">
-            <a
-              type="button"
-              :disabled="page.isDisabled"
-              class="pagination-link"
-              :class="{ 'is-current': isPageActive(page.name) }"
-              :aria-label="`Go to page number ${page.name}`"
-              @click="onClickPage(page.name)"
-            >
-              {{ page.name }}
-            </a>
-          </li>
+        <li v-for="(page, index) in pages" :key="index">
+          <a
+            type="button"
+            :disabled="page.isDisabled"
+            class="pagination-link"
+            :class="{ 'is-current': isPageActive(page.name) }"
+            :aria-label="`Go to page number ${page.name}`"
+            @click="onClickPage(page.name)"
+          >
+            {{ page.name }}
+          </a>
+        </li>
 
-          <li>
-            <a
-              class="pagination-link"
-              type="button"
-              :disabled="isInLastPage"
-              aria-label="Go to last page"
-              :class="{'disabled': isInLastPage}"
-              @click="onClickNextPage"
-            >
-              Next
-            </a>
-          </li>
-        </ul>
-      </nav>
-    </div>
-  </section>
+        <li>
+          <a
+            class="pagination-link"
+            type="button"
+            :disabled="isInLastPage"
+            aria-label="Go to last page"
+            :class="{'disabled': isInLastPage}"
+            @click="onClickNextPage"
+          >
+            Next
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
 </template>
 
 <script>
