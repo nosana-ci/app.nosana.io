@@ -83,7 +83,7 @@ export default {
     },
     goToPage (index) {
       this.currentPage = index;
-      this.$emit('goToPpage', index, this.commitsPerPage);
+      this.$emit('goToPpage', index, this.totalPages);
     }
   }
 

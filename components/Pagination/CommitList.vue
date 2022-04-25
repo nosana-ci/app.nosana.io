@@ -36,18 +36,19 @@ export default {
     this.commitsShown = this.commits.slice(0, this.commitsPerPage);
   },
   methods: {
-    onClicked (value) {
+    onClicked (value, totalPages) {
       if (value === 0) {
-        this.commitsShown = this.commits.slice(value, 3);
+        this.commitsShown = this.commits.slice(value, this.commitsPerPage);
+        console.log(totalPages);
       }
       if (value === 1) {
-        this.commitsShown = this.commits.slice(3, 6);
+        this.commitsShown = this.commits.slice(3, this.commitsPerPage * 2);
       }
       if (value === 2) {
-        this.commitsShown = this.commits.slice(6, 9);
+        this.commitsShown = this.commits.slice(6, this.commitsPerPage * 3);
       }
       if (value === 3) {
-        this.commitsShown = this.commits.slice(9, 12);
+        this.commitsShown = this.commits.slice(9, this.commitsPerPage * 4);
       }
     }
   }
