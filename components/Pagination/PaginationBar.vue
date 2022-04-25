@@ -7,18 +7,17 @@
     >
       <a
         class="pagination-previous"
-        :class="{'disabled': isPreviousButtonDisabled}"
-        :disabled="isPreviousButtonDisabled"
-        nuxt-link-go-back
-        @click="previousPage"
+        :class="{'disabled': isInFirstPage}"
+        :disabled="isInFirstPage"
+        @click="onClickPreviousPage"
       >
         Previous
       </a>
       <a
         class="pagination-next"
-        :class="{'disabled': isNextButtonDisabled}"
-        :disabled="isNextButtonDisabled"
-        @click="nextPage"
+        :class="{'disabled': isInLastPage}"
+        :disabled="isInLastPage"
+        @click="onClickNextPage"
       >
         Next page
       </a>
@@ -26,10 +25,10 @@
         <li v-for="(page, index) in totalPages" :key="index">
           <a
             class="pagination-link"
-            :class="{'is-current': currentPage === index }"
+            :class="{'is-current': isPageActive(index) }"
             aria-label="Goto page 1"
             arie-current="page"
-            @click="goToPage(index)"
+            @click="onClickPage(index)"
           >
             {{ index }}
           </a>
@@ -44,49 +43,74 @@
 <script>
 export default {
   props: {
-    commits: {
-      type: Array,
-      default () {
-        return [];
-      }
-    },
-    commitsPerPage: {
+    maxVisibleButtons: {
       type: Number,
+      required: false,
       default: 3
+    },
+    totalPages: {
+      type: Number,
+      default: 0,
+      required: false
+    },
+    perPage: {
+      type: Number,
+      default: 5,
+      required: false
+    },
+    currentPage: {
+      type: Number,
+      default: 0,
+      required: false
     }
-  },
-  data () {
-    return {
-      currentPage: 0
-    };
   },
   computed: {
-    isPreviousButtonDisabled () {
+    isInFirstPage () {
       return this.currentPage === 0;
     },
-    isNextButtonDisabled () {
+    isInLastPage () {
       return this.currentPage >= this.totalPages - 1;
     },
-    totalPages () {
-      return Math.ceil(this.commits.length / this.commitsPerPage);
+    startPage () {
+      if (this.currentPage === 1) {
+        return 1;
+      }
+      if (this.currentPage === this.totalPages) {
+        return this.totalPages - this.maxVisibleButtons;
+      }
+      return this.currentPage - 1;
+    },
+    pages () {
+      const range = [];
+
+      for (
+        let i = this.startPage;
+        i < Math.min(this.startPage + this.maxVisibleButtons - 1, this.totalPages);
+        i++
+      ) {
+        range.push({
+          name: i,
+          isDisabled: i === this.currentPage
+        });
+      }
+
+      return range;
     }
   },
-  watch: {},
   methods: {
-    nextPage () {
-      this.currentPage += 1;
-      this.$emit('goToPpage', this.currentPage);
+    isPageActive (page) {
+      return this.currentPage === page;
     },
-    previousPage () {
-      this.currentPage -= 1;
-      this.$emit('goToPpage', this.currentPage);
+    onClickPreviousPage () {
+      this.$emit('pagechanged', this.currentPage - 1);
     },
-    goToPage (index) {
-      this.currentPage = index;
-      this.$emit('goToPpage', index, this.totalPages);
+    onClickPage (page) {
+      this.$emit('pagechanged', page);
+    },
+    onClickNextPage () {
+      this.$emit('pagechanged', this.currentPage + 1);
     }
   }
-
 };
 </script>
 
