@@ -78,14 +78,24 @@
           </tbody>
         </table>
       </div>
+      <pagination-helper
+        :total-pages="11"
+        :total="113"
+        :per-page="10"
+        :current-page="currentPage"
+        @pagechanged="onPageChange"
+      />
     </div>
   </section>
 </template>
 
 <script>
+import PaginationHelper from '../../components/Pagination/PaginationHelper.vue';
 export default {
+  components: { PaginationHelper },
   data () {
     return {
+      currentPage: 1,
       commits: null,
       repository: null,
       project: null
@@ -100,6 +110,10 @@ export default {
     // }, 20000)
   },
   methods: {
+    onPageChange (page) {
+      console.log(page);
+      this.currentPage = page;
+    },
     async getCommits () {
       try {
         const commits = await this.$axios.$get(

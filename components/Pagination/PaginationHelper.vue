@@ -7,6 +7,7 @@
           type="button"
           :disabled="isInFirstPage"
           aria-label="Go to previous page"
+          :class="{'disabled': isInFirstPage}"
           @click="onClickFirstPage"
         >
           First
@@ -16,6 +17,7 @@
           type="button"
           :disabled="isInLastPage"
           aria-label="Go to next page"
+          :class="{'disabled': isInLastPage}"
           @click="onClickLastPage"
         >
           Last
@@ -24,6 +26,7 @@
           <li>
             <a
               class="pagination-link"
+              :class="{'disabled': isInFirstPage}"
               type="button"
               :disabled="isInFirstPage"
               aria-label="Go to first page"
@@ -52,6 +55,7 @@
               type="button"
               :disabled="isInLastPage"
               aria-label="Go to last page"
+              :class="{'disabled': isInLastPage}"
               @click="onClickNextPage"
             >
               Next
@@ -75,10 +79,7 @@ export default {
       type: Number,
       required: true
     },
-    total: {
-      type: Number,
-      required: true
-    },
+
     perPage: {
       type: Number,
       required: true
