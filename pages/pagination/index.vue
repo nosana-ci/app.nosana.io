@@ -1,15 +1,13 @@
 <template>
-  <p>{{ title }}</p>
+  <div>
+    <commit-list />
+  </div>
 </template>
 
 <script>
+import CommitList from '../../components/Pagination/CommitList.vue';
 export default {
-  props: {
-    title: {
-      type: String,
-      default: 'Number one'
-    }
-  },
+  components: { CommitList },
   data () {
     return {};
   },
