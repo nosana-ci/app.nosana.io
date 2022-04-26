@@ -35,7 +35,7 @@
         </div>
       </nav>
       <div>
-        <a v-if="!githubToken" :class="{'is-loading': loading}" class="button is-accent" href="https://github.com/login/oauth/authorize?client_id=382b493152debb760a28&scope=write:repo_hook,read:org">
+        <a v-if="!githubToken" :class="{'is-loading': loading}" class="button is-accent" href="https://github.com/apps/nosana-platform/installations/new">
           Connect to Github
         </a>
         <div v-else-if="!loggedIn" class="navbar-item" exact-active-class="is-active" @click="mobileMenu = false">
@@ -93,9 +93,9 @@ export default {
   },
   created () {
     if (process.client) {
-      const code = this.$route.query.code;
-      if (code) {
-        this.githubOauth(code);
+      const installationId = this.$route.query.installation_id;
+      if (installationId) {
+        this.githubApp(installationId);
       } else {
         this.goToGithub();
       }
@@ -104,15 +104,13 @@ export default {
   methods: {
     goToGithub () {
       this.loading = true;
-      window.location.href = 'https://github.com/login/oauth/authorize?client_id=382b493152debb760a28&scope=write:repo_hook,read:org';
+      window.location.href = 'https://github.com/apps/nosana-platform/installations/new';
     },
-    async githubOauth (code) {
+    async githubApp (installationId) {
       try {
         this.loading = true;
-        const response = await this.$axios.$post('/github/callback', {
-          code
-        });
-        this.githubToken = response.access_token;
+        const response = await this.$axios.$get('/github/auth/' + installationId);
+        this.githubToken = response.token;
         githubApi = axios.create({
           baseURL: 'https://api.github.com',
           headers: { Authorization: 'token ' + this.githubToken }
@@ -132,24 +130,11 @@ export default {
     async getUserRepos () {
       try {
         if (githubApi) {
-          let page = 1;
-          let response;
           this.repositories = [];
-          do {
-            response = await githubApi.get(`/user/repos?type=public&per_page=100&page=${page}`);
-            this.repositories = this.repositories.concat(response.data);
-            page++;
-          } while (response && response.data.length >= 100);
-          // const response2 = await githubApi.get('/user/memberships/orgs')
-          // response2.data.forEach(async (org) => {
-          //   page = 1
-          //   do {
-          //     response = await githubApi.get(`/orgs/${org.organization.login}/repos?per_page=100&page=${page}`)
-          //     this.repositories = this.repositories.concat(response.data)
-          //     page++
-          //   } while (response && response.data.length >= 100)
-          // })
-          // this.repositories = response.data
+          const response = await githubApi.get('/installation/repositories');
+          if (response && response.data) {
+            this.repositories = this.repositories.concat(response.data.repositories);
+          }
         }
       } catch (error) {
         this.$modal.show({
