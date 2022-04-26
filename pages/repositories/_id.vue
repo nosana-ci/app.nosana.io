@@ -37,7 +37,7 @@
           </thead>
           <tbody>
             <tr
-              v-for="commit in displayedCommits"
+              v-for="commit in commits"
               :key="commit.id"
               class="is-clickable"
               @click="$router.push(`/jobs/${commit.id}`)"
@@ -79,10 +79,11 @@
         </table>
       </div>
       <pagination-helper
-        :total-pages="totalPages"
-        :per-page="commitsPerPage"
-        :current-page="currentPage"
-        @pagechanged="onPageChange"
+        v-if="commits.length > 0 && pagination"
+        :total-pages="Math.ceil(pagination.total / pagination.perPage)"
+        :per-page="pagination.perPage"
+        :current-page="parseInt(pagination.currentPage)"
+        @pagechanged="getCommits"
       />
     </div>
   </section>
@@ -94,20 +95,11 @@ export default {
   components: { PaginationHelper },
   data () {
     return {
-      currentPage: 1,
-      commitsPerPage: 10,
+      pagination: null,
       commits: [],
       repository: null,
       project: null
     };
-  },
-  computed: {
-    totalPages () {
-      return Math.ceil(this.commits.length / this.commitsPerPage);
-    },
-    displayedCommits () {
-      return this.paginate(this.commits);
-    }
   },
   created () {
     this.getCommits();
@@ -125,15 +117,13 @@ export default {
       const to = (page * perPage);
       return commits.slice(from, to);
     },
-    onPageChange (page) {
-      this.currentPage = page;
-    },
-    async getCommits () {
+    async getCommits (page = 1) {
       try {
         const commits = await this.$axios.$get(
-          `/repositories/${this.$route.params.id}/commits`
+          `/repositories/${this.$route.params.id}/commits?page=${page}`
         );
-        this.commits = commits;
+        this.commits = commits.data;
+        this.pagination = commits.pagination;
       } catch (error) {
         this.$modal.show({
           color: 'danger',
