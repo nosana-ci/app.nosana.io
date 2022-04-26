@@ -187,7 +187,7 @@ export default {
   },
   computed: {
     loggedIn () {
-      return this.$sol && this.$sol.token;
+      return this.$auth && this.$auth.loggedIn;
     },
     filteredRepositories () {
       let filteredRepositories = this.repositories;
@@ -203,14 +203,14 @@ export default {
     }
   },
   watch: {
-    '$sol.token' (token) {
-      if (token) {
+    '$auth.loggedIn' (loggedIn) {
+      if (loggedIn) {
         this.getUser();
       }
     }
   },
   created () {
-    if (this.$sol && this.$sol.token) {
+    if (this.loggedIn) {
       this.getUser();
     }
     this.getActiveRepositories();

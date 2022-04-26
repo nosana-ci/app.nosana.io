@@ -239,8 +239,8 @@ export default {
     };
   },
   watch: {
-    '$sol.token' (token) {
-      if (token) {
+    '$auth.loggedIn' (loggedIn) {
+      if (loggedIn) {
         this.getUser();
       }
     }
@@ -261,7 +261,7 @@ export default {
     if (!this.clockInterval) {
       this.clockInterval = setInterval(this.updateClock, 1000);
     }
-    if (this.$sol && this.$sol.token) {
+    if (this.$auth && this.$auth.loggedIn) {
       this.getUser();
     }
   },

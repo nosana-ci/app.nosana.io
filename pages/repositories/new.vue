@@ -78,7 +78,7 @@ export default {
   },
   computed: {
     loggedIn () {
-      return (this.$sol) ? this.$sol.token : null;
+      return this.$auth && this.$auth.loggedIn;
     },
     filteredRepositories () {
       let filteredRepositories = this.repositories;
