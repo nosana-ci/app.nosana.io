@@ -24,8 +24,8 @@
             v-for="repo in filteredRepositories"
             :key="repo.id"
             class="panel-block"
-            :class="{'is-active': repository === repo.full_name}"
-            @click.stop="repository=repo.full_name"
+            :class="{'is-active': repository === repo.full_name, 'is-disabled': repo.private}"
+            @click.stop="!repo.private ? repository=repo.full_name : notPublic()"
           >
             <span class="panel-icon">
               <i class="fas fa-code-branch" aria-hidden="true" />
@@ -38,19 +38,6 @@
         <a v-if="!githubToken" :class="{'is-loading': loading}" class="button is-accent" href="https://github.com/apps/nosana-platform/installations/new">
           Connect to Github
         </a>
-        <div v-else-if="!loggedIn" class="navbar-item" exact-active-class="is-active" @click="mobileMenu = false">
-          <a
-            :class="{'is-loading': loading}"
-            class="button is-accent has-text-weight-semibold"
-            exact-active-class="is-active"
-            to="/account"
-            @click="$sol.loginModal = true"
-          >
-            <div>
-              Connect Wallet
-            </div>
-          </a>
-        </div>
         <form v-else @submit.prevent="addRepository">
           <button type="submit" class="button is-accent mt-2" :disabled="!repository">
             Add {{ repository }}
@@ -67,6 +54,7 @@ import axios from 'axios';
 let githubApi;
 
 export default {
+  middleware: 'auth',
   data () {
     return {
       repository: null,
@@ -77,9 +65,6 @@ export default {
     };
   },
   computed: {
-    loggedIn () {
-      return this.$auth && this.$auth.loggedIn;
-    },
     filteredRepositories () {
       let filteredRepositories = this.repositories;
       // Search repos
@@ -97,11 +82,18 @@ export default {
       if (installationId) {
         this.githubApp(installationId);
       } else {
-        this.goToGithub();
+        // this.goToGithub();
       }
     }
   },
   methods: {
+    notPublic () {
+      this.$modal.show({
+        color: 'danger',
+        text: 'This repo is not public, make this repository public first',
+        title: 'Cannot select repo'
+      });
+    },
     goToGithub () {
       this.loading = true;
       window.location.href = 'https://github.com/apps/nosana-platform/installations/new';
@@ -109,6 +101,8 @@ export default {
     async githubApp (installationId) {
       try {
         this.loading = true;
+        const installation = await this.$axios.$post('/user/github/installations/', { installationId });
+        console.log('installation', installation);
         const response = await this.$axios.$get('/github/auth/' + installationId);
         this.githubToken = response.token;
         githubApi = axios.create({
@@ -130,11 +124,16 @@ export default {
     async getUserRepos () {
       try {
         if (githubApi) {
+          let page = 1;
+          let response;
           this.repositories = [];
-          const response = await githubApi.get('/installation/repositories');
-          if (response && response.data) {
-            this.repositories = this.repositories.concat(response.data.repositories);
-          }
+          do {
+            response = await githubApi.get(`/installation/repositories?type=public&per_page=100&page=${page}`);
+            if (response && response.data) {
+              this.repositories = this.repositories.concat(response.data.repositories);
+            }
+            page++;
+          } while (response && response.data && response.data.repositories.length >= 100);
         }
       } catch (error) {
         this.$modal.show({
