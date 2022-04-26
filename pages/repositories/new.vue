@@ -7,8 +7,36 @@
       <h1 class="title is-4">
         Add new <b class="has-text-accent">Repository</b>
       </h1>
-      <nav class="panel">
+      <div v-if="!githubToken && !installations">
+        Loading..
+      </div>
+      <div v-else-if="!githubToken">
+        <p
+          v-for="installation in installations"
+          :key="installation.id"
+          class="block"
+        >
+          <a
+            class="button is-outlined"
+            @click="githubApp(installation.installation_id)"
+          >
+            <span class="icon is-small">
+              <img :src="installation.meta.account.avatar_url">
+            </span>
+            <span>{{ installation.meta.account.login }}</span>
+          </a>
+        </p>
+        <p class="block">
+          <a :class="{'is-loading': loading}" class="button is-accent" href="https://github.com/apps/nosana-platform/installations/new">
+            <span>Connect another Github account</span>
+          </a>
+        </p>
+      </div>
+      <nav v-else class="panel">
         <p class="panel-heading">
+          <a :class="{'is-loading': loading}" class="button is-accent is-pulled-right is-small" href="https://github.com/apps/nosana-platform/installations/new">
+            <span>Add more Github repositories</span>
+          </a>
           Repositories
         </p>
         <div class="panel-block">
@@ -34,11 +62,8 @@
           </a>
         </div>
       </nav>
-      <div>
-        <a v-if="!githubToken" :class="{'is-loading': loading}" class="button is-accent" href="https://github.com/apps/nosana-platform/installations/new">
-          Connect to Github
-        </a>
-        <form v-else @submit.prevent="addRepository">
+      <div v-if="githubToken">
+        <form @submit.prevent="addRepository">
           <button type="submit" class="button is-accent mt-2" :disabled="!repository">
             Add {{ repository }}
           </button>
@@ -61,7 +86,8 @@ export default {
       githubToken: null,
       repositories: null,
       loading: false,
-      search: null
+      search: null,
+      installations: null
     };
   },
   computed: {
@@ -82,7 +108,7 @@ export default {
       if (installationId) {
         this.githubApp(installationId);
       } else {
-        // this.goToGithub();
+        this.getInstallations();
       }
     }
   },
@@ -94,6 +120,20 @@ export default {
         title: 'Cannot select repo'
       });
     },
+    async getInstallations () {
+      try {
+        this.installations = await this.$axios.$get('/user/github/installations/');
+        if (!this.installations.length) {
+          this.goToGithub();
+        }
+      } catch (error) {
+        this.$modal.show({
+          color: 'danger',
+          text: error,
+          title: 'Error'
+        });
+      }
+    },
     goToGithub () {
       this.loading = true;
       window.location.href = 'https://github.com/apps/nosana-platform/installations/new';
@@ -103,6 +143,9 @@ export default {
         this.loading = true;
         const installation = await this.$axios.$post('/user/github/installations/', { installationId });
         console.log('installation', installation);
+        const query = Object.assign({}, this.$route.query);
+        delete query.installation_id;
+        this.$router.replace({ query });
         const response = await this.$axios.$get('/github/auth/' + installationId);
         this.githubToken = response.token;
         githubApi = axios.create({
@@ -117,9 +160,6 @@ export default {
           title: 'Error'
         });
       }
-      const query = Object.assign({}, this.$route.query);
-      delete query.code;
-      this.$router.replace({ query });
     },
     async getUserRepos () {
       try {
