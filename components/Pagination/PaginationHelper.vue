@@ -6,7 +6,7 @@
         type="button"
         :disabled="isInFirstPage"
         aria-label="Go to previous page"
-        :class="{'disabled': isInFirstPage}"
+        :class="{'is-disabled': isInFirstPage}"
         @click="onClickFirstPage"
       >
         First
@@ -16,7 +16,7 @@
         type="button"
         :disabled="isInLastPage"
         aria-label="Go to next page"
-        :class="{'disabled': isInLastPage}"
+        :class="{'is-disabled': isInLastPage}"
         @click="onClickLastPage"
       >
         Last
@@ -25,7 +25,7 @@
         <li>
           <a
             class="pagination-link"
-            :class="{'disabled': isInFirstPage}"
+            :class="{'is-disabled': isInFirstPage}"
             type="button"
             :disabled="isInFirstPage"
             aria-label="Go to first page"
@@ -54,7 +54,7 @@
             type="button"
             :disabled="isInLastPage"
             aria-label="Go to last page"
-            :class="{'disabled': isInLastPage}"
+            :class="{'is-disabled': isInLastPage}"
             @click="onClickNextPage"
           >
             Next
@@ -145,7 +145,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.disabled{
+.is-disabled{
     pointer-events: none;
 }
 </style>>
