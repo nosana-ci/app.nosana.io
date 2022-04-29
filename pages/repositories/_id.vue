@@ -65,7 +65,7 @@
               </td>
             </tr>
             <tr
-              v-if="!commits || !commits.length"
+              v-if="!commits"
               class="has-text-centered has-text-weight-bold"
             >
               <td v-if="!commits" colspan="5">
@@ -79,7 +79,8 @@
         </table>
       </div>
       <pagination-helper
-        :total-pages="totalPages"
+        v-if="commits"
+        :commits="commits"
         :per-page="commitsPerPage"
         :current-page="currentPage"
         @pagechanged="onPageChange"
@@ -96,15 +97,12 @@ export default {
     return {
       currentPage: 1,
       commitsPerPage: 10,
-      commits: [],
+      commits: null,
       repository: null,
       project: null
     };
   },
   computed: {
-    totalPages () {
-      return Math.ceil(this.commits.length / this.commitsPerPage);
-    },
     displayedCommits () {
       return this.paginate(this.commits);
     }
@@ -123,7 +121,9 @@ export default {
       const perPage = this.commitsPerPage;
       const from = (page * perPage) - perPage;
       const to = (page * perPage);
-      return commits.slice(from, to);
+      if (this.commits) {
+        return commits.slice(from, to);
+      }
     },
     onPageChange (page) {
       this.currentPage = page;

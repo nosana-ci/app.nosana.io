@@ -68,16 +68,17 @@
 <script>
 export default {
   props: {
+    commits: {
+      type: Array,
+      default () {
+        return [];
+      }
+    },
     maxVisibleButtons: {
       type: Number,
       required: false,
       default: 3
     },
-    totalPages: {
-      type: Number,
-      required: true
-    },
-
     perPage: {
       type: Number,
       required: true
@@ -88,6 +89,9 @@ export default {
     }
   },
   computed: {
+    totalPages () {
+      return Math.ceil(this.commits.length / this.perPage);
+    },
     startPage () {
       if (this.currentPage === 1) {
         return 1;
@@ -103,6 +107,7 @@ export default {
       return Math.min(this.startPage + this.maxVisibleButtons - 1, this.totalPages);
     },
     pages () {
+      console.log(this.totalPages);
       const range = [];
 
       for (let i = this.startPage; i <= this.endPage; i += 1) {
