@@ -65,10 +65,10 @@
               </td>
             </tr>
             <tr
-              v-if="!commits"
+              v-if="!commits || !commits.length"
               class="has-text-centered has-text-weight-bold"
             >
-              <td v-if="!commits" colspan="5">
+              <td v-if="!commits || !commits.length" colspan="5">
                 Loading commits..
               </td>
               <td v-else colspan="5">
