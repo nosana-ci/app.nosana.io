@@ -10,7 +10,12 @@
             <h2 class="title mb-0 mr-2">
               {{ repository.repository }}
             </h2>
-            <nuxt-link v-if="repository && user && (repository.user_id === user.id || user.roles.includes('admin'))" class="button is-outlined is-accent is-small" style="margin-left: auto" :to="`/repositories/${id}/edit`">
+            <nuxt-link
+              v-if="repository && user && (repository.user_id === user.id || user.roles.includes('admin'))"
+              class="button is-outlined is-accent is-small"
+              style="margin-left: auto"
+              :to="`/repositories/${id}/edit`"
+            >
               edit
             </nuxt-link>
           </div>
@@ -18,13 +23,22 @@
             <a :href="'https://github.com/'+ repository.repository" target="_blank" @click.stop>https://github.com/{{ repository.repository }}</a>
           </p>
           <p>
-            <span class="has-tooltip-arrow" :class="{'has-tooltip': repository.secret}" :data-tooltip="repository.secret ? ('Github Webhook:\n' + backendUrl + '/webhook/github/' + repository.secret) : null" @click.stop="repository.secret ? copyToClipboard(backendUrl + '/webhook/github/' + repository.secret) : null">Trigger on commit to {{ repository.branches }} branch(es)</span>
+            <span
+              class="has-tooltip-arrow"
+              :class="{'has-tooltip': repository.secret}"
+              :data-tooltip="repository.secret ?
+                ('Github Webhook:\n' + backendUrl + '/webhook/github/' + repository.secret) : null"
+              @click.stop="repository.secret ?
+                copyToClipboard(backendUrl + '/webhook/github/' + repository.secret) : null"
+            >Trigger on commit to {{ repository.branches }} branch(es)</span>
           </p>
           <p>
             Pipeline price: <b class="has-text-accent">{{ repository.job_price/1e6 }} NOS</b>
           </p>
           <p class="is-size-7">
-            <a @click="showPipeline = !showPipeline"><span v-if="showPipeline">Hide</span><span v-else>Show</span> pipeline</a>
+            <a @click="showPipeline = !showPipeline">
+              <span v-if="showPipeline">Hide</span><span v-else>Show</span> pipeline
+            </a>
           </p>
           <div v-if="repository && showPipeline">
             <editor v-model="repository.pipeline" :readonly="true" />
@@ -97,20 +111,20 @@ export default {
       id: this.$route.params.id,
       user: null,
       backendUrl: process.env.NUXT_ENV_BACKEND_URL
-    }
+    };
   },
   watch: {
     '$sol.token' (token) {
       if (token) {
-        this.getUser()
+        this.getUser();
       }
     }
   },
   created () {
-    this.getCommits()
-    this.getRepository()
+    this.getCommits();
+    this.getRepository();
     if (this.$sol && this.$sol.token) {
-      this.getUser()
+      this.getUser();
     }
     // setInterval(() => {
     //   console.log('refreshing repositories..')
@@ -120,25 +134,25 @@ export default {
   methods: {
     copyToClipboard (content) {
       navigator.clipboard.writeText(content).then(() => {
-        alert('Webhook URL copied!')
-      })
+        alert('Webhook URL copied!');
+      });
     },
     async getUser () {
       try {
-        const user = await this.$axios.$get('/user')
-        this.user = user
+        const user = await this.$axios.$get('/user');
+        this.user = user;
       } catch (error) {
         this.$modal.show({
           color: 'danger',
           text: error,
           title: 'Error'
-        })
+        });
       }
     },
     async getCommits () {
       try {
-        const commits = await this.$axios.$get(`/repositories/${this.id}/commits`)
-        this.commits = commits
+        const commits = await this.$axios.$get(`/repositories/${this.id}/commits`);
+        this.commits = commits;
       } catch (error) {
         this.$modal.show({
           color: 'danger',
@@ -149,11 +163,7 @@ export default {
     },
     async getRepository () {
       try {
-<<<<<<< HEAD:pages/repositories/_id/index.vue
-        this.repository = await this.$axios.$get(`/repositories/${this.id}`)
-=======
-        this.repository = await this.$axios.$get(`/repositories/${this.$route.params.id}`);
->>>>>>> 76d07b4380a5fc294eecb49ff1cd9ce7cbd89626:pages/repositories/_id.vue
+        this.repository = await this.$axios.$get(`/repositories/${this.id}`);
       } catch (error) {
         this.$modal.show({
           color: 'danger',
