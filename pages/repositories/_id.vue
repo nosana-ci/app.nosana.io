@@ -79,7 +79,7 @@
         </table>
       </div>
       <pagination-helper
-        v-if="commits"
+        v-if="commits && commits.length"
         :commits="commits"
         :per-page="commitsPerPage"
         :current-page="currentPage"
