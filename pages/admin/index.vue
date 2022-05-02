@@ -106,28 +106,28 @@
           </thead>
           <tbody>
             <tr
-              v-for="user in users"
-              :key="user.id"
+              v-for="u in users"
+              :key="u.id"
               class="is-size-7"
-              @click="getUser(user.user_id)"
+              @click="getUser(u.user_id)"
             >
-              <td><img v-if="user.image" style="height: 20px; max-width: fit-content;" :src="user.image"></td>
+              <td><img v-if="u.image" style="height: 20px; max-width: fit-content;" :src="u.image"></td>
               <td>
-                <span class="blockchain-address">{{ user.address }}</span>
+                <span class="blockchain-address">{{ u.address }}</span>
               </td>
-              <td>{{ user.repositories }}</td>
-              <td>{{ user.commits }}</td>
-              <td>{{ user.name }}</td>
-              <td>{{ user.email }}</td>
+              <td>{{ u.repositories }}</td>
+              <td>{{ u.commits }}</td>
+              <td>{{ u.name }}</td>
+              <td>{{ u.email }}</td>
               <td>
                 <div class="description">
-                  {{ user.description }}
+                  {{ u.description }}
                 </div>
               </td>
-              <td>{{ user.discord }}</td>
-              <td>{{ user.created_at }}</td>
+              <td>{{ u.discord }}</td>
+              <td>{{ u.created_at }}</td>
               <td>
-                {{ user.status }}
+                {{ u.status }}
               </td>
             </tr>
           </tbody>
@@ -214,28 +214,28 @@ export default {
       search: '',
       filter: '',
       repoFilter: ''
-    }
+    };
   },
   computed: {
     loggedIn () {
-      return (this.$sol && this.$sol.token)
+      return (this.$sol && this.$sol.token);
     },
     maxPage () {
-      return Math.ceil(this.userCount / 20)
+      return Math.ceil(this.userCount / 20);
     }
   },
   watch: {
     page () {
-      this.getUsers()
+      this.getUsers();
     }
   },
 
   mounted () {
     if (!this.loggedIn) {
-      this.$sol.loginModal = true
-      this.$router.push({ path: '/', query: { redirect: 'admin' } })
+      this.$sol.loginModal = true;
+      this.$router.push({ path: '/', query: { redirect: 'admin' } });
     } else {
-      this.getUsers()
+      this.getUsers();
     }
   },
   methods: {
@@ -246,38 +246,38 @@ export default {
           {
             status
           }
-        )
-        this.getUsers()
+        );
+        this.getUsers();
       } catch (e) {
-        console.error(e)
+        console.error(e);
       }
     },
     async getUser (id) {
-      this.loading = true
+      this.loading = true;
       try {
-        const response = await this.$axios.get(`/admin/user/${id}`)
-        this.user = response.data
-        window.open('/projects/' + id)
+        const response = await this.$axios.get(`/admin/user/${id}`);
+        this.user = response.data;
+        window.open('/projects/' + id);
       } catch (error) {
-        console.error(error)
+        console.error(error);
       }
-      this.loading = false
+      this.loading = false;
     },
     async getUsers () {
-      this.loading = true
+      this.loading = true;
       try {
         const response = await this.$axios.get(
           `/admin/users?page=${this.page}&q=${this.search}&f=${this.filter}&r=${this.repoFilter}`
-        )
-        this.users = response.data.users
-        this.userCount = response.data.count
+        );
+        this.users = response.data.users;
+        this.userCount = response.data.count;
       } catch (error) {
-        console.error(error)
+        console.error(error);
       }
-      this.loading = false
+      this.loading = false;
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>

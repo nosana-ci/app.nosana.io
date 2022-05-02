@@ -47,7 +47,12 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="commit in commits" :key="commit.id" class="is-clickable" @click="$router.push(`/jobs/${commit.id}`)">
+            <tr
+              v-for="commit in commits"
+              :key="commit.id"
+              class="is-clickable"
+              @click="$router.push(`/jobs/${commit.id}`)"
+            >
               <td> {{ commit.id }}</td>
               <td>{{ commit.payload.message.split('\n')[0] }}</td>
               <td><a :href="commit.payload.url" target="_blank" @click.stop>{{ commit.commit }}</a></td>
@@ -139,22 +144,26 @@ export default {
           color: 'danger',
           text: error,
           title: 'Error'
-        })
+        });
       }
     },
     async getRepository () {
       try {
+<<<<<<< HEAD:pages/repositories/_id/index.vue
         this.repository = await this.$axios.$get(`/repositories/${this.id}`)
+=======
+        this.repository = await this.$axios.$get(`/repositories/${this.$route.params.id}`);
+>>>>>>> 76d07b4380a5fc294eecb49ff1cd9ce7cbd89626:pages/repositories/_id.vue
       } catch (error) {
         this.$modal.show({
           color: 'danger',
           text: error,
           title: 'Error'
-        })
+        });
       }
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>

@@ -7,13 +7,18 @@
             Projects on <b class="has-text-accent">TestNet</b>
           </h1>
           <p class="has-limited-width-small">
-            Below you can find open-source repositories of projects that are running their pipelines on the Nosana TestNet
+            Below you can find open-source repositories of projects that are running
+            their pipelines on the Nosana TestNet
           </p>
         </div>
         <div class="column is-8">
           <div class="columns">
             <div class="column is-one-third">
-              <a class="box is-secondary step" :class="{'has-background-white': loggedIn}" @click="$sol.loginModal = true">
+              <a
+                class="box is-secondary step"
+                :class="{'has-background-white': loggedIn}"
+                @click="$sol.loginModal = true"
+              >
                 <div class="is-flex is-justify-content-space-between">
                   <div>1</div>
                   <div v-if="loggedIn">
@@ -30,7 +35,12 @@
               </a>
             </div>
             <div class="column is-one-third">
-              <nuxt-link class="box is-secondary step" :class="{'has-background-white': user && repositories && repositories.filter(r => r.user_id === user.user_id).length, 'disabled': !loggedIn}" to="/repositories/new">
+              <nuxt-link
+                class="box is-secondary step"
+                :class="{'has-background-white': user && repositories
+                  && repositories.filter(r => r.user_id === user.user_id).length, 'disabled': !loggedIn}"
+                to="/repositories/new"
+              >
                 <div class="is-flex is-justify-content-space-between">
                   <div>2</div>
                   <div v-if="user && repositories && repositories.filter(r => r.user_id === user.user_id).length">
@@ -48,7 +58,14 @@
               </nuxt-link>
             </div>
             <div class="column is-one-third">
-              <nuxt-link class="box is-secondary step" :class="{'has-background-white': user && repositories && repositories.filter(r => r.user_id === user.user_id).length, 'disabled': !(loggedIn && user && repositories && repositories.filter(r => r.user_id === user.user_id).length)}" to="/account?edit=true">
+              <nuxt-link
+                class="box is-secondary step"
+                :class="{'has-background-white': user && repositories
+                           && repositories.filter(r => r.user_id === user.user_id).length,
+                         'disabled': !(loggedIn && user && repositories
+                           && repositories.filter(r => r.user_id === user.user_id).length)}"
+                to="/account?edit=true"
+              >
                 <div class="is-flex is-justify-content-space-between">
                   <div>3</div>
                   <div v-if="user && user.isApproved">
@@ -62,7 +79,11 @@
                   </div>
                 </div>
                 <div class="has-text-centered my-2">
-                  <img v-if="loggedIn && user && repositories && repositories.filter(r => r.user_id === user.user_id).length" src="~assets/img/icons/project.svg">
+                  <img
+                    v-if="loggedIn && user && repositories
+                      && repositories.filter(r => r.user_id === user.user_id).length"
+                    src="~assets/img/icons/project.svg"
+                  >
                   <img v-else src="~assets/img/icons/project_grey.svg">
                   <p>Request Funds</p>
                 </div>
@@ -79,18 +100,6 @@
           + Add new repository
         </nuxt-link>
       </div>
-      <!-- <p v-if="!loggedIn" class="has-text-aligned is-horizontal-centered has-limited-width">
-        Projects that want to run their pipelines on TestNet are being approved right now. Add your wallet, repositories and input your project information to request TestNet funds to be able to run jobs and earn NOS tokens for every pipeline that you are running! Selected projects will automatically receive 500 $NOS tokens for joining our Testnet. You can <b>earn up to 10.000 $NOS tokens</b> by running pipelines with our Testnet.
-      </p>
-      <p v-else-if="user && (!repositories || !repositories.filter(r => r.user_id === user.user_id).length)" class="has-text-aligned is-horizontal-centered has-limited-width">
-        Projects that want to run their pipelines on TestNet are being approved right now. Add your repositories and input your project information to request TestNet funds to be able to run jobs and earn NOS tokens for every pipeline that you are running!
-      </p>
-      <p v-else-if="user && !user.name" class="has-text-aligned is-horizontal-centered has-limited-width">
-        Projects that want to run their pipelines on TestNet are being approved right now. Input your project information to request TestNet funds to be able to run jobs and earn NOS tokens for every pipeline that you are running!
-      </p>
-      <p v-else-if="user && user.name" class="is-horizontal-centered has-limited-width notification is-info">
-        Thank you for your submission. You can add/change repositories and project information during your pending request. We will inform you via email as soon as your project is approved. Approved projects can run jobs and earn NOS tokens for every pipeline!
-      </p> -->
       <div v-if="repositories" class="columns is-multiline mt-4 has-background-secondary">
         <div v-if="!filteredRepositories.length" class="has-text-centered subtitle">
           We are currently selecting projects for Nosana Testnet
@@ -145,7 +154,11 @@
                       @click.stop=""
                     >
                       <nuxt-link :to="`/jobs/${commit.id}`">
-                        <commit-status :status="commit.status" class="has-tooltip-arrow" :data-tooltip="commit.commit.substring(0,7)" />
+                        <commit-status
+                          :status="commit.status"
+                          class="has-tooltip-arrow"
+                          :data-tooltip="commit.commit.substring(0,7)"
+                        />
                       </nuxt-link>
                     </div>
                   </div>
@@ -170,78 +183,77 @@ export default {
       user: null,
       search: null,
       interval: null
-    }
+    };
   },
   computed: {
     loggedIn () {
-      return this.$sol && this.$sol.token
+      return this.$sol && this.$sol.token;
     },
     filteredRepositories () {
-      let filteredRepositories = this.repositories
+      let filteredRepositories = this.repositories;
       // Search campaigns
       if (filteredRepositories && this.search !== null) {
-        filteredRepositories = filteredRepositories.filter((r) => {
-          return r.repository.toLowerCase().includes(this.search.toLowerCase()) ||
+        filteredRepositories =
+        filteredRepositories.filter(r => r.repository.toLowerCase().includes(this.search.toLowerCase()) ||
             (r.repository.description && r.repository.description.toLowerCase().includes(this.search.toLowerCase())) ||
-            (r.repository.name && r.repository.name.toLowerCase().includes(this.search.toLowerCase()))
-        })
+            (r.repository.name && r.repository.name.toLowerCase().includes(this.search.toLowerCase())));
       }
 
-      return filteredRepositories
+      return filteredRepositories;
     }
   },
   watch: {
     '$sol.token' (token) {
       if (token) {
-        this.getUser()
+        this.getUser();
       }
     }
   },
   created () {
     if (this.$sol && this.$sol.token) {
-      this.getUser()
+      this.getUser();
     }
-    this.getActiveRepositories()
+    this.getActiveRepositories();
     if (!this.interval) {
       this.interval = setInterval(() => {
-        console.log('refreshing repositories..')
-        this.getActiveRepositories()
-      }, 20000)
+        console.log('refreshing repositories..');
+        this.getActiveRepositories();
+      }, 20000);
     }
   },
   beforeDestroy () {
     if (this.interval) {
-      clearInterval(this.interval)
-      this.interval = null
+      clearInterval(this.interval);
+      this.interval = null;
     }
   },
   methods: {
     async getUser () {
       try {
-        const user = await this.$axios.$get('/user')
-        this.user = user
+        const user = await this.$axios.$get('/user');
+        this.user = user;
       } catch (error) {
         this.$modal.show({
           color: 'danger',
           text: error,
           title: 'Error'
-        })
+        });
       }
     },
     async getActiveRepositories () {
       try {
-        const repositories = await this.$axios.$get('/repositories/active')
-        this.repositories = repositories
+        const repositories = await this.$axios.$get('/repositories/active');
+        this.repositories = repositories;
       } catch (error) {
         this.$modal.show({
           color: 'danger',
           text: error,
           title: 'Error'
-        })
+        });
       }
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>

@@ -20,7 +20,13 @@
           </p>
         </div>
         <div style="max-height: 50vh; overflow-y: scroll">
-          <a v-for="repo in filteredRepositories" :key="repo.id" class="panel-block" :class="{'is-active': repository === repo.full_name}" @click.stop="repository=repo.full_name">
+          <a
+            v-for="repo in filteredRepositories"
+            :key="repo.id"
+            class="panel-block"
+            :class="{'is-active': repository === repo.full_name}"
+            @click.stop="repository=repo.full_name"
+          >
             <span class="panel-icon">
               <i class="fas fa-code-branch" aria-hidden="true" />
             </span>
@@ -33,7 +39,13 @@
           Connect to Github
         </a>
         <div v-else-if="!loggedIn" class="navbar-item" exact-active-class="is-active" @click="mobileMenu = false">
-          <a :class="{'is-loading': loading}" class="button is-accent has-text-weight-semibold" exact-active-class="is-active" to="/account" @click="$sol.loginModal = true">
+          <a
+            :class="{'is-loading': loading}"
+            class="button is-accent has-text-weight-semibold"
+            exact-active-class="is-active"
+            to="/account"
+            @click="$sol.loginModal = true"
+          >
             <div>
               Connect Wallet
             </div>
@@ -51,8 +63,8 @@
 </template>
 
 <script>
-import axios from 'axios'
-let githubApi
+import axios from 'axios';
+let githubApi;
 
 export default {
   data () {
@@ -62,73 +74,72 @@ export default {
       repositories: null,
       loading: false,
       search: null
-    }
+    };
   },
   computed: {
     loggedIn () {
-      return (this.$sol) ? this.$sol.token : null
+      return (this.$sol) ? this.$sol.token : null;
     },
     filteredRepositories () {
-      let filteredRepositories = this.repositories
+      let filteredRepositories = this.repositories;
       // Search repos
       if (filteredRepositories && this.search !== null) {
-        filteredRepositories = filteredRepositories.filter((r) => {
-          return r.full_name.toLowerCase().includes(this.search.toLowerCase())
-        })
+        filteredRepositories =
+        filteredRepositories.filter(r => r.full_name.toLowerCase().includes(this.search.toLowerCase()));
       }
 
-      return filteredRepositories
+      return filteredRepositories;
     }
   },
   created () {
     if (process.client) {
-      const code = this.$route.query.code
+      const code = this.$route.query.code;
       if (code) {
-        this.githubOauth(code)
+        this.githubOauth(code);
       } else {
-        this.goToGithub()
+        this.goToGithub();
       }
     }
   },
   methods: {
     goToGithub () {
-      this.loading = true
-      window.location.href = 'https://github.com/login/oauth/authorize?client_id=382b493152debb760a28&scope=write:repo_hook,read:org'
+      this.loading = true;
+      window.location.href = 'https://github.com/login/oauth/authorize?client_id=382b493152debb760a28&scope=write:repo_hook,read:org';
     },
     async githubOauth (code) {
       try {
-        this.loading = true
+        this.loading = true;
         const response = await this.$axios.$post('/github/callback', {
           code
-        })
-        this.githubToken = response.access_token
+        });
+        this.githubToken = response.access_token;
         githubApi = axios.create({
           baseURL: 'https://api.github.com',
           headers: { Authorization: 'token ' + this.githubToken }
-        })
-        this.getUserRepos()
+        });
+        this.getUserRepos();
       } catch (error) {
         this.$modal.show({
           color: 'danger',
           text: error,
           title: 'Error'
-        })
+        });
       }
-      const query = Object.assign({}, this.$route.query)
-      delete query.code
-      this.$router.replace({ query })
+      const query = Object.assign({}, this.$route.query);
+      delete query.code;
+      this.$router.replace({ query });
     },
     async getUserRepos () {
       try {
         if (githubApi) {
-          let page = 1
-          let response
-          this.repositories = []
+          let page = 1;
+          let response;
+          this.repositories = [];
           do {
-            response = await githubApi.get(`/user/repos?type=public&per_page=100&page=${page}`)
-            this.repositories = this.repositories.concat(response.data)
-            page++
-          } while (response && response.data.length >= 100)
+            response = await githubApi.get(`/user/repos?type=public&per_page=100&page=${page}`);
+            this.repositories = this.repositories.concat(response.data);
+            page++;
+          } while (response && response.data.length >= 100);
           // const response2 = await githubApi.get('/user/memberships/orgs')
           // response2.data.forEach(async (org) => {
           //   page = 1
@@ -145,24 +156,24 @@ export default {
           color: 'danger',
           text: error,
           title: 'Error'
-        })
+        });
       }
-      this.loading = false
+      this.loading = false;
     },
     async addRepository () {
       try {
         const repo = await this.$axios.$post('/repositories', {
           repository: this.repository,
           type: 'GITHUB'
-        })
-        await this.addWebhook(repo)
-        this.$router.push('/account')
+        });
+        await this.addWebhook(repo);
+        this.$router.push('/account');
       } catch (error) {
         this.$modal.show({
           color: 'danger',
           text: error,
           title: 'Error'
-        })
+        });
       }
     },
     async addWebhook (repo) {
@@ -174,11 +185,11 @@ export default {
             url: process.env.NUXT_ENV_BACKEND_URL + '/webhook/github/' + (repo.secret ? repo.secret : repo.id),
             insecure_ssl: 1
           }
-        })
+        });
       }
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>
