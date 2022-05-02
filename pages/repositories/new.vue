@@ -186,11 +186,11 @@ export default {
     },
     async addRepository () {
       try {
-        const repo = await this.$axios.$post('/repositories', {
+        await this.$axios.$post('/repositories', {
           repository: this.repository,
           type: 'GITHUB'
         });
-        await this.addWebhook(repo);
+        // await this.addWebhook(repo);
         this.$router.push('/account');
       } catch (error) {
         this.$modal.show({

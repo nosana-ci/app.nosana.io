@@ -102,7 +102,7 @@
       </div>
       <div v-if="repositories" class="columns is-multiline mt-4 has-background-secondary">
         <div v-if="!filteredRepositories.length" class="has-text-centered subtitle">
-          We are currently selecting projects for Nosana Testnet
+          No repositories found..
         </div>
         <template v-for="repository in filteredRepositories">
           <div :key="repository.id" class="column is-6 is-3-fullhd is-3-widescreen is-4-desktop">
