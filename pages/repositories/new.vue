@@ -87,7 +87,8 @@ export default {
       repositories: null,
       loading: false,
       search: null,
-      installations: null
+      installations: null,
+      installationId: null
     };
   },
   computed: {
@@ -152,6 +153,7 @@ export default {
           baseURL: 'https://api.github.com',
           headers: { Authorization: 'token ' + this.githubToken }
         });
+        this.installationId = installationId;
         this.getUserRepos();
       } catch (error) {
         this.$modal.show({
@@ -188,7 +190,8 @@ export default {
       try {
         await this.$axios.$post('/repositories', {
           repository: this.repository,
-          type: 'GITHUB'
+          type: 'GITHUB',
+          installationId: this.installationId
         });
         // await this.addWebhook(repo);
         this.$router.push('/account');
