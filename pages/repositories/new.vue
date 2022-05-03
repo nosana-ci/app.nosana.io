@@ -170,7 +170,8 @@ export default {
           let response;
           this.repositories = [];
           do {
-            response = await githubApi.get(`/installation/repositories?type=public&per_page=100&page=${page}`);
+            response = await githubApi
+              .get(`/installation/repositories?type=public&per_page=100&page=${page}&t=${(new Date()).getTime()}`);
             if (response && response.data) {
               this.repositories = this.repositories.concat(response.data.repositories);
             }
