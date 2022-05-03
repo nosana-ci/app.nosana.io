@@ -79,7 +79,7 @@
         </table>
       </div>
       <pagination-helper
-        v-if="commits.length > 0 && pagination"
+        v-if="commits && commits.length > 0 && pagination"
         :total-pages="Math.ceil(pagination.total / pagination.perPage)"
         :per-page="pagination.perPage"
         :current-page="parseInt(pagination.currentPage)"
@@ -90,13 +90,13 @@
 </template>
 
 <script>
-import PaginationHelper from '../../components/Pagination/PaginationHelper.vue';
+import PaginationHelper from '@/components/Pagination/PaginationHelper.vue';
 export default {
   components: { PaginationHelper },
   data () {
     return {
       pagination: null,
-      commits: [],
+      commits: null,
       repository: null,
       project: null
     };
@@ -105,18 +105,11 @@ export default {
     this.getCommits();
     this.getRepository();
     // setInterval(() => {
-    //   console.log('refreshing repositories..')
+    //   console.log('refreshing commits..')
     //   this.getCommits()
     // }, 20000)
   },
   methods: {
-    paginate (commits) {
-      const page = this.currentPage;
-      const perPage = this.commitsPerPage;
-      const from = (page * perPage) - perPage;
-      const to = (page * perPage);
-      return commits.slice(from, to);
-    },
     async getCommits (page = 1) {
       try {
         const commits = await this.$axios.$get(

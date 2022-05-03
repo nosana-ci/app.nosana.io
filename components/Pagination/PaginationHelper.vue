@@ -6,7 +6,7 @@
         type="button"
         :disabled="isInFirstPage"
         aria-label="Go to previous page"
-        :class="{'disabled': isInFirstPage}"
+        :class="{'is-disabled': isInFirstPage}"
         @click="onClickFirstPage"
       >
         First
@@ -16,7 +16,7 @@
         type="button"
         :disabled="isInLastPage"
         aria-label="Go to next page"
-        :class="{'disabled': isInLastPage}"
+        :class="{'is-disabled': isInLastPage}"
         @click="onClickLastPage"
       >
         Last
@@ -25,7 +25,7 @@
         <li>
           <a
             class="pagination-link"
-            :class="{'disabled': isInFirstPage}"
+            :class="{'is-disabled': isInFirstPage}"
             type="button"
             :disabled="isInFirstPage"
             aria-label="Go to first page"
@@ -54,7 +54,7 @@
             type="button"
             :disabled="isInLastPage"
             aria-label="Go to last page"
-            :class="{'disabled': isInLastPage}"
+            :class="{'is-disabled': isInLastPage}"
             @click="onClickNextPage"
           >
             Next
@@ -68,16 +68,17 @@
 <script>
 export default {
   props: {
+    commits: {
+      type: Array,
+      default () {
+        return [];
+      }
+    },
     maxVisibleButtons: {
       type: Number,
       required: false,
       default: 3
     },
-    totalPages: {
-      type: Number,
-      required: true
-    },
-
     perPage: {
       type: Number,
       required: true
@@ -88,6 +89,9 @@ export default {
     }
   },
   computed: {
+    totalPages () {
+      return Math.ceil(this.commits.length / this.perPage);
+    },
     startPage () {
       if (this.currentPage === 1) {
         return 1;
@@ -144,8 +148,8 @@ export default {
 };
 </script>
 
-<style>
-.disabled{
+<style lang="scss" scoped>
+.is-disabled{
     pointer-events: none;
 }
-</style>
+</style>>
