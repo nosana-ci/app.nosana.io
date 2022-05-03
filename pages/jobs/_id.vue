@@ -104,7 +104,6 @@
             </small>
             <template v-for="gitCommand in ['clone', 'checkout']">
               <div
-                v-if="commit.cache_result && commit.cache_result.results[gitCommand]"
                 :key="gitCommand"
                 class="box is-info"
               >
@@ -116,12 +115,23 @@
                     <h3
                       class="subtitle m-0"
                       :class="{
-                        'has-text-success': !commit.cache_result.results[gitCommand][0].includes('error'),
-                        'has-text-danger': commit.cache_result.results[gitCommand][0].includes('error')
+                        'has-text-success':
+                          commit.cache_result && commit.cache_result.results[gitCommand]
+                          && !commit.cache_result.results[gitCommand][0].includes('error'),
+                        'has-text-danger':
+                          commit.cache_result && commit.cache_result.results[gitCommand]
+                          && commit.cache_result.results[gitCommand][0].includes('error')
                       }"
                     >
-                      <i v-if="commit.cache_result.results[gitCommand][0].includes('error')" class="fas fa-times" />
-                      <i v-else class="fas fa-check" />
+                      <i
+                        v-if="commit.cache_result && commit.cache_result.results[gitCommand]
+                          && commit.cache_result.results[gitCommand][0].includes('error')"
+                        class="fas fa-times"
+                      />
+                      <i
+                        v-else-if="commit.cache_result && commit.cache_result.results[gitCommand]"
+                        class="fas fa-check"
+                      />
                       <span>git {{ gitCommand }}</span>
                     </h3>
                     <div class="is-size-7 has-overresult-ellipses mr-4" style="margin-left: auto">
@@ -134,16 +144,22 @@
                   </div>
                   <div v-if="step === gitCommand">
                     <div>
-                      <template v-if="!commit.cache_result.results[gitCommand][0].includes('error')">
+                      <template
+                        v-if="commit.cache_result && commit.cache_result.results[gitCommand]
+                          && !commit.cache_result.results[gitCommand][0].includes('error')"
+                      >
                         <pre>{{ commit.cache_result.results[gitCommand] }}</pre>
                       </template>
-                      <template v-else>
+                      <template v-else-if="commit.cache_result && commit.cache_result.results[gitCommand]">
                         <pre
                           class="has-text-danger"
                         ><template
                         v-for="(error, index) in commit.cache_result.results[gitCommand]"
                         ><p v-if="index !== 0" :key="error">{{ error }}</p></template></pre>
                       </template>
+                      <div v-else>
+                        No results yet..
+                      </div>
                     </div>
                   </div>
                 </div>
