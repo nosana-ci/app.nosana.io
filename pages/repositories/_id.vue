@@ -37,7 +37,7 @@
           </thead>
           <tbody>
             <tr
-              v-for="commit in displayedCommits"
+              v-for="commit in commits"
               :key="commit.id"
               class="is-clickable"
               @click="$router.push(`/jobs/${commit.id}`)"
@@ -79,61 +79,44 @@
         </table>
       </div>
       <pagination-helper
-        v-if="commits && commits.length"
-        :commits="commits"
-        :per-page="commitsPerPage"
-        :current-page="currentPage"
-        @pagechanged="onPageChange"
+        v-if="commits && commits.length > 0 && pagination"
+        :total-pages="Math.ceil(pagination.total / pagination.perPage)"
+        :per-page="pagination.perPage"
+        :current-page="parseInt(pagination.currentPage)"
+        @pagechanged="getCommits"
       />
     </div>
   </section>
 </template>
 
 <script>
-import PaginationHelper from '../../components/Pagination/PaginationHelper.vue';
+import PaginationHelper from '@/components/Pagination/PaginationHelper.vue';
 export default {
   components: { PaginationHelper },
   data () {
     return {
-      currentPage: 1,
-      commitsPerPage: 10,
+      pagination: null,
       commits: null,
       repository: null,
       project: null
     };
   },
-  computed: {
-    displayedCommits () {
-      return this.paginate(this.commits);
-    }
-  },
   created () {
     this.getCommits();
     this.getRepository();
     // setInterval(() => {
-    //   console.log('refreshing repositories..')
+    //   console.log('refreshing commits..')
     //   this.getCommits()
     // }, 20000)
   },
   methods: {
-    paginate (commits) {
-      const page = this.currentPage;
-      const perPage = this.commitsPerPage;
-      const from = (page * perPage) - perPage;
-      const to = (page * perPage);
-      if (this.commits) {
-        return commits.slice(from, to);
-      }
-    },
-    onPageChange (page) {
-      this.currentPage = page;
-    },
-    async getCommits () {
+    async getCommits (page = 1) {
       try {
         const commits = await this.$axios.$get(
-          `/repositories/${this.$route.params.id}/commits`
+          `/repositories/${this.$route.params.id}/commits?page=${page}`
         );
-        this.commits = commits;
+        this.commits = commits.data;
+        this.pagination = commits.pagination;
       } catch (error) {
         this.$modal.show({
           color: 'danger',
