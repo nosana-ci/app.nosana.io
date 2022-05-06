@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div v-show="totalPages > 1" class="container">
     <nav class="pagination is-centered" role="navigation" aria-label="pagination">
       <a
         class="pagination-previous"

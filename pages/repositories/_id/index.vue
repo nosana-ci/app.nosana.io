@@ -66,7 +66,7 @@
           </thead>
           <tbody>
             <tr
-              v-for="commit in displayedCommits"
+              v-for="commit in commits"
               :key="commit.id"
               class="is-clickable"
               @click="$router.push(`/jobs/${commit.id}`)"
@@ -119,12 +119,13 @@
 </template>
 
 <script>
-import PaginationHelper from '../../components/Pagination/PaginationHelper.vue';
+import PaginationHelper from '@/components/Pagination/PaginationHelper.vue';
 export default {
   components: { PaginationHelper },
   data () {
     return {
       showPipeline: true,
+      pagination: null,
       commits: null,
       repository: null,
       project: null,
@@ -147,7 +148,7 @@ export default {
       this.getUser();
     }
     // setInterval(() => {
-    //   console.log('refreshing repositories..')
+    //   console.log('refreshing commits..')
     //   this.getCommits()
     // }, 20000)
   },
@@ -169,10 +170,13 @@ export default {
         });
       }
     },
-    async getCommits () {
+    async getCommits (page = 1) {
       try {
-        const commits = await this.$axios.$get(`/repositories/${this.id}/commits`);
-        this.commits = commits;
+        const commits = await this.$axios.$get(
+          `/repositories/${this.$route.params.id}/commits?page=${page}`
+        );
+        this.commits = commits.data;
+        this.pagination = commits.pagination;
       } catch (error) {
         this.$modal.show({
           color: 'danger',
