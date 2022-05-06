@@ -20,7 +20,11 @@
             </nuxt-link>
           </div>
           <p>
-            <a :href="'https://github.com/'+ repository.repository" target="_blank" @click.stop>https://github.com/{{ repository.repository }}</a>
+            <a
+              :href="'https://github.com/' + repository.repository"
+              target="_blank"
+              @click.stop
+            >https://github.com/{{ repository.repository }}</a>
           </p>
           <p>
             <span
@@ -62,15 +66,19 @@
           </thead>
           <tbody>
             <tr
-              v-for="commit in commits"
+              v-for="commit in displayedCommits"
               :key="commit.id"
               class="is-clickable"
               @click="$router.push(`/jobs/${commit.id}`)"
             >
-              <td> {{ commit.id }}</td>
-              <td>{{ commit.payload.message.split('\n')[0] }}</td>
-              <td><a :href="commit.payload.url" target="_blank" @click.stop>{{ commit.commit }}</a></td>
-              <td>{{ $moment(commit.created_at ).fromNow() }}</td>
+              <td>{{ commit.id }}</td>
+              <td>{{ commit.payload.message.split("\n")[0] }}</td>
+              <td>
+                <a :href="commit.payload.url" target="_blank" @click.stop>{{
+                  commit.commit
+                }}</a>
+              </td>
+              <td>{{ $moment(commit.created_at).fromNow() }}</td>
               <td class="py-4">
                 <div
                   class="tag is-small"
@@ -78,14 +86,17 @@
                     'is-accent': commit.status === 'COMPLETED',
                     'is-info': commit.status === 'RUNNING',
                     'is-warning': commit.status === 'QUEUED',
-                    'is-danger': commit.status === 'FAILED'
+                    'is-danger': commit.status === 'FAILED',
                   }"
                 >
                   {{ commit.status }}
                 </div>
               </td>
             </tr>
-            <tr v-if="!commits || !commits.length" class="has-text-centered has-text-weight-bold">
+            <tr
+              v-if="!commits || !commits.length"
+              class="has-text-centered has-text-weight-bold"
+            >
               <td v-if="!commits" colspan="5">
                 Loading commits..
               </td>
@@ -96,12 +107,21 @@
           </tbody>
         </table>
       </div>
+      <pagination-helper
+        v-if="commits && commits.length > 0 && pagination"
+        :total-pages="Math.ceil(pagination.total / pagination.perPage)"
+        :per-page="pagination.perPage"
+        :current-page="parseInt(pagination.currentPage)"
+        @pagechanged="getCommits"
+      />
     </div>
   </section>
 </template>
 
 <script>
+import PaginationHelper from '../../components/Pagination/PaginationHelper.vue';
 export default {
+  components: { PaginationHelper },
   data () {
     return {
       showPipeline: true,
@@ -177,7 +197,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
- td {
-   vertical-align: middle;
- }
+td {
+  vertical-align: middle;
+}
 </style>
