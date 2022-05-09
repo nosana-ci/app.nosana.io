@@ -36,7 +36,7 @@
             <div class="loader is-loading" />
           </div>
           <div v-if="loggedIn">
-            <div v-if="!$sol.token" class="has-text-centered has-text-black">
+            <div v-if="!$auth.loggedIn" class="has-text-centered has-text-black">
               <div class="block">
                 <b class="has-text-black">Selected account</b>
                 <a
@@ -137,19 +137,21 @@ export default {
       try {
         const timestamp = Math.floor(+new Date() / 1000);
         const signature = await this.$sol.sign(timestamp);
-        const response = await this.$axios.post('/login', {
-          address: new PublicKey(this.publicKey).toBuffer(),
-          signature,
-          timestamp,
-          referrer: this.$route.query.ref
+        const response = await this.$auth.loginWith('local', {
+          data: {
+            address: new PublicKey(this.publicKey).toBuffer(),
+            signature,
+            timestamp,
+            referrer: this.$route.query.ref
+          }
         });
-        this.$sol.token = response.data.token;
-        this.$axios.setToken(response.data.token, 'Bearer');
+        console.log('Logged in!', response);
         this.$sol.loginModal = false;
         this.error = null;
-        if (this.$route.query.redirect) {
-          this.$router.push(this.$route.query.redirect);
-        }
+        // Needed because there is a redirect bug when going to a protected route from the login page
+        const path = this.$auth.$storage.getUniversal('redirect') || '/';
+        this.$auth.$storage.setUniversal('redirect', null);
+        this.$router.push(path);
       } catch (error) {
         console.error('ERR', error);
         if (error.response && error.response.data) {

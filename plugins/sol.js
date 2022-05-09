@@ -197,12 +197,11 @@ export default (context, inject) => {
           this.publicKey = null;
         }
         this.clear();
-        this.loginModal = true;
       },
 
       async logout () {
         await this.switch();
-        context.app.router.push('/');
+        await context.$auth.logout();
       },
 
       clear () {
