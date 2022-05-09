@@ -54,39 +54,36 @@
 </template>
 
 <script>
-import { parse } from 'yaml'
+import { parse } from 'yaml';
 
 export default {
+  middleware: 'auth',
   data () {
     return {
       id: this.$route.params.id,
       repository: null,
       user: null
-    }
+    };
   },
   created () {
-    if (this.$sol && this.$sol.token) {
-      this.getUser()
-    } else {
-      this.$router.push(`/repositories/${this.id}`)
-    }
+    this.getUser();
   },
   methods: {
     async edit () {
       try {
-        const pipeline = parse(this.repository.pipeline)
+        const pipeline = parse(this.repository.pipeline);
         if (!pipeline.commands || !Array.isArray(pipeline.commands)) {
-          throw new Error('Your yaml does not include a `commands` list')
+          throw new Error('Your yaml does not include a `commands` list');
         }
         if (!pipeline.image || typeof pipeline.image !== 'string') {
-          throw new Error('Your yaml does not include a `image` string')
+          throw new Error('Your yaml does not include a `image` string');
         }
-        console.log(pipeline)
+        console.log(pipeline);
         await this.$axios.$post(`/repositories/${this.id}`, {
           pipeline: this.repository.pipeline,
           job_price: this.repository.job_price,
           branches: this.repository.branches
-        })
+        });
         this.$modal.show({
           color: 'success',
           text: 'Successfully updated repository',
@@ -94,53 +91,53 @@ export default {
           persistent: true,
           cancel: false,
           onConfirm: () => {
-            this.$router.push(`/repositories/${this.id}`)
+            this.$router.push(`/repositories/${this.id}`);
           }
-        })
+        });
       } catch (error) {
-        console.error(error)
+        console.error(error);
         if (error.name === 'YAMLParseError') {
           this.$modal.show({
             color: 'danger',
             text: error,
             title: 'Could not parse YAML'
-          })
+          });
         } else {
           this.$modal.show({
             color: 'danger',
             text: error,
             title: 'Could not parse YAML'
-          })
+          });
         }
       }
     },
     async getUser () {
       try {
-        const user = await this.$axios.$get('/user')
-        this.user = user
-        await this.getRepository()
+        const user = await this.$axios.$get('/user');
+        this.user = user;
+        await this.getRepository();
       } catch (error) {
         this.$modal.show({
           color: 'danger',
           text: error,
           title: 'Error'
-        })
+        });
       }
       if (!this.user || !this.repository || !this.user.roles.includes('admin') || !this.user.id === this.repository.user_id) {
-        this.$router.push(`/repositories/${this.id}`)
+        this.$router.push(`/repositories/${this.id}`);
       }
     },
     async getRepository () {
       try {
-        this.repository = await this.$axios.$get(`/repositories/${this.id}`)
+        this.repository = await this.$axios.$get(`/repositories/${this.id}`);
       } catch (error) {
         this.$modal.show({
           color: 'danger',
           text: error,
           title: 'Error'
-        })
+        });
       }
     }
   }
-}
+};
 </script>
