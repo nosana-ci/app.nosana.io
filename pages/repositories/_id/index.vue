@@ -45,7 +45,7 @@
             </a>
           </p>
           <div v-if="repository && showPipeline">
-            <editor v-model="repository.pipeline" :readonly="true" />
+            <code-editor v-model="repository.pipeline" :readonly="true" />
           </div>
         </div>
         <div v-else>

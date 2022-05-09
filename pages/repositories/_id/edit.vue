@@ -14,7 +14,7 @@
           <p>
             <a :href="'https://github.com/'+ repository.repository" target="_blank" @click.stop>https://github.com/{{ repository.repository }}</a>
           </p>
-          <editor v-model="repository.pipeline" />
+          <code-editor v-model="repository.pipeline" />
           <div class="field">
             <label class="label">Trigger branches (comma seperated)</label>
             <div class="control">
