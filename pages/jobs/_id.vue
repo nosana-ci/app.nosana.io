@@ -68,7 +68,7 @@
               <span>Not posted to blockchain..</span>
             </div>
           </div>
-          <div v-if="user && (user.roles.includes('admin'))" class="level-right">
+          <div v-if="user && (user.roles && user.roles.includes('admin'))" class="level-right">
             <div class="level-item">
               <button class="button is-small is-danger" style="display: none" @click="postJob(commit.id)">
                 Retry transaction

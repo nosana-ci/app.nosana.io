@@ -123,7 +123,7 @@ export default {
           title: 'Error'
         });
       }
-      if (!this.user || !this.repository || !this.user.roles.includes('admin') || !this.user.id === this.repository.user_id) {
+      if (!this.user || !this.repository || ((!this.user.roles || !this.user.roles.includes('admin')) && !this.user.user_id === this.repository.user_id)) {
         this.$router.push(`/repositories/${this.id}`);
       }
     },

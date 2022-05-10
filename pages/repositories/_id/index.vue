@@ -11,7 +11,8 @@
               {{ repository.repository }}
             </h2>
             <nuxt-link
-              v-if="repository && user && (repository.user_id === user.id || user.roles.includes('admin'))"
+              v-if="repository && user &&
+                (repository.user_id === user.user_id || (user.roles && user.roles.includes('admin')))"
               class="button is-outlined is-accent is-small"
               style="margin-left: auto"
               :to="`/repositories/${id}/edit`"
