@@ -4,7 +4,8 @@
       <div class="columns">
         <div class="column is-4">
           <h1 class="title is-4">
-            Projects on <b class="has-text-accent">TestNet</b>
+            Projects on <b v-if="network === 'devnet'" class="has-text-accent">DevNet</b>
+            <b v-else class="has-text-accent">TestNet</b>
           </h1>
           <p class="has-limited-width-small">
             Below you can find open-source repositories of projects that are running
@@ -182,7 +183,8 @@ export default {
       projects: null,
       user: null,
       search: null,
-      interval: null
+      interval: null,
+      network: process.env.NUXT_ENV_SOL_NETWORK
     };
   },
   computed: {
