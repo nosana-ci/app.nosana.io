@@ -39,6 +39,14 @@
               </a>
             </p>
           </div>
+          <div class="field">
+            <div class="control">
+              <label class="checkbox">
+                <input v-model="repository.enable_check_runs" type="checkbox">
+                Enable Github Check-Runs
+              </label>
+            </div>
+          </div>
           <div class="control">
             <button type="submit" class="button is-accent">
               Save
@@ -82,7 +90,8 @@ export default {
         await this.$axios.$post(`/repositories/${this.id}`, {
           pipeline: this.repository.pipeline,
           job_price: this.repository.job_price,
-          branches: this.repository.branches
+          branches: this.repository.branches,
+          enable_check_runs: this.repository.enable_check_runs
         });
         this.$modal.show({
           color: 'success',
