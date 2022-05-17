@@ -27,8 +27,6 @@
         <h1 class="title">
           {{ commit.payload.message.split('\n')[0] }}
         </h1>
-        <!-- resultIpfsHash: {{ commit.resultIpfsHash }}
-        jobIpfsHash: {{ commit.jobIpfsHash }} -->
         <div class="box">
           <div v-if="commit.job" class="mb-4">
             <i class="fas fa-list mr-4 has-text-accent" />
@@ -84,9 +82,9 @@
             <li :class="{'is-active': tab === 'logs'}">
               <a @click.prevent="tab='logs'">Job Info</a>
             </li>
-            <!-- <li :class="{'is-active': tab === 'payload'}">
-              <a @click.prevent="tab='payload'">Payload</a>
-            </li> -->
+            <li :class="{'is-active': tab === 'ipfs'}">
+              <a @click.prevent="tab='ipfs'">IPFS</a>
+            </li>
           </ul>
         </div>
         <div v-if="tab === 'result'">
@@ -171,31 +169,33 @@
                   class="is-clickable is-flex is-flex-wrap-wrap is-align-items-center"
                   @click="step !== index ? step = index : step = null"
                 >
-                  <h3
-                    class="subtitle m-0"
-                    :class="{
-                      'has-text-success': commit.cache_result && commit.cache_result.results
-                        && commit.cache_result.results[`cmd-${index}`]
-                        && commit.cache_result.results[`cmd-${index}`].exit === 0,
-                      'has-text-danger': commit.cache_result && commit.cache_result.results
-                        && commit.cache_result.results[`cmd-${index}`]
-                        && commit.cache_result.results[`cmd-${index}`].exit > 0
-                    }"
+                  <template
+                    v-if="(commit.cache_result && commit.cache_result.results)
+                      && ((commit.cache_result.results[`cmd-${index}`]
+                        && commit.cache_result.results[`cmd-${index}`].exit === 0) ||
+                        (commit.cache_result.results['docker-cmds']
+                          && commit.cache_result.results['docker-cmds'][0] === 'success'))"
                   >
-                    <i
-                      v-if="commit.cache_result && commit.cache_result.results
-                        && commit.cache_result.results[`cmd-${index}`]
-                        && commit.cache_result.results[`cmd-${index}`].exit > 0"
-                      class="fas fa-times"
-                    />
-                    <i
-                      v-else-if="commit.cache_result && commit.cache_result.results
-                        && commit.cache_result.results[`cmd-${index}`]
-                        && commit.cache_result.results[`cmd-${index}`].exit === 0"
-                      class="fas fa-check"
-                    />
-                    <span>{{ command }}</span>
-                  </h3>
+                    <h3 class="subtitle m-0 has-text-success">
+                      <i
+                        v-if="commit.cache_result && commit.cache_result.results"
+                        class="fas fa-check"
+                      />
+                      <span>{{ command }}</span>
+                    </h3>
+                  </template>
+                  <template v-else>
+                    <h3
+                      class="subtitle m-0"
+                      :class="{'has-text-danger': commit.cache_result && commit.cache_result.results}"
+                    >
+                      <i
+                        v-if="commit.cache_result && commit.cache_result.results"
+                        class="fas fa-times"
+                      />
+                      <span>{{ command }}</span>
+                    </h3>
+                  </template>
                   <div class="is-size-7 has-overresult-ellipses mr-4" style="margin-left: auto">
                     <span v-if="commit.cache_result">node: {{ commit.cache_result['nos-id'] }}</span>
                     <span v-else>pending</span>
@@ -206,18 +206,27 @@
                 </div>
                 <div v-if="step === index">
                   <div>
+                    <div v-if="!commit.cache_result">
+                      No results yet..
+                    </div>
                     <pre
                       v-if="commit.cache_result && commit.cache_result.results
-                        && commit.cache_result.results[`cmd-${index}`].out"
+                        && (commit.cache_result.results[`cmd-${index}`]
+                          && commit.cache_result.results[`cmd-${index}`].out)"
                     >{{ commit.cache_result.results[`cmd-${index}`].out }}</pre>
                     <pre
                       v-if="commit.cache_result && commit.cache_result.results
-                        && commit.cache_result.results[`cmd-${index}`].err"
+                        && (commit.cache_result.results[`cmd-${index}`]
+                          && commit.cache_result.results[`cmd-${index}`].err)"
                       class="has-text-danger"
                     >{{ commit.cache_result.results[`cmd-${index}`].err }}</pre>
-                    <div v-else>
-                      No results yet..
-                    </div>
+                    <pre
+                      v-if="commit.cache_result && commit.cache_result.results
+                        && (commit.cache_result.results['docker-cmds']
+                          && commit.cache_result.results['docker-cmds'][1].find(c => c.cmd === command))"
+                      :class="{'has-text-danger':
+                        commit.cache_result.results['docker-cmds'][1].find(c => c.cmd === command).error}"
+                    >{{ commit.cache_result.results['docker-cmds'][1].find(c => c.cmd === command).log }}</pre>
                   </div>
                 </div>
               </div>
@@ -229,6 +238,14 @@
         </div>
         <div v-else-if="tab === 'payload'">
           <pre>{{ commit.payload }}</pre>
+        </div>
+        <div v-else-if="tab === 'ipfs'">
+          <div v-if="commit.jobIpfsHash">
+            Job IPFS: <a :href="'https://nosana.mypinata.cloud/ipfs/' + commit.jobIpfsHash" target="_blank">{{ commit.jobIpfsHash }}</a>
+          </div>
+          <div v-if="commit.resultIpfsHash">
+            Result IPFS: <a :href="'https://nosana.mypinata.cloud/ipfs/' + commit.resultIpfsHash" target="_blank">{{ commit.resultIpfsHash }}</a>
+          </div>
         </div>
       </div>
       <div v-else>
@@ -346,10 +363,10 @@ export default {
       try {
         const commit = await this.$axios.$get(`/commits/${id}`);
         this.commit = commit;
-        if (this.commit.status === 'RUNNING') {
+        if (this.commit.status === 'RUNNING' || this.commit.status === 'QUEUED') {
           if (!this.refreshInterval) {
             // Refresh status every 10 seconds
-            this.refreshInterval = setInterval(this.getCommit, parseInt(60000, 10));
+            this.refreshInterval = setInterval(this.getCommit, parseInt(10000, 10));
           }
         } else if (this.refreshInterval) {
           clearInterval(this.refreshInterval);
