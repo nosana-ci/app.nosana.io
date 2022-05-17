@@ -6,7 +6,7 @@
     </client-only>
     <nav-bar />
     <Nuxt />
-    <nos-foot />
+    <nos-footer />
   </div>
 </template>
 

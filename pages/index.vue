@@ -4,7 +4,8 @@
       <div class="columns">
         <div class="column is-4">
           <h1 class="title is-4">
-            Projects on <b class="has-text-accent">TestNet</b>
+            Projects on <b v-if="network === 'devnet'" class="has-text-accent">DevNet</b>
+            <b v-else class="has-text-accent">TestNet</b>
           </h1>
           <p class="has-limited-width-small">
             Below you can find open-source repositories of projects that are running
@@ -102,7 +103,7 @@
       </div>
       <div v-if="repositories" class="columns is-multiline mt-4 has-background-secondary">
         <div v-if="!filteredRepositories.length" class="has-text-centered subtitle">
-          We are currently selecting projects for Nosana Testnet
+          No repositories found..
         </div>
         <template v-for="repository in filteredRepositories">
           <div :key="repository.id" class="column is-6 is-3-fullhd is-3-widescreen is-4-desktop">
@@ -182,12 +183,13 @@ export default {
       projects: null,
       user: null,
       search: null,
-      interval: null
+      interval: null,
+      network: process.env.NUXT_ENV_SOL_NETWORK
     };
   },
   computed: {
     loggedIn () {
-      return this.$sol && this.$sol.token;
+      return this.$auth && this.$auth.loggedIn;
     },
     filteredRepositories () {
       let filteredRepositories = this.repositories;
@@ -203,14 +205,14 @@ export default {
     }
   },
   watch: {
-    '$sol.token' (token) {
-      if (token) {
+    '$auth.loggedIn' (loggedIn) {
+      if (loggedIn) {
         this.getUser();
       }
     }
   },
   created () {
-    if (this.$sol && this.$sol.token) {
+    if (this.loggedIn) {
       this.getUser();
     }
     this.getActiveRepositories();

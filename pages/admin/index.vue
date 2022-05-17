@@ -202,6 +202,7 @@ export default {
   components: {
 
   },
+  middleware: 'auth',
   data () {
     return {
       loading: false,
@@ -217,9 +218,6 @@ export default {
     };
   },
   computed: {
-    loggedIn () {
-      return (this.$sol && this.$sol.token);
-    },
     maxPage () {
       return Math.ceil(this.userCount / 20);
     }
@@ -231,12 +229,7 @@ export default {
   },
 
   mounted () {
-    if (!this.loggedIn) {
-      this.$sol.loginModal = true;
-      this.$router.push({ path: '/', query: { redirect: 'admin' } });
-    } else {
-      this.getUsers();
-    }
+    this.getUsers();
   },
   methods: {
     async setUserStatus (userId, status) {

@@ -68,7 +68,7 @@
               <span>Not posted to blockchain..</span>
             </div>
           </div>
-          <div v-if="user && (user.roles.includes('admin'))" class="level-right">
+          <div v-if="user && (user.roles && user.roles.includes('admin'))" class="level-right">
             <div class="level-item">
               <button class="button is-small is-danger" style="display: none" @click="postJob(commit.id)">
                 Retry transaction
@@ -165,7 +165,7 @@
                 </div>
               </div>
             </template>
-            <div v-for="(command, index) in commit.job_content.commands" :key="index" class="box is-info">
+            <div v-for="(command, index) in commit.job_content.pipeline.commands" :key="index" class="box is-info">
               <div>
                 <div
                   class="is-clickable is-flex is-flex-wrap-wrap is-align-items-center"
@@ -240,6 +240,7 @@
 
 <script>
 import bs58 from 'bs58';
+import { parse } from 'yaml';
 
 export default {
   data () {
@@ -255,8 +256,8 @@ export default {
     };
   },
   watch: {
-    '$sol.token' (token) {
-      if (token) {
+    '$auth.loggedIn' (loggedIn) {
+      if (loggedIn) {
         this.getUser();
       }
     }
@@ -277,7 +278,7 @@ export default {
     if (!this.clockInterval) {
       this.clockInterval = setInterval(this.updateClock, 1000);
     }
-    if (this.$sol && this.$sol.token) {
+    if (this.$auth && this.$auth.loggedIn) {
       this.getUser();
     }
   },
@@ -326,6 +327,11 @@ export default {
       this.$set(this.commit, 'jobIpfsHash', hash);
       if (!this.commit.job_content) {
         this.commit.job_content = await this.retrieveIpfsContent(hash);
+      }
+      if (this.commit.job_content.pipeline) {
+        this.$set(this.commit.job_content, 'pipeline', parse(this.commit.job_content.pipeline));
+      } else {
+        this.$set(this.commit.job_content, 'pipeline', { commands: this.commit.job_content.commands });
       }
     },
     getResult (ipfsResult) {
