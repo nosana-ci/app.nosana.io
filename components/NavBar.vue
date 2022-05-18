@@ -30,7 +30,7 @@
                 <div>Pipelines</div>
               </nuxt-link>
             </div>
-            <div v-if="!publicKey" class="navbar-item" exact-active-class="is-active" @click="mobileMenu = false">
+            <div v-if="!loggedIn" class="navbar-item" exact-active-class="is-active" @click="mobileMenu = false">
               <nuxt-link
                 class="button is-accent is-outlined has-text-weight-semibold"
                 exact-active-class="is-active"
@@ -45,18 +45,10 @@
             <div v-else class="navbar-item" exact-active-class="is-active" @click="mobileMenu = false">
               <nuxt-link class="button is-accent has-text-weight-semibold" exact-active-class="is-active" to="/account">
                 <div class="blockchain-address" style="max-width: 140px;">
-                  {{ publicKey }}
+                  {{ $auth.user.address }}
                 </div>
               </nuxt-link>
             </div>
-            <!-- <div class="navbar-item" exact-active-class="is-active" @click="mobileMenu = false">
-              <a target="_blank" href="mailto:team@nosana.io"
-              class="button is-accent is-outlined px-5 is-wide" to="/account" exact-active-class="is-active">
-                <div>
-                  Contact
-                </div>
-              </a>
-            </div> -->
           </div>
         </div>
       </div>
@@ -73,8 +65,8 @@ export default {
     };
   },
   computed: {
-    publicKey () {
-      return (this.$sol) ? this.$sol.publicKey : null;
+    loggedIn () {
+      return (this.$auth && this.$auth.loggedIn);
     }
   }
 };

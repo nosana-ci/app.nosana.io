@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div v-show="totalPages > 1" class="container">
     <nav class="pagination is-centered" role="navigation" aria-label="pagination">
       <a
         class="pagination-previous"
@@ -68,11 +68,9 @@
 <script>
 export default {
   props: {
-    commits: {
-      type: Array,
-      default () {
-        return [];
-      }
+    totalPages: {
+      type: Number,
+      required: true
     },
     maxVisibleButtons: {
       type: Number,
@@ -89,9 +87,6 @@ export default {
     }
   },
   computed: {
-    totalPages () {
-      return Math.ceil(this.commits.length / this.perPage);
-    },
     startPage () {
       if (this.currentPage === 1) {
         return 1;

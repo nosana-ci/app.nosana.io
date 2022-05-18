@@ -4,10 +4,7 @@
       <h1 class="title is-4">
         Your Account
       </h1>
-      <div v-if="!loggedIn">
-        <a href="" @click.prevent="$sol.loginModal = true">Connect your Solana Wallet</a> to continue
-      </div>
-      <div v-else>
+      <div>
         <div>
           <div class="columns">
             <div v-if="user" class="column is-4">
@@ -21,8 +18,8 @@
                     <a @click.prevent="editUser = true"><i class="fas fa-edit" /></a>
                   </h2>
                   <h2 class="subtitle is-6 mb-1">
-                    <a target="_blank" :href="`https://solscan.io/address/${publicKey}`" class="blockchain-address" style="max-width: 140px;">
-                      {{ publicKey }}
+                    <a target="_blank" :href="`https://solscan.io/address/${$auth.user.address}`" class="blockchain-address" style="max-width: 140px;">
+                      {{ $auth.user.address }}
                     </a>
                   </h2>
                   <a v-if="!user.name" @click.prevent="editUser = true"><i class="fas fa-edit" /> Edit Project info</a>
@@ -197,7 +194,7 @@
 
         <repository-list :repositories="repositories" />
       </div>
-      <div v-if="publicKey" class="has-text-centered mt-6">
+      <div class="has-text-centered mt-6">
         <a class="has-text-danger" @click.prevent="$sol.logout">Logout</a>
       </div>
     </div>
@@ -209,6 +206,7 @@ import RepositoryList from '../components/RepositoryList.vue';
 
 export default {
   components: { RepositoryList },
+  middleware: 'auth',
   data () {
     return {
       user: null,
@@ -226,10 +224,7 @@ export default {
   },
   computed: {
     loggedIn () {
-      return (this.$sol) ? this.$sol.token : null;
-    },
-    publicKey () {
-      return (this.$sol) ? this.$sol.publicKey : null;
+      return this.$auth && this.$auth.loggedIn;
     },
     reward () {
       let reward = 0;
@@ -240,27 +235,13 @@ export default {
       return Math.min(reward + this.usedBalance, 10000);
     }
   },
-  watch: {
-    '$sol.token' (token) {
-      if (token) {
-        this.getUser();
-        this.getUserRepositories();
-        this.getUserJobPrices();
-      }
-    }
-  },
   created () {
-    if (this.$sol && this.$sol.token) {
-      this.getUser();
-      this.getUserRepositories();
-      this.getUserJobPrices();
-    }
+    this.getUser();
+    this.getUserRepositories();
+    this.getUserJobPrices();
     if (this.$route.query.edit) {
       this.editUser = true;
     }
-  },
-  mounted () {
-    if (!this.publicKey) { this.$sol.loginModal = true; }
   },
   methods: {
     async getUser () {

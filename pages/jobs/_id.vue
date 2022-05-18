@@ -27,8 +27,6 @@
         <h1 class="title">
           {{ commit.payload.message.split('\n')[0] }}
         </h1>
-        <!-- resultIpfsHash: {{ commit.resultIpfsHash }}
-        jobIpfsHash: {{ commit.jobIpfsHash }} -->
         <div class="box">
           <div v-if="commit.job" class="mb-4">
             <i class="fas fa-list mr-4 has-text-accent" />
@@ -68,7 +66,7 @@
               <span>Not posted to blockchain..</span>
             </div>
           </div>
-          <div v-if="user && (user.roles.includes('admin'))" class="level-right">
+          <div v-if="user && (user.roles && user.roles.includes('admin'))" class="level-right">
             <div class="level-item">
               <button class="button is-small is-danger" style="display: none" @click="postJob(commit.id)">
                 Retry transaction
@@ -84,9 +82,9 @@
             <li :class="{'is-active': tab === 'logs'}">
               <a @click.prevent="tab='logs'">Job Info</a>
             </li>
-            <!-- <li :class="{'is-active': tab === 'payload'}">
-              <a @click.prevent="tab='payload'">Payload</a>
-            </li> -->
+            <li :class="{'is-active': tab === 'ipfs'}">
+              <a @click.prevent="tab='ipfs'">IPFS</a>
+            </li>
           </ul>
         </div>
         <div v-if="tab === 'result'">
@@ -104,7 +102,6 @@
             </small>
             <template v-for="gitCommand in ['clone', 'checkout']">
               <div
-                v-if="commit.cache_result && commit.cache_result.results[gitCommand]"
                 :key="gitCommand"
                 class="box is-info"
               >
@@ -116,12 +113,23 @@
                     <h3
                       class="subtitle m-0"
                       :class="{
-                        'has-text-success': !commit.cache_result.results[gitCommand][0].includes('error'),
-                        'has-text-danger': commit.cache_result.results[gitCommand][0].includes('error')
+                        'has-text-success':
+                          commit.cache_result && commit.cache_result.results[gitCommand]
+                          && !commit.cache_result.results[gitCommand][0].includes('error'),
+                        'has-text-danger':
+                          commit.cache_result && commit.cache_result.results[gitCommand]
+                          && commit.cache_result.results[gitCommand][0].includes('error')
                       }"
                     >
-                      <i v-if="commit.cache_result.results[gitCommand][0].includes('error')" class="fas fa-times" />
-                      <i v-else class="fas fa-check" />
+                      <i
+                        v-if="commit.cache_result && commit.cache_result.results[gitCommand]
+                          && commit.cache_result.results[gitCommand][0].includes('error')"
+                        class="fas fa-times"
+                      />
+                      <i
+                        v-else-if="commit.cache_result && commit.cache_result.results[gitCommand]"
+                        class="fas fa-check"
+                      />
                       <span>git {{ gitCommand }}</span>
                     </h3>
                     <div class="is-size-7 has-overresult-ellipses mr-4" style="margin-left: auto">
@@ -134,52 +142,60 @@
                   </div>
                   <div v-if="step === gitCommand">
                     <div>
-                      <template v-if="!commit.cache_result.results[gitCommand][0].includes('error')">
+                      <template
+                        v-if="commit.cache_result && commit.cache_result.results[gitCommand]
+                          && !commit.cache_result.results[gitCommand][0].includes('error')"
+                      >
                         <pre>{{ commit.cache_result.results[gitCommand] }}</pre>
                       </template>
-                      <template v-else>
+                      <template v-else-if="commit.cache_result && commit.cache_result.results[gitCommand]">
                         <pre
                           class="has-text-danger"
                         ><template
                         v-for="(error, index) in commit.cache_result.results[gitCommand]"
                         ><p v-if="index !== 0" :key="error">{{ error }}</p></template></pre>
                       </template>
+                      <div v-else>
+                        No results yet..
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </template>
-            <div v-for="(command, index) in commit.job_content.commands" :key="index" class="box is-info">
+            <div v-for="(command, index) in commit.job_content.pipeline.commands" :key="index" class="box is-info">
               <div>
                 <div
                   class="is-clickable is-flex is-flex-wrap-wrap is-align-items-center"
                   @click="step !== index ? step = index : step = null"
                 >
-                  <h3
-                    class="subtitle m-0"
-                    :class="{
-                      'has-text-success': commit.cache_result && commit.cache_result.results
-                        && commit.cache_result.results[`cmd-${index}`]
-                        && commit.cache_result.results[`cmd-${index}`].exit === 0,
-                      'has-text-danger': commit.cache_result && commit.cache_result.results
-                        && commit.cache_result.results[`cmd-${index}`]
-                        && commit.cache_result.results[`cmd-${index}`].exit > 0
-                    }"
+                  <template
+                    v-if="(commit.cache_result && commit.cache_result.results)
+                      && ((commit.cache_result.results[`cmd-${index}`]
+                        && commit.cache_result.results[`cmd-${index}`].exit === 0) ||
+                        (commit.cache_result.results['docker-cmds']
+                          && commit.cache_result.results['docker-cmds'][0] === 'success'))"
                   >
-                    <i
-                      v-if="commit.cache_result && commit.cache_result.results
-                        && commit.cache_result.results[`cmd-${index}`]
-                        && commit.cache_result.results[`cmd-${index}`].exit > 0"
-                      class="fas fa-times"
-                    />
-                    <i
-                      v-else-if="commit.cache_result && commit.cache_result.results
-                        && commit.cache_result.results[`cmd-${index}`]
-                        && commit.cache_result.results[`cmd-${index}`].exit === 0"
-                      class="fas fa-check"
-                    />
-                    <span>{{ command }}</span>
-                  </h3>
+                    <h3 class="subtitle m-0 has-text-success">
+                      <i
+                        v-if="commit.cache_result && commit.cache_result.results"
+                        class="fas fa-check"
+                      />
+                      <span>{{ command }}</span>
+                    </h3>
+                  </template>
+                  <template v-else>
+                    <h3
+                      class="subtitle m-0"
+                      :class="{'has-text-danger': commit.cache_result && commit.cache_result.results}"
+                    >
+                      <i
+                        v-if="commit.cache_result && commit.cache_result.results"
+                        class="fas fa-times"
+                      />
+                      <span>{{ command }}</span>
+                    </h3>
+                  </template>
                   <div class="is-size-7 has-overresult-ellipses mr-4" style="margin-left: auto">
                     <span v-if="commit.cache_result">node: {{ commit.cache_result['nos-id'] }}</span>
                     <span v-else>pending</span>
@@ -190,18 +206,27 @@
                 </div>
                 <div v-if="step === index">
                   <div>
+                    <div v-if="!commit.cache_result">
+                      No results yet..
+                    </div>
                     <pre
                       v-if="commit.cache_result && commit.cache_result.results
-                        && commit.cache_result.results[`cmd-${index}`].out"
+                        && (commit.cache_result.results[`cmd-${index}`]
+                          && commit.cache_result.results[`cmd-${index}`].out)"
                     >{{ commit.cache_result.results[`cmd-${index}`].out }}</pre>
                     <pre
                       v-if="commit.cache_result && commit.cache_result.results
-                        && commit.cache_result.results[`cmd-${index}`].err"
+                        && (commit.cache_result.results[`cmd-${index}`]
+                          && commit.cache_result.results[`cmd-${index}`].err)"
                       class="has-text-danger"
                     >{{ commit.cache_result.results[`cmd-${index}`].err }}</pre>
-                    <div v-else>
-                      No results yet..
-                    </div>
+                    <pre
+                      v-if="commit.cache_result && commit.cache_result.results
+                        && (commit.cache_result.results['docker-cmds']
+                          && commit.cache_result.results['docker-cmds'][1].find(c => c.cmd === command))"
+                      :class="{'has-text-danger':
+                        commit.cache_result.results['docker-cmds'][1].find(c => c.cmd === command).error}"
+                    >{{ commit.cache_result.results['docker-cmds'][1].find(c => c.cmd === command).log }}</pre>
                   </div>
                 </div>
               </div>
@@ -214,6 +239,14 @@
         <div v-else-if="tab === 'payload'">
           <pre>{{ commit.payload }}</pre>
         </div>
+        <div v-else-if="tab === 'ipfs'">
+          <div v-if="commit.jobIpfsHash">
+            Job IPFS: <a :href="'https://nosana.mypinata.cloud/ipfs/' + commit.jobIpfsHash" target="_blank">{{ commit.jobIpfsHash }}</a>
+          </div>
+          <div v-if="commit.resultIpfsHash">
+            Result IPFS: <a :href="'https://nosana.mypinata.cloud/ipfs/' + commit.resultIpfsHash" target="_blank">{{ commit.resultIpfsHash }}</a>
+          </div>
+        </div>
       </div>
       <div v-else>
         Loading..
@@ -224,6 +257,7 @@
 
 <script>
 import bs58 from 'bs58';
+import { parse } from 'yaml';
 
 export default {
   data () {
@@ -239,8 +273,8 @@ export default {
     };
   },
   watch: {
-    '$sol.token' (token) {
-      if (token) {
+    '$auth.loggedIn' (loggedIn) {
+      if (loggedIn) {
         this.getUser();
       }
     }
@@ -261,7 +295,7 @@ export default {
     if (!this.clockInterval) {
       this.clockInterval = setInterval(this.updateClock, 1000);
     }
-    if (this.$sol && this.$sol.token) {
+    if (this.$auth && this.$auth.loggedIn) {
       this.getUser();
     }
   },
@@ -311,6 +345,11 @@ export default {
       if (!this.commit.job_content) {
         this.commit.job_content = await this.retrieveIpfsContent(hash);
       }
+      if (this.commit.job_content.pipeline) {
+        this.$set(this.commit.job_content, 'pipeline', parse(this.commit.job_content.pipeline));
+      } else {
+        this.$set(this.commit.job_content, 'pipeline', { commands: this.commit.job_content.commands });
+      }
     },
     getResult (ipfsResult) {
       // this.result = { 'nos-id': 'IJnYh-qz3uCPTQUk9bCiF', 'finished-at': 1645545696, results: { 'cmd-0': { exit: 0, out: 'audited 1581 packages in 9.248s\n\n124 packages are looking for funding\n  run `npm fund` for details\n\nfound 44 vulnerabilities (2 low, 29 moderate, 13 high)\n  run `npm audit fix` to fix them, or `npm audit` for details\n', err: '' }, 'cmd-1': { exit: 0, out: "yarn run v1.21.1\n$ set -ex; npm run pretty; eslint . --ext .js,.ts\n\n> @solana/web3.js@0.0.0-development pretty\n> prettier --check '{,{src,test}/**/}*.{j,t}s'\n\nChecking formatting...\nAll matched files use Prettier code style!\nDone in 12.01s.\n", err: '+ npm run pretty\n+ eslint . --ext .js,.ts\n' }, 'cmd-2': { exit: 0, out: "yarn run v1.21.1\n$ mocha -r ts-node/register './test/**/*.test.ts'\n\n\n  Account\n    ✓ generate new account\n    ✓ account from secret key\n\n  AgentManager\n    ✓ works (5005ms)\n\n  Cluster Util\n    ✓ invalid\n    ✓ devnet\n\n  Connection\n    ✓ should pass HTTP headers to RPC\n    ✓ should allow middleware to augment request\n    ✓ should attribute middleware fatals to the middleware\n    ✓ should not attribute fetch errors to the middleware\n    ✓ get account info - not found\n    ✓ get multiple accounts info\n    ✓ get program accounts (140ms)\n    ✓ get balance\n    ✓ get inflation\n    ✓ get inflation reward\n    ✓ get epoch info\n    ✓ get epoch schedule\n    ✓ get leader schedule\n    ✓ get slot\n    ✓ get slot leader\n    ✓ get slot leaders\n    ✓ get cluster nodes\n    ✓ confirm transaction - error\n    ✓ get transaction count\n    ✓ get total supply\n    ✓ get minimum balance for rent exemption\n    ✓ get confirmed signatures for address\n    ✓ get signatures for address\n    ✓ get parsed confirmed transactions\n    ✓ get transaction\n    ✓ get confirmed transaction\n    ✓ get parsed confirmed transaction coerces public keys of inner instructions\n    ✓ get block\n    ✓ get confirmed block\n    ✓ get blocks between two slots\n    ✓ get blocks from starting slot\n    ✓ get block signatures\n    ✓ get recent blockhash\n    ✓ get latest blockhash\n    ✓ get fee calculator\n    ✓ get fee for message\n    ✓ get block time\n    ✓ get minimum ledger slot\n    ✓ get first available block\n    ✓ get supply\n    ✓ get supply without accounts\n    ✓ get performance samples\n    ✓ get performance samples limit too high\n    ✓ get largest accounts (82ms)\n    ✓ stake activation should throw when called for not delegated account\n    ✓ stake activation should only accept state with valid string literals\n    ✓ getVersion\n    ✓ getGenesisHash\n    ✓ request airdrop\n    ✓ transaction failure (123ms)\n\n  EpochSchedule\n    ✓ slot methods work\n\n  Keypair\n    ✓ new keypair\n    ✓ generate new keypair\n    ✓ create keypair from secret key\n    ✓ creating keypair from invalid secret key throws error\n    ✓ creating keypair from invalid secret key succeeds if validation is skipped\n    ✓ generate keypair from random seed\n\n  Nonce\n    ✓ create and query nonce account (83ms)\n    ✓ create and query nonce account with seed (51ms)\n\n  PublicKey\n    ✓ invalid\n    ✓ equals\n    ✓ toBase58\n    ✓ toJSON\n    ✓ toBuffer\n    ✓ equals (II)\n    ✓ createWithSeed\n    ✓ createProgramAddress\n    ✓ findProgramAddress\n    ✓ isOnCurve\n    ✓ canBeSerializedWithBorsh\n    ✓ canBeDeserializedUncheckedWithBorsh\n\n  shortvec\n    ✓ decodeLength\n    ✓ encodeLength\n\n  StakeProgram\n    ✓ createAccountWithSeed\n    ✓ createAccount\n    ✓ delegate\n    ✓ authorize\n    ✓ authorize with custodian\n    ✓ authorizeWithSeed\n    ✓ authorizeWithSeed with custodian\n    ✓ split\n    ✓ splitWithSeed\n    ✓ merge\n    ✓ withdraw\n    ✓ withdraw with custodian\n    ✓ deactivate\n    ✓ StakeInstructions\n\n  SystemProgram\n    ✓ createAccount\n    ✓ transfer\n    ✓ transferWithSeed\n    ✓ allocate\n    ✓ allocateWithSeed\n    ✓ assign\n    ✓ assignWithSeed\n    ✓ createAccountWithSeed\n    ✓ createNonceAccount\n    ✓ createNonceAccount with seed\n    ✓ nonceAdvance\n    ✓ nonceWithdraw\n    ✓ nonceAuthorize\n    ✓ non-SystemInstruction error\n\n  Transaction Payer\n    ✓ transaction-payer (97ms)\n\n  Transaction\n    ✓ partialSign (130ms)\n    ✓ transfer signatures (57ms)\n    ✓ dedup signatures\n    ✓ use nonce (62ms)\n    ✓ parse wire format and serialize (61ms)\n    ✓ populate transaction\n    ✓ serialize unsigned transaction\n    ✓ deprecated - externally signed stake delegate\n    ✓ externally signed stake delegate\n    ✓ can serialize, deserialize, and reserialize with a partial signer (85ms)\n    compileMessage\n      ✓ accountKeys are ordered (40ms)\n      ✓ payer is first account meta (61ms)\n      ✓ validation\n      ✓ payer is writable (67ms)\n    dedupe\n      ✓ setSigners\n      ✓ sign\n\n  ValidatorInfo\n    ✓ from config account data\n\n  VoteProgram\n    ✓ createAccount\n    ✓ initialize\n    ✓ authorize\n    ✓ withdraw\n\n\n  128 passing (7s)\n\nDone in 14.26s.\n", err: 'Transaction references a signature that is unnecessary, only the fee payer and instruction signer accounts should sign a transaction. This behavior is deprecated and will throw an error in the next major version release.\nTransaction references a signature that is unnecessary, only the fee payer and instruction signer accounts should sign a transaction. This behavior is deprecated and will throw an error in the next major version release.\nTransaction references a signature that is unnecessary, only the fee payer and instruction signer accounts should sign a transaction. This behavior is deprecated and will throw an error in the next major version release.\nTransaction references a signature that is unnecessary, only the fee payer and instruction signer accounts should sign a transaction. This behavior is deprecated and will throw an error in the next major version release.\nTransaction references a signature that is unnecessary, only the fee payer and instruction signer accounts should sign a transaction. This behavior is deprecated and will throw an error in the next major version release.\nTransaction references a signature that is unnecessary, only the fee payer and instruction signer accounts should sign a transaction. This behavior is deprecated and will throw an error in the next major version release.\nTransaction references a signature that is unnecessary, only the fee payer and instruction signer accounts should sign a transaction. This behavior is deprecated and will throw an error in the next major version release.\nTransaction references a signature that is unnecessary, only the fee payer and instruction signer accounts should sign a transaction. This behavior is deprecated and will throw an error in the next major version release.\nNo instructions provided\nNo instructions provided\nNo instructions provided\nNo instructions provided\n' } } }
@@ -324,10 +363,10 @@ export default {
       try {
         const commit = await this.$axios.$get(`/commits/${id}`);
         this.commit = commit;
-        if (this.commit.status === 'RUNNING') {
+        if (this.commit.status === 'RUNNING' || this.commit.status === 'QUEUED') {
           if (!this.refreshInterval) {
             // Refresh status every 10 seconds
-            this.refreshInterval = setInterval(this.getCommit, parseInt(60000, 10));
+            this.refreshInterval = setInterval(this.getCommit, parseInt(10000, 10));
           }
         } else if (this.refreshInterval) {
           clearInterval(this.refreshInterval);

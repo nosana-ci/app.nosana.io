@@ -76,9 +76,35 @@ export default {
   },
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
-    '@nuxtjs/axios'
+    '@nuxtjs/axios',
+    '@nuxtjs/auth-next'
   ],
-
+  auth: {
+    strategies: {
+      local: {
+        endpoints: {
+          login: { url: `${process.env.NUXT_ENV_BACKEND_URL}/login`, method: 'post', propertyName: 'token' },
+          user: { url: `${process.env.NUXT_ENV_BACKEND_URL}/user`, method: 'get', propertyName: '' },
+          logout: false
+        },
+        user: {
+          property: ''
+        }
+      }
+    },
+    watchLoggedIn: true,
+    // localStorage: false,
+    // cookie: false,
+    fullPathRedirect: true,
+    redirect: {
+      login: '/login',
+      logout: '/login',
+      home: false
+    },
+    plugins: [
+      { src: '~/plugins/axios.js' }
+    ]
+  },
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
     transpile: [
