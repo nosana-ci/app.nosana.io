@@ -76,7 +76,7 @@
               <td>{{ commit.payload.message.split("\n")[0] }}</td>
               <td>
                 <a :href="commit.payload.url" target="_blank" @click.stop>{{
-                  commit.commit
+                  commit.commit | shortenHashes
                 }}</a>
               </td>
               <td>{{ $moment(commit.created_at).fromNow() }}</td>
@@ -123,6 +123,16 @@
 import PaginationHelper from '@/components/Pagination/PaginationHelper.vue';
 export default {
   components: { PaginationHelper },
+  filters: {
+    shortenHashes (value) {
+      if (!value) {
+        return;
+      }
+      const firstCharacters = value.slice(1, 4);
+      const lastCharacters = value.slice(value.length - 3, value.length);
+      return firstCharacters + '... ' + lastCharacters;
+    }
+  },
   data () {
     return {
       showPipeline: true,
