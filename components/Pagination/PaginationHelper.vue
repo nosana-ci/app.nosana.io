@@ -131,15 +131,19 @@ export default {
     },
     onClickPreviousPage () {
       this.$emit('pagechanged', this.currentPage - 1);
+      this.$router.push('?' + (this.currentPage - 1));
     },
     onClickPage (page) {
       this.$emit('pagechanged', page);
+      this.$router.push('?' + page);
     },
     onClickNextPage () {
       this.$emit('pagechanged', this.currentPage + 1);
+      this.$router.push('?' + (this.currentPage + 1));
     },
     onClickLastPage () {
       this.$emit('pagechanged', this.totalPages);
+      this.$router.push('?' + this.totalPages);
     },
     isPageActive (page) {
       return this.currentPage === page;
