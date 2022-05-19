@@ -123,22 +123,23 @@ export default {
   methods: {
     onClickFirstPage () {
       this.$emit('pagechanged', 1);
+      this.$router.replace({ query: { page: 1 } });
     },
     onClickPreviousPage () {
       this.$emit('pagechanged', this.currentPage - 1);
-      this.$router.push('?' + (this.currentPage - 1));
+      this.$router.replace({ query: { page: this.currentPage - 1 } });
     },
     onClickPage (page) {
       this.$emit('pagechanged', page);
-      this.$router.push('?' + page);
+      this.$router.replace({ query: { page } });
     },
     onClickNextPage () {
       this.$emit('pagechanged', this.currentPage + 1);
-      this.$router.push('?' + (this.currentPage + 1));
+      this.$router.replace({ query: { page: this.currentPage + 1 } });
     },
     onClickLastPage () {
       this.$emit('pagechanged', this.totalPages);
-      this.$router.push('?' + this.totalPages);
+      this.$router.replace({ query: { page: this.totalPages } });
     },
     isPageActive (page) {
       return this.currentPage === page;

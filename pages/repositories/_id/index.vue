@@ -125,6 +125,7 @@ export default {
   components: { PaginationHelper },
   data () {
     return {
+      queryPage: this.$route.query.page || 1,
       showPipeline: true,
       pagination: null,
       commits: null,
@@ -140,10 +141,16 @@ export default {
       if (loggedIn) {
         this.getUser();
       }
+    },
+    '$route.query.page' () {
+      console.log(this.$route.query.page);
+      this.queryPage = this.$route.query.page;
+      this.getCommits(this.queryPage);
     }
   },
   created () {
-    this.getCommits();
+    // this.$watch(() => this.$route.query, query => (this.getCommits(query.page)));
+    this.getCommits(this.queryPage);
     this.getRepository();
     if (this.$auth && this.$auth.loggedIn) {
       this.getUser();
@@ -171,7 +178,7 @@ export default {
         });
       }
     },
-    async getCommits (page = 1) {
+    async getCommits (page) {
       try {
         const commits = await this.$axios.$get(
           `/repositories/${this.$route.params.id}/commits?page=${page}`
