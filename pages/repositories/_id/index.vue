@@ -143,7 +143,6 @@ export default {
       }
     },
     '$route.query.page' () {
-      console.log(this.$route.query.page);
       this.queryPage = this.$route.query.page;
       this.getCommits(this.queryPage);
     }
