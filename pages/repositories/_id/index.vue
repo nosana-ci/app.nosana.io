@@ -154,7 +154,6 @@ export default {
     }
   },
   created () {
-    // this.$watch(() => this.$route.query, query => (this.getCommits(query.page)));
     this.getCommits(this.queryPage);
     this.getRepository();
     if (this.$auth && this.$auth.loggedIn) {
