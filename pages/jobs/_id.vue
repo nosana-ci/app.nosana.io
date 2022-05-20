@@ -174,7 +174,8 @@
                       && ((commit.cache_result.results[`cmd-${index}`]
                         && commit.cache_result.results[`cmd-${index}`].exit === 0) ||
                         (commit.cache_result.results['docker-cmds']
-                          && commit.cache_result.results['docker-cmds'][0] === 'success'))"
+                          && commit.cache_result.results['docker-cmds'][1].find(c => c.cmd === command)
+                          && !commit.cache_result.results['docker-cmds'][1].find(c => c.cmd === command).error))"
                   >
                     <h3 class="subtitle m-0 has-text-success">
                       <i
@@ -184,15 +185,21 @@
                       <span>{{ command }}</span>
                     </h3>
                   </template>
+                  <template
+                    v-else-if="(commit.cache_result && commit.cache_result.results)
+                      && ((commit.cache_result.results[`cmd-${index}`]
+                        && commit.cache_result.results[`cmd-${index}`].exit > 0) ||
+                        (commit.cache_result.results['docker-cmds']
+                          && commit.cache_result.results['docker-cmds'][1].find(c => c.cmd === command)
+                          && commit.cache_result.results['docker-cmds'][1].find(c => c.cmd === command).error))"
+                  >
+                    <h3 class="subtitle m-0 has-text-danger">
+                      <i class="fas fa-times" />
+                      <span>{{ command }}</span>
+                    </h3>
+                  </template>
                   <template v-else>
-                    <h3
-                      class="subtitle m-0"
-                      :class="{'has-text-danger': commit.cache_result && commit.cache_result.results}"
-                    >
-                      <i
-                        v-if="commit.cache_result && commit.cache_result.results"
-                        class="fas fa-times"
-                      />
+                    <h3 class="subtitle m-0">
                       <span>{{ command }}</span>
                     </h3>
                   </template>

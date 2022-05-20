@@ -37,7 +37,7 @@
                 to="/account"
                 @click="$sol.loginModal = true"
               >
-                <div>
+                <div class="blockchain-address" style="max-width: 140px;">
                   Connect Wallet
                 </div>
               </nuxt-link>
