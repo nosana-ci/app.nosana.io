@@ -1,5 +1,13 @@
-# Nosana Platform
+# Nosana Platform Dev
+#In this example:
 
+#plugins/vue-tooltip.js imports our tooltip and tells Vue to use it.
+
+#pages/index.vue uses our plugin.
+
+#nuxt.config.js contains the plugins property to register our plugin and the css property to add our tooltip css.
+
+#package.json shows our tooltip package has been installed.
 ## Build Setup
 
 ```bash
