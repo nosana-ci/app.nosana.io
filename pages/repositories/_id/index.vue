@@ -128,8 +128,8 @@ export default {
       if (!value) {
         return;
       }
-      const firstCharacters = value.slice(1, 4);
-      const lastCharacters = value.slice(value.length - 3, value.length);
+      const firstCharacters = value.slice(0, 4);
+      const lastCharacters = value.slice(value.length - 4, value.length);
       return firstCharacters + '... ' + lastCharacters;
     }
   },
