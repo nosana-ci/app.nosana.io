@@ -48,11 +48,10 @@
                 exact-active-class="is-active"
                 to="/account"
               >
-                <div class="blockchain-address is-flex" style="max-width: 160px;">
-                  <img
-                    style="border-radius: 50%; margin-right: 5px; max-height: 25px;"
-                    :src="$auth.user.image"
-                  >
+                <span v-if="$auth.user.image" class="icon is-small has-background-light p-1 has-radius">
+                  <img :src="$auth.user.image">
+                </span>
+                <div class="blockchain-address" style="max-width: 140px;">
                   {{ $auth.user.address }}
                 </div>
               </nuxt-link>
