@@ -37,7 +37,7 @@
                 to="/account"
                 @click="$sol.loginModal = true"
               >
-                <div>
+                <div class="test">
                   Connect Wallet
                 </div>
               </nuxt-link>
