@@ -11,7 +11,7 @@
         :disabled="isInFirstPage"
         aria-label="Go to previous page"
         :class="{ 'is-disabled': isInFirstPage }"
-        @click="onClickFirstPage"
+        @click="changePage(1)"
       >
         First
       </a>
@@ -21,7 +21,7 @@
         :disabled="isInLastPage"
         aria-label="Go to next page"
         :class="{ 'is-disabled': isInLastPage }"
-        @click="onClickLastPage"
+        @click="changePage(totalPages)"
       >
         Last
       </a>
@@ -33,7 +33,7 @@
             type="button"
             :disabled="isInFirstPage"
             aria-label="Go to first page"
-            @click="onClickPreviousPage"
+            @click="changePage(currentPage - 1)"
           >
             Previous
           </a>
@@ -46,7 +46,7 @@
             class="pagination-link"
             :class="{ 'is-current': isPageActive(page.name) }"
             :aria-label="`Go to page number ${page.name}`"
-            @click="onClickPage(page.name)"
+            @click="changePage(page.name)"
           >
             {{ page.name }}
           </a>
@@ -59,7 +59,7 @@
             :disabled="isInLastPage"
             aria-label="Go to last page"
             :class="{ 'is-disabled': isInLastPage }"
-            @click="onClickNextPage"
+            @click="changePage(currentPage + 1)"
           >
             Next
           </a>
@@ -129,25 +129,9 @@ export default {
     }
   },
   methods: {
-    onClickFirstPage () {
-      this.$emit('pagechanged', 1);
-      this.$router.replace({ query: { page: 1 } });
-    },
-    onClickPreviousPage () {
-      this.$emit('pagechanged', this.currentPage - 1);
-      this.$router.replace({ query: { page: this.currentPage - 1 } });
-    },
-    onClickPage (page) {
+    changePage (page) {
       this.$emit('pagechanged', page);
       this.$router.replace({ query: { page } });
-    },
-    onClickNextPage () {
-      this.$emit('pagechanged', this.currentPage + 1);
-      this.$router.replace({ query: { page: this.currentPage + 1 } });
-    },
-    onClickLastPage () {
-      this.$emit('pagechanged', this.totalPages);
-      this.$router.replace({ query: { page: this.totalPages } });
     },
     isPageActive (page) {
       return this.currentPage === page;

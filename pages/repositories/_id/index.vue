@@ -151,10 +151,6 @@ export default {
       if (loggedIn) {
         this.getUser();
       }
-    },
-    '$route.query.page' () {
-      this.queryPage = this.$route.query.page;
-      this.getCommits(this.queryPage);
     }
   },
   created () {
