@@ -42,9 +42,17 @@
                 </div>
               </nuxt-link>
             </div>
-            <div v-else class="navbar-item" exact-active-class="is-active" @click="mobileMenu = false">
-              <nuxt-link class="button is-accent has-text-weight-semibold" exact-active-class="is-active" to="/account">
-                <div class="blockchain-address" style="max-width: 140px;">
+            <div v-else class="navbar-item;" exact-active-class="is-active" @click="mobileMenu = false">
+              <nuxt-link
+                class="button is-accent has-text-weight-semibold"
+                exact-active-class="is-active"
+                to="/account"
+              >
+                <div class="blockchain-address is-flex" style="max-width: 160px;">
+                  <img
+                    style="border-radius: 50%; margin-right: 5px; max-height: 25px;"
+                    :src="$auth.user.image"
+                  >
                   {{ $auth.user.address }}
                 </div>
               </nuxt-link>
