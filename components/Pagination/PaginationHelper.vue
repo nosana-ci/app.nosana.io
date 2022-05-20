@@ -1,13 +1,17 @@
 <template>
   <div v-show="totalPages > 1" class="container">
-    <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+    <nav
+      class="pagination is-centered"
+      role="navigation"
+      aria-label="pagination"
+    >
       <a
         class="pagination-previous"
         type="button"
         :disabled="isInFirstPage"
         aria-label="Go to previous page"
-        :class="{'is-disabled': isInFirstPage}"
-        @click="onClickFirstPage"
+        :class="{ 'is-disabled': isInFirstPage }"
+        @click="changePage(1)"
       >
         First
       </a>
@@ -16,8 +20,8 @@
         type="button"
         :disabled="isInLastPage"
         aria-label="Go to next page"
-        :class="{'is-disabled': isInLastPage}"
-        @click="onClickLastPage"
+        :class="{ 'is-disabled': isInLastPage }"
+        @click="changePage(totalPages)"
       >
         Last
       </a>
@@ -25,11 +29,11 @@
         <li>
           <a
             class="pagination-link"
-            :class="{'is-disabled': isInFirstPage}"
+            :class="{ 'is-disabled': isInFirstPage }"
             type="button"
             :disabled="isInFirstPage"
             aria-label="Go to first page"
-            @click="onClickPreviousPage"
+            @click="changePage(currentPage - 1)"
           >
             Previous
           </a>
@@ -42,7 +46,7 @@
             class="pagination-link"
             :class="{ 'is-current': isPageActive(page.name) }"
             :aria-label="`Go to page number ${page.name}`"
-            @click="onClickPage(page.name)"
+            @click="changePage(page.name)"
           >
             {{ page.name }}
           </a>
@@ -54,8 +58,8 @@
             type="button"
             :disabled="isInLastPage"
             aria-label="Go to last page"
-            :class="{'is-disabled': isInLastPage}"
-            @click="onClickNextPage"
+            :class="{ 'is-disabled': isInLastPage }"
+            @click="changePage(currentPage + 1)"
           >
             Next
           </a>
@@ -91,15 +95,19 @@ export default {
       if (this.currentPage === 1) {
         return 1;
       }
-
+      if (this.totalPages === 2) {
+        return this.totalPages - 1;
+      }
       if (this.currentPage === this.totalPages) {
         return this.totalPages - this.maxVisibleButtons + 1;
       }
-
       return this.currentPage - 1;
     },
     endPage () {
-      return Math.min(this.startPage + this.maxVisibleButtons - 1, this.totalPages);
+      return Math.min(
+        this.startPage + this.maxVisibleButtons - 1,
+        this.totalPages
+      );
     },
     pages () {
       const range = [];
@@ -121,20 +129,9 @@ export default {
     }
   },
   methods: {
-    onClickFirstPage () {
-      this.$emit('pagechanged', 1);
-    },
-    onClickPreviousPage () {
-      this.$emit('pagechanged', this.currentPage - 1);
-    },
-    onClickPage (page) {
+    changePage (page) {
       this.$emit('pagechanged', page);
-    },
-    onClickNextPage () {
-      this.$emit('pagechanged', this.currentPage + 1);
-    },
-    onClickLastPage () {
-      this.$emit('pagechanged', this.totalPages);
+      this.$router.replace({ query: { page } });
     },
     isPageActive (page) {
       return this.currentPage === page;
@@ -144,7 +141,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.is-disabled{
-    pointer-events: none;
+.is-disabled {
+  pointer-events: none;
 }
-</style>>
+</style>
+>
