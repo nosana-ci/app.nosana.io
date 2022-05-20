@@ -1,12 +1,16 @@
 <template>
   <div v-show="totalPages > 1" class="container">
-    <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+    <nav
+      class="pagination is-centered"
+      role="navigation"
+      aria-label="pagination"
+    >
       <a
         class="pagination-previous"
         type="button"
         :disabled="isInFirstPage"
         aria-label="Go to previous page"
-        :class="{'is-disabled': isInFirstPage}"
+        :class="{ 'is-disabled': isInFirstPage }"
         @click="onClickFirstPage"
       >
         First
@@ -16,7 +20,7 @@
         type="button"
         :disabled="isInLastPage"
         aria-label="Go to next page"
-        :class="{'is-disabled': isInLastPage}"
+        :class="{ 'is-disabled': isInLastPage }"
         @click="onClickLastPage"
       >
         Last
@@ -25,7 +29,7 @@
         <li>
           <a
             class="pagination-link"
-            :class="{'is-disabled': isInFirstPage}"
+            :class="{ 'is-disabled': isInFirstPage }"
             type="button"
             :disabled="isInFirstPage"
             aria-label="Go to first page"
@@ -54,7 +58,7 @@
             type="button"
             :disabled="isInLastPage"
             aria-label="Go to last page"
-            :class="{'is-disabled': isInLastPage}"
+            :class="{ 'is-disabled': isInLastPage }"
             @click="onClickNextPage"
           >
             Next
@@ -91,15 +95,19 @@ export default {
       if (this.currentPage === 1) {
         return 1;
       }
-
+      if (this.totalPages === 2) {
+        return this.totalPages - 1;
+      }
       if (this.currentPage === this.totalPages) {
         return this.totalPages - this.maxVisibleButtons + 1;
       }
-
       return this.currentPage - 1;
     },
     endPage () {
-      return Math.min(this.startPage + this.maxVisibleButtons - 1, this.totalPages);
+      return Math.min(
+        this.startPage + this.maxVisibleButtons - 1,
+        this.totalPages
+      );
     },
     pages () {
       const range = [];
@@ -149,7 +157,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.is-disabled{
-    pointer-events: none;
+.is-disabled {
+  pointer-events: none;
 }
-</style>>
+</style>
+>
