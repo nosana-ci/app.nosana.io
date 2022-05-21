@@ -42,8 +42,69 @@
                 </div>
               </nuxt-link>
             </div>
-            <div v-else class="navbar-item;" exact-active-class="is-active" @click="mobileMenu = false">
-              <nuxt-link
+            <div
+              v-else
+              class="navbar-item dropdown"
+              :class="{'is-active': dropdownMenu}"
+              exact-active-class="is-active"
+              @click="mobileMenu = false"
+            >
+              <div class="dropdown-trigger">
+                <button
+                  class="button is-accent has-text-weight-semibold"
+                  aria-haspopup="true"
+                  aria-controls="dropdown-menu"
+                  @click="toggleDropdown"
+                >
+                  <span v-if="$auth.user.image" class="icon is-small has-background-light p-1 has-radius">
+                    <img :src="$auth.user.image">
+                  </span>
+                  <div class="blockchain-address" style="max-width: 140px;">
+                    {{ $auth.user.address }}
+                  </div>
+                </button>
+              </div>
+              <div
+                id="dropdown-menu"
+                class="dropdown-menu ml-4"
+                style="min-width: 214px;"
+                role="menu"
+              >
+                <div class="dropdown-content" style="dropdown-content-shadow: none">
+                  <nuxt-link
+                    v-for="link in links"
+                    :key="link.text"
+                    style="text-align: left"
+                    :to="link.url"
+                    class="dropdown-item"
+                    :class="{'is-active': link === value}"
+                    @click.native="toggleDropdown(); select(link)"
+                  >
+                    <span
+                      v-if="$auth.user.image"
+                      class="icon is-medium p-1 m-1 has-radius"
+                    >
+                      <i :class="link.icon" />
+                    </span>
+                    {{ link.text }}
+                  </nuxt-link>
+                  <a
+                    style="text-align: left"
+                    class="dropdown-item has-text-danger"
+                    @click="toggleDropdown; $sol.logout()"
+                  >
+                    <span
+                      v-if="$auth.user.image"
+                      class=" icon is-medium p-1 m-1 has-radius"
+                    >
+                      <i class="fa-solid fa-power-off" />
+                    </span>
+                    Logout
+                  </a>
+                </div>
+              </div>
+
+              <!-- <nuxt-link
                 class="button is-accent has-text-weight-semibold"
                 exact-active-class="is-active"
                 to="/account"
@@ -54,7 +115,7 @@
                 <div class="blockchain-address" style="max-width: 140px;">
                   {{ $auth.user.address }}
                 </div>
-              </nuxt-link>
+              </nuxt-link> -->
             </div>
           </div>
         </div>
@@ -68,12 +129,26 @@ export default {
   components: {},
   data () {
     return {
-      mobileMenu: false
+      links: [
+        { text: 'View Profile', url: '/account', icon: 'fa-solid fa-user' },
+        { text: 'Settings', url: '/settings', icon: 'fa-solid fa-gear' }
+      ],
+      mobileMenu: false,
+      dropdownMenu: false,
+      value: ''
     };
   },
   computed: {
     loggedIn () {
       return (this.$auth && this.$auth.loggedIn);
+    }
+  },
+  methods: {
+    select (option) {
+      this.value = option;
+    },
+    toggleDropdown (value) {
+      this.dropdownMenu = !this.dropdownMenu;
     }
   }
 };
