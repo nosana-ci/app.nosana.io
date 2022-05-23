@@ -34,7 +34,7 @@
               >
                 <div>Pipelines</div>
               </nuxt-link>
-              <div v-if="mobileMenu">
+              <div v-if="mobileMenu" class="is-hidden-desktop">
                 <nuxt-link
                   class="navbar-item"
                   to="/account"
@@ -43,13 +43,14 @@
                 >
                   <div>View Profile</div>
                 </nuxt-link>
-                <a
+                <nuxt-link
                   class="navbar-item"
                   exact-active-class="is-active"
-                  @click="changeRoute"
+                  :to="{ path: 'account', query: { settings: 'true' }}"
+                  @click.native="mobileMenu = false"
                 >
                   <div>Settings</div>
-                </a>
+                </nuxt-link>
                 <a
                   class="navbar-item"
                   to="/"
@@ -102,22 +103,35 @@
               >
                 <div class="dropdown-content" style="dropdown-content-shadow: none">
                   <nuxt-link
-                    v-for="link in links"
-                    :key="link.text"
+                    exact-active-class="is-active"
                     style="text-align: left"
-                    :to="link.url"
+                    to="/account"
                     class="dropdown-item"
-                    :class="{'is-active': link === value}"
-                    @click.native="toggleDropdown(); select(link)"
+                    @click.native="toggleDropdown"
                   >
                     <span
                       class="icon is-medium p-1 m-1 has-radius"
                     >
-                      <i :class="link.icon" />
+                      <i class="fa-solid fa-user" />
                     </span>
-                    {{ link.text }}
+                    View Profile
+                  </nuxt-link>
+                  <nuxt-link
+                    :to="{ path: 'account', query: { settings: 'true' }}"
+                    exact-active-class="is-active"
+                    style="text-align: left"
+                    class="dropdown-item"
+                    @click.native="toggleDropdown"
+                  >
+                    <span
+                      class="icon is-medium p-1 m-1 has-radius"
+                    >
+                      <i class="fa-solid fa-gear" />
+                    </span>
+                    Settings
                   </nuxt-link>
                   <a
+                    exact-active-class="is-active"
                     style="text-align: left"
                     class="dropdown-item has-text-danger"
                     @click="toggleDropdown; $sol.logout()"
@@ -157,10 +171,6 @@ export default {
   components: {},
   data () {
     return {
-      links: [
-        { text: 'View Profile', url: '/account', icon: 'fa-solid fa-user' },
-        { text: 'Settings', url: '/settings', icon: 'fa-solid fa-gear' }
-      ],
       mobileMenu: false,
       dropdownMenu: false,
       value: ''
@@ -172,13 +182,6 @@ export default {
     }
   },
   methods: {
-    changeRoute () {
-      this.$router.push({ path: 'account', query: { settings: 'true' } });
-      this.mobileMenu = false;
-    },
-    select (option) {
-      this.value = option;
-    },
     toggleDropdown (value) {
       this.dropdownMenu = !this.dropdownMenu;
     }
