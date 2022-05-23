@@ -25,10 +25,40 @@
         <div id="navbar" class="navbar-menu" :class="{'is-active': mobileMenu}">
           <div class="navbar-start" />
           <div class="navbar-end is-align-items-center">
-            <div @click="mobileMenu = false">
-              <nuxt-link class="navbar-item" to="/" exact-active-class="is-active">
+            <div>
+              <nuxt-link
+                class="navbar-item"
+                to="/"
+                exact-active-class="is-active"
+                @click.native="mobileMenu = false"
+              >
                 <div>Pipelines</div>
               </nuxt-link>
+              <div v-if="mobileMenu">
+                <nuxt-link
+                  class="navbar-item"
+                  to="/account"
+                  exact-active-class="is-active"
+                  @click.native="mobileMenu = false"
+                >
+                  <div>View Profile</div>
+                </nuxt-link>
+                <a
+                  class="navbar-item"
+                  exact-active-class="is-active"
+                  @click="changeRoute"
+                >
+                  <div>Settings</div>
+                </a>
+                <a
+                  class="navbar-item"
+                  to="/"
+                  exact-active-class="is-active"
+                  @click="$sol.logout(); mobileMenu = false"
+                >
+                  <div>Log out</div>
+                </a>
+              </div>
             </div>
             <div v-if="!loggedIn" class="navbar-item" exact-active-class="is-active" @click="mobileMenu = false">
               <nuxt-link
@@ -45,7 +75,7 @@
             <div
               v-else
               class="navbar-item dropdown"
-              :class="{'is-active': dropdownMenu}"
+              :class="{'is-active': dropdownMenu && !mobileMenu}"
               exact-active-class="is-active"
               @click="mobileMenu = false"
             >
@@ -81,7 +111,6 @@
                     @click.native="toggleDropdown(); select(link)"
                   >
                     <span
-                      v-if="$auth.user.image"
                       class="icon is-medium p-1 m-1 has-radius"
                     >
                       <i :class="link.icon" />
@@ -94,7 +123,6 @@
                     @click="toggleDropdown; $sol.logout()"
                   >
                     <span
-                      v-if="$auth.user.image"
                       class=" icon is-medium p-1 m-1 has-radius"
                     >
                       <i class="fa-solid fa-power-off" />
@@ -144,6 +172,10 @@ export default {
     }
   },
   methods: {
+    changeRoute () {
+      this.$router.push({ path: 'account', query: { settings: 'true' } });
+      this.mobileMenu = false;
+    },
     select (option) {
       this.value = option;
     },
