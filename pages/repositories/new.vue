@@ -27,14 +27,14 @@
           </a>
         </p>
         <p class="block">
-          <a :class="{'is-loading': loading}" class="button is-accent" href="https://github.com/apps/nosana-platform/installations/new">
+          <a :class="{'is-loading': loading}" class="button is-accent" :href="githubAppUrl">
             <span>Connect another Github account</span>
           </a>
         </p>
       </div>
       <nav v-else class="panel">
         <p class="panel-heading">
-          <a :class="{'is-loading': loading}" class="button is-accent is-pulled-right is-small" href="https://github.com/apps/nosana-platform/installations/new">
+          <a :class="{'is-loading': loading}" class="button is-accent is-pulled-right is-small" :href="githubAppUrl">
             <span>Add more Github repositories</span>
           </a>
           Repositories
@@ -82,6 +82,7 @@ export default {
   middleware: 'auth',
   data () {
     return {
+      githubAppUrl: process.env.NUXT_ENV_GITHUB_APP_URL,
       repository: null,
       githubToken: null,
       repositories: null,
