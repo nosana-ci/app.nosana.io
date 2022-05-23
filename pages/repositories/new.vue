@@ -138,7 +138,7 @@ export default {
     },
     goToGithub () {
       this.loading = true;
-      window.location.href = 'https://github.com/apps/nosana-platform/installations/new';
+      window.location.href = this.githubAppUrl;
     },
     async githubApp (installationId) {
       try {
