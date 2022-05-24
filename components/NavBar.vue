@@ -25,22 +25,22 @@
         <div id="navbar" class="navbar-menu" :class="{'is-active': mobileMenu}">
           <div class="navbar-start" />
           <div class="navbar-end is-align-items-center">
-            <div>
-              <nuxt-link
-                class="navbar-item"
-                to="/"
-                exact-active-class="is-active"
-                @click.native="mobileMenu = false"
-              >
-                <div class="align-pipelines">
-                  <span
-                    class="icon is-medium p-1 m-1 has-radius is-hidden-desktop"
-                  >
-                    <i class="fa-solid fa-grip-lines" />
-                  </span>
-                  Pipelines
-                </div>
-              </nuxt-link>
+            <nuxt-link
+              class="navbar-item"
+              to="/"
+              exact-active-class="is-active"
+              @click.native="mobileMenu = false"
+            >
+              <div class="align-pipelines">
+                <span
+                  class="icon is-medium p-1 m-1 has-radius is-hidden-desktop"
+                >
+                  <i class="fa-solid fa-grip-lines" />
+                </span>
+                Pipelines
+              </div>
+            </nuxt-link>
+            <div v-if="loggedIn">
               <div v-if="mobileMenu" class="is-hidden-desktop">
                 <nuxt-link
                   class="navbar-item"
