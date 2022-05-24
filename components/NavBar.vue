@@ -68,7 +68,7 @@
                 to="/account"
                 @click="$sol.loginModal = true"
               >
-                <div class="blockchain-address" style="max-width: 140px;">
+                <div class="blockchain-address" style="max-width: 140px;" @click="$sol.loginModal = true">
                   Connect Wallet
                 </div>
               </nuxt-link>
@@ -137,7 +137,7 @@
                     @click="toggleDropdown; $sol.logout()"
                   >
                     <span
-                      class=" icon is-medium p-1 m-1 has-radius"
+                      class="icon is-medium p-1 m-1 has-radius"
                     >
                       <i class="fa-solid fa-power-off" />
                     </span>
@@ -145,7 +145,6 @@
                   </a>
                 </div>
               </div>
-
               <!-- <nuxt-link
                 class="button is-accent has-text-weight-semibold"
                 exact-active-class="is-active"
