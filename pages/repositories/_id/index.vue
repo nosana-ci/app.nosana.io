@@ -128,9 +128,9 @@ export default {
       if (!value) {
         return;
       }
-      const firstCharacters = value.slice(0, 4);
-      const lastCharacters = value.slice(value.length - 4, value.length);
-      return firstCharacters + '... ' + lastCharacters;
+      const firstCharacters = value.slice(0, 8);
+      // const lastCharacters = value.slice(value.length - 4, value.length);
+      return firstCharacters; // + '... ' + lastCharacters;
     }
   },
   data () {
