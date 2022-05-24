@@ -142,7 +142,7 @@
           </div>
         </div>
         <div class="modal" :class="{'is-active': editUser}">
-          <div class="modal-background" @click="editUser = false" />
+          <div class="modal-background" @click="editUser = false; removeQuery()" />
           <div class="modal-card">
             <header class="modal-card-head">
               <p class="modal-card-title">
