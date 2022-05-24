@@ -174,14 +174,14 @@
               </section>
 
               <footer class="modal-card-foot has-text-right">
-                <button class="button" @click.prevent="editUser = false">
+                <button class="button" @click.prevent="editUser = false; removeQuery()">
                   Cancel
                 </button>
                 <input type="submit" class="button is-accent" value="Save">
               </footer>
             </form>
           </div>
-          <button class="modal-close is-large" aria-label="close" @click="editUser = false" />
+          <button class="modal-close is-large" aria-label="close" @click="editUser = false;" />
         </div>
       </div>
       <div v-if="user" class="mt-6">
@@ -235,6 +235,13 @@ export default {
       return Math.min(reward + this.usedBalance, 10000);
     }
   },
+  watch: {
+    '$route.query.settings' () {
+      if (this.$route.query.settings) {
+        this.editUser = true;
+      }
+    }
+  },
   created () {
     this.getUser();
     this.getUserRepositories();
@@ -244,6 +251,9 @@ export default {
     }
   },
   methods: {
+    removeQuery () {
+      this.$router.replace({ query: null });
+    },
     async getUser () {
       try {
         const user = await this.$axios.$get('/user');
