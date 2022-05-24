@@ -41,7 +41,12 @@
                   exact-active-class="is-active"
                   @click.native="mobileMenu = false"
                 >
-                  <div>View Profile</div>
+                  <span
+                    class="icon is-medium p-1 m-1 has-radius"
+                  >
+                    <i class="fa-solid fa-user" />
+                  </span>
+                  View Profile
                 </nuxt-link>
                 <nuxt-link
                   class="navbar-item"
@@ -49,15 +54,25 @@
                   :to="{ path: 'account', query: { settings: 'true' }}"
                   @click.native="mobileMenu = false"
                 >
-                  <div>Settings</div>
+                  <span
+                    class="icon is-medium p-1 m-1 has-radius"
+                  >
+                    <i class="fa-solid fa-gear" />
+                  </span>
+                  Settings
                 </nuxt-link>
                 <a
-                  class="navbar-item"
+                  class="navbar-item has-text-danger"
                   to="/"
                   exact-active-class="is-active"
                   @click="$sol.logout(); mobileMenu = false"
                 >
-                  <div>Log out</div>
+                  <span
+                    class="icon is-medium p-1 m-1 has-radius"
+                  >
+                    <i class="fa-solid fa-power-off" />
+                  </span>
+                  Log out
                 </a>
               </div>
             </div>
