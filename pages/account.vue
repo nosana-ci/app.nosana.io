@@ -181,7 +181,7 @@
               </footer>
             </form>
           </div>
-          <button class="modal-close is-large" aria-label="close" @click="editUser = false;" />
+          <button class="modal-close is-large" aria-label="close" @click="editUser = false; removeQuery()" />
         </div>
       </div>
       <div v-if="user" class="mt-6">
