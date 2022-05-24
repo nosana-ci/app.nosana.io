@@ -60,7 +60,7 @@
                 <nuxt-link
                   class="navbar-item"
                   exact-active-class="is-active"
-                  :to="{ path: 'account', query: { settings: 'true' }}"
+                  :to="{ path: '/account', query: { settings: 'true' }}"
                   @click.native="mobileMenu = false"
                 >
                   <div class="has-text-left mx-auto" style="width: 125px">
@@ -146,7 +146,7 @@
                     View Profile
                   </nuxt-link>
                   <nuxt-link
-                    :to="{ path: 'account', query: { settings: 'true' }}"
+                    :to="{ path: '/account', query: { settings: 'true' }}"
                     exact-active-class="is-active"
                     style="text-align: left"
                     class="dropdown-item"
