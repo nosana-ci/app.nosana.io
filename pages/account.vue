@@ -239,7 +239,7 @@ export default {
     this.getUser();
     this.getUserRepositories();
     this.getUserJobPrices();
-    if (this.$route.query.edit) {
+    if (this.$route.query.settings) {
       this.editUser = true;
     }
   },
