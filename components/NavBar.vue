@@ -23,13 +23,13 @@
         <div class="navbar-menu" :class="{'is-active': mobileMenu}">
           <div class="navbar-end is-align-items-center">
             <nuxt-link
-              id="links"
+              id="pipelines"
               class="dropdown-item"
               to="/"
               exact-active-class="is-active"
               @click.native="mobileMenu = false; showDropdown = false"
             >
-              <div>
+              <div class="link-content">
                 <span
                   class="icon is-medium p-1 m-1 has-radius is-hidden-desktop"
                 >
@@ -56,9 +56,9 @@
                 </div>
               </nuxt-link>
             </div>
-            <div class="navbar-item has-dropdown" :class="{'is-active': showDropdown}">
+            <div class="navbar-item has-dropdown " :class="{'is-active': showDropdown}">
               <a
-                class="navbar-link button is-accent is-outlined has-text-weight-semibold is-hidden-touch"
+                class="navbar-link button is-outlined has-text-weight-semibold is-hidden-touch"
                 aria-haspopup="true"
                 aria-controls="dropdown-menu"
                 @click="toggleDropdown"
@@ -80,12 +80,14 @@
                   class="dropdown-item"
                   @click.native="toggleDropdown(); mobileMenu = false"
                 >
-                  <span
-                    class="icon is-medium p-1 m-1 has-radius"
-                  >
-                    <i class="fa-solid fa-user" />
-                  </span>
-                  View Profile
+                  <div class="link-content">
+                    <span
+                      class="icon is-medium p-1 m-1 has-radius"
+                    >
+                      <i class="fa-solid fa-user" />
+                    </span>
+                    View Profile
+                  </div>
                 </nuxt-link>
                 <nuxt-link
                   id="links"
@@ -94,12 +96,14 @@
                   class="dropdown-item"
                   @click.native="toggleDropdown(); mobileMenu = false"
                 >
-                  <span
-                    class="icon is-medium p-1 m-1 has-radius"
-                  >
-                    <i class="fa-solid fa-gear" />
-                  </span>
-                  Settings
+                  <div class="link-content">
+                    <span
+                      class="icon is-medium p-1 m-1 has-radius"
+                    >
+                      <i class="fa-solid fa-gear" />
+                    </span>
+                    Settings
+                  </div>
                 </nuxt-link>
                 <a
                   id="links"
@@ -107,12 +111,14 @@
                   class="dropdown-item has-text-danger"
                   @click="$sol.logout(); toggleDropdown; mobileMenu = false"
                 >
-                  <span
-                    class="icon is-medium p-1 m-1 has-radius"
-                  >
-                    <i class="fa-solid fa-power-off" />
-                  </span>
-                  Logout
+                  <div class="link-content">
+                    <span
+                      class="icon is-medium p-1 m-1 has-radius"
+                    >
+                      <i class="fa-solid fa-power-off" />
+                    </span>
+                    Logout
+                  </div>
                 </a>
               </div>
             </div>
@@ -147,12 +153,32 @@ export default {
 
 <style lang="scss">
 @import "bulma/sass/utilities/mixins";
-  // insert mobile and tablet styling here
-@include touch {
-  // insert mobile and tablet styling here
-  #links{
-    text-align: center;
+
+@include touch{
+  #pipelines{
+    padding: 15px 0;
   }
+}
+
+@include desktop{
+  #pipelines.dropdown-item.is-active, button.dropdown-item.is-active {
+    background-color: white;
+    color: black;
+    font-weight: 700;
+  }
+}
+
+#links{
+  padding: 15px 0;
+}
+
+.navbar-dropdown{
+  padding: 0;
+}
+
+.link-content{
+  max-width: 165px;
+  margin: 0 auto;
 }
 
 .navbar {
