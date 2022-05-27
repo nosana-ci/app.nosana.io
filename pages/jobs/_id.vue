@@ -254,6 +254,9 @@
             Result IPFS: <a :href="'https://nosana.mypinata.cloud/ipfs/' + commit.resultIpfsHash" target="_blank">{{ commit.resultIpfsHash }}</a>
           </div>
         </div>
+        <!-- <template v-if="commit.cache_result && commit.cache_result.results">
+          <div />
+        </template> -->
       </div>
       <div v-else>
         Loading..
