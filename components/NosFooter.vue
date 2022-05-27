@@ -1,5 +1,5 @@
 <template>
-  <footer class="footer container py-6 px-4">
+  <footer class="footer container">
     <div class="px-5 m-2 py-4 has-radius has-text-centered">
       <img src="~/assets/img/Nosana_Logo_vertical_color_black.svg" class="logo" style="height: 80px">
     </div>

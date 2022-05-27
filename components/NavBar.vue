@@ -24,8 +24,7 @@
         <div class="navbar-menu" :class="{'is-active': mobileMenu}">
           <div class="navbar-end  is-align-items-center">
             <nuxt-link
-              id="pipelines"
-              class="dropdown-item"
+              class="dropdown-item navbar-links"
               to="/"
               exact-active-class="is-active"
               @click.native="mobileMenu = false; showDropdown = false"
@@ -41,9 +40,8 @@
             </nuxt-link>
             <div
               v-if="!loggedIn"
-              id="connect-button"
               key=""
-              class="navbar-item"
+              class="navbar-item mobile-connect-button"
               exact-active-class="is-active"
               @click="mobileMenu = false"
             >
@@ -64,7 +62,6 @@
                 v-if="loggedIn"
                 id="login-button"
                 class="button is-accent is-outlined has-text-weight-semibold "
-                :class="{'navbar-link': false}"
                 aria-haspopup="true"
                 aria-controls="dropdown-menu"
                 @click="toggleDropdown"
@@ -81,7 +78,6 @@
               >
                 <nuxt-link
                   v-if="loggedIn"
-                  id="links"
                   exact-active-class="is-active"
                   to="/account"
                   class="dropdown-item"
@@ -98,7 +94,6 @@
                 </nuxt-link>
                 <nuxt-link
                   v-if="loggedIn"
-                  id="links"
                   :to="{ path: 'account', query: { settings: 'true' }}"
                   exact-active-class="is-active"
                   class="dropdown-item"
@@ -115,7 +110,6 @@
                 </nuxt-link>
                 <a
                   v-if="loggedIn"
-                  id="links"
                   exact-active-class="is-active"
                   class="dropdown-item has-text-danger"
                   @click="$sol.logout(); toggleDropdown; mobileMenu = false"
@@ -164,7 +158,7 @@ export default {
 @import "bulma/sass/utilities/mixins";
 
 @include touch{
-  #links, #pipelines, #connect-button{
+  .dropdown-item, .navbar-links, .mobile-connect-button{
     text-align: center;
   }
   .navbar-item.has-dropdown {
@@ -190,7 +184,7 @@ export default {
   }
 
 @include desktop{
-  #pipelines.dropdown-item.is-active, button.dropdown-item.is-active {
+  .navbar-links.dropdown-item.is-active, button.dropdown-item.is-active {
     background-color: white;
     color: black;
     font-weight: 700;
