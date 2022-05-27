@@ -167,15 +167,17 @@ export default {
     text-align: center;
   }
   .navbar-item.has-dropdown {
-    padding: 0;
     display: flex;
     flex-direction: column;
   }
   #login-button{
-    border-bottom: none;
     border-left: none;
     border-right: none;
     border-radius: 0;
+    &:hover{
+      background: none;
+      color: $accent;
+    }
   }
 }
 
