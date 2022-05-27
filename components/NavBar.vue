@@ -64,6 +64,7 @@
                 v-if="loggedIn"
                 id="login-button"
                 class="button is-accent is-outlined has-text-weight-semibold "
+                :class="{'navbar-link': false}"
                 aria-haspopup="true"
                 aria-controls="dropdown-menu"
                 @click="toggleDropdown"
@@ -178,6 +179,9 @@ export default {
       background: none;
       color: $accent;
     }
+  }
+  .navbar-dropdown{
+    padding: 0;
   }
 }
 
