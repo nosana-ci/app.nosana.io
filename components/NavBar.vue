@@ -7,6 +7,7 @@
             <img class="logo" :src="require('@/assets/img/Nosana_Logo_horizontal_color_black.svg')">
           </nuxt-link>
           <a
+            id="navbar-burger"
             role="button"
             class="navbar-burger"
             aria-label="menu"
@@ -21,7 +22,7 @@
           </a>
         </div>
         <div class="navbar-menu" :class="{'is-active': mobileMenu}">
-          <div class="navbar-end is-align-items-center">
+          <div class="navbar-end  is-align-items-center">
             <nuxt-link
               id="pipelines"
               class="dropdown-item"
@@ -40,6 +41,7 @@
             </nuxt-link>
             <div
               v-if="!loggedIn"
+              id="connect-button"
               key=""
               class="navbar-item"
               exact-active-class="is-active"
@@ -49,6 +51,7 @@
                 class="button is-accent is-outlined has-text-weight-semibold"
                 exact-active-class="is-active"
                 to="/account"
+
                 @click="$sol.loginModal = true"
               >
                 <div class="blockchain-address" style="max-width: 140px;" @click="$sol.loginModal = true">
@@ -58,7 +61,9 @@
             </div>
             <div class="navbar-item has-dropdown " :class="{'is-active': showDropdown}">
               <a
-                class="navbar-link button is-outlined has-text-weight-semibold is-hidden-touch"
+                v-if="loggedIn"
+                id="login-button"
+                class="button is-accent is-outlined has-text-weight-semibold "
                 aria-haspopup="true"
                 aria-controls="dropdown-menu"
                 @click="toggleDropdown"
@@ -74,6 +79,7 @@
                 class="navbar-dropdown"
               >
                 <nuxt-link
+                  v-if="loggedIn"
                   id="links"
                   exact-active-class="is-active"
                   to="/account"
@@ -90,6 +96,7 @@
                   </div>
                 </nuxt-link>
                 <nuxt-link
+                  v-if="loggedIn"
                   id="links"
                   :to="{ path: 'account', query: { settings: 'true' }}"
                   exact-active-class="is-active"
@@ -106,6 +113,7 @@
                   </div>
                 </nuxt-link>
                 <a
+                  v-if="loggedIn"
                   id="links"
                   exact-active-class="is-active"
                   class="dropdown-item has-text-danger"
@@ -151,14 +159,29 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style scoped lang="scss">
 @import "bulma/sass/utilities/mixins";
 
 @include touch{
-  #pipelines{
-    padding: 15px 0;
+  #links, #pipelines, #connect-button{
+    text-align: center;
+  }
+  .navbar-item.has-dropdown {
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  #login-button{
+    border-bottom: none;
+    border-left: none;
+    border-right: none;
+    border-radius: 0;
   }
 }
+
+  a{
+    -webkit-tap-highlight-color: transparent;
+  }
 
 @include desktop{
   #pipelines.dropdown-item.is-active, button.dropdown-item.is-active {
@@ -166,19 +189,6 @@ export default {
     color: black;
     font-weight: 700;
   }
-}
-
-#links{
-  padding: 15px 0;
-}
-
-.navbar-dropdown{
-  padding: 0;
-}
-
-.link-content{
-  max-width: 165px;
-  margin: 0 auto;
 }
 
 .navbar {
