@@ -91,9 +91,8 @@
           <div v-if="commit.job_content">
             <small v-if="commit.cache_blockchain && parseInt(commit.cache_blockchain['timeEnd'],16)">
               Finished {{ $moment(parseInt(commit.cache_blockchain['timeEnd'],16)*1e3).fromNow() }}<br>
-              Duration
-              {{ (parseInt(commit.cache_blockchain['timeEnd'],16))
-                - (parseInt(commit.cache_blockchain['timeStart'],16)) }} seconds
+              Duration:<br>
+              {{ secondsToHms(commit.cache_blockchain['timeStart'], commit.cache_blockchain['timeEnd']) }}
             </small>
             <small
               v-else-if="nowSeconds && commit.cache_blockchain && parseInt(commit.cache_blockchain['timeStart'],16)"
@@ -310,6 +309,19 @@ export default {
     }
   },
   methods: {
+    secondsToHms (start, end) {
+      const startTime = parseInt(start, 16);
+      const endTime = parseInt(end, 16);
+      const totalTime = endTime - startTime;
+      const h = Math.floor(totalTime / 3600);
+      const m = Math.floor(totalTime % 3600 / 60);
+      const s = Math.floor(totalTime % 3600 % 60);
+
+      const hours = h > 0 ? h + (h === 1 ? ' hour, ' : ' hours, ') : '';
+      const minutes = m > 0 ? m + (m === 1 ? ' minute, ' : ' minutes, ') : '';
+      const seconds = s > 0 ? s + (s === 1 ? ' second' : ' seconds') : '';
+      return hours + minutes + seconds;
+    },
     updateClock () {
       this.nowSeconds = parseInt((new Date()).getTime() / 1e3);
     },
