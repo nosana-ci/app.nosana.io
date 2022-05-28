@@ -252,9 +252,34 @@
             Result IPFS: <a :href="'https://nosana.mypinata.cloud/ipfs/' + commit.resultIpfsHash" target="_blank">{{ commit.resultIpfsHash }}</a>
           </div>
         </div>
-        <!-- <template v-if="commit.cache_result && commit.cache_result.results">
-          <div />
-        </template> -->
+
+        <template v-if="commit.cache_result && commit.cache_result.results">
+          <div class="box mt-2 content-block" style="background-color: black">
+            <div v-for="(res, index) in commit.cache_result.results" :key="index">
+              <div v-if="index != 'docker-cmds'">
+                <p class="job-task row-count">
+                  {{ 'git ' + index }}<br>
+                </p>
+                <p class="text-part row-count">
+                  {{ commit.cache_result.results[`${index}`] }}
+                </p>
+              </div>
+              <div v-else>
+                <div
+                  v-for="(item, i) of commit.cache_result.results[`${index}`][1]"
+                  :key="item"
+                >
+                  <p v-if="item.log && item.cmd" class="row-count job-task">
+                    {{ item.cmd }}
+                  </p>
+                  <p class="row-count text-part">
+                    {{ commit.cache_result.results[`${index}`][1][i]['log'] }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </template>
       </div>
       <div v-else>
         Loading..
@@ -308,6 +333,9 @@ export default {
     }
   },
   methods: {
+    jobOutput (output) {
+      console.log(output);
+    },
     secondsToHms (start, end) {
       const startTime = parseInt(start, 16);
       const endTime = parseInt(end, 16);
@@ -415,5 +443,23 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.job-task{
+  font-weight: bold;
+  color: $link;
 
+}
+.text-part{
+  color: white;
+}
+.content-block{
+  counter-reset: line;
+}
+.row-count:before{
+  counter-increment: line;
+  content: counter(line);
+  display: inline-block;
+  padding: 0 .5em;
+  margin-right: .5em;
+  color: #888;
+}
 </style>
