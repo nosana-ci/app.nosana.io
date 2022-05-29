@@ -254,13 +254,20 @@
         </div>
 
         <template v-if="commit.cache_result && commit.cache_result.results">
-          <div class="box mt-2 content-block" style="background-color: black">
+          <div class="box mt-2 px-4 content-block is-clipped" style="background-color: black">
+            <div class=" is-flex is-justify-content-center mb-3">
+              <div style=" border-radius: 5px;" class="has-background-secondary">
+                <p class="has-text-black has-text-centered px-2 break-word is-size-6">
+                  <b>Nos-id:</b> {{ commit.cache_result['nos-id'] }}
+                </p>
+              </div>
+            </div>
             <div v-for="(res, index) in commit.cache_result.results" :key="index">
               <div v-if="index != 'docker-cmds'">
-                <p class="job-task row-count">
-                  {{ 'git ' + index }}<br>
+                <p class="has-text-link has-text-weight-bold row-count">
+                  {{ 'git ' + index }}
                 </p>
-                <p class="text-part row-count">
+                <p class="has-text-white row-count text-right break-words">
                   {{ commit.cache_result.results[`${index}`] }}
                 </p>
               </div>
@@ -269,11 +276,23 @@
                   v-for="(item, i) of commit.cache_result.results[`${index}`][1]"
                   :key="item"
                 >
-                  <p v-if="item.log && item.cmd" class="row-count job-task">
-                    {{ item.cmd }}
-                  </p>
-                  <p class="row-count text-part">
-                    {{ commit.cache_result.results[`${index}`][1][i]['log'] }}
+                  <div class="is-flex is-justify-content-space-between is-align-items-center">
+                    <p v-if="item.log && item.cmd" class="row-count has-text-weight-bold has-text-link">
+                      {{ item.cmd }}
+                    </p>
+                    <p v-if="item.log && item.cmd" class="timeStamp is-size-7 px-2 has-background-secondary">
+                      {{
+                        timeStamp(commit.cache_result.results[`${index}`][1][0]['time'],
+                                  commit.cache_result.results[`${index}`][1][i]['time'])
+                      }}
+                    </p>
+                  </div>
+                  <p
+                    v-if="item.log && item.cmd"
+                    style="max-width: 80%"
+                    class="row-count has-text-white text-right break-words"
+                  >
+                    {{ truncate(commit.cache_result.results[`${index}`][1][i]['log'], 300) }}
                   </p>
                 </div>
               </div>
@@ -333,6 +352,9 @@ export default {
     }
   },
   methods: {
+    truncate (str, n) {
+      return (str.length > n) ? str.substr(0, n - 1) + '...' : str;
+    },
     jobOutput (output) {
       console.log(output);
     },
@@ -348,6 +370,19 @@ export default {
       const minutes = m > 0 ? m + (m === 1 ? ' minute, ' : ' minutes, ') : '';
       const seconds = s > 0 ? s + (s === 1 ? ' second' : ' seconds') : '';
       return hours + minutes + seconds;
+    },
+    timeStamp (start, end) {
+      const totalTime = end - start;
+      console.log(totalTime);
+      const h = Math.floor(totalTime / 3600);
+      const m = Math.floor(totalTime % 3600 / 60);
+      const s = Math.floor(totalTime % 3600 % 60);
+      const hours = h > 0 && h < 10 ? '0' + h + ':' : (h >= 10 ? h + ':' : '');
+      const minutes = m > 0 && m < 10 ? '0' + m + ':' : (m >= 10 ? m + ':' : '');
+      const seconds = s > 0 && s < 10 ? '0' + s + ':' : (s >= 10 ? s : '');
+
+      const time = hours + minutes + seconds;
+      return time;
     },
     updateClock () {
       this.nowSeconds = parseInt((new Date()).getTime() / 1e3);
@@ -443,13 +478,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.job-task{
-  font-weight: bold;
-  color: $link;
-
+.break-words{
+  word-break: break-word;
 }
-.text-part{
-  color: white;
+.timeStamp{
+border-radius: 15px;
+}
+.text-right{
+  padding-left: 2.5em;
+  text-indent:-1.25em;
 }
 .content-block{
   counter-reset: line;
@@ -460,6 +497,6 @@ export default {
   display: inline-block;
   padding: 0 .5em;
   margin-right: .5em;
-  color: #888;
+  color: $accent;
 }
 </style>
