@@ -268,12 +268,12 @@
                   {{ 'git ' + index }}
                 </p>
                 <p class="has-text-white row-count text-right break-words">
-                  {{ commit.cache_result.results[`${index}`] }}
+                  {{ res }}
                 </p>
               </div>
               <div v-else>
                 <div
-                  v-for="(item, i) of commit.cache_result.results[`${index}`][1]"
+                  v-for="(item, i) of res[1]"
                   :key="item.cmd"
                 >
                   <div class="is-flex is-justify-content-space-between is-align-items-center">
@@ -286,7 +286,7 @@
                     </p>
                     <p v-if="item.time && i > 0" class="has-radius is-size-7 px-2 has-background-secondary">
                       {{
-                        timeStamp(commit.cache_result.results[`${index}`][1][i - 1]['time'],
+                        timeStamp(res[1][i - 1]['time'],
                                   item.time)
                       }}
                     </p>
