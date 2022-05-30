@@ -274,25 +274,30 @@
               <div v-else>
                 <div
                   v-for="(item, i) of commit.cache_result.results[`${index}`][1]"
-                  :key="item"
+                  :key="item.cmd"
                 >
                   <div class="is-flex is-justify-content-space-between is-align-items-center">
-                    <p v-if="item.log && item.cmd" class="row-count has-text-weight-bold has-text-link">
+                    <p
+                      v-if="item.cmd"
+                      class="row-count has-text-weight-bold has-text-link"
+                      :class="{'has-text-danger': item.error}"
+                    >
                       {{ item.cmd }}
                     </p>
-                    <p v-if="item.log && item.cmd" class="timeStamp is-size-7 px-2 has-background-secondary">
+                    <p v-if="item.time && i > 0" class="has-radius is-size-7 px-2 has-background-secondary">
                       {{
                         timeStamp(commit.cache_result.results[`${index}`][1][i - 1]['time'],
-                                  commit.cache_result.results[`${index}`][1][i]['time'])
+                                  item.time)
                       }}
                     </p>
                   </div>
                   <p
-                    v-if="item.log && item.cmd"
+                    v-if="item.log"
                     style="max-width: 80%"
                     class="row-count has-text-white text-right break-words"
                   >
-                    <span class="pre">{{ commit.cache_result.results[`${index}`][1][i]['log'] }}</span>
+                    <span class="pre">{{ item.log }}</span>
+                    <span class="pre has-text-danger">{{ item.error }}</span>
                   </p>
                 </div>
               </div>
@@ -321,7 +326,8 @@ export default {
       user: null,
       refreshInterval: null,
       clockInterval: null,
-      nowSeconds: null
+      nowSeconds: null,
+      closedResults: []
     };
   },
   watch: {
@@ -373,7 +379,7 @@ export default {
       const s = Math.floor(totalTime % 3600 % 60);
       const hours = h > 0 && h < 10 ? '0' + h + ':' : (h >= 10 ? h + ':' : '');
       const minutes = m > 0 && m < 10 ? '0' + m + ':' : (m >= 10 ? m + ':' : '00:');
-      const seconds = s > 0 && s < 10 ? '0' + s + ':' : (s >= 10 ? s : '');
+      const seconds = s > 0 && s < 10 ? '0' + s : (s >= 10 ? s : '00');
 
       const time = hours + minutes + seconds;
       return time;
@@ -478,9 +484,6 @@ export default {
 .break-words{
   word-break: break-word;
 }
-.timeStamp{
-border-radius: 15px;
-}
 .text-right{
   padding-left: 2.5em;
   text-indent:-1.25em;
@@ -488,12 +491,18 @@ border-radius: 15px;
 .content-block{
   counter-reset: line;
 }
-.row-count:before{
-  counter-increment: line;
-  content: counter(line);
-  display: inline-block;
-  padding: 0 .5em;
-  margin-right: .5em;
-  color: $accent;
+.row-count{
+  &:before{
+    counter-increment: line;
+    font-weight: normal;
+    content: counter(line);
+    display: inline-block;
+    padding: 0 .5em;
+    margin-right: .5em;
+    color: $accent;
+  }
+  &.has-text-danger:before {
+    color: $red;
+  }
 }
 </style>
