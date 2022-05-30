@@ -237,6 +237,70 @@
               </div>
             </div>
           </div>
+          <div class="box mt-2 px-4 content-block" style="background-color: black">
+            <div v-if="commit.cache_result && commit.cache_result.results">
+              <div class="has-text-centered block">
+                <div class="tag is-medium">
+                  <b>Node:</b>&nbsp;{{ commit.cache_result['nos-id'] }}
+                </div>
+              </div>
+              <div v-for="(res, index) in commit.cache_result.results" :key="index">
+                <div v-if="index != 'docker-cmds'">
+                  <div
+                    class="is-flex is-justify-content-space-between is-align-items-center command is-clickable"
+                    @click="toggleResult(index)"
+                  >
+                    <p
+                      class="has-text-link has-text-weight-bold row-count"
+                    >
+                      {{ 'git ' + index }}
+                    </p>
+                    <i class="fas fa-chevron-down ml-2 has-text-link" :class="{'fa-chevron-up': !hideResults[index]}" />
+                  </div>
+                  <p
+                    class="has-text-white row-count text-right break-words"
+                    :class="{'hidden-log': hideResults[index]}"
+                  >
+                    {{ res }}
+                  </p>
+                </div>
+                <div v-else>
+                  <div
+                    v-for="(item, i) of res[1]"
+                    :key="item.cmd"
+                  >
+                    <div
+                      v-if="item.cmd"
+                      class="is-flex is-justify-content-space-between is-align-items-center command is-clickable"
+                      @click="toggleResult(i)"
+                    >
+                      <p
+                        class="row-count has-text-weight-bold has-text-link"
+                        :class="{'has-text-danger': item.error}"
+                      >
+                        {{ item.cmd }}
+                      </p>
+                      <div>
+                        <p v-if="item.time && i > 0" class="tag">
+                          {{ timeStamp(res[1][i - 1]['time'], item.time) }}
+                        </p>
+                        <i class="fas fa-chevron-down ml-2 has-text-link" :class="{'fa-chevron-up': !hideResults[i]}" />
+                      </div>
+                    </div>
+                    <p
+                      v-if="item.log"
+                      style="max-width: 80%"
+                      class="row-count has-text-white text-right break-words"
+                      :class="{'hidden-log': hideResults[i]}"
+                    >
+                      <span class="pre">{{ item.log }}</span>
+                      <span class="pre has-text-danger">{{ item.error }}</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <div v-else-if="tab === 'logs'">
           <pre>{{ commit.cache_blockchain }}</pre>
@@ -252,58 +316,6 @@
             Result IPFS: <a :href="'https://nosana.mypinata.cloud/ipfs/' + commit.resultIpfsHash" target="_blank">{{ commit.resultIpfsHash }}</a>
           </div>
         </div>
-
-        <template v-if="commit.cache_result && commit.cache_result.results">
-          <div class="box mt-2 px-4 content-block is-clipped" style="background-color: black">
-            <div class=" is-flex is-justify-content-center mb-3">
-              <div style=" border-radius: 5px;" class="has-background-secondary">
-                <p class="has-text-black has-text-centered px-2 break-word is-size-6">
-                  <b>Nos-id:</b> {{ commit.cache_result['nos-id'] }}
-                </p>
-              </div>
-            </div>
-            <div v-for="(res, index) in commit.cache_result.results" :key="index">
-              <div v-if="index != 'docker-cmds'">
-                <p class="has-text-link has-text-weight-bold row-count">
-                  {{ 'git ' + index }}
-                </p>
-                <p class="has-text-white row-count text-right break-words">
-                  {{ res }}
-                </p>
-              </div>
-              <div v-else>
-                <div
-                  v-for="(item, i) of res[1]"
-                  :key="item.cmd"
-                >
-                  <div class="is-flex is-justify-content-space-between is-align-items-center">
-                    <p
-                      v-if="item.cmd"
-                      class="row-count has-text-weight-bold has-text-link"
-                      :class="{'has-text-danger': item.error}"
-                    >
-                      {{ item.cmd }}
-                    </p>
-                    <p v-if="item.time && i > 0" class="has-radius is-size-7 px-2 has-background-secondary">
-                      {{
-                        timeStamp(res[1][i - 1]['time'],
-                                  item.time)
-                      }}
-                    </p>
-                  </div>
-                  <p
-                    v-if="item.log"
-                    style="max-width: 80%"
-                    class="row-count has-text-white text-right break-words"
-                  >
-                    <span class="pre">{{ item.log }}</span>
-                    <span class="pre has-text-danger">{{ item.error }}</span>
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </template>
       </div>
       <div v-else>
         Loading..
@@ -327,7 +339,7 @@ export default {
       refreshInterval: null,
       clockInterval: null,
       nowSeconds: null,
-      closedResults: []
+      hideResults: {}
     };
   },
   watch: {
@@ -358,6 +370,13 @@ export default {
     }
   },
   methods: {
+    toggleResult (i) {
+      if (i in this.hideResults) {
+        this.hideResults[i] = !this.hideResults[i];
+      } else {
+        this.$set(this.hideResults, i, true);
+      }
+    },
     secondsToHms (start, end) {
       const startTime = parseInt(start, 16);
       const endTime = parseInt(end, 16);
@@ -491,6 +510,16 @@ export default {
 .content-block{
   counter-reset: line;
 }
+.hidden-log {
+  overflow:hidden;
+  height:0;
+}
+.command {
+  &:hover {
+    background: $grey-darker;
+  }
+}
+
 .row-count{
   &:before{
     counter-increment: line;
