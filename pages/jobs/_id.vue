@@ -282,7 +282,7 @@
                     </p>
                     <p v-if="item.log && item.cmd" class="timeStamp is-size-7 px-2 has-background-secondary">
                       {{
-                        timeStamp(commit.cache_result.results[`${index}`][1][0]['time'],
+                        timeStamp(commit.cache_result.results[`${index}`][1][i - 1]['time'],
                                   commit.cache_result.results[`${index}`][1][i]['time'])
                       }}
                     </p>
@@ -292,7 +292,7 @@
                     style="max-width: 80%"
                     class="row-count has-text-white text-right break-words"
                   >
-                    {{ truncate(commit.cache_result.results[`${index}`][1][i]['log'], 300) }}
+                    <span class="pre">{{ commit.cache_result.results[`${index}`][1][i]['log'] }}</span>
                   </p>
                 </div>
               </div>
@@ -352,12 +352,6 @@ export default {
     }
   },
   methods: {
-    truncate (str, n) {
-      return (str.length > n) ? str.substr(0, n - 1) + '...' : str;
-    },
-    jobOutput (output) {
-      console.log(output);
-    },
     secondsToHms (start, end) {
       const startTime = parseInt(start, 16);
       const endTime = parseInt(end, 16);
@@ -378,7 +372,7 @@ export default {
       const m = Math.floor(totalTime % 3600 / 60);
       const s = Math.floor(totalTime % 3600 % 60);
       const hours = h > 0 && h < 10 ? '0' + h + ':' : (h >= 10 ? h + ':' : '');
-      const minutes = m > 0 && m < 10 ? '0' + m + ':' : (m >= 10 ? m + ':' : '');
+      const minutes = m > 0 && m < 10 ? '0' + m + ':' : (m >= 10 ? m + ':' : '00:');
       const seconds = s > 0 && s < 10 ? '0' + s + ':' : (s >= 10 ? s : '');
 
       const time = hours + minutes + seconds;
@@ -478,6 +472,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.pre {
+  white-space: pre-line;
+}
 .break-words{
   word-break: break-word;
 }
