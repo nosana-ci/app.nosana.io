@@ -170,7 +170,7 @@
                       class="row-count has-text-white log"
                       :class="{'hidden-log': hideResults[i]}"
                     >
-                      <span class="pre">{{ item.log }}</span>
+                      <span class="pre">{{ item.log | truncate(10000, '...\n') }}</span>
                       <span class="pre has-text-danger">{{ item.error }}</span>
                     </p>
                   </div>
@@ -219,6 +219,15 @@ import bs58 from 'bs58';
 import { parse } from 'yaml';
 
 export default {
+  filters: {
+    truncate: function (text, length, suffix) {
+      if (text.length > length) {
+        return text.substring(0, length) + suffix;
+      } else {
+        return text;
+      }
+    }
+  },
   data () {
     return {
       commit: null,
