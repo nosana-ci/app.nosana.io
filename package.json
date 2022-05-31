@@ -17,7 +17,7 @@
     "@nuxtjs/google-analytics": "2.4.0",
     "@solana/wallet-adapter-base": "0.9.5",
     "@solana/wallet-adapter-wallets": "0.16.1",
-    "@solana/web3.js": "1.43.2",
+    "@solana/web3.js": "1.43.4",
     "bs58": "5.0.0",
     "bulma": "0.9.4",
     "core-js": "3.22.7",
