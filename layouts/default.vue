@@ -3,8 +3,8 @@
     <modal-popup />
     <client-only>
       <sol-wallet />
+      <nav-bar />
     </client-only>
-    <nav-bar />
     <Nuxt />
     <nos-footer />
   </div>
