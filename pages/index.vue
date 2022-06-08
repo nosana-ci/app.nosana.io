@@ -114,7 +114,7 @@
                 </div>
                 <div>
                   <h2 class="title is-6 has-text-weight-semibold" style="min-height: 36px">
-                    {{ repository.repository }}
+                    <span v-html="repository.repository.split('/').join('/<br>')" />
                   </h2>
                   <h2 class="subtitle is-6 mb-1">
                     <span>{{ repository.name }}</span>
