@@ -170,14 +170,23 @@
           </div>
         </template>
       </div>
+      <div v-if="totalJobs" class="is-pulled-right">
+        <i>Total jobs posted to blockchain:</i> <b><ICountUp :end-val="totalJobs" /></b>
+      </div>
     </div>
   </section>
 </template>
 
 <script>
+import ICountUp from 'vue-countup-v2';
+
 export default {
+  components: {
+    ICountUp
+  },
   data () {
     return {
+      totalJobs: null,
       repositories: null,
       commits: null,
       projects: null,
@@ -215,6 +224,7 @@ export default {
     if (this.loggedIn) {
       this.getUser();
     }
+    this.getStats();
     this.getActiveRepositories();
     if (!this.interval) {
       this.interval = setInterval(() => {
@@ -240,6 +250,15 @@ export default {
           text: error,
           title: 'Error'
         });
+      }
+    },
+    async getStats () {
+      try {
+        const stats = await this.$axios.$get('/stats');
+        console.log(stats);
+        this.totalJobs = stats.total_jobs;
+      } catch (error) {
+        console.error(error);
       }
     },
     async getActiveRepositories () {
