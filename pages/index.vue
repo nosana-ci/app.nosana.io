@@ -103,7 +103,16 @@
             <div class="is-size-7">
               {{ stat.split("_").map((w) => (w[0].toUpperCase() + w.substring(1))).join(" ") }}
             </div>
-            <h2 class="title is-4">
+            <h2
+              class="title is-4"
+              :class="{
+                'has-text-info': stat.includes('running'),
+                'has-text-danger': stat.includes('failed'),
+                'has-text-warning': stat.includes('queued'),
+                'has-text-success': stat.includes('success'),
+                'has-text-accent': stat.includes('reward')
+              }"
+            >
               <ICountUp :end-val="value" />
             </h2>
           </div>
