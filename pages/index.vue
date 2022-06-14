@@ -113,7 +113,7 @@
                 'has-text-accent': stat.includes('reward')
               }"
             >
-              <ICountUp :end-val="value" />
+              <ICountUp :end-val="value" /> <small v-if="stat.includes('reward')" class="is-size-6">NOS</small>
             </h2>
           </div>
         </div>
