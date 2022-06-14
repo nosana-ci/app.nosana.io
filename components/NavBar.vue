@@ -38,6 +38,21 @@
                 Pipelines
               </div>
             </nuxt-link>
+            <nuxt-link
+              class="dropdown-item navbar-links"
+              to="/stats"
+              exact-active-class="is-active"
+              @click.native="mobileMenu = false; showDropdown = false"
+            >
+              <div class="link-content">
+                <span
+                  class="icon is-medium p-1 m-1 has-radius is-hidden-desktop"
+                >
+                  <i class="fa-solid fa-grip-lines" />
+                </span>
+                Statistics
+              </div>
+            </nuxt-link>
             <div
               v-if="!loggedIn"
               key=""

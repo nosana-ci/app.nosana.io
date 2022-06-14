@@ -93,31 +93,6 @@
           </div>
         </div>
       </div>
-      <div v-if="stats" class="columns is-multiline is-mobile">
-        <div
-          v-for="(value, stat) in stats"
-          :key="stat"
-          class="column is-2-widescreen is-one-fifth-desktop is-3-tablet is-6-mobile"
-        >
-          <div class="box has-text-centered">
-            <div class="is-size-7">
-              {{ stat.split("_").map((w) => (w[0].toUpperCase() + w.substring(1))).join(" ") }}
-            </div>
-            <h2
-              class="title is-4"
-              :class="{
-                'has-text-info': stat.includes('running'),
-                'has-text-danger': stat.includes('failed'),
-                'has-text-warning': stat.includes('queued'),
-                'has-text-success': stat.includes('success'),
-                'has-text-accent': stat.includes('reward')
-              }"
-            >
-              <ICountUp :end-val="value" /> <small v-if="stat.includes('reward')" class="is-size-6">NOS</small>
-            </h2>
-          </div>
-        </div>
-      </div>
       <div class="is-flex is-justify-content-space-between has-background-secondary columns p-2">
         <div style="max-width: 100%; width: 400px">
           <input v-model="search" class="input" placeholder="search repositories">
@@ -200,15 +175,10 @@
 </template>
 
 <script>
-import ICountUp from 'vue-countup-v2';
 
 export default {
-  components: {
-    ICountUp
-  },
   data () {
     return {
-      stats: null,
       repositories: null,
       commits: null,
       projects: null,
@@ -246,7 +216,6 @@ export default {
     if (this.loggedIn) {
       this.getUser();
     }
-    this.getStats();
     this.getActiveRepositories();
     if (!this.interval) {
       this.interval = setInterval(() => {
@@ -272,16 +241,6 @@ export default {
           text: error,
           title: 'Error'
         });
-      }
-    },
-    async getStats () {
-      try {
-        const stats = await this.$axios.$get('/stats');
-        stats.total_jobs_rewards = stats.total_jobs_rewards / 1e6;
-        console.log(stats);
-        this.stats = stats;
-      } catch (error) {
-        console.error(error);
       }
     },
     async getActiveRepositories () {
