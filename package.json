@@ -21,7 +21,7 @@
     "bs58": "5.0.0",
     "bulma": "0.9.4",
     "core-js": "3.22.8",
-    "countup.js": "^2.2.0",
+    "countup.js": "2.2.0",
     "nuxt": "2.15.8",
     "prismjs": "^1.27.0",
     "vue-countup-v2": "4.0.0",
