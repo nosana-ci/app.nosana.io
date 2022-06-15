@@ -108,6 +108,8 @@ export default {
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
     transpile: [
+      'countup.js',
+      'vue-countup-v2',
       '@solana/wallet-adapter-base',
       '@solana/wallet-adapter-sollet',
       '@solana/wallet-adapter-bitkeep',
