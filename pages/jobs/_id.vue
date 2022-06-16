@@ -165,8 +165,21 @@
                         <i class="fas fa-chevron-down ml-2 has-text-link" :class="{'fa-chevron-up': !hideResults[i]}" />
                       </div>
                     </div>
+                    <div v-if="item.log && Array.isArray(item.log)">
+                      <p
+                        v-for="(log, ik) in item.log"
+                        v-show=" log[1] !== ''"
+                        :key="ik"
+                        class="row-count  log"
+                        :class="{'has-text-white': log[0] === 1,
+                                 'has-text-danger': log[0] === 2,
+                                 'hidden-log': hideResults[i] }"
+                      >
+                        {{ log[1] }}
+                      </p>
+                    </div>
                     <p
-                      v-if="item.log"
+                      v-else-if="item.log"
                       class="row-count has-text-white log"
                       :class="{'hidden-log': hideResults[i]}"
                     >
@@ -427,7 +440,7 @@ export default {
     display: inline-block;
     padding: 0 .5em;
     margin-right: .5em;
-    color: $accent;
+    color: $accent !important;
   }
   &.has-text-danger:before {
     color: $red;
