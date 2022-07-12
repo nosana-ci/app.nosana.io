@@ -98,7 +98,7 @@ export default {
     fullPathRedirect: true,
     redirect: {
       login: '/login',
-      logout: '/login',
+      logout: false,
       home: false
     },
     plugins: [
@@ -110,6 +110,7 @@ export default {
     transpile: [
       'countup.js',
       'vue-countup-v2',
+      '@solana/spl-token',
       '@solana/wallet-adapter-base',
       '@solana/wallet-adapter-sollet',
       '@solana/wallet-adapter-bitkeep',

@@ -149,9 +149,13 @@ export default {
         this.$sol.loginModal = false;
         this.error = null;
         // Needed because there is a redirect bug when going to a protected route from the login page
-        const path = this.$auth.$storage.getUniversal('redirect') || '/';
+        const path = this.$auth.$storage.getUniversal('redirect');
         this.$auth.$storage.setUniversal('redirect', null);
-        this.$router.push(path);
+        if (path) {
+          this.$router.push(path);
+        } else if (this.$route.name === 'login') {
+          this.$router.push('/');
+        }
       } catch (error) {
         console.error('ERR', error);
         if (error.response && error.response.data) {
