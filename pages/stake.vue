@@ -4,7 +4,7 @@
       <h1 class="title is-spaced">
         Stake
       </h1>
-      <div v-if="$sol.publicKey">
+      <div v-if="$sol && $sol.publicKey">
         <div v-if="stakeData === null">
           Loading..
         </div>
@@ -20,33 +20,44 @@
           <a v-if="balance === 0" href="https://nosana.io/token" target="_blank">Buy NOS tokens</a>
         </div>
       </div>
-      <div>
+      <form @submit.prevent="stake">
         <div class="field">
           <label class="label">NOS amount</label>
           <div class="control">
-            <input v-model="amount" class="input" type="number" placeholder="0.00 NOS">
+            <input
+              v-model="amount"
+              required
+              class="input"
+              :max="balance"
+              min="1"
+              type="number"
+              placeholder="0.00 NOS"
+            >
           </div>
         </div>
         <div v-if="!stakeData" class="field">
           <label class="label">Unstake Days</label>
           <div class="control">
-            <input v-model="unstakeDays" class="input" type="number" placeholder="0 days">
+            <input v-model="unstakeDays" required class="input" type="number" placeholder="0 days">
           </div>
         </div>
+        <h2 class="subtitle">
+          {{ xNOS }} xNOS
+        </h2>
         <button
-          v-if="!$sol.publicKey"
+          v-if="!$sol || !$sol.publicKey"
           class="button is-accent is-outlined has-text-weight-semibold"
-          @click="$sol.loginModal = true"
+          @click.stop.prevent="$sol.loginModal = true"
         >
           Connect Wallet
         </button>
-        <button v-else-if="stakeData" class="button is-accent" :class="{'is-loading': loading}" @click="topup">
+        <button v-else-if="stakeData" type="submit" class="button is-accent" :class="{'is-loading': loading}">
           Topup with {{ amount }} NOS
         </button>
-        <button v-else class="button is-accent" :class="{'is-loading': loading}" @click="stake">
+        <button v-else type="submit" class="button is-accent" :class="{'is-loading': loading}">
           Stake {{ amount }} NOS
         </button>
-      </div>
+      </form>
     </div>
   </section>
 </template>
@@ -57,6 +68,7 @@ const TOKEN_PROGRAM_ID = 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA';
 const idl = require('@/utils/nosana_staking.json');
 
 const ENV = process.env.NUXT_ENV_SOL_NETWORK;
+const SECONDS_PER_DAY = 24 * 60 * 60;
 
 let node = ENV;
 if (!node.includes('http')) {
@@ -76,6 +88,24 @@ export default {
       amount: null,
       unstakeDays: 365
     };
+  },
+  computed: {
+    xNOS () {
+      if (!this.unstakeDays && !this.stakeData) {
+        return 0;
+      }
+      let amount = parseFloat(this.amount) || 0;
+      let unstakeTime;
+      if (this.stakeData) {
+        amount += this.stakeData.amount / 1e9;
+        unstakeTime = this.stakeData.duration;
+      } else {
+        unstakeTime = this.unstakeDays * SECONDS_PER_DAY;
+      }
+      const multiplierSeconds = (SECONDS_PER_DAY * 365) / 6; // 2 months
+      const multiplier = unstakeTime / multiplierSeconds;
+      return (parseFloat(amount) + parseFloat(amount) * multiplier).toFixed(2);
+    }
   },
   watch: {
     '$sol.publicKey': function (pubkey) {
@@ -177,6 +207,8 @@ export default {
           .rpc();
         console.log(response);
         this.stakeData = await this.program.account.stakeAccount.fetch(this.accounts.stake);
+        this.amount = null;
+        await this.getBalance();
       } catch (error) {
         this.$modal.show({
           color: 'danger',
@@ -187,18 +219,22 @@ export default {
       this.loading = false;
     },
     async stake () {
+      if (this.stakeData) {
+        return await this.topup();
+      }
       try {
-        const secondsPerDay = 24 * 60 * 60;
-        const stakeDurationMonth = this.unstakeDays * secondsPerDay;
+        const stakeDurationSeconds = this.unstakeDays * SECONDS_PER_DAY;
         const decimals = 1e9;
         const stakeAmount = this.amount * decimals;
 
         const response = await this.program.methods
-          .stake(new anchor.BN(stakeAmount), new anchor.BN(stakeDurationMonth))
+          .stake(new anchor.BN(stakeAmount), new anchor.BN(stakeDurationSeconds))
           .accounts(this.accounts)
           .rpc();
         console.log(response);
         this.stakeData = await this.program.account.stakeAccount.fetch(this.accounts.stake);
+        this.amount = null;
+        await this.getBalance();
       } catch (error) {
         this.$modal.show({
           color: 'danger',
