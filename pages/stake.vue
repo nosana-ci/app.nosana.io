@@ -14,7 +14,8 @@
           </div>
           <h2 class="subtitle has-text-weight-bold">
             <ICountUp
-              :end-val="amount ? stakeData.amount/1e9 + parseFloat(amount) : stakeData.amount/1e9"
+              :end-val="amount ?
+                parseFloat(stakeData.amount/1e9 + parseFloat(amount)) : parseFloat(stakeData.amount/1e9)"
               :options="{ decimalPlaces: 2 }"
             /> <small class="is-size-6">NOS</small>
           </h2>
@@ -44,6 +45,7 @@
               class="input"
               :max="balance"
               min="1"
+              step="0.00000001"
               type="number"
               placeholder="0.00 NOS"
             >
@@ -67,7 +69,7 @@
           <span v-if="!amount">Current</span><span v-else>New</span> xNOS score
         </div>
         <h2 class="title">
-          <ICountUp :end-val="xNOS" :options="{ decimalPlaces: 2 }" /> <small class="is-size-5">xNOS</small>
+          <ICountUp :end-val="parseFloat(xNOS)" :options="{ decimalPlaces: 2 }" /> <small class="is-size-5">xNOS</small>
         </h2>
         <button
           v-if="!loggedIn"
@@ -173,7 +175,11 @@ export default {
   methods: {
     async initAnchor (wallet) {
       this.provider = new anchor.AnchorProvider(web3, wallet, {});
-      const userKey = new anchor.web3.PublicKey(this.$auth.user.address);
+      let userKey = wallet.publicKey;
+      if (this.$auth && this.$auth.user) {
+        userKey = new anchor.web3.PublicKey(this.$auth.user.address);
+      }
+
       const accounts = {
         // solana native
         systemProgram: anchor.web3.SystemProgram.programId,
@@ -247,7 +253,9 @@ export default {
           .accounts(this.accounts)
           .rpc();
         console.log(response);
-        this.stakeData = await this.program.account.stakeAccount.fetch(this.accounts.stake);
+        setTimeout(async () => {
+          this.stakeData = await this.program.account.stakeAccount.fetch(this.accounts.stake);
+        }, 1000);
         this.amount = null;
         await this.getBalance();
       } catch (error) {
@@ -273,7 +281,9 @@ export default {
           .accounts(this.accounts)
           .rpc();
         console.log(response);
-        this.stakeData = await this.program.account.stakeAccount.fetch(this.accounts.stake);
+        setTimeout(async () => {
+          this.stakeData = await this.program.account.stakeAccount.fetch(this.accounts.stake);
+        }, 1000);
         this.amount = null;
         await this.getBalance();
       } catch (error) {
