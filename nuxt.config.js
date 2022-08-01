@@ -98,7 +98,7 @@ export default {
     fullPathRedirect: true,
     redirect: {
       login: '/login',
-      logout: false,
+      logout: '/',
       home: false
     },
     plugins: [
