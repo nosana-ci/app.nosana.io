@@ -91,9 +91,7 @@
 <script>
 import ICountUp from 'vue-countup-v2';
 const anchor = require('@project-serum/anchor');
-const TOKEN_PROGRAM_ID = 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA';
-
-const idl = require('@/utils/nosana_staking.json');
+const { TOKEN_PROGRAM_ID, getAssociatedTokenAddress } = require('@solana/spl-token');
 
 const ENV = process.env.NUXT_ENV_SOL_NETWORK;
 const SECONDS_PER_DAY = 24 * 60 * 60;
@@ -123,7 +121,6 @@ export default {
       loading: false,
       program: null,
       provider: null,
-      programId: process.env.NUXT_ENV_STAKE_PROGRAM_ID,
       stakeData: null,
       accounts: null,
       balance: null,
@@ -180,39 +177,38 @@ export default {
         userKey = new anchor.web3.PublicKey(this.$auth.user.address);
       }
 
+      const programId = new anchor.web3.PublicKey(process.env.NUXT_ENV_STAKE_PROGRAM_ID);
+      const mint = new anchor.web3.PublicKey(process.env.NUXT_ENV_NOS_TOKEN);
       const accounts = {
         // solana native
         systemProgram: anchor.web3.SystemProgram.programId,
         rent: anchor.web3.SYSVAR_RENT_PUBKEY,
-        clock: anchor.web3.SYSVAR_CLOCK_PUBKEY,
-        tokenProgram: new anchor.web3.PublicKey(TOKEN_PROGRAM_ID),
-        // custom
+        tokenProgram: TOKEN_PROGRAM_ID,
         feePayer: userKey,
+        // custom
         authority: userKey,
+        ataFrom: await getAssociatedTokenAddress(mint, userKey),
         ataVault: undefined,
-        mint: new anchor.web3.PublicKey(process.env.NUXT_ENV_NOS_TOKEN),
-        ataFrom: undefined,
-        stake: undefined
+        stake: undefined,
+        stats: undefined,
+        mint
       };
-      this.program = new anchor.Program(idl, this.programId, this.provider);
-      const [ataVault, bump] = await anchor.web3.PublicKey.findProgramAddress(
-        [accounts.mint.toBuffer()],
-        this.program.programId
+
+      const idl = await anchor.Program.fetchIdl(process.env.NUXT_ENV_STAKE_PROGRAM_ID, this.provider);
+      this.program = new anchor.Program(idl, programId, this.provider);
+      // get pda
+      [accounts.ataVault] = await anchor.web3.PublicKey.findProgramAddress(
+        [mint.toBuffer()],
+        programId
       );
-      accounts.ataVault = ataVault;
-      console.log(ataVault.toString(), bump);
+      [accounts.stats] = await anchor.web3.PublicKey.findProgramAddress(
+        [anchor.utils.bytes.utf8.encode('stats')],
+        programId
+      );
       [accounts.stake] = await anchor.web3.PublicKey.findProgramAddress(
-        [anchor.utils.bytes.utf8.encode('stake'), userKey.toBuffer()],
-        this.program.programId
+        [anchor.utils.bytes.utf8.encode('stake'), mint.toBuffer(), userKey.toBuffer()],
+        programId
       );
-      accounts.ataFrom = (await anchor.web3.PublicKey.findProgramAddress(
-        [
-          userKey.toBuffer(),
-          accounts.tokenProgram.toBuffer(),
-          accounts.mint.toBuffer()
-        ],
-        new anchor.web3.PublicKey('ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL') // SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID
-      ))[0];
       try {
         this.stakeData = await this.program.account.stakeAccount.fetch(accounts.stake);
       } catch (e) {
@@ -282,7 +278,7 @@ export default {
           .rpc();
         console.log(response);
         setTimeout(async () => {
-          this.stakeData = await this.program.account.stakeAccount.fetch(this.accounts.stake);
+          this.stakeData = await this.$axios.$get('/user/stake');
         }, 1000);
         this.amount = null;
         await this.getBalance();

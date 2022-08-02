@@ -16,6 +16,7 @@
     "@nuxtjs/axios": "5.13.6",
     "@nuxtjs/google-analytics": "2.4.0",
     "@project-serum/anchor": "^0.25.0",
+    "@solana/spl-token": "^0.2.0",
     "@solana/wallet-adapter-base": "0.9.5",
     "@solana/wallet-adapter-wallets": "0.16.1",
     "@solana/web3.js": "1.43.4",
