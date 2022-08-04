@@ -1,118 +1,154 @@
 <template>
   <section class="section">
+    {{stakeData}}
     <div class="container">
-      <h1 class="title is-spaced">
-        Stake
-      </h1>
-      <div>
-        <div v-if="stakeData === null">
-          Loading..
-        </div>
-        <div v-else-if="stakeData">
-          <div>
-            <span v-if="!amount">Current</span><span v-else>New</span> Stake
-          </div>
-          <h2 class="subtitle has-text-weight-bold">
-            <ICountUp
-              :end-val="amount ?
-                parseFloat(stakeData.amount/1e9 + parseFloat(amount)) : parseFloat(stakeData.amount/1e9)"
-              :options="{ decimalPlaces: 2 }"
-            /> <small class="is-size-6">NOS</small>
-          </h2>
-          <div>
-            Unstake duration
-          </div>
-          <h2 class="subtitle has-text-weight-bold">
-            {{ $moment.duration(stakeData.duration, 'seconds').humanize() }}
-          </h2>
-        </div>
-        <br>
-        <div class="is-pulled-right">
-          <span v-if="balance === null">Loading..</span>
-          <span v-else>
-            Balance: <a @click="amount = balance">{{ balance }} NOS</a>
-            <a v-if="balance === 0" href="https://nosana.io/token" target="_blank">Buy NOS tokens</a>
-          </span>
-        </div>
-      </div>
-      <div class="tabs">
+      <div class="tabs" v-if="stakeData">
         <ul>
-          <li @click="extendStake = false" :class="{'is-active': extendStake === false}"><a>Topup</a></li>
-          <li :class="{'is-active': extendStake === true}" @click="extendStake = true"><a>Extend</a></li>
+          <li @click="unstakeForm = false" :class="{'is-active': unstakeForm === false}"><a>Stake</a></li>
+          <li :class="{'is-active': unstakeForm === true}" @click="unstakeForm = true"><a>Unstake</a></li>
         </ul>
       </div>
-      <form @submit.prevent="stake">
-        <div class="field" v-if="!extendStake">
-          <label class="label">NOS amount</label>
-          <div class="control">
-            <input
-              v-model="amount"
-              required
-              class="input"
-              :max="balance"
-              min="1"
-              step="0.00000001"
-              type="number"
-              placeholder="0.00 NOS"
-            >
-          </div>
-        </div>
-        <div v-if="stakeData && extendStake" class="field">
-          <label class="label">Add extra unstake days</label>
-          <div class="control">
-            <input
-              v-model="extraUnstakeDays"
-              required
-              class="input"
-              type="number"
-              :min="1"
-              :max="365 - parseInt($moment.duration(stakeData.duration, 'seconds').asDays())"
-              placeholder="0 days"
-            >
-          </div>
-        </div>
-        <div v-if="!stakeData" class="field">
-          <label class="label">Unstake Days</label>
-          <div class="control">
-            <input
-              v-model="unstakeDays"
-              required
-              class="input"
-              type="number"
-              :min="31"
-              :max="365"
-              placeholder="0 days"
-            >
-          </div>
-        </div>
+      <div v-if="!unstakeForm">
+        <h1 class="title is-spaced">
+          Stake
+        </h1>
         <div>
-          <span v-if="!amount">Current</span><span v-else>New</span> xNOS score
+          <div v-if="stakeData === null">
+            Loading..
+          </div>
+          <div v-else-if="stakeData">
+            <div>
+              <span v-if="!amount">Current</span><span v-else>New</span> Stake
+            </div>
+            <h2 class="subtitle has-text-weight-bold">
+              <ICountUp
+                :end-val="amount ?
+                  parseFloat(stakeData.amount/1e9 + parseFloat(amount)) : parseFloat(stakeData.amount/1e9)"
+                :options="{ decimalPlaces: 2 }"
+              /> <small class="is-size-6">NOS</small>
+            </h2>
+            <div>
+              Unstake duration
+            </div>
+            <h2 class="subtitle has-text-weight-bold">
+              {{ $moment.duration(stakeData.duration, 'seconds').humanize() }}
+            </h2>
+          </div>
+          <br>
+          <div class="tabs">
+            <ul>
+              <li @click="extendStake = false" :class="{'is-active': extendStake === false}"><a>Topup</a></li>
+              <li :class="{'is-active': extendStake === true}" @click="extendStake = true"><a>Extend</a></li>
+            </ul>
+          </div>
+          <div class="is-pulled-right">
+            <span v-if="balance === null">Loading..</span>
+            <span v-else>
+              Balance: <a @click="amount = balance">{{ balance }} NOS</a>
+              <a v-if="balance === 0" href="https://nosana.io/token" target="_blank">Buy NOS tokens</a>
+            </span>
+          </div>
         </div>
-        <h2 class="title">
-          <ICountUp :end-val="parseFloat(xNOS)" :options="{ decimalPlaces: 2 }" /> <small class="is-size-5">xNOS</small>
-        </h2>
-        <button
-          v-if="!loggedIn"
-          class="button is-accent is-outlined has-text-weight-semibold"
-          @click.stop.prevent="$sol.loginModal = true"
-        >
-          Connect Wallet
-        </button>
-        <button
-          v-else-if="stakeData && extendStake"
-          type="submit"
-          class="button is-accent"
-          :class="{'is-loading': loading}"
-        >
-          Extend with {{ extraUnstakeDays }} days
-        </button>
-        <button v-else-if="stakeData" type="submit" class="button is-accent" :class="{'is-loading': loading}">
-          Topup with {{ amount }} NOS
-        </button>
-        <button v-else type="submit" class="button is-accent" :class="{'is-loading': loading}">
-          Stake {{ amount }} NOS
-        </button>
-      </form>
+        <form @submit.prevent="stake">
+          <div class="field" v-if="!extendStake">
+            <label class="label">NOS amount</label>
+            <div class="control">
+              <input
+                v-model="amount"
+                required
+                class="input"
+                :max="balance"
+                min="1"
+                step="0.00000001"
+                type="number"
+                placeholder="0.00 NOS"
+              >
+            </div>
+          </div>
+          <div v-if="stakeData && extendStake" class="field">
+            <label class="label">Add extra unstake days</label>
+            <div class="control">
+              <input
+                v-model="extraUnstakeDays"
+                required
+                class="input"
+                type="number"
+                :min="1"
+                :max="365 - parseInt($moment.duration(stakeData.duration, 'seconds').asDays())"
+                placeholder="0 days"
+              >
+            </div>
+          </div>
+          <div v-if="!stakeData" class="field">
+            <label class="label">Unstake Days</label>
+            <div class="control">
+              <input
+                v-model="unstakeDays"
+                required
+                class="input"
+                type="number"
+                :min="31"
+                :max="365"
+                placeholder="0 days"
+              >
+            </div>
+          </div>
+          <div>
+            <span v-if="!amount">Current</span><span v-else>New</span> xNOS score
+          </div>
+          <h2 class="title">
+            <ICountUp :end-val="parseFloat(xNOS)" :options="{ decimalPlaces: 2 }" />
+            <small class="is-size-5">xNOS</small>
+          </h2>
+          <button
+            v-if="!loggedIn"
+            class="button is-accent is-outlined has-text-weight-semibold"
+            @click.stop.prevent="$sol.loginModal = true"
+          >
+            Connect Wallet
+          </button>
+          <button
+            v-else-if="stakeData && extendStake"
+            type="submit"
+            class="button is-accent"
+            :class="{'is-loading': loading}"
+          >
+            Extend with {{ extraUnstakeDays }} days
+          </button>
+          <button v-else-if="stakeData" type="submit" class="button is-accent" :class="{'is-loading': loading}">
+            Topup with {{ amount }} NOS
+          </button>
+          <button v-else type="submit" class="button is-accent" :class="{'is-loading': loading}">
+            Stake {{ amount }} NOS
+          </button>
+        </form>
+        <hr>
+      </div>
+
+      <!--- Unstake form --->
+      <div v-if="unstakeForm && stakeData">
+        <h1 class="title is-spaced">
+          Unstake
+        </h1>
+        <p>Lorem ipsum unstake time</p>
+        <form @submit.prevent="unstake">
+          <button
+            v-if="!loggedIn"
+            class="button is-accent is-outlined has-text-weight-semibold"
+            @click.stop.prevent="$sol.loginModal = true"
+          >
+            Connect Wallet
+          </button>
+          <button
+            v-else-if="stakeData"
+            type="submit"
+            class="button is-accent"
+            :class="{'is-loading': loading}"
+          >
+            Unstake NOS
+          </button>
+        </form>
+      </div>
     </div>
   </section>
 </template>
@@ -155,7 +191,8 @@ export default {
       amount: null,
       unstakeDays: 365,
       extraUnstakeDays: null,
-      extendStake: false
+      extendStake: false,
+      unstakeForm: false
     };
   },
   computed: {
@@ -215,6 +252,8 @@ export default {
         rent: anchor.web3.SYSVAR_RENT_PUBKEY,
         tokenProgram: TOKEN_PROGRAM_ID,
         feePayer: userKey,
+        clock: anchor.web3.SYSVAR_CLOCK_PUBKEY,
+
         // custom
         authority: userKey,
         ataFrom: await getAssociatedTokenAddress(mint, userKey),
@@ -240,7 +279,7 @@ export default {
         programId
       );
       try {
-        this.stakeData = await this.program.account.stakeAccount.fetch(accounts.stake);
+        this.stakeData = await this.$axios.$get('/user/stake');
       } catch (e) {
         if (!e.message.includes('Account does not exist')) {
           this.$modal.show({
@@ -346,6 +385,31 @@ export default {
         });
       }
       this.loading = false;
+    },
+    async unstake () {
+      try {
+        this.loading = true;
+        const response = await this.program.methods
+          .unstake()
+          .accounts(this.accounts)
+          .rpc();
+        console.log(response);
+        setTimeout(async () => {
+          this.stakeData = await this.refreshStake();
+        }, 1000);
+        this.amount = null;
+        await this.getBalance();
+      } catch (error) {
+        this.$modal.show({
+          color: 'danger',
+          text: error,
+          title: 'Error'
+        });
+      }
+      this.loading = false;
+    },
+    async refreshStake () {
+      return await this.$axios.$get('/user/stake');
     }
   }
 };
