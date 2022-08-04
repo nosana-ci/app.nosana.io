@@ -1,22 +1,22 @@
 <template>
   <section class="section">
     {{stakeData}}
-    <div class="container">
-      <div class="tabs" v-if="stakeData">
+    <div v-if="loading" class="loader-wrapper is-active">
+      <div class="loader is-loading" />
+    </div>
+    <div v-if="!stakeEndDate" class="container">
+      <div v-if="stakeData" class="tabs">
         <ul>
           <li @click="unstakeForm = false" :class="{'is-active': unstakeForm === false}"><a>Stake</a></li>
           <li :class="{'is-active': unstakeForm === true}" @click="unstakeForm = true"><a>Unstake</a></li>
         </ul>
       </div>
-      <div v-if="!unstakeForm && stakeData && stakeData.time_unstake == 0">
+      <div v-if="!unstakeForm">
         <h1 class="title is-spaced">
           Stake
         </h1>
         <div>
-          <div v-if="stakeData === null">
-            Loading..
-          </div>
-          <div v-else-if="stakeData">
+          <div v-if="stakeData">
             <div>
               <span v-if="!amount">Current</span><span v-else>New</span> Stake
             </div>
@@ -124,28 +124,6 @@
         </form>
         <hr>
       </div>
-      <span v-else-if="!unstakeForm && stakeData && stakeData.time_unstake != 0">
-        You have unstaked your tokens.<br>
-        They will be released on {{$moment.unix(stakeData.time_unstake).toDate()}}<br>
-        Or restake them here: <br>
-        <form @submit.prevent="restake">
-          <button
-            v-if="!loggedIn"
-            class="button is-accent is-outlined has-text-weight-semibold"
-            @click.stop.prevent="$sol.loginModal = true"
-          >
-            Connect Wallet
-          </button>
-          <button
-            v-else-if="stakeData"
-            type="submit"
-            class="button is-accent"
-            :class="{'is-loading': loading}"
-          >
-            Restake {{ parseFloat(stakeData.amount)/1e9 }} NOS
-          </button>
-        </form>
-      </span>
 
       <!--- Unstake form --->
       <div v-if="unstakeForm && stakeData">
@@ -171,6 +149,45 @@
           </button>
         </form>
       </div>
+    </div>
+
+    <!-- Time unstake is not 0, so show countdown + restake stuff -->
+    <div v-if="stakeData && stakeEndDate" class="container">
+      <!-- Restake -->
+      You have unstaked your tokens.<br>
+      Unstaked at: {{ $moment.unix(stakeData.time_unstake).toDate() }}<br>
+
+      They will be released in
+      <client-only>
+        <countdown :end-time="new Date(stakeEndDate)">
+          <span
+            slot="process"
+            slot-scope="{ timeObj }">
+            <h2 class="title py-1 has-text-weight-medium">{{
+              `${timeObj.d}:${timeObj.h}:${timeObj.m}:${timeObj.s}`
+            }}</h2></span>
+          <span slot="finish">Finish!</span>
+        </countdown>
+      </client-only>
+
+      Or restake them here: <br>
+      <form @submit.prevent="restake">
+        <button
+          v-if="!loggedIn"
+          class="button is-accent is-outlined has-text-weight-semibold"
+          @click.stop.prevent="$sol.loginModal = true"
+        >
+          Connect Wallet
+        </button>
+        <button
+          v-else-if="stakeData"
+          type="submit"
+          class="button is-accent"
+          :class="{'is-loading': loading}"
+        >
+          Restake {{ parseFloat(stakeData.amount)/1e9 }} NOS
+        </button>
+      </form>
     </div>
   </section>
 </template>
@@ -214,7 +231,8 @@ export default {
       unstakeDays: 365,
       extraUnstakeDays: null,
       extendStake: false,
-      unstakeForm: false
+      unstakeForm: false,
+      stakeEndDate: null
     };
   },
   computed: {
@@ -260,6 +278,7 @@ export default {
   },
   methods: {
     async initAnchor (wallet) {
+      this.loading = true;
       this.provider = new anchor.AnchorProvider(web3, wallet, {});
       let userKey = wallet.publicKey;
       if (this.$auth && this.$auth.user) {
@@ -313,6 +332,12 @@ export default {
           this.stakeData = false;
         }
       }
+      if (parseInt(this.stakeData.time_unstake) !== 0) {
+        this.stakeEndDate = this.$moment.unix(this.stakeData.time_unstake).add(this.stakeData.duration, 's');
+      } else {
+        this.stakeEndDate = null;
+      }
+      this.loading = false;
       this.accounts = accounts;
       this.getBalance();
     },
@@ -341,7 +366,7 @@ export default {
           .rpc();
         console.log(response);
         setTimeout(async () => {
-          this.stakeData = await this.program.account.stakeAccount.fetch(this.accounts.stake);
+          this.stakeData = await this.refreshStake();
         }, 1000);
         this.amount = null;
         await this.getBalance();
@@ -372,7 +397,7 @@ export default {
           .rpc();
         console.log(response);
         setTimeout(async () => {
-          this.stakeData = await this.$axios.$get('/user/stake');
+          this.stakeData = await this.refreshStake();
         }, 1000);
         this.amount = null;
         await this.getBalance();
@@ -395,7 +420,7 @@ export default {
           .rpc();
         console.log(response);
         setTimeout(async () => {
-          this.stakeData = await this.program.account.stakeAccount.fetch(this.accounts.stake);
+          this.stakeData = await this.refreshStake();
         }, 1000);
         this.amount = null;
         await this.getBalance();
@@ -453,7 +478,13 @@ export default {
       this.loading = false;
     },
     async refreshStake () {
-      return await this.$axios.$get('/user/stake');
+      const stakeData = await this.$axios.$get('/user/stake');
+      if (parseInt(this.stakeData.time_unstake) !== 0) {
+        this.stakeEndDate = this.$moment.unix(this.stakeData.time_unstake).add(this.stakeData.duration, 's');
+      } else {
+        this.stakeEndDate = null;
+      }
+      return stakeData;
     }
   }
 };
