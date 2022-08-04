@@ -8,7 +8,7 @@
           <li :class="{'is-active': unstakeForm === true}" @click="unstakeForm = true"><a>Unstake</a></li>
         </ul>
       </div>
-      <div v-if="!unstakeForm">
+      <div v-if="!unstakeForm && stakeData && stakeData.time_unstake == 0">
         <h1 class="title is-spaced">
           Stake
         </h1>
@@ -124,6 +124,28 @@
         </form>
         <hr>
       </div>
+      <span v-else-if="!unstakeForm && stakeData && stakeData.time_unstake != 0">
+        You have unstaked your tokens.<br>
+        They will be released on {{$moment.unix(stakeData.time_unstake).toDate()}}<br>
+        Or restake them here: <br>
+        <form @submit.prevent="restake">
+          <button
+            v-if="!loggedIn"
+            class="button is-accent is-outlined has-text-weight-semibold"
+            @click.stop.prevent="$sol.loginModal = true"
+          >
+            Connect Wallet
+          </button>
+          <button
+            v-else-if="stakeData"
+            type="submit"
+            class="button is-accent"
+            :class="{'is-loading': loading}"
+          >
+            Restake {{ parseFloat(stakeData.amount)/1e9 }} NOS
+          </button>
+        </form>
+      </span>
 
       <!--- Unstake form --->
       <div v-if="unstakeForm && stakeData">
@@ -391,6 +413,28 @@ export default {
         this.loading = true;
         const response = await this.program.methods
           .unstake()
+          .accounts(this.accounts)
+          .rpc();
+        console.log(response);
+        setTimeout(async () => {
+          this.stakeData = await this.refreshStake();
+        }, 1000);
+        this.amount = null;
+        await this.getBalance();
+      } catch (error) {
+        this.$modal.show({
+          color: 'danger',
+          text: error,
+          title: 'Error'
+        });
+      }
+      this.loading = false;
+    },
+    async restake () {
+      try {
+        this.loading = true;
+        const response = await this.program.methods
+          .restake()
           .accounts(this.accounts)
           .rpc();
         console.log(response);
