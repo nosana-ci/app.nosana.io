@@ -35,8 +35,14 @@
           </span>
         </div>
       </div>
+      <div class="tabs">
+        <ul>
+          <li @click="extendStake = false" :class="{'is-active': extendStake === false}"><a>Topup</a></li>
+          <li :class="{'is-active': extendStake === true}" @click="extendStake = true"><a>Extend</a></li>
+        </ul>
+      </div>
       <form @submit.prevent="stake">
-        <div class="field">
+        <div class="field" v-if="!extendStake">
           <label class="label">NOS amount</label>
           <div class="control">
             <input
@@ -48,6 +54,20 @@
               step="0.00000001"
               type="number"
               placeholder="0.00 NOS"
+            >
+          </div>
+        </div>
+        <div v-if="stakeData && extendStake" class="field">
+          <label class="label">Add extra unstake days</label>
+          <div class="control">
+            <input
+              v-model="extraUnstakeDays"
+              required
+              class="input"
+              type="number"
+              :min="1"
+              :max="365 - parseInt($moment.duration(stakeData.duration, 'seconds').asDays())"
+              placeholder="0 days"
             >
           </div>
         </div>
@@ -77,6 +97,14 @@
           @click.stop.prevent="$sol.loginModal = true"
         >
           Connect Wallet
+        </button>
+        <button
+          v-else-if="stakeData && extendStake"
+          type="submit"
+          class="button is-accent"
+          :class="{'is-loading': loading}"
+        >
+          Extend with {{ extraUnstakeDays }} days
         </button>
         <button v-else-if="stakeData" type="submit" class="button is-accent" :class="{'is-loading': loading}">
           Topup with {{ amount }} NOS
@@ -125,7 +153,9 @@ export default {
       accounts: null,
       balance: null,
       amount: null,
-      unstakeDays: 365
+      unstakeDays: 365,
+      extraUnstakeDays: null,
+      extendStake: false
     };
   },
   computed: {
@@ -264,9 +294,12 @@ export default {
       this.loading = false;
     },
     async stake () {
-      if (this.stakeData) {
+      if (this.stakeData && this.amount) {
         return await this.topup();
+      } else if (this.stakeData && this.extraUnstakeDays) {
+        return await this.extend();
       }
+
       try {
         const stakeDurationSeconds = this.unstakeDays * SECONDS_PER_DAY;
         const decimals = 1e9;
@@ -289,6 +322,30 @@ export default {
           title: 'Error'
         });
       }
+    },
+    async extend () {
+      try {
+        this.loading = true;
+        const stakeDurationSeconds = this.extraUnstakeDays * SECONDS_PER_DAY;
+
+        const response = await this.program.methods
+          .extend(new anchor.BN(stakeDurationSeconds))
+          .accounts(this.accounts)
+          .rpc();
+        console.log(response);
+        setTimeout(async () => {
+          this.stakeData = await this.program.account.stakeAccount.fetch(this.accounts.stake);
+        }, 1000);
+        this.amount = null;
+        await this.getBalance();
+      } catch (error) {
+        this.$modal.show({
+          color: 'danger',
+          text: error,
+          title: 'Error'
+        });
+      }
+      this.loading = false;
     }
   }
 };
