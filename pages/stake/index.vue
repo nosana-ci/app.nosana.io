@@ -297,6 +297,18 @@ export default {
       wallet = new FakeWallet(anchor.web3.Keypair.generate());
     }
     this.initAnchor(wallet);
+    if (!this.interval) {
+      this.interval = setInterval(() => {
+        console.log('refresh staking info..');
+        this.refreshStake();
+      }, 30000);
+    }
+  },
+  beforeDestroy () {
+    if (this.interval) {
+      clearInterval(this.interval);
+      this.interval = null;
+    }
   },
   methods: {
     async initAnchor (wallet) {
@@ -321,7 +333,7 @@ export default {
         authority: userKey,
         ataFrom: await getAssociatedTokenAddress(mint, userKey),
         ataVault: undefined,
-        ataTo: undefined,
+        ataTo: await getAssociatedTokenAddress(mint, userKey),
         stake: undefined,
         stats: undefined,
         mint
@@ -330,7 +342,7 @@ export default {
       const idl = await anchor.Program.fetchIdl(process.env.NUXT_ENV_STAKE_PROGRAM_ID, this.provider);
       this.program = new anchor.Program(idl, programId, this.provider);
       // get pda
-      const [ataVault, ataTo, bump] = await anchor.web3.PublicKey.findProgramAddress(
+      const [ataVault, bump] = await anchor.web3.PublicKey.findProgramAddress(
         [mint.toBuffer()],
         programId
       );
@@ -345,7 +357,6 @@ export default {
         [anchor.utils.bytes.utf8.encode('stake'), mint.toBuffer(), userKey.toBuffer()],
         programId
       );
-      accounts.ataTo = ataTo;
       try {
         this.stakeData = await this.refreshStake();
       } catch (e) {
@@ -540,7 +551,7 @@ export default {
       } catch (error) {
         this.$modal.show({
           color: 'danger',
-          text: error,
+          text: error.message,
           title: 'Error'
         });
       }
@@ -550,7 +561,7 @@ export default {
       const stakeData = await this.$axios.$get('/user/stake');
       if (stakeData && parseInt(stakeData.time_unstake) !== 0 && parseInt(stakeData.time_unstake) !== '00') {
         this.stakeEndDate = this.$moment.unix(stakeData.time_unstake).add(stakeData.duration, 's');
-        // this.stakeEndDate = this.$moment.unix(1659696174);
+        // this.stakeEndDate = this.$moment.unix(1659698174);
       } else {
         this.stakeEndDate = null;
       }
