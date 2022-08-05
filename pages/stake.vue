@@ -23,7 +23,7 @@
             <h2 class="subtitle has-text-weight-bold">
               <ICountUp
                 :end-val="amount ?
-                  parseFloat(stakeData.amount/1e9 + parseFloat(amount)) : parseFloat(stakeData.amount/1e9)"
+                  parseFloat(stakeData.amount/1e6 + parseFloat(amount)) : parseFloat(stakeData.amount/1e6)"
                 :options="{ decimalPlaces: 2 }"
               /> <small class="is-size-6">NOS</small>
             </h2>
@@ -35,7 +35,7 @@
             </h2>
           </div>
           <br>
-          <div class="tabs">
+          <div class="tabs" v-if="stakeData">
             <ul>
               <li @click="extendStake = false" :class="{'is-active': extendStake === false}"><a>Topup</a></li>
               <li :class="{'is-active': extendStake === true}" @click="extendStake = true"><a>Extend</a></li>
@@ -185,7 +185,7 @@
           class="button is-accent"
           :class="{'is-loading': loading}"
         >
-          Restake {{ parseFloat(stakeData.amount)/1e9 }} NOS
+          Restake {{ parseFloat(stakeData.amount)/1e6 }} NOS
         </button>
       </form>
     </div>
@@ -246,7 +246,7 @@ export default {
       let amount = parseFloat(this.amount) || 0;
       let unstakeTime;
       if (this.stakeData) {
-        amount += this.stakeData.amount / 1e9;
+        amount += this.stakeData.amount / 1e6;
         unstakeTime = this.stakeData.duration;
       } else {
         unstakeTime = this.unstakeDays * SECONDS_PER_DAY;
@@ -307,10 +307,13 @@ export default {
       const idl = await anchor.Program.fetchIdl(process.env.NUXT_ENV_STAKE_PROGRAM_ID, this.provider);
       this.program = new anchor.Program(idl, programId, this.provider);
       // get pda
-      [accounts.ataVault] = await anchor.web3.PublicKey.findProgramAddress(
+      const [ataVault, bump] = await anchor.web3.PublicKey.findProgramAddress(
         [mint.toBuffer()],
         programId
       );
+      accounts.ataVault = ataVault;
+      console.log(ataVault.toString(), bump);
+
       [accounts.stats] = await anchor.web3.PublicKey.findProgramAddress(
         [anchor.utils.bytes.utf8.encode('stats')],
         programId
@@ -320,7 +323,7 @@ export default {
         programId
       );
       try {
-        this.stakeData = await this.$axios.$get('/user/stake');
+        this.stakeData = await this.refreshStake();
       } catch (e) {
         if (!e.message.includes('Account does not exist')) {
           this.$modal.show({
@@ -331,11 +334,6 @@ export default {
         } else {
           this.stakeData = false;
         }
-      }
-      if (parseInt(this.stakeData.time_unstake) !== 0) {
-        this.stakeEndDate = this.$moment.unix(this.stakeData.time_unstake).add(this.stakeData.duration, 's');
-      } else {
-        this.stakeEndDate = null;
       }
       this.loading = false;
       this.accounts = accounts;
@@ -357,7 +355,7 @@ export default {
     async topup () {
       try {
         this.loading = true;
-        const decimals = 1e9;
+        const decimals = 1e6;
         const stakeAmount = this.amount * decimals;
 
         const response = await this.program.methods
@@ -388,7 +386,7 @@ export default {
 
       try {
         const stakeDurationSeconds = this.unstakeDays * SECONDS_PER_DAY;
-        const decimals = 1e9;
+        const decimals = 1e6;
         const stakeAmount = this.amount * decimals;
 
         const response = await this.program.methods
@@ -479,8 +477,8 @@ export default {
     },
     async refreshStake () {
       const stakeData = await this.$axios.$get('/user/stake');
-      if (parseInt(this.stakeData.time_unstake) !== 0) {
-        this.stakeEndDate = this.$moment.unix(this.stakeData.time_unstake).add(this.stakeData.duration, 's');
+      if (stakeData && parseInt(stakeData.time_unstake) !== 0 && parseInt(stakeData.time_unstake) !== '00') {
+        this.stakeEndDate = this.$moment.unix(stakeData.time_unstake).add(stakeData.duration, 's');
       } else {
         this.stakeEndDate = null;
       }
