@@ -154,24 +154,45 @@
     <!-- Time unstake is not 0, so show countdown + restake stuff -->
     <div v-if="stakeData && stakeEndDate" class="container">
       <!-- Restake -->
-      You have unstaked your tokens.<br>
-      Unstaked at: {{ $moment.unix(stakeData.time_unstake).toDate() }}<br>
+      <span v-if="countdownFinished">
+        Claim your tokens!<br>
+      </span>
+      <span v-else>
+        You have unstaked your tokens.<br>
+        Unstaked at: {{ $moment.unix(stakeData.time_unstake).toDate() }}<br>
 
-      They will be released in
+        They will be released in
+      </span>
       <client-only>
-        <countdown :end-time="new Date(stakeEndDate)">
+        <countdown :end-time="new Date(stakeEndDate)" @finish="countdownFinished = true">
           <span
             slot="process"
             slot-scope="{ timeObj }">
             <h2 class="title py-1 has-text-weight-medium">{{
               `${timeObj.d}:${timeObj.h}:${timeObj.m}:${timeObj.s}`
             }}</h2></span>
-          <span slot="finish">Finish!</span>
+          <span slot="finish">
+            <button
+              v-if="!loggedIn"
+              class="button is-accent is-outlined has-text-weight-semibold"
+              @click.stop.prevent="$sol.loginModal = true"
+            >
+              Connect Wallet
+            </button>
+            <button
+              v-else
+              @click.stop.prevent="claim()"
+              class="button is-accent"
+              :class="{'is-loading': loading}"
+            >
+              Claim {{ parseFloat(stakeData.amount)/1e6 }} NOS
+            </button>
+          </span>
         </countdown>
       </client-only>
 
-      Or restake them here: <br>
-      <form @submit.prevent="restake">
+      <form v-if="!countdownFinished" @submit.prevent="restake">
+        Or restake them here: <br>
         <button
           v-if="!loggedIn"
           class="button is-accent is-outlined has-text-weight-semibold"
@@ -232,7 +253,8 @@ export default {
       extraUnstakeDays: null,
       extendStake: false,
       unstakeForm: false,
-      stakeEndDate: null
+      stakeEndDate: null,
+      countdownFinished: false
     };
   },
   computed: {
@@ -299,6 +321,7 @@ export default {
         authority: userKey,
         ataFrom: await getAssociatedTokenAddress(mint, userKey),
         ataVault: undefined,
+        ataTo: undefined,
         stake: undefined,
         stats: undefined,
         mint
@@ -307,7 +330,7 @@ export default {
       const idl = await anchor.Program.fetchIdl(process.env.NUXT_ENV_STAKE_PROGRAM_ID, this.provider);
       this.program = new anchor.Program(idl, programId, this.provider);
       // get pda
-      const [ataVault, bump] = await anchor.web3.PublicKey.findProgramAddress(
+      const [ataVault, ataTo, bump] = await anchor.web3.PublicKey.findProgramAddress(
         [mint.toBuffer()],
         programId
       );
@@ -322,6 +345,7 @@ export default {
         [anchor.utils.bytes.utf8.encode('stake'), mint.toBuffer(), userKey.toBuffer()],
         programId
       );
+      accounts.ataTo = ataTo;
       try {
         this.stakeData = await this.refreshStake();
       } catch (e) {
@@ -368,6 +392,11 @@ export default {
         }, 1000);
         this.amount = null;
         await this.getBalance();
+        this.$modal.show({
+          color: 'success',
+          text: 'Successfully topped up stake',
+          title: ''
+        });
       } catch (error) {
         this.$modal.show({
           color: 'danger',
@@ -399,6 +428,11 @@ export default {
         }, 1000);
         this.amount = null;
         await this.getBalance();
+        this.$modal.show({
+          color: 'success',
+          text: 'Successfully staked NOS',
+          title: 'Staked'
+        });
       } catch (error) {
         this.$modal.show({
           color: 'danger',
@@ -422,6 +456,11 @@ export default {
         }, 1000);
         this.amount = null;
         await this.getBalance();
+        this.$modal.show({
+          color: 'success',
+          text: 'Successfully extented stake',
+          title: 'Extended'
+        });
       } catch (error) {
         this.$modal.show({
           color: 'danger',
@@ -444,6 +483,11 @@ export default {
         }, 1000);
         this.amount = null;
         await this.getBalance();
+        this.$modal.show({
+          color: 'success',
+          text: 'Successfully unstaked NOS',
+          title: 'Unstaked'
+        });
       } catch (error) {
         this.$modal.show({
           color: 'danger',
@@ -466,6 +510,33 @@ export default {
         }, 1000);
         this.amount = null;
         await this.getBalance();
+        this.$modal.show({
+          color: 'success',
+          text: 'Successfully restaked NOS',
+          title: 'Restaked!'
+        });
+      } catch (error) {
+        this.$modal.show({
+          color: 'danger',
+          text: error,
+          title: 'Error'
+        });
+      }
+      this.loading = false;
+    },
+    async claim () {
+      try {
+        this.loading = true;
+        const response = await this.program.methods
+          .claim()
+          .accounts(this.accounts)
+          .rpc();
+        console.log(response);
+        setTimeout(async () => {
+          this.stakeData = await this.refreshStake();
+        }, 1000);
+        this.amount = null;
+        await this.getBalance();
       } catch (error) {
         this.$modal.show({
           color: 'danger',
@@ -479,6 +550,7 @@ export default {
       const stakeData = await this.$axios.$get('/user/stake');
       if (stakeData && parseInt(stakeData.time_unstake) !== 0 && parseInt(stakeData.time_unstake) !== '00') {
         this.stakeEndDate = this.$moment.unix(stakeData.time_unstake).add(stakeData.duration, 's');
+        // this.stakeEndDate = this.$moment.unix(1659696174);
       } else {
         this.stakeEndDate = null;
       }
