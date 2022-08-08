@@ -1,11 +1,12 @@
 <template>
   <section class="section">
-    {{stakeData}}
+    {{stakeData}}<br>
+    userHasStakedBefore?: {{userHasStakedBefore}}
     <div v-if="loading" class="loader-wrapper is-active">
       <div class="loader is-loading" />
     </div>
     <div v-if="!stakeEndDate" class="container">
-      <div v-if="stakeData" class="tabs">
+      <div v-if="userHasStakedBefore" class="tabs">
         <ul>
           <li @click="unstakeForm = false" :class="{'is-active': unstakeForm === false}"><a>Stake</a></li>
           <li :class="{'is-active': unstakeForm === true}" @click="unstakeForm = true"><a>Unstake</a></li>
@@ -16,7 +17,7 @@
           Stake
         </h1>
         <div>
-          <div v-if="stakeData">
+          <div v-if="stakeData && stakeData.user_id">
             <div>
               <span v-if="!amount">Current</span><span v-else>New</span> Stake
             </div>
@@ -35,7 +36,7 @@
             </h2>
           </div>
           <br>
-          <div class="tabs" v-if="stakeData">
+          <div v-if="userHasStakedBefore" class="tabs">
             <ul>
               <li @click="extendStake = false" :class="{'is-active': extendStake === false}"><a>Topup</a></li>
               <li :class="{'is-active': extendStake === true}" @click="extendStake = true"><a>Extend</a></li>
@@ -50,7 +51,7 @@
           </div>
         </div>
         <form @submit.prevent="stake">
-          <div class="field" v-if="!extendStake">
+          <div v-if="!extendStake" class="field">
             <label class="label">NOS amount</label>
             <div class="control">
               <input
@@ -65,7 +66,7 @@
               >
             </div>
           </div>
-          <div v-if="stakeData && extendStake" class="field">
+          <div v-if="userHasStakedBefore && extendStake" class="field">
             <label class="label">Add extra unstake days</label>
             <div class="control">
               <input
@@ -79,7 +80,7 @@
               >
             </div>
           </div>
-          <div v-if="!stakeData" class="field">
+          <div v-else class="field">
             <label class="label">Unstake Days</label>
             <div class="control">
               <input
@@ -114,7 +115,12 @@
             </div>
 
             <div class="column is-2-widescreen is-one-fifth-desktop is-3-tablet is-6-mobile">
-              <div v-if="!stakeEndDate && stakeData && stakeData.tierInfo.tier !== null" class="box has-text-centered">
+              <div
+                v-if="!stakeEndDate &&
+                  userHasStakedBefore &&
+                  stakeData.tierInfo.tier !== null"
+                class="box has-text-centered"
+              >
                 <div class="is-size-7">
                   Tier
                 </div>
@@ -132,7 +138,7 @@
             <div class="column is-2-widescreen is-one-fifth-desktop is-3-tablet is-6-mobile">
               <div
                 v-if="!stakeEndDate &&
-                  stakeData &&
+                  userHasStakedBefore &&
                   stakeData.tierInfo.tier !== null &&
                   stakeData.tierInfo.xnosNeededForNext &&
                   stakeData.tierInfo.xnosNeededForNext !== -1"
@@ -162,14 +168,19 @@
             Connect Wallet
           </button>
           <button
-            v-else-if="stakeData && extendStake"
+            v-else-if="userHasStakedBefore && extendStake"
             type="submit"
             class="button is-accent"
             :class="{'is-loading': loading}"
           >
             Extend with {{ extraUnstakeDays }} days
           </button>
-          <button v-else-if="stakeData" type="submit" class="button is-accent" :class="{'is-loading': loading}">
+          <button
+            v-else-if="userHasStakedBefore"
+            type="submit"
+            class="button is-accent"
+            :class="{'is-loading': loading}"
+          >
             Topup with {{ amount }} NOS
           </button>
           <button v-else type="submit" class="button is-accent" :class="{'is-loading': loading}">
@@ -180,7 +191,7 @@
       </div>
 
       <!--- Unstake form --->
-      <div v-if="unstakeForm && stakeData">
+      <div v-if="unstakeForm && userHasStakedBefore">
         <h1 class="title is-spaced">
           Unstake
         </h1>
@@ -194,7 +205,7 @@
             Connect Wallet
           </button>
           <button
-            v-else-if="stakeData"
+            v-else-if="userHasStakedBefore"
             type="submit"
             class="button is-accent"
             :class="{'is-loading': loading}"
@@ -206,7 +217,7 @@
     </div>
 
     <!-- Time unstake is not 0, so show countdown + restake stuff -->
-    <div v-if="stakeData && stakeEndDate" class="container">
+    <div v-if="userHasStakedBefore && stakeEndDate" class="container">
       <span v-if="countdownFinished">
         Claim your tokens!<br>
       </span>
@@ -254,7 +265,7 @@
           Connect Wallet
         </button>
         <button
-          v-else-if="stakeData"
+          v-else-if="userHasStakedBefore"
           type="submit"
           class="button is-accent"
           :class="{'is-loading': loading}"
@@ -311,16 +322,19 @@ export default {
     };
   },
   computed: {
+    userHasStakedBefore () {
+      return this.stakeData !== null && (this.stakeData.user_id !== null && this.stakeData.user_id !== undefined);
+    },
     loggedIn () {
       return this.$sol && this.$sol.publicKey;
     },
     xNOS () {
-      if (!this.unstakeDays && !this.stakeData) {
+      if (!this.unstakeDays && !this.userHasStakedBefore) {
         return 0;
       }
       let amount = parseFloat(this.amount) || 0;
       let unstakeTime;
-      if (this.stakeData) {
+      if (this.userHasStakedBefore) {
         amount += this.stakeData.amount / 1e6;
         if (this.extraUnstakeDays) {
           unstakeTime = parseInt(this.stakeData.duration) + (this.extraUnstakeDays * SECONDS_PER_DAY);
@@ -475,9 +489,9 @@ export default {
       this.loading = false;
     },
     async stake () {
-      if (this.stakeData && this.amount) {
+      if (this.userHasStakedBefore && this.amount) {
         return await this.topup();
-      } else if (this.stakeData && this.extraUnstakeDays) {
+      } else if (this.userHasStakedBefore && this.extraUnstakeDays) {
         return await this.extend();
       }
 
@@ -616,7 +630,7 @@ export default {
     },
     async refreshStake () {
       const stakeData = await this.$axios.$get('/user/stake');
-      if (stakeData && parseInt(stakeData.time_unstake) !== 0 && parseInt(stakeData.time_unstake) !== '00') {
+      if (stakeData && stakeData.user_id && parseInt(stakeData.time_unstake) !== 0 && parseInt(stakeData.time_unstake) !== '00') {
         this.stakeEndDate = this.$moment.unix(stakeData.time_unstake).add(stakeData.duration, 's');
         // this.stakeEndDate = this.$moment.unix(1659698174);
       } else {
