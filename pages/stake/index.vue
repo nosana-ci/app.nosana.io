@@ -207,7 +207,6 @@
 
     <!-- Time unstake is not 0, so show countdown + restake stuff -->
     <div v-if="stakeData && stakeEndDate" class="container">
-      <!-- Restake -->
       <span v-if="countdownFinished">
         Claim your tokens!<br>
       </span>
@@ -323,7 +322,11 @@ export default {
       let unstakeTime;
       if (this.stakeData) {
         amount += this.stakeData.amount / 1e6;
-        unstakeTime = this.stakeData.duration;
+        if (this.extraUnstakeDays) {
+          unstakeTime = parseInt(this.stakeData.duration) + (this.extraUnstakeDays * SECONDS_PER_DAY);
+        } else {
+          unstakeTime = this.stakeData.duration;
+        }
       } else {
         unstakeTime = this.unstakeDays * SECONDS_PER_DAY;
       }
@@ -454,8 +457,8 @@ export default {
         console.log(response);
         setTimeout(async () => {
           this.stakeData = await this.refreshStake();
+          this.amount = null;
         }, 1000);
-        this.amount = null;
         await this.getBalance();
         this.$modal.show({
           color: 'success',
@@ -518,8 +521,8 @@ export default {
         console.log(response);
         setTimeout(async () => {
           this.stakeData = await this.refreshStake();
+          this.extraUnstakeDays = null;
         }, 1000);
-        this.amount = null;
         await this.getBalance();
         this.$modal.show({
           color: 'success',
