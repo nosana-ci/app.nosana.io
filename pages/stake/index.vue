@@ -93,13 +93,67 @@
               >
             </div>
           </div>
-          <div>
-            <span v-if="!amount">Current</span><span v-else>New</span> xNOS score
+          <br>
+
+          <!-- Info -->
+          <div class="columns is-multiline is-mobile">
+            <div class="column is-2-widescreen is-one-fifth-desktop is-3-tablet is-6-mobile">
+              <div class="box has-text-centered">
+                <div class="is-size-7">
+                  <span v-if="!amount">Current</span><span v-else>New</span> xNOS score
+                </div>
+                <h2
+                  class="title is-4"
+                  :class="{
+                    'has-text-success': true,
+                  }"
+                >
+                  <ICountUp :end-val="parseFloat(xNOS)" :options="{ decimalPlaces: 2 }" />
+                </h2>
+              </div>
+            </div>
+
+            <div class="column is-2-widescreen is-one-fifth-desktop is-3-tablet is-6-mobile">
+              <div v-if="!stakeEndDate && stakeData && stakeData.tierInfo.tier !== null" class="box has-text-centered">
+                <div class="is-size-7">
+                  Tier
+                </div>
+                <h2
+                  class="title is-4"
+                  :class="{
+                    'has-text-success': true,
+                  }"
+                >
+                  <ICountUp :end-val="stakeData.tierInfo.tier" />
+                </h2>
+              </div>
+            </div>
+
+            <div class="column is-2-widescreen is-one-fifth-desktop is-3-tablet is-6-mobile">
+              <div
+                v-if="!stakeEndDate &&
+                  stakeData &&
+                  stakeData.tierInfo.tier !== null &&
+                  stakeData.tierInfo.xnosNeededForNext &&
+                  stakeData.tierInfo.xnosNeededForNext !== -1"
+                class="box has-text-centered"
+              >
+                <div class="is-size-7">
+                  xNOS needed for next tier
+                </div>
+                <h2
+                  class="title is-4"
+                  :class="{
+                    'has-text-success': true,
+                  }"
+                >
+                  <ICountUp :end-val="parseFloat(stakeData.tierInfo.xnosNeededForNext / 1e6)" />
+                </h2>
+              </div>
+            </div>
           </div>
-          <h2 class="title">
-            <ICountUp :end-val="parseFloat(xNOS)" :options="{ decimalPlaces: 2 }" />
-            <small class="is-size-5">xNOS</small>
-          </h2>
+
+          <!-- Buttons -->
           <button
             v-if="!loggedIn"
             class="button is-accent is-outlined has-text-weight-semibold"
