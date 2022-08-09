@@ -1,7 +1,7 @@
 <template>
   <section class="section">
-    {{stakeData}}<br>
-    userHasStakedBefore?: {{userHasStakedBefore}}
+    <!-- {{stakeData}}<br>
+    userHasStakedBefore?: {{userHasStakedBefore}} -->
     <div v-if="loading" class="loader-wrapper is-active">
       <div class="loader is-loading" />
     </div>
@@ -344,7 +344,7 @@ export default {
       } else {
         unstakeTime = this.unstakeDays * SECONDS_PER_DAY;
       }
-      const multiplierSeconds = (SECONDS_PER_DAY * 365) / 6; // 2 months
+      const multiplierSeconds = (SECONDS_PER_DAY * 365) / 3; // 4 months
       const multiplier = unstakeTime / multiplierSeconds;
       return (parseFloat(amount) + parseFloat(amount) * multiplier).toFixed(2);
     }
