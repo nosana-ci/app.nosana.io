@@ -6,6 +6,10 @@ a {
   outline: 0;
 }
 
+.is-fullheight {
+  min-height: 100vh;
+}
+
 .has-limited-width {
   width: 640px;
   max-width: 100%;

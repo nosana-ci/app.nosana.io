@@ -3,10 +3,16 @@
     <modal-popup />
     <client-only>
       <sol-wallet />
-      <nav-bar />
     </client-only>
-    <Nuxt />
-    <nos-footer />
+    <div class="columns m-0 is-fullheight">
+      <div class="column is-narrow has-background-secondary">
+        <nav-bar />
+      </div>
+      <div class="column">
+        <Nuxt />
+        <nos-footer />
+      </div>
+    </div>
   </div>
 </template>
 
