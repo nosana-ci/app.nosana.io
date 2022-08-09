@@ -80,7 +80,7 @@
               >
             </div>
           </div>
-          <div v-else class="field">
+          <div v-else-if="!userHasStakedBefore" class="field">
             <label class="label">Unstake Days</label>
             <div class="control">
               <input
@@ -118,7 +118,7 @@
               <div
                 v-if="!stakeEndDate &&
                   userHasStakedBefore &&
-                  stakeData.tierInfo.tier !== null"
+                  stakeData.tierInfo.userTier !== null"
                 class="box has-text-centered"
               >
                 <div class="is-size-7">
@@ -130,7 +130,7 @@
                     'has-text-success': true,
                   }"
                 >
-                  <ICountUp :end-val="stakeData.tierInfo.tier" />
+                  <ICountUp :end-val="stakeData.tierInfo.userTier.tier" />
                 </h2>
               </div>
             </div>
@@ -139,7 +139,7 @@
               <div
                 v-if="!stakeEndDate &&
                   userHasStakedBefore &&
-                  stakeData.tierInfo.tier !== null &&
+                  stakeData.tierInfo.userTier !== null &&
                   stakeData.tierInfo.xnosNeededForNext &&
                   stakeData.tierInfo.xnosNeededForNext !== -1"
                 class="box has-text-centered"
