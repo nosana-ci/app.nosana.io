@@ -9,7 +9,7 @@ $family-headers: 'Space Mono', monospace;
 
 // Colors
 $primary: white;
-$secondary: #F7F9F6;
+$secondary: #EAEEE9;
 $accent:  #04DE00;
 
 $secondary-invert: findColorInvert($secondary) !default;
@@ -20,7 +20,7 @@ $custom-colors: (
   "accent":($accent, $accent-invert),
 );
 
-// $text: white;
+$text: #4D4F4C;
 // $text-strong: white;
 
 $link: #4e9dff;
@@ -54,3 +54,7 @@ $box-link-active-shadow: 0 0 0 1px $accent;
 
 
 $pagination-current-background-color: $accent;
+
+$menu-item-hover-background-color: #CBD1C9;
+$menu-item-active-background-color: #CBD1C9;
+$menu-item-active-color: $text;
