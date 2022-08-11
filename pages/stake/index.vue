@@ -5,241 +5,174 @@
     <div v-if="loading" class="loader-wrapper is-active">
       <div class="loader is-loading" />
     </div>
+    <h1 class="title is-4">
+      Earn by staking
+    </h1>
+    <p>Stake NOS and generate $NOS and $xNOS</p>
 
-    <div class="columns">
-      <div class="column is-half">
-        <div class="stake-block p-5 has-background-light">
-          <div v-if="!stakeEndDate" class="container">
-            <div v-if="userHasStakedBefore" class="tabs">
-              <ul>
-                <li @click="unstakeForm = false" :class="{'is-active': unstakeForm === false}"><a>Stake</a></li>
-                <li :class="{'is-active': unstakeForm === true}" @click="unstakeForm = true"><a>Unstake</a></li>
-              </ul>
-            </div>
-            <div v-if="!unstakeForm">
-              <h1 class="title is-spaced">
-                Earn by staking
-              </h1>
-              <p>Stake NOS and generate $NOS and $xNOS</p>
-              <div>
-                <div v-if="stakeData && stakeData.user_id">
-                  <div>
-                    <span v-if="!amount">Current</span><span v-else>New</span> Stake
-                  </div>
-                  <h2 class="subtitle has-text-weight-bold">
-                    <ICountUp
-                      :end-val="amount ?
-                        parseFloat(stakeData.amount/1e6 + parseFloat(amount)) : parseFloat(stakeData.amount/1e6)"
-                      :options="{ decimalPlaces: 2 }"
-                    /> <small class="is-size-6">NOS</small>
-                  </h2>
-                  <div>
-                    Unstake duration
-                  </div>
-                  <h2 class="subtitle has-text-weight-bold">
-                    {{ $moment.duration(stakeData.duration, 'seconds').humanize() }}
-                  </h2>
-                </div>
-                <br>
-                <div v-if="userHasStakedBefore" class="tabs">
-                  <ul>
-                    <li @click="extendStake = false" :class="{'is-active': extendStake === false}"><a>Topup</a></li>
-                    <li :class="{'is-active': extendStake === true}" @click="extendStake = true"><a>Extend</a></li>
-                  </ul>
-                </div>
-                <div class="is-pulled-right">
-                  <span v-if="balance === null">Loading..</span>
-                  <span v-else>
-                    Balance: <a @click="amount = balance">{{ balance }} NOS</a>
-                    <a v-if="balance === 0" href="https://nosana.io/token" target="_blank">Buy NOS tokens</a>
-                  </span>
-                </div>
-              </div>
-              <form @submit.prevent="stake">
-                <div v-if="!extendStake" class="field">
-                  <label class="label">NOS amount</label>
-                  <div class="control">
-                    <input
-                      v-model="amount"
-                      required
-                      class="input"
-                      :max="balance"
-                      min="1"
-                      step="0.00000001"
-                      type="number"
-                      placeholder="0.00 NOS"
-                    >
-                  </div>
-                </div>
-                <div v-if="userHasStakedBefore && extendStake" class="field">
-                  <label class="label">Add extra unstake days</label>
-                  <div class="control">
-                    <input
-                      v-model="extraUnstakeDays"
-                      required
-                      class="input"
-                      type="number"
-                      :min="1"
-                      :max="365 - parseInt($moment.duration(stakeData.duration, 'seconds').asDays())"
-                      placeholder="0 days"
-                    >
-                  </div>
-                </div>
-                <div v-else-if="!userHasStakedBefore" class="field">
-                  <label class="label">Unstake Days</label>
-                  <div class="control">
-                    <input
-                      v-model="unstakeDays"
-                      required
-                      class="input"
-                      type="number"
-                      :min="31"
-                      :max="365"
-                      placeholder="0 days"
-                    >
-                  </div>
-                </div>
-                <br>
-
-                <!-- Info -->
-                <div class="columns is-multiline is-mobile">
-                  <div class="column is-2-widescreen is-one-fifth-desktop is-3-tablet is-6-mobile">
-                    <div class="box has-text-centered">
-                      <div class="is-size-7">
-                        <span v-if="!amount">Current</span><span v-else>New</span> xNOS score
-                      </div>
-                      <h2
-                        class="title is-4"
-                        :class="{
-                          'has-text-success': true,
-                        }"
-                      >
-                        <ICountUp :end-val="parseFloat(xNOS)" :options="{ decimalPlaces: 2 }" />
-                      </h2>
-                    </div>
-                  </div>
-
-                  <div class="column is-2-widescreen is-one-fifth-desktop is-3-tablet is-6-mobile">
-                    <div
-                      v-if="!stakeEndDate &&
-                        userHasStakedBefore &&
-                        stakeData.tierInfo.userTier !== null"
-                      class="box has-text-centered"
-                    >
-                      <div class="is-size-7">
-                        Tier
-                      </div>
-                      <h2
-                        class="title is-4"
-                        :class="{
-                          'has-text-success': true,
-                        }"
-                      >
-                        <ICountUp :end-val="stakeData.tierInfo.userTier.tier" />
-                      </h2>
-                    </div>
-                  </div>
-
-                  <div class="column is-2-widescreen is-one-fifth-desktop is-3-tablet is-6-mobile">
-                    <div
-                      v-if="!stakeEndDate &&
-                        userHasStakedBefore &&
-                        stakeData.tierInfo.userTier !== null &&
-                        stakeData.tierInfo.xnosNeededForNext &&
-                        stakeData.tierInfo.xnosNeededForNext !== -1"
-                      class="box has-text-centered"
-                    >
-                      <div class="is-size-7">
-                        xNOS needed for next tier
-                      </div>
-                      <h2
-                        class="title is-4"
-                        :class="{
-                          'has-text-success': true,
-                        }"
-                      >
-                        <ICountUp :end-val="parseFloat(stakeData.tierInfo.xnosNeededForNext / 1e6)" />
-                      </h2>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Buttons -->
-                <button
-                  v-if="!loggedIn"
-                  class="button is-accent is-outlined has-text-weight-semibold"
-                  @click.stop.prevent="$sol.loginModal = true"
-                >
-                  Connect Wallet
-                </button>
-                <button
-                  v-else-if="userHasStakedBefore && extendStake"
-                  type="submit"
-                  class="button is-accent"
-                  :class="{'is-loading': loading}"
-                >
-                  Extend with {{ extraUnstakeDays }} days
-                </button>
-                <button
-                  v-else-if="userHasStakedBefore"
-                  type="submit"
-                  class="button is-accent"
-                  :class="{'is-loading': loading}"
-                >
-                  Topup with {{ amount }} NOS
-                </button>
-                <button v-else type="submit" class="button is-accent" :class="{'is-loading': loading}">
-                  Stake {{ amount }} NOS
-                </button>
-              </form>
-              <hr>
-            </div>
-
-            <!--- Unstake form --->
-            <div v-if="unstakeForm && userHasStakedBefore">
-              <h1 class="title is-spaced">
-                Unstake
-              </h1>
-              <p>Lorem ipsum unstake time</p>
-              <form @submit.prevent="unstake">
-                <button
-                  v-if="!loggedIn"
-                  class="button is-accent is-outlined has-text-weight-semibold"
-                  @click.stop.prevent="$sol.loginModal = true"
-                >
-                  Connect Wallet
-                </button>
-                <button
-                  v-else-if="userHasStakedBefore"
-                  type="submit"
-                  class="button is-accent"
-                  :class="{'is-loading': loading}"
-                >
-                  Unstake NOS
-                </button>
-              </form>
-            </div>
+    <div class="columns mt-6">
+      <div class="column is-half stake-block">
+        <div class="has-background-light">
+          <div class="tabs">
+            <ul>
+              <li
+                class="has-background-secondary px-4"
+                :class="{'is-active': unstakeForm === false}"
+                @click="unstakeForm = false"
+              >
+                <a class="p-4">Stake</a>
+              </li>
+              <li
+                v-if="userHasStakedBefore"
+                class="has-background-secondary px-4"
+                :class="{'is-active': unstakeForm === true}"
+                @click="unstakeForm = true"
+              >
+                <a class="p-4">Unstake</a>
+              </li>
+            </ul>
           </div>
-          <!-- Time unstake is not 0, so show countdown + restake stuff -->
-          <div v-if="userHasStakedBefore && stakeEndDate" class="container">
-            <span v-if="countdownFinished">
-              Claim your tokens!<br>
-            </span>
-            <span v-else>
-              You have unstaked your tokens.<br>
-              Unstaked at: {{ $moment.unix(stakeData.time_unstake).toDate() }}<br>
 
-              They will be released in
-            </span>
-            <client-only>
-              <countdown :end-time="new Date(stakeEndDate)" @finish="countdownFinished = true">
-                <span
-                  slot="process"
-                  slot-scope="{ timeObj }">
-                  <h2 class="title py-1 has-text-weight-medium">{{
-                    `${timeObj.d}:${timeObj.h}:${timeObj.m}:${timeObj.s}`
-                  }}</h2></span>
-                <span slot="finish">
+          <div class="p-5">
+            <div v-if="!stakeEndDate" class="container">
+              <div v-if="!unstakeForm">
+                <div
+                  class="balances is-flex is-flex-direction-row is-flex-wrap-wrap
+                    is-justify-content-space-between is-align-content-center"
+                >
+                  <div class="px-2">
+                    <span v-if="balance === null" class="is-size-7">Loading..<br></span>
+                    <span v-else class="is-size-7">NOS Balance<br></span>
+                    <span @click="amount = balance">{{ balance }} NOS</span>
+                    <a v-if="balance === 0" href="https://nosana.io/token" target="_blank">Buy NOS tokens</a>
+                  </div>
+                  <div class="px-2">
+                    <span class="is-size-7">Staked<br></span>
+                    <span v-if="stakeData && stakeData.amount">
+                      {{ parseFloat(stakeData.amount/1e6) }}
+                    </span>
+                    <span v-else>0</span>
+                    <small class="is-size-6">NOS</small>
+                  </div>
+                </div>
+                <div>
+                  <div v-if="userHasStakedBefore" class="tabs">
+                    <ul>
+                      <li @click="extendStake = false" :class="{'is-active': extendStake === false}"><a>Topup</a></li>
+                      <li :class="{'is-active': extendStake === true}" @click="extendStake = true"><a>Extend</a></li>
+                    </ul>
+                  </div>
+                </div>
+                <form @submit.prevent="stake">
+                  <div v-if="!extendStake" class="field">
+                    <label class="label">NOS amount</label>
+                    <div class="control">
+                      <input
+                        v-model="amount"
+                        required
+                        class="input"
+                        :max="balance"
+                        min="1"
+                        step="0.00000001"
+                        type="number"
+                        placeholder="0.00 NOS"
+                      >
+                    </div>
+                  </div>
+                  <div v-if="userHasStakedBefore && extendStake" class="field">
+                    <label class="label">Add extra unstake days</label>
+                    <div class="control">
+                      <input
+                        v-model="extraUnstakeDays"
+                        required
+                        class="input"
+                        type="number"
+                        :min="1"
+                        :max="365 - parseInt($moment.duration(stakeData.duration, 'seconds').asDays())"
+                        placeholder="0 days"
+                      >
+                    </div>
+                  </div>
+                  <div v-else-if="!userHasStakedBefore" class="field">
+                    <label class="label">Unstake Days</label>
+                    <div class="control">
+                      <input
+                        v-model="unstakeDays"
+                        required
+                        class="input"
+                        type="number"
+                        :min="31"
+                        :max="365"
+                        placeholder="0 days"
+                      >
+                    </div>
+                  </div>
+                  <br>
+
+                  <!-- Info -->
+                  <div class="columns is-multiline is-mobile">
+                    <div class="column is-2-widescreen is-one-fifth-desktop is-3-tablet is-6-mobile">
+                      <div class="box has-text-centered">
+                        <div class="is-size-7">
+                          <span v-if="!amount">Current</span><span v-else>New</span> xNOS score
+                        </div>
+                        <h2
+                          class="title is-4"
+                          :class="{
+                            'has-text-success': true,
+                          }"
+                        >
+                          <ICountUp :end-val="parseFloat(xNOS)" :options="{ decimalPlaces: 2 }" />
+                        </h2>
+                      </div>
+                    </div>
+
+                    <div class="column is-2-widescreen is-one-fifth-desktop is-3-tablet is-6-mobile">
+                      <div
+                        v-if="!stakeEndDate &&
+                          userHasStakedBefore &&
+                          stakeData.tierInfo.userTier !== null"
+                        class="box has-text-centered"
+                      >
+                        <div class="is-size-7">
+                          Tier
+                        </div>
+                        <h2
+                          class="title is-4"
+                          :class="{
+                            'has-text-success': true,
+                          }"
+                        >
+                          <ICountUp :end-val="stakeData.tierInfo.userTier.tier" />
+                        </h2>
+                      </div>
+                    </div>
+
+                    <div class="column is-2-widescreen is-one-fifth-desktop is-3-tablet is-6-mobile">
+                      <div
+                        v-if="!stakeEndDate &&
+                          userHasStakedBefore &&
+                          stakeData.tierInfo.userTier !== null &&
+                          stakeData.tierInfo.xnosNeededForNext &&
+                          stakeData.tierInfo.xnosNeededForNext !== -1"
+                        class="box has-text-centered"
+                      >
+                        <div class="is-size-7">
+                          xNOS needed for next tier
+                        </div>
+                        <h2
+                          class="title is-4"
+                          :class="{
+                            'has-text-success': true,
+                          }"
+                        >
+                          <ICountUp :end-val="parseFloat(stakeData.tierInfo.xnosNeededForNext / 1e6)" />
+                        </h2>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Buttons -->
                   <button
                     v-if="!loggedIn"
                     class="button is-accent is-outlined has-text-weight-semibold"
@@ -248,35 +181,111 @@
                     Connect Wallet
                   </button>
                   <button
-                    v-else
-                    @click.stop.prevent="claim()"
+                    v-else-if="userHasStakedBefore && extendStake"
+                    type="submit"
                     class="button is-accent"
                     :class="{'is-loading': loading}"
                   >
-                    Claim {{ parseFloat(stakeData.amount)/1e6 }} NOS
+                    Extend with {{ extraUnstakeDays }} days
                   </button>
-                </span>
-              </countdown>
-            </client-only>
+                  <button
+                    v-else-if="userHasStakedBefore"
+                    type="submit"
+                    class="button is-accent"
+                    :class="{'is-loading': loading}"
+                  >
+                    Topup with {{ amount }} NOS
+                  </button>
+                  <button v-else type="submit" class="button is-accent" :class="{'is-loading': loading}">
+                    Stake {{ amount }} NOS
+                  </button>
+                </form>
+                <hr>
+              </div>
 
-            <form v-if="!countdownFinished" @submit.prevent="restake">
-              Or restake them here: <br>
-              <button
-                v-if="!loggedIn"
-                class="button is-accent is-outlined has-text-weight-semibold"
-                @click.stop.prevent="$sol.loginModal = true"
-              >
-                Connect Wallet
-              </button>
-              <button
-                v-else-if="userHasStakedBefore"
-                type="submit"
-                class="button is-accent"
-                :class="{'is-loading': loading}"
-              >
-                Restake {{ parseFloat(stakeData.amount)/1e6 }} NOS
-              </button>
-            </form>
+              <!--- Unstake form --->
+              <div v-if="unstakeForm && userHasStakedBefore">
+                <h1 class="title is-spaced">
+                  Unstake
+                </h1>
+                <p>Lorem ipsum unstake time</p>
+                <form @submit.prevent="unstake">
+                  <button
+                    v-if="!loggedIn"
+                    class="button is-accent is-outlined has-text-weight-semibold"
+                    @click.stop.prevent="$sol.loginModal = true"
+                  >
+                    Connect Wallet
+                  </button>
+                  <button
+                    v-else-if="userHasStakedBefore"
+                    type="submit"
+                    class="button is-accent"
+                    :class="{'is-loading': loading}"
+                  >
+                    Unstake NOS
+                  </button>
+                </form>
+              </div>
+            </div>
+            <!-- Time unstake is not 0, so show countdown + restake stuff -->
+            <div v-if="userHasStakedBefore && stakeEndDate" class="container">
+              <span v-if="countdownFinished">
+                Claim your tokens!<br>
+              </span>
+              <span v-else>
+                You have unstaked your tokens.<br>
+                Unstaked at: {{ $moment.unix(stakeData.time_unstake).toDate() }}<br>
+
+                They will be released in
+              </span>
+              <client-only>
+                <countdown :end-time="new Date(stakeEndDate)" @finish="countdownFinished = true">
+                  <span
+                    slot="process"
+                    slot-scope="{ timeObj }">
+                    <h2 class="title py-1 has-text-weight-medium">{{
+                      `${timeObj.d}:${timeObj.h}:${timeObj.m}:${timeObj.s}`
+                    }}</h2></span>
+                  <span slot="finish">
+                    <button
+                      v-if="!loggedIn"
+                      class="button is-accent is-outlined has-text-weight-semibold"
+                      @click.stop.prevent="$sol.loginModal = true"
+                    >
+                      Connect Wallet
+                    </button>
+                    <button
+                      v-else
+                      @click.stop.prevent="claim()"
+                      class="button is-accent"
+                      :class="{'is-loading': loading}"
+                    >
+                      Claim {{ parseFloat(stakeData.amount)/1e6 }} NOS
+                    </button>
+                  </span>
+                </countdown>
+              </client-only>
+
+              <form v-if="!countdownFinished" @submit.prevent="restake">
+                Or restake them here: <br>
+                <button
+                  v-if="!loggedIn"
+                  class="button is-accent is-outlined has-text-weight-semibold"
+                  @click.stop.prevent="$sol.loginModal = true"
+                >
+                  Connect Wallet
+                </button>
+                <button
+                  v-else-if="userHasStakedBefore"
+                  type="submit"
+                  class="button is-accent"
+                  :class="{'is-loading': loading}"
+                >
+                  Restake {{ parseFloat(stakeData.amount)/1e6 }} NOS
+                </button>
+              </form>
+            </div>
           </div>
         </div>
       </div>
@@ -673,5 +682,25 @@ export default {
 .stake-block {
   border-radius: 4px;
   height: 100%;
+}
+
+.tabs ul {
+  border-bottom-width: 0px;
+  li {
+    width: 50%;
+    font-size: 18px;
+    a {
+      margin-bottom: 0;
+    }
+    &.is-active {
+      background-color: transparent !important;
+    }
+  }
+}
+
+.balances {
+  div {
+    border-left: 1px solid $grey-dark;
+  }
 }
 </style>
