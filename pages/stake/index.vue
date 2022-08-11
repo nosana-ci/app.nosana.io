@@ -1,14 +1,14 @@
 <template>
   <section class="section">
-    <!-- {{stakeData}}<br>
-    userHasStakedBefore?: {{userHasStakedBefore}} -->
+    {{stakeData}}<br>
+    userHasStakedBefore?: {{userHasStakedBefore}}
     <div v-if="loading" class="loader-wrapper is-active">
       <div class="loader is-loading" />
     </div>
 
     <div class="columns">
       <div class="column is-half">
-        <div class="stake-block p-5">
+        <div class="stake-block p-5 has-background-light">
           <div v-if="!stakeEndDate" class="container">
             <div v-if="userHasStakedBefore" class="tabs">
               <ul>
@@ -282,7 +282,7 @@
       </div>
 
       <div class="column is-half">
-        <div class="stake-block p-5">
+        <div class="stake-block p-5 has-background-light">
           Tiers
         </div>
       </div>
@@ -290,13 +290,13 @@
 
     <div class="columns">
       <div class="column is-half">
-        <div class="stake-block p-5">
+        <div class="stake-block p-5 has-background-light">
           Countdown
         </div>
       </div>
 
       <div class="column is-half">
-        <div class="stake-block p-5">
+        <div class="stake-block p-5 has-background-light">
           Subscribe
         </div>
       </div>
@@ -671,7 +671,6 @@ export default {
 
 <style scoped lang="scss">
 .stake-block {
-  background: #F7F9F6;
   border-radius: 4px;
   height: 100%;
 }
