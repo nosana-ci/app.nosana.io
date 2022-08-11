@@ -52,12 +52,10 @@
               exact-active-class="is-active"
               @click.native="mobileMenu = false;"
             >
-              <div class="link-content">
-                <span class="icon is-medium p-1 m-1 has-radius">
-                  <i class="fa-solid fa-user" />
-                </span>
-                Account
-              </div>
+              <span class="icon is-medium p-1 m-1 has-radius">
+                <i class="fa-solid fa-user" />
+              </span>
+              Account
             </nuxt-link>
           </li>
           <li>
@@ -66,12 +64,10 @@
               exact-active-class="is-active"
               @click.native="mobileMenu = false;"
             >
-              <div class="link-content">
-                <span class="icon is-medium p-1 m-1 has-radius">
-                  <i class="fa-solid fa-bars-staggered" />
-                </span>
-                Pipelines
-              </div>
+              <span class="icon is-medium p-1 m-1 has-radius">
+                <i class="fa-solid fa-bars-staggered" />
+              </span>
+              Pipelines
             </nuxt-link>
           </li>
           <li>
@@ -80,12 +76,10 @@
               exact-active-class="is-active"
               @click.native="mobileMenu = false;"
             >
-              <div class="link-content">
-                <span class="icon is-medium p-1 m-1 has-radius">
-                  <i class="fa-solid fa-chart-line" />
-                </span>
-                Statistics
-              </div>
+              <span class="icon is-medium p-1 m-1 has-radius">
+                <i class="fa-solid fa-chart-line" />
+              </span>
+              Statistics
             </nuxt-link>
           </li>
         </ul>
@@ -98,27 +92,30 @@
 export default {
   components: { },
   data () {
-    return {
-      mobileMenu: false,
-      showDropdown: false
-    };
+    return { mobileMenu: false };
   },
   computed: {
     loggedIn () {
       return (this.$auth && this.$auth.loggedIn);
-    }
-  },
-  methods: {
-    toggleDropdown () {
-      this.showDropdown = !this.showDropdown;
     }
   }
 };
 </script>
 
 <style scoped lang="scss">
-@import "bulma/sass/utilities/mixins";
-
-@include touch{
+.menu {
+font-size: 14px;
+}
+.menu-list {
+  li {
+    margin: 5px 0;
+  }
+  a{
+    &.is-active, &:hover {
+      i {
+        color: $accent;
+      }
+    }
+  }
 }
 </style>
