@@ -1,7 +1,7 @@
 <template>
   <section class="section">
-    {{stakeData}}<br>
-    userHasStakedBefore?: {{userHasStakedBefore}}
+    <!-- {{stakeData}}<br>
+    userHasStakedBefore?: {{userHasStakedBefore}} -->
     <div v-if="loading" class="loader-wrapper is-active">
       <div class="loader is-loading" />
     </div>
