@@ -92,7 +92,7 @@
         </div>
       </div>
     </div>
-    <div class="is-flex is-justify-content-space-between has-background-secondary columns p-2">
+    <div class="is-flex is-justify-content-space-between has-background-light columns p-2">
       <div style="max-width: 100%; width: 400px">
         <input v-model="search" class="input" placeholder="search repositories">
       </div>
@@ -100,7 +100,7 @@
         + Add new repository
       </nuxt-link>
     </div>
-    <div v-if="repositories" class="columns is-multiline mt-4 has-background-secondary">
+    <div v-if="repositories" class="columns is-multiline mt-4 has-background-light">
       <div v-if="!filteredRepositories.length" class="has-text-centered subtitle">
         No repositories found..
       </div>

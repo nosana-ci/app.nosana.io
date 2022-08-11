@@ -11,6 +11,13 @@ $family-headers: 'Space Mono', monospace;
 $primary: white;
 $secondary: #EAEEE9;
 $accent:  #04DE00;
+$grey-darker: #CBD1C9;
+$grey-dark: #E0E6DE;
+$grey-light: #EAEEE9;
+$grey-lighter: #F2F5F1;
+$white-ter: #F7FAF6;
+
+$dark: $grey-dark;
 
 $secondary-invert: findColorInvert($secondary) !default;
 $accent-invert: findColorInvert($accent) !default;
@@ -21,7 +28,7 @@ $custom-colors: (
 );
 
 $text: #4D4F4C;
-// $text-strong: white;
+$text-strong: #010C04;
 
 $link: #4e9dff;
 $link-hover: $accent;
@@ -46,7 +53,7 @@ $footer-padding: 3rem 1rem;
 
 $hr-background-color: $secondary;
 $hr-height: 1px;
-$box-background-color: $secondary;
+$box-background-color: $grey-light;
 $box-shadow: 0 0 0 1px transparent;
 $box-shadow: 0 0 0 1px transparent;
 $box-link-hover-shadow: 0 0 0 1px $accent;
@@ -55,10 +62,10 @@ $box-link-active-shadow: 0 0 0 1px $accent;
 
 $pagination-current-background-color: $accent;
 
-$menu-item-hover-background-color: #CBD1C9;
-$menu-item-active-background-color: #CBD1C9;
+$menu-item-hover-background-color: $grey-dark;
+$menu-item-active-background-color: $grey-darker;
 $menu-item-active-color: $text;
+$menu-list-link-padding: 0.25em 0.75em;
+$menu-item-active-color: $text-strong;
 
 $tablet: 1024px;
-
-$menu-list-link-padding: 0.25em 0.75em;

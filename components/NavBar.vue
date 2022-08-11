@@ -111,7 +111,7 @@ font-size: 14px;
     margin: 5px 0;
   }
   a{
-    &.is-active, &:hover {
+    &.is-active {
       i {
         color: $accent;
       }

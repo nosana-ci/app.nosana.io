@@ -5,8 +5,11 @@
       <sol-wallet />
     </client-only>
     <div class="columns m-0 is-fullheight">
-      <div class="column is-narrow has-background-secondary">
+      <div class="column is-narrow has-background-light is-flex is-flex-direction-column">
         <nav-bar />
+        <div class="mt-auto box has-background-dark">
+          Reward block
+        </div>
       </div>
       <div class="column">
         <Nuxt />
