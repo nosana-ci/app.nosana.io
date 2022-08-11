@@ -23,10 +23,9 @@
                 <a class="p-4">Stake</a>
               </li>
               <li
-                v-if="userHasStakedBefore"
                 class="has-background-secondary px-4"
-                :class="{'is-active': unstakeForm === true}"
-                @click="unstakeForm = true"
+                :class="{'is-active': unstakeForm === true, 'is-inactive' : !userHasStakedBefore}"
+                @click="userHasStakedBefore ? unstakeForm = true : null"
               >
                 <a class="p-4">Unstake</a>
               </li>
@@ -43,7 +42,7 @@
                       <span v-if="balance === null" class="is-size-7">Loading..<br></span>
                       <span v-else class="is-size-7">NOS Balance<br></span>
                       <span @click="amount = balance">{{ balance }} NOS</span>
-                      <a v-if="balance === 0" href="https://nosana.io/token" target="_blank">Buy NOS tokens</a>
+                      <a v-if="balance === 0" href="https://nosana.io/token" target="_blank" class="is-size-7">Buy NOS tokens</a>
                     </div>
                   </div>
                   <div class="column is-one-third">
@@ -62,7 +61,7 @@
                 <div>
                   <div v-if="userHasStakedBefore" class="tabs">
                     <ul>
-                      <li @click="extendStake = false" :class="{'is-active': extendStake === false}"><a>Topup</a></li>
+                      <li :class="{'is-active': extendStake === false}" @click="extendStake = false"><a>Topup</a></li>
                       <li :class="{'is-active': extendStake === true}" @click="extendStake = true"><a>Extend</a></li>
                     </ul>
                   </div>
@@ -71,20 +70,44 @@
                 <!--- Form --->
                 <form class="mt-5 columns is-multiline is-flex" @submit.prevent="stake">
                   <div class="column is-two-thirds">
-                    <div class="form-inputs has-background-grey-lighter has-radius-medium p-3">
-                      <div v-if="!extendStake" class="field">
-                        <label class="label">NOS amount</label>
-                        <div class="control">
-                          <input
-                            v-model="amount"
-                            required
-                            class="input"
-                            :max="balance"
-                            min="1"
-                            step="0.00000001"
-                            type="number"
-                            placeholder="0.00 NOS"
-                          >
+                    <div class="form-inputs has-background-grey-lighter has-radius-medium p-3 pt-5">
+                      <div v-if="!extendStake" class="field has-background-grey-light has-radius-medium">
+                        <div
+                          class="control px-1 pr-3 py-2
+                            is-flex is-flex-direction-row is-align-items-center is-justify-content-space-between"
+                        >
+                          <div class="amount-logo px-3">
+                            <img width="30" src="~assets/img/icons/token.svg">
+                          </div>
+                          <div class="is-flex is-align-items-center is-flex-grow-1">
+                            <input
+                              v-model="amount"
+                              required
+                              class="input has-background-grey-light ml-3 my-3"
+                              :max="balance"
+                              min="1"
+                              step="0.00000001"
+                              type="number"
+                              placeholder="0"
+                              style="width: 100px; height: 35px; border: none;"
+                            >
+                            <span class="is-size-7 pt-3 pl-2">NOS</span>
+                          </div>
+
+                          <div class="buttons are-small">
+                            <button
+                              class="px-2 mr-1 button is-accent is-outlined has-text-weight-semibold is-uppercase"
+                              @click.prevent="amount = (balance/2)"
+                            >
+                              Half
+                            </button>
+                            <button
+                              class="px-2 button is-accent is-outlined has-text-weight-semibold is-uppercase is-size-7"
+                              @click.prevent="amount = balance"
+                            >
+                              Max
+                            </button>
+                          </div>
                         </div>
                       </div>
                       <div v-if="userHasStakedBefore && extendStake" class="field">
@@ -93,45 +116,48 @@
                           <input
                             v-model="extraUnstakeDays"
                             required
-                            class="input"
+                            class="input mx-2 py-5 has-background-grey-light has-text-centered"
                             type="number"
                             :min="1"
                             :max="365 - parseInt($moment.duration(stakeData.duration, 'seconds').asDays())"
-                            placeholder="0 days"
+                            placeholder="0"
+                            style="width: auto;"
                           >
                         </div>
                       </div>
                       <div v-else-if="!userHasStakedBefore" class="field">
-                        <label class="label">Unstake Days</label>
-                        <div class="control">
+                        <div class="mt-5 is-flex is-flex-direction-row is-align-items-center is-justify-content-center">
+                          <span class="is-size-7">Unstake period of</span>
                           <input
                             v-model="unstakeDays"
                             required
-                            class="input"
+                            class="input mx-2 py-5 has-background-grey-light has-text-centered"
                             type="number"
                             :min="31"
                             :max="365"
-                            placeholder="0 days"
+                            placeholder="0"
+                            style="width: auto;"
                           >
+                          <span class="is-size-7">days</span>
                         </div>
                       </div>
                     </div>
                   </div>
 
                   <!-- (New) Scores -->
-                  <div class="column is-one-third">
+                  <div class="column is-one-third scores">
                     <div class="has-background-grey-lighter has-radius-medium p-3">
-                      <div class="box has-text-centered">
-                        <h2 class="title is-4 has-text-success mb-1">
+                      <div class="box has-text-centered mb-3">
+                        <h2 class="title is-4 has-text-success mb-0">
                           <ICountUp :end-val="parseFloat(NOS)" :options="{ decimalPlaces: 2 }" />
                         </h2>
-                        <span>NOS</span>
+                        <p>NOS</p>
                       </div>
                       <div class="box has-text-centered">
-                        <h2 class="title is-4 has-text-success mb-1">
+                        <h2 class="title is-4 has-text-success mb-0">
                           <ICountUp :end-val="parseFloat(xNOS)" :options="{ decimalPlaces: 2 }" />
                         </h2>
-                        <span>xNOS</span>
+                        <p>xNOS</p>
                       </div>
                     </div>
                   </div>
@@ -222,8 +248,8 @@
                     </button>
                     <button
                       v-else
-                      @click.stop.prevent="claim()"
                       class="button is-accent"
+                      @click.stop.prevent="claim()"
                       :class="{'is-loading': loading}"
                     >
                       Claim {{ parseFloat(stakeData.amount)/1e6 }} NOS
@@ -330,7 +356,6 @@ export default {
       return this.$sol && this.$sol.publicKey;
     },
     NOS () {
-      console.log('this.userHasStakedBefore', this.unstakeDays);
       if (!this.userHasStakedBefore) {
         const amount = parseFloat(this.amount) || 0;
         return parseFloat(amount).toFixed(2);
@@ -669,6 +694,24 @@ export default {
     &.is-active {
       background-color: transparent !important;
     }
+    &.is-inactive {
+      opacity: .4;
+      a {
+        cursor: not-allowed;
+        &:hover {
+          color: $text;
+        }
+      }
+    }
+  }
+}
+
+.scores {
+  h2 {
+    font-family: $family-sans-serif;
+  }
+  p {
+    font-size: 14px;
   }
 }
 
@@ -684,6 +727,21 @@ form {
   }
   .column .has-background-grey-lighter {
     height: 100%;
+  }
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+  }
+  input[type="number"] {
+      -moz-appearance: textfield;
+  }
+  .buttons button {
+    width: 45px;
+    height: 22px;
+  }
+  .amount-logo {
+    border-right: 1px solid $grey-darker;
   }
 }
 </style>
