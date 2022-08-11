@@ -7,7 +7,7 @@
     <div class="columns m-0 is-fullheight">
       <div class="column is-narrow has-background-light is-flex is-flex-direction-column">
         <nav-bar />
-        <div class="mt-auto box has-background-dark">
+        <div class="mt-auto box has-background-dark is-hidden-mobile">
           Reward block
         </div>
       </div>
