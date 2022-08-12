@@ -1,5 +1,101 @@
 <template>
   <div class="column is-half stake-block">
+    <!-- Popups -->
+    <div class="modal stake-popup" :class="{ 'is-active': extendPopup }">
+      <div class="modal-background" />
+      <div v-if="stakeData && stakeData.duration" class="modal-content has-background-white has-radius-medium p-5">
+        <h3 class="has-text-centered subtitle is-4 has-text-weight-semibold">Extend unstake period</h3>
+        <form @submit.prevent="stake" class="is-fullwidth">
+          <div
+            class="mt-5 py-5 has-radius-medium has-background-grey-lighter has-text-centered"
+          >
+            <div class="is-flex is-align-items-center is-justify-content-center">
+              <span>Extend unstake period with</span>
+              <input
+                v-model="extraUnstakeDays"
+                required
+                class="input mx-2 py-5 has-background-grey-light has-text-centered"
+                type="number"
+                :min="1"
+                :max="365 - parseInt($moment.duration(stakeData.duration, 'seconds').asDays())"
+                placeholder="0"
+                style="width: auto;"
+              >
+              <span>days</span>
+            </div>
+            <p class="mt-3">
+              <span v-if="extraUnstakeDays > 0">
+                New days:
+                {{ parseInt($moment.duration(stakeData.duration, 'seconds').asDays()) + parseInt(extraUnstakeDays) }}
+              </span>
+              <span v-else>Current days: {{ parseInt($moment.duration(stakeData.duration, 'seconds').asDays()) }}</span>
+            </p>
+          </div>
+          <button
+            v-if="!loggedIn"
+            class="button is-accent is-fullwidth mt-5 has-text-weight-semibold"
+            @click.stop.prevent="$sol.loginModal = true"
+          >
+            Connect Wallet
+          </button>
+          <button
+            v-else
+            type="submit"
+            class="button is-accent is-fullwidth mt-5 has-text-weight-semibold"
+            :class="{'is-loading': loading}"
+          >
+            Extend
+          </button>
+        </form>
+      </div>
+      <button class="modal-close is-large" aria-label="close" @click="extendPopup = false" />
+    </div>
+    <div class="modal stake-popup" :class="{ 'is-active': topupPopup }">
+      <div class="modal-background" @click="topupPopup = false" />
+      <div class="modal-content">
+        <h3 class="has-text-centered subtitle is-4 has-text-weight-semibold">Increase stake</h3>
+        <div class="field has-background-grey-light has-radius-medium">
+          <div
+            class="control px-1 pr-3 py-2
+              is-flex is-flex-direction-row is-align-items-center is-justify-content-space-between"
+          >
+            <div class="amount-logo px-3">
+              <img width="30" src="~assets/img/icons/token.svg">
+            </div>
+            <div class="is-flex is-align-items-center is-flex-grow-1">
+              <input
+                v-model="amount"
+                required
+                class="input has-background-grey-light ml-3 my-3"
+                :max="balance"
+                min="1"
+                step="0.00000001"
+                type="number"
+                placeholder="0"
+                style="width: 100px; height: 35px; border: none;"
+              >
+              <span class="is-size-7 pt-3 pl-2">NOS</span>
+            </div>
+
+            <div class="buttons are-small">
+              <button
+                class="px-2 mr-1 button is-accent is-outlined has-text-weight-semibold is-uppercase"
+                @click.prevent="amount = (balance/2)"
+              >
+                Half
+              </button>
+              <button
+                class="px-2 button is-accent is-outlined has-text-weight-semibold is-uppercase is-size-7"
+                @click.prevent="amount = balance"
+              >
+                Max
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="modal-close is-large" aria-label="close" @click="topupPopup = true" />
+    </div>
     <!-- {{stakeData}} -->
     <div class="has-background-light">
       <div class="tabs">
@@ -202,15 +298,16 @@
               </p>
               <button
                 class="button is-accent is-light extend-btn mt-3 px-6"
-                @click="openPopup('extend')"
+                @click="extendPopup = true, amount = 0, extraUnstakeDays = 0"
               >
                 Extend unstake period
               </button>
               <div class="column is-whole">
                 <!-- Buttons -->
                 <button
-                  class="button has-background-green is-accent is-fullwidth mt-5 has-text-weight-semibold"
+                  class="button is-accent is-fullwidth mt-5 has-text-weight-semibold"
                   :class="{'is-loading': loading}"
+                  @click="topupPopup = true, amount = 0, extraUnstakeDays = 0"
                 >
                   Increase stake
                 </button>
@@ -349,7 +446,9 @@ export default {
       extraUnstakeDays: null,
       extendStake: false,
       unstakeForm: false,
-      countdownFinished: false
+      countdownFinished: false,
+      topupPopup: false,
+      extendPopup: false
     };
   },
   computed: {
@@ -500,7 +599,9 @@ export default {
           text: 'Successfully topped up stake',
           title: ''
         });
+        this.topupPopup = false;
       } catch (error) {
+        this.topupPopup = false;
         this.$modal.show({
           color: 'danger',
           text: error,
@@ -564,7 +665,9 @@ export default {
           text: 'Successfully extented stake',
           title: 'Extended'
         });
+        this.extendPopup = false;
       } catch (error) {
+        this.extendPopup = false;
         this.$modal.show({
           color: 'danger',
           text: error,
@@ -732,5 +835,9 @@ form {
   font-size: 14px;
   margin: 0 auto;
 
+}
+
+.stake-popup {
+  z-index: 39;
 }
 </style>
