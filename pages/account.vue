@@ -21,7 +21,7 @@
                     {{ $auth.user.address }}
                   </a>
                 </h2>
-                <a v-if="!user.name" @click.prevent="editUser = true"><i class="fas fa-edit" /> Edit Project info</a>
+                <a v-if="!user.name" @click.prevent="editUser = true"><i class="fas fa-edit" /> Edit User info</a>
                 <p class="is-size-7 has-overflow-ellipses" style="height: 40px;">
                   <span v-if="user.description">{{ user.description }}</span>
                 </p>
@@ -303,6 +303,7 @@ export default {
           discord: this.discord,
           email: this.email
         });
+        this.$auth.fetchUser();
         this.user = user;
         this.editUser = false;
       } catch (error) {

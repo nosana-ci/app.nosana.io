@@ -44,7 +44,16 @@
           <div style="max-width: 100%;">
             <h2 v-if="$auth.user.name" class="title is-6 has-text-weight-semibold">
               {{ $auth.user.name }}
+              <nuxt-link to="/account?settings=true">
+                <i class="fas fa-edit" />
+              </nuxt-link>
             </h2>
+            <h2 v-else class="title is-6 has-text-weight-semibold">
+              <nuxt-link to="/account?settings=true">
+                <i class="fas fa-edit" /> Edit User info
+              </nuxt-link>
+            </h2>
+
             <h2 class="subtitle is-7 mb-1">
               <a target="_blank" :href="`https://solscan.io/address/${$auth.user.address}`" class="blockchain-address" style="max-width: 140px;">
                 {{ $auth.user.address }}
