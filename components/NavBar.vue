@@ -24,25 +24,33 @@
 
     <div :class="{'is-hidden-mobile': !mobileMenu}">
       <hr class="has-background-grey-lighter">
-      <div class="has-text-centered my-4">
+      <div class="my-4">
         <nuxt-link
-          class="button is-accent has-text-weight-semibold"
+          v-if="!loggedIn"
+          class="button is-accent has-text-weight-semibold has-text-centered"
           exact-active-class="is-active"
           to="/account"
           :class="{'is-outlined': loggedIn}"
         >
-          <div v-if="!loggedIn" class="blockchain-address" style="max-width: 140px;" @click="$sol.loginModal = true">
+          <div class="blockchain-address" style="max-width: 185px;" @click="$sol.loginModal = true">
             Connect Wallet
           </div>
-          <template v-else>
-            <span v-if="$auth.user.image" class="icon is-small has-background-light m-1 has-radius">
-              <img :src="$auth.user.image">
-            </span>
-            <div class="blockchain-address" style="max-width: 140px;">
-              {{ $auth.user.address }}
-            </div>
-          </template>
         </nuxt-link>
+        <div v-else class="is-flex is-align-items-flex-start is-justify-content-flex-start">
+          <div class="user-icon mr-4">
+            <img v-if="$auth.user.image" style="height: 26px" :src="$auth.user.image">
+          </div>
+          <div style="max-width: 100%;">
+            <h2 v-if="$auth.user.name" class="title is-6 has-text-weight-semibold">
+              {{ $auth.user.name }}
+            </h2>
+            <h2 class="subtitle is-7 mb-1">
+              <a target="_blank" :href="`https://solscan.io/address/${$auth.user.address}`" class="blockchain-address" style="max-width: 140px;">
+                {{ $auth.user.address }}
+              </a>
+            </h2>
+          </div>
+        </div>
       </div>
       <aside class="menu">
         <ul class="menu-list">
@@ -117,6 +125,17 @@ export default {
 <style scoped lang="scss">
 .menu {
 font-size: 14px;
+}
+
+.user-icon {
+  border-radius: 100%;
+  background: $secondary;
+  display:flex;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  align-items: center;
+  border: 1px solid grey;
 }
 .menu-list {
   li {
