@@ -4,7 +4,7 @@
       <div class="loader is-loading" />
     </div>
     <h1 class="title is-4">
-      Earn by staking
+      Earn by <span class="has-text-accent">Staking</span>
     </h1>
     <p>Stake NOS and generate $NOS and $xNOS</p>
 

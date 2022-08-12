@@ -5,11 +5,12 @@
       <sol-wallet />
     </client-only>
     <div class="columns m-0 is-fullheight">
-      <div class="column is-narrow has-background-light is-flex is-flex-direction-column">
+      <div
+        class="column is-narrow has-background-light is-flex is-flex-direction-column"
+        style="height: fit-content;min-height: 100vh;"
+      >
         <nav-bar />
-        <div class="mt-auto box has-background-dark is-hidden-mobile">
-          Reward block
-        </div>
+        <stake-block class="mt-auto is-hidden-mobile" />
       </div>
       <div class="column">
         <Nuxt />
@@ -22,11 +23,13 @@
 <script>
 import NavBar from '@/components/NavBar';
 import SolWallet from '@/components/SolWallet';
+import StakeBlock from '@/components/Staking/StakeBlock';
 
 export default {
   components: {
     NavBar,
-    SolWallet
+    SolWallet,
+    StakeBlock
   }
 };
 </script>
