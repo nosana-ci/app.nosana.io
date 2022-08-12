@@ -123,6 +123,12 @@ a.card {
   &.is-wide {
     min-width: 140px;
   }
+  &.is-accent {
+    color: $white;
+    &:hover {
+      color: $white;
+    }
+  }
 }
 
 .has-radius {

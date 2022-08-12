@@ -1,5 +1,6 @@
 <template>
   <div class="column is-half stake-block">
+    <!-- {{stakeData}} -->
     <div class="has-background-light">
       <div class="tabs">
         <ul>
@@ -24,7 +25,7 @@
         <div v-if="!stakeEndDate" class="container">
           <div v-if="!unstakeForm">
             <!--- Balances --->
-            <div class="balances columns">
+            <div v-if="!userHasStakedBefore" class="balances columns">
               <div class="column is-two-thirds">
                 <div class="balance pl-3">
                   <span v-if="balance === null" class="is-size-7">Loading..<br></span>
@@ -46,7 +47,7 @@
             </div>
 
             <!-- Extra tabs topup&extend, what to do with these? -->
-            <div>
+            <!-- <div>
               <div v-if="userHasStakedBefore" class="tabs">
                 <ul>
                   <li
@@ -62,13 +63,17 @@
                   </li>
                 </ul>
               </div>
-            </div>
+            </div> -->
 
             <!--- Form --->
-            <form class="mt-5 columns is-multiline is-flex" @submit.prevent="stake">
+            <form
+              v-if="!userHasStakedBefore"
+              class="mt-5 columns is-multiline is-flex"
+              @submit.prevent="stake"
+            >
               <div class="column is-two-thirds">
                 <div class="form-inputs has-background-grey-lighter has-radius-medium p-3 pt-5">
-                  <div v-if="!extendStake" class="field has-background-grey-light has-radius-medium">
+                  <div class="field has-background-grey-light has-radius-medium">
                     <div
                       class="control px-1 pr-3 py-2
                         is-flex is-flex-direction-row is-align-items-center is-justify-content-space-between"
@@ -107,22 +112,7 @@
                       </div>
                     </div>
                   </div>
-                  <div v-if="userHasStakedBefore && extendStake" class="field">
-                    <label class="label">Add extra unstake days</label>
-                    <div class="control">
-                      <input
-                        v-model="extraUnstakeDays"
-                        required
-                        class="input mx-2 py-5 has-background-grey-light has-text-centered"
-                        type="number"
-                        :min="1"
-                        :max="365 - parseInt($moment.duration(stakeData.duration, 'seconds').asDays())"
-                        placeholder="0"
-                        style="width: auto;"
-                      >
-                    </div>
-                  </div>
-                  <div v-else-if="!userHasStakedBefore" class="field">
+                  <div class="field">
                     <div class="mt-5 is-flex is-flex-direction-row is-align-items-center is-justify-content-center">
                       <span class="is-size-7">Unstake period of</span>
                       <input
@@ -189,14 +179,53 @@
                 </button>
               </div>
             </form>
+            <div v-else>
+              <h3 class="has-text-centered subtitle is-4 has-text-weight-semibold">Your Stake</h3>
+              <div class="scores">
+                <div class="has-radius-medium p-3 is-flex is-align-items-center is-justify-content-center">
+                  <div class="box has-text-centered mr-2 mb-0">
+                    <h2 class="title is-4 mb-0">
+                      <ICountUp :end-val="parseFloat(NOS)" :options="{ decimalPlaces: 2 }" />
+                    </h2>
+                    <p>NOS</p>
+                  </div>
+                  <div class="box has-text-centered ml-2 mb-0">
+                    <h2 class="title is-4 mb-0">
+                      <ICountUp :end-val="parseFloat(xNOS)" :options="{ decimalPlaces: 2 }" />
+                    </h2>
+                    <p>xNOS</p>
+                  </div>
+                </div>
+              </div>
+              <p class="is-size-7 has-text-centered">
+                Unstake period of {{ $moment.duration(stakeData.duration, 'seconds').asDays() }} days
+              </p>
+              <button
+                class="button is-accent is-light extend-btn mt-3 px-6"
+                @click="openPopup('extend')"
+              >
+                Extend unstake period
+              </button>
+              <div class="column is-whole">
+                <!-- Buttons -->
+                <button
+                  class="button has-background-green is-accent is-fullwidth mt-5 has-text-weight-semibold"
+                  :class="{'is-loading': loading}"
+                >
+                  Increase stake
+                </button>
+              </div>
+            </div>
           </div>
 
           <!--- Unstake form --->
           <div v-if="unstakeForm && userHasStakedBefore">
-            <h1 class="title is-spaced">
-              Unstake
-            </h1>
-            <p>Lorem ipsum unstake time</p>
+            <p>
+              Unstake your tokens here. Be aware that you'll still have to wait till<br>
+              If you would to unstake now, you can claim your tokens on:
+              {{ $moment().add(stakeData.duration, 'seconds').format('LL') }}
+            </p>
+            <br>
             <form @submit.prevent="unstake">
               <button
                 v-if="!loggedIn"
@@ -223,7 +252,7 @@
           </span>
           <span v-else>
             You have unstaked your tokens.<br>
-            Unstaked at: {{ $moment.unix(stakeData.time_unstake).toDate() }}<br>
+            Unstaked at: {{ $moment.unix(stakeData.time_unstake).format('LL') }}<br>
 
             They will be released in
           </span>
@@ -663,6 +692,9 @@ export default {
   p {
     font-size: 14px;
   }
+  .box {
+    border: none;
+  }
 }
 
 .balances {
@@ -693,5 +725,12 @@ form {
   .amount-logo {
     border-right: 1px solid $grey-darker;
   }
+}
+
+.extend-btn {
+  display: block;
+  font-size: 14px;
+  margin: 0 auto;
+
 }
 </style>
