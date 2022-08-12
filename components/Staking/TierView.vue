@@ -8,6 +8,7 @@
           :perspective="20"
           :display="3"
           :width="350"
+          :start-index="stakeData.tierInfo.userTier ? stakeData.tierInfo.userTier.tier : 0"
           :height="320"
         >
           <slide
@@ -36,8 +37,13 @@
                   Guaranteed NFT mint token
                 </span>
                 <span v-else>
-                  Top {{ slide.percentage }}%<br><small class="is-size-7">minus top 100</small>
+                  Top
+                  {{
+                    stakeData.tierInfo.tiers.filter(s=>s.tier !== slide.tier && s.tier > slide.tier)
+                      .reduce((a, o) => a + (o.percentage ? o.percentage : 0), 0) + slide.percentage
+                  }}%
                 </span>
+                <br><small class="is-size-7"><span v-if="slide.tier !== 5">minus</span> top 100</small>
               </div>
             </div>
           </slide>
@@ -48,13 +54,20 @@
 </template>
 <script>
 export default {
-  props: ['stakeData']
+  props: ['stakeData'],
+  watch: {
+    stakeData (stakeData) {
+      if (stakeData.tierInfo && stakeData.tierInfo.userTier && this.$refs.carousel) {
+        this.$refs.carousel.goSlide(stakeData.tierInfo.userTier.tier - 1);
+      }
+    }
+  }
 };
 </script>
 
 <style lang="scss">
 .carousel-3d-slide{
-  filter: blur(1px);
+  filter: blur(2px);
   &.current {
     filter: none;
   }
