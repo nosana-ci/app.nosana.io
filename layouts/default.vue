@@ -5,7 +5,10 @@
       <sol-wallet />
     </client-only>
     <div class="columns m-0 is-fullheight">
-      <div class="column is-narrow has-background-light is-flex is-flex-direction-column">
+      <div
+        class="column is-narrow has-background-light is-flex is-flex-direction-column"
+        style="height: fit-content;min-height: 100vh;"
+      >
         <nav-bar />
         <stake-block class="mt-auto is-hidden-mobile" />
       </div>

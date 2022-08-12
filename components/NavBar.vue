@@ -25,17 +25,18 @@
     <div :class="{'is-hidden-mobile': !mobileMenu}">
       <hr class="has-background-grey-lighter">
       <div class="my-4">
-        <nuxt-link
-          v-if="!loggedIn"
-          class="button is-accent has-text-weight-semibold has-text-centered"
-          exact-active-class="is-active"
-          to="/account"
-          :class="{'is-outlined': loggedIn}"
-        >
-          <div class="blockchain-address" style="max-width: 185px;" @click="$sol.loginModal = true">
-            Connect Wallet
-          </div>
-        </nuxt-link>
+        <div v-if="!loggedIn" class="has-text-centered">
+          <nuxt-link
+            class="button is-accent has-text-weight-semibold has-text-centered"
+            exact-active-class="is-active"
+            to="/account"
+            :class="{'is-outlined': loggedIn}"
+          >
+            <div class="blockchain-address" style="max-width: 185px;" @click="$sol.loginModal = true">
+              Connect Wallet
+            </div>
+          </nuxt-link>
+        </div>
         <div v-else class="is-flex is-align-items-flex-start is-justify-content-flex-start">
           <div class="user-icon mr-4">
             <img v-if="$auth.user.image" style="height: 26px" :src="$auth.user.image">
