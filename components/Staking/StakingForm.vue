@@ -1,8 +1,8 @@
 <template>
   <div class="column is-half stake-block">
-    <!-- Popups -->
+    <!-- Extend popup -->
     <div class="modal stake-popup" :class="{ 'is-active': extendPopup }">
-      <div class="modal-background" />
+      <div class="modal-background" @click="extendPopup = false" />
       <div v-if="stakeData && stakeData.duration" class="modal-content has-background-white has-radius-medium p-5">
         <h3 class="has-text-centered subtitle is-4 has-text-weight-semibold">Extend unstake period</h3>
         <form @submit.prevent="stake" class="is-fullwidth">
@@ -50,52 +50,96 @@
       </div>
       <button class="modal-close is-large" aria-label="close" @click="extendPopup = false" />
     </div>
+
+    <!-- Topup popup -->
     <div class="modal stake-popup" :class="{ 'is-active': topupPopup }">
       <div class="modal-background" @click="topupPopup = false" />
       <div class="modal-content">
-        <h3 class="has-text-centered subtitle is-4 has-text-weight-semibold">Increase stake</h3>
-        <div class="field has-background-grey-light has-radius-medium">
-          <div
-            class="control px-1 pr-3 py-2
-              is-flex is-flex-direction-row is-align-items-center is-justify-content-space-between"
-          >
-            <div class="amount-logo px-3">
-              <img width="30" src="~assets/img/icons/token.svg">
-            </div>
-            <div class="is-flex is-align-items-center is-flex-grow-1">
-              <input
-                v-model="amount"
-                required
-                class="input has-background-grey-light ml-3 my-3"
-                :max="balance"
-                min="1"
-                step="0.00000001"
-                type="number"
-                placeholder="0"
-                style="width: 100px; height: 35px; border: none;"
-              >
-              <span class="is-size-7 pt-3 pl-2">NOS</span>
-            </div>
+        <div v-if="stakeData && stakeData.duration" class="modal-content has-background-white has-radius-medium p-5">
+          <h3 class="has-text-centered subtitle is-4 has-text-weight-semibold">Increase stake</h3>
+          <form @submit.prevent="stake" class="is-fullwidth">
+            <div
+              class="mt-5 py-5 has-radius-medium has-background-grey-lighter has-text-centered columns"
+            >
+              <div class="column is-two-thirds">
+                <div class="field has-background-grey-light has-radius-medium">
+                  <div
+                    class="control px-1 pr-3 py-2
+                      is-flex is-flex-direction-row is-align-items-center is-justify-content-space-between"
+                  >
+                    <div class="amount-logo px-3">
+                      <img width="30" src="~assets/img/icons/token.svg">
+                    </div>
+                    <div class="is-flex is-align-items-center is-flex-grow-1">
+                      <input
+                        v-model="amount"
+                        required
+                        class="input has-background-grey-light ml-3 my-3"
+                        :max="balance"
+                        min="1"
+                        step="0.00000001"
+                        type="number"
+                        placeholder="0"
+                        style="width: 100px; height: 35px; border: none;"
+                      >
+                      <span class="is-size-7 pt-3 pl-2">NOS</span>
+                    </div>
 
-            <div class="buttons are-small">
-              <button
-                class="px-2 mr-1 button is-accent is-outlined has-text-weight-semibold is-uppercase"
-                @click.prevent="amount = (balance/2)"
-              >
-                Half
-              </button>
-              <button
-                class="px-2 button is-accent is-outlined has-text-weight-semibold is-uppercase is-size-7"
-                @click.prevent="amount = balance"
-              >
-                Max
-              </button>
+                    <div class="buttons are-small">
+                      <button
+                        class="px-2 mr-1 button is-accent is-outlined has-text-weight-semibold is-uppercase"
+                        @click.prevent="amount = (balance/2)"
+                      >
+                        Half
+                      </button>
+                      <button
+                        class="px-2 button is-accent is-outlined has-text-weight-semibold is-uppercase is-size-7"
+                        @click.prevent="amount = balance"
+                      >
+                        Max
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="column is-one-third scores">
+                <div class="has-background-grey-lighter has-radius-medium p-3">
+                  <div class="box has-text-centered mb-3">
+                    <h2 class="title is-4 has-text-success mb-0">
+                      <ICountUp :end-val="parseFloat(NOS)" :options="{ decimalPlaces: 2 }" />
+                    </h2>
+                    <p>NOS</p>
+                  </div>
+                  <div class="box has-text-centered">
+                    <h2 class="title is-4 has-text-success mb-0">
+                      <ICountUp :end-val="parseFloat(xNOS)" :options="{ decimalPlaces: 2 }" />
+                    </h2>
+                    <p>xNOS</p>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
+            <button
+              v-if="!loggedIn"
+              class="button is-accent is-fullwidth mt-5 has-text-weight-semibold"
+              @click.stop.prevent="$sol.loginModal = true"
+            >
+              Connect Wallet
+            </button>
+            <button
+              v-else
+              type="submit"
+              class="button is-accent is-fullwidth mt-5 has-text-weight-semibold"
+              :class="{'is-loading': loading}"
+            >
+              Increase stake
+            </button>
+          </form>
         </div>
       </div>
       <button class="modal-close is-large" aria-label="close" @click="topupPopup = true" />
     </div>
+
     <!-- {{stakeData}} -->
     <div class="has-background-light">
       <div class="tabs">
@@ -318,7 +362,8 @@
           <!--- Unstake form --->
           <div v-if="unstakeForm && userHasStakedBefore">
             <p>
-              Unstake your tokens here. Be aware that you'll still have to wait till<br>
+              Unstake your tokens here. Be aware that after you unstake,
+              you will have to wait till your unstake period ends to claim your tokens<br><br>
               If you would to unstake now, you can claim your tokens on:
               {{ $moment().add(stakeData.duration, 'seconds').format('LL') }}
             </p>
@@ -596,7 +641,7 @@ export default {
         await this.getBalance();
         this.$modal.show({
           color: 'success',
-          text: 'Successfully topped up stake',
+          text: 'Successfully increased stake',
           title: ''
         });
         this.topupPopup = false;
