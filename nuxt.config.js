@@ -103,7 +103,8 @@ export default {
       home: false
     },
     plugins: [
-      { src: '~/plugins/axios.js' }
+      { src: '~/plugins/axios.js' },
+      { src: '~/plugins/carousel.js', mode: 'client' }
     ]
   },
   // Build Configuration: https://go.nuxtjs.dev/config-build

@@ -6,8 +6,7 @@
     </client-only>
     <div class="columns m-0 is-fullheight">
       <div
-        class="column is-narrow has-background-light is-flex is-flex-direction-column"
-        style="height: fit-content;min-height: 100vh;"
+        class="column is-narrow has-background-light is-flex is-flex-direction-column sidebar"
       >
         <nav-bar />
         <stake-block class="mt-auto is-hidden-mobile" />
@@ -35,8 +34,18 @@ export default {
 </script>
 
 <style lang="scss">
+@import "bulma/sass/utilities/mixins";
 html {
   min-height: 100vh;
   background-size: cover;
+}
+.sidebar {
+  height: fit-content;
+  min-height: 100vh;
+}
+@include mobile {
+  .sidebar {
+    min-height: 0;
+  }
 }
 </style>
