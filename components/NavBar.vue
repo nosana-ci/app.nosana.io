@@ -68,7 +68,7 @@
           </li>
           <li>
             <nuxt-link
-              to="/"
+              to="/pipelines"
               exact-active-class="is-active"
               @click.native="mobileMenu = false;"
             >
