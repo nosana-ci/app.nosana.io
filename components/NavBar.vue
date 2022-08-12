@@ -67,7 +67,19 @@
               <span class="icon is-medium p-1 m-1 has-radius">
                 <i class="fa-solid fa-bars-staggered" />
               </span>
-              Pipelines
+              Developer Hub
+            </nuxt-link>
+          </li>
+          <li>
+            <nuxt-link
+              to="/stake"
+              exact-active-class="is-active"
+              @click.native="mobileMenu = false;"
+            >
+              <span class="icon is-medium p-1 m-1 has-radius">
+                <i class="fa-solid fa-coins" />
+              </span>
+              Node Hub
             </nuxt-link>
           </li>
           <li>
@@ -79,7 +91,7 @@
               <span class="icon is-medium p-1 m-1 has-radius">
                 <i class="fa-solid fa-chart-line" />
               </span>
-              Statistics
+              Network Statistics
             </nuxt-link>
           </li>
         </ul>
