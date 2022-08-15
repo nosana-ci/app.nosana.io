@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="stake-block p-5 has-background-grey-lighter">
+    <div class="stake-block p-5 has-background-grey-lighter" style="height:100%">
       <client-only>
         <carousel-3d
           v-if="stakeData && stakeData.tierInfo"

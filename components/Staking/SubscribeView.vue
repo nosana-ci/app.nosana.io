@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="stake-block p-5 has-background-light">
+    <div class="stake-block p-5 has-background-light" style="height: 100%">
       <div class="columns is-vcentered">
         <div class="column is-5 is-offset-1">
           <img width="175" src="~assets/img/burner-phone-logo.svg">

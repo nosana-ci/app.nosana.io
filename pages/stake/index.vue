@@ -15,7 +15,7 @@
           :stake-end-date="stakeEndDate"
           @x-nos="updateXNOS"
         />
-        <reward-countdown style="flex-grow: 0" class="tile is-child" />
+        <reward-countdown class="tile is-child" />
       </div>
 
       <div class="tile is-vertical is-parent">
