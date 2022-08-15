@@ -39,7 +39,7 @@ a {
   border: 2px solid $grey-lightest;
 }
 .has-border-accent {
-  border: 1px $accent solid;
+  border: 1px $accent solid !important;
 }
 .has-border-accent-light {
   border: 1px rgba(95, 255, 0, 0.1) solid;
@@ -144,7 +144,10 @@ a.card {
 }
 
 .has-shadow {
-  box-shadow: 0px 25.2102px 26.6931px rgba(131, 135, 130, 0.2);;
+  box-shadow: 0px 25.2102px 26.6931px rgba(131, 135, 130, 0.2);
+}
+.has-shadow-accent {
+  box-shadow: 0px 25.2102px 26.6931px rgba($accent, 0.2);
 }
 
 .box {

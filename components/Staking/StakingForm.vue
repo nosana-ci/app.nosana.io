@@ -4,8 +4,10 @@
     <div class="modal stake-popup" :class="{ 'is-active': extendPopup }">
       <div class="modal-background" @click="extendPopup = false" />
       <div v-if="stakeData && stakeData.duration" class="modal-content has-background-white has-radius-medium p-5">
-        <h3 class="has-text-centered subtitle is-4 has-text-weight-semibold">Extend unstake period</h3>
-        <form @submit.prevent="stake" class="is-fullwidth">
+        <h3 class="has-text-centered subtitle is-4 has-text-weight-semibold">
+          Extend unstake period
+        </h3>
+        <form class="is-fullwidth" @submit.prevent="stake">
           <div
             class="mt-5 py-5 has-radius-medium has-background-grey-lighter has-text-centered"
           >
@@ -56,8 +58,10 @@
       <div class="modal-background" @click="topupPopup = false" />
       <div class="modal-content">
         <div v-if="stakeData && stakeData.duration" class="modal-content has-background-white has-radius-medium p-5">
-          <h3 class="has-text-centered subtitle is-4 has-text-weight-semibold">Increase stake</h3>
-          <form @submit.prevent="stake" class="is-fullwidth">
+          <h3 class="has-text-centered subtitle is-4 has-text-weight-semibold">
+            Increase stake
+          </h3>
+          <form class="is-fullwidth" @submit.prevent="stake">
             <div
               class="mt-5 py-5 has-radius-medium has-background-grey-lighter has-text-centered columns"
             >
@@ -285,7 +289,9 @@
               </div>
             </form>
             <div v-else>
-              <h3 class="has-text-centered subtitle is-4 has-text-weight-semibold">Your Stake</h3>
+              <h3 class="has-text-centered subtitle is-4 has-text-weight-semibold">
+                Your Stake
+              </h3>
               <div class="scores">
                 <div class="has-radius-medium p-3 is-flex is-align-items-center is-justify-content-center">
                   <div class="box has-text-centered mr-2 mb-0">
@@ -367,7 +373,8 @@
             <countdown :end-time="new Date(stakeEndDate)" @finish="countdownFinished = true">
               <span
                 slot="process"
-                slot-scope="{ timeObj }">
+                slot-scope="{ timeObj }"
+              >
                 <h2 class="title py-1 has-text-weight-medium">{{
                   `${timeObj.d}:${timeObj.h}:${timeObj.m}:${timeObj.s}`
                 }}</h2></span>
@@ -382,8 +389,8 @@
                 <button
                   v-else
                   class="button is-accent"
-                  @click.stop.prevent="claim()"
                   :class="{'is-loading': loading}"
+                  @click.stop.prevent="claim()"
                 >
                   Claim {{ parseFloat(stakeData.amount)/1e6 }} NOS
                 </button>
@@ -494,7 +501,9 @@ export default {
       }
       const multiplierSeconds = (SECONDS_PER_DAY * 365) / 3; // 4 months
       const multiplier = unstakeTime / multiplierSeconds;
-      return (parseFloat(amount) + parseFloat(amount) * multiplier).toFixed(2);
+      const xNOS = (parseFloat(amount) + parseFloat(amount) * multiplier).toFixed(2);
+      this.$emit('x-nos', xNOS);
+      return xNOS;
     }
   },
   watch: {
