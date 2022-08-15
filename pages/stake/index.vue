@@ -9,8 +9,8 @@
     <p>Stake NOS and generate $NOS and $xNOS</p>
 
     <div class="columns mt-6">
-      <staking-form :stake-data="stakeData" :stake-end-date="stakeEndDate" />
-      <tier-view :stake-data="stakeData" />
+      <staking-form :stake-data="stakeData" :stake-end-date="stakeEndDate" @x-nos="updateXNOS" />
+      <tier-view :stake-data="stakeData" :xnos="xNOS" />
     </div>
 
     <div class="columns">
@@ -47,7 +47,8 @@ export default {
       extendStake: false,
       unstakeForm: false,
       stakeEndDate: null,
-      countdownFinished: false
+      countdownFinished: false,
+      xNOS: null
     };
   },
   computed: {
@@ -70,6 +71,9 @@ export default {
     }
   },
   methods: {
+    updateXNOS (xNOS) {
+      this.xNOS = xNOS;
+    },
     async refreshStake () {
       const stakeData = await this.$axios.$get('/user/stake');
       if (stakeData && stakeData.user_id && parseInt(stakeData.time_unstake) !== 0 && parseInt(stakeData.time_unstake) !== '00') {

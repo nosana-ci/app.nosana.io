@@ -54,8 +54,20 @@
 </template>
 <script>
 export default {
-  props: ['stakeData'],
+  props: ['stakeData', 'xnos'],
   watch: {
+    xnos (xnos) {
+      console.log(xnos);
+      if (this.stakeData && this.stakeData.tierInfo && this.stakeData.tierInfo.tiers && this.$refs.carousel) {
+        const tiers = this.stakeData.tierInfo.tiers;
+        for (let i = 0; i < tiers.length; i++) {
+          if (tiers[i].requiredXNOS / 1e6 <= parseFloat(xnos)) {
+            this.$refs.carousel.goSlide(tiers[i].tier - 1);
+            break;
+          }
+        };
+      }
+    },
     stakeData (stakeData) {
       if (stakeData.tierInfo && stakeData.tierInfo.userTier && this.$refs.carousel) {
         this.$refs.carousel.goSlide(stakeData.tierInfo.userTier.tier - 1);
