@@ -65,7 +65,7 @@
             <div
               class="mt-5 py-5 has-radius-medium has-background-grey-lighter has-text-centered columns"
             >
-              <div class="column is-two-thirds">
+              <div class="column">
                 <div class="field has-background-grey-light has-radius-medium">
                   <div
                     class="control px-1 pr-3 py-2
@@ -215,7 +215,7 @@
               class="mt-5 columns is-multiline is-flex"
               @submit.prevent="stake"
             >
-              <div class="column is-two-thirds">
+              <div class="column">
                 <div class="form-inputs has-background-grey-lighter has-radius-medium p-3 pt-5">
                   <div class="field has-background-grey-light has-radius-medium">
                     <div
@@ -280,20 +280,38 @@
                 <div class="has-background-grey-lighter has-radius-medium p-3">
                   <div class="box has-text-centered mb-3">
                     <h2 class="title is-4 has-text-success mb-0">
-                      <ICountUp :end-val="parseFloat(NOS)" :options="{ decimalPlaces: 2 }" />
+                      <ICountUp
+                        :end-val="parseFloat(NOS)"
+                        :options="{ decimalPlaces: 0, duration:0.1 }"
+                        style="opacity:0"
+                      />
+                      <ICountUp
+                        :end-val="parseFloat(NOS)"
+                        :options="{ decimalPlaces: 0 }"
+                        style="position:absolute;width: 100%;text-align: center;left: 0;"
+                      />
                     </h2>
                     <p>NOS</p>
                   </div>
                   <div class="box has-text-centered">
                     <h2 class="title is-4 has-text-success mb-0">
-                      <ICountUp :end-val="parseFloat(xNOS)" :options="{ decimalPlaces: 2 }" />
+                      <ICountUp
+                        :end-val="parseFloat(xNOS)"
+                        :options="{ decimalPlaces: 0, duration:0.1 }"
+                        style="opacity:0"
+                      />
+                      <ICountUp
+                        :end-val="parseFloat(xNOS)"
+                        :options="{ decimalPlaces: 0 }"
+                        style="position:absolute;width: 100%;text-align: center;left: 0;"
+                      />
                     </h2>
                     <p>xNOS</p>
                   </div>
                 </div>
               </div>
 
-              <div class="column is-whole">
+              <div class="column is-12">
                 <!-- Buttons -->
                 <button
                   v-if="!loggedIn"
@@ -331,13 +349,31 @@
                 <div class="has-radius-medium p-3 is-flex is-align-items-center is-justify-content-center">
                   <div class="box has-text-centered mr-2 mb-0">
                     <h2 class="title is-4 mb-0">
-                      <ICountUp :end-val="parseFloat(NOS)" :options="{ decimalPlaces: 2 }" />
+                      <ICountUp
+                        :end-val="parseFloat(NOS)"
+                        :options="{ decimalPlaces: 0, duration:0.1 }"
+                        style="opacity:0"
+                      />
+                      <ICountUp
+                        :end-val="parseFloat(NOS)"
+                        :options="{ decimalPlaces: 0 }"
+                        style="position:absolute;width: 100%;text-align: center;left: 0;"
+                      />
                     </h2>
                     <p>NOS</p>
                   </div>
                   <div class="box has-text-centered ml-2 mb-0">
                     <h2 class="title is-4 mb-0">
-                      <ICountUp :end-val="parseFloat(xNOS)" :options="{ decimalPlaces: 2 }" />
+                      <ICountUp
+                        :end-val="parseFloat(xNOS)"
+                        :options="{ decimalPlaces: 0, duration:0.1 }"
+                        style="opacity:0"
+                      />
+                      <ICountUp
+                        :end-val="parseFloat(xNOS)"
+                        :options="{ decimalPlaces: 0 }"
+                        style="position:absolute;width: 100%;text-align: center;left: 0;"
+                      />
                     </h2>
                     <p>xNOS</p>
                   </div>
@@ -843,6 +879,7 @@ export default {
 }
 
 .scores {
+  min-width: fit-content;
   h2 {
     font-family: $family-sans-serif;
   }
