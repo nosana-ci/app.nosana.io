@@ -1,6 +1,5 @@
 <template>
   <div class="stake-block">
-    {{stakeData}}
     <!-- Extend popup -->
     <div class="modal stake-popup" :class="{ 'is-active': extendPopup }">
       <div class="modal-background" @click="extendPopup = false" />
@@ -62,10 +61,26 @@
           <h3 class="has-text-centered subtitle is-4 has-text-weight-semibold">
             Increase stake
           </h3>
+          <div class="balances is-flex">
+            <div class="balance pl-3">
+              <span v-if="balance === null" class="is-size-7">Loading..<br></span>
+              <span v-else class="is-size-7">NOS Balance<br></span>
+              <span @click="amount = balance">{{ balance }} NOS</span>
+              <a v-if="balance === 0" href="https://nosana.io/token" target="_blank" class="is-size-7">Buy NOS tokens</a>
+            </div>
+            <div class="balance pl-3 ml-6">
+              <span class="is-size-7">Staked<br></span>
+              <span v-if="stakeData && stakeData.amount">
+                {{ parseFloat(stakeData.amount/1e6) }}
+              </span>
+              <span v-else>0</span>
+              <small class="is-size-6">NOS</small>
+            </div>
+          </div>
           <form class="is-fullwidth" @submit.prevent="stake">
             <div
-              class="mt-5 has-radius-medium has-background-grey-lighter has-text-centered columns
-              is-flex is-align-items-center is-multiline"
+              class="mt-5 has-radius-medium has-text-centered columns
+              is-flex is-align-items-center is-multiline has-background-grey-lighter m-0"
             >
               <div class="column is-8 is-full-mobile">
                 <div class="field has-background-grey-light has-radius-medium">
@@ -154,7 +169,6 @@
       <button class="modal-close is-large" aria-label="close" @click="topupPopup = true" />
     </div>
 
-    <!-- {{stakeData}} -->
     <div class="has-background-light" style="height: 100%">
       <div class="tabs">
         <ul>

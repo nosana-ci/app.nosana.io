@@ -38,8 +38,10 @@
                     </span>
                   </small>
                 </div>
-                <div class="has-text-accent subtitle mt-auto has-border-accent p-1 has-radius">
-                  <span v-if="slide.tier === 1" style="min-width: 160px;z-index: 1;">
+                <div :class="['tier-' + slide.tier]"
+                    class="has-text-accent subtitle mt-auto has-border-accent p-1 has-radius"
+                >
+                  <span v-if="slide.tier === 1">
                     <b>Guaranteed</b> NFT mint token
                   </span>
                   <span v-else-if="slide.tier === 2">
@@ -73,13 +75,6 @@ export default {
     return {
       activeTier: null
     };
-  },
-  mounted () {
-    console.log('this.$refs.carousel', this.$refs.carousel);
-    if (this.stakeData && this.stakeData.tierInfo && this.stakeData.tierInfo.userTier && this.$refs.carousel) {
-      this.activeTier = this.stakeData.tierInfo.userTier.tier;
-      this.$refs.carousel.goSlide(this.stakeData.tierInfo.userTier.tier - 1);
-    }
   },
   watch: {
     xnos (xnos) {
@@ -125,5 +120,8 @@ export default {
 .carousel-3d-container {
   padding-bottom: 50px;
   box-sizing: content-box !important;
+}
+.tier-1 {
+  min-width: 160px;z-index: 1;
 }
 </style>
