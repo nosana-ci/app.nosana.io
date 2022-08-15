@@ -16,6 +16,7 @@
             :key="slide.tier"
             :index="slide.tier - 1"
             class="box has-background-light has-shadow"
+            :class="{'has-shadow-accent has-border-accent': activeTier === slide.tier}"
           >
             <div class="has-text-centered">
               <div class="subtitle is-5">
@@ -55,9 +56,13 @@
 <script>
 export default {
   props: ['stakeData', 'xnos'],
+  data () {
+    return {
+      activeTier: null
+    };
+  },
   watch: {
     xnos (xnos) {
-      console.log(xnos);
       if (this.stakeData && this.stakeData.tierInfo && this.stakeData.tierInfo.tiers && this.$refs.carousel) {
         const tiers = this.stakeData.tierInfo.tiers;
         for (let i = 0; i < tiers.length; i++) {
@@ -70,6 +75,7 @@ export default {
     },
     stakeData (stakeData) {
       if (stakeData.tierInfo && stakeData.tierInfo.userTier && this.$refs.carousel) {
+        this.activeTier = stakeData.tierInfo.userTier.tier;
         this.$refs.carousel.goSlide(stakeData.tierInfo.userTier.tier - 1);
       }
     }
