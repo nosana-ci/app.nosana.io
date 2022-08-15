@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/order-in-components -->
 <template>
   <div>
     <div class="stake-block p-5 has-background-grey-lighter">
@@ -61,6 +62,13 @@ export default {
       activeTier: null
     };
   },
+  mounted () {
+    console.log('this.$refs.carousel', this.$refs.carousel);
+    if (this.stakeData && this.stakeData.tierInfo && this.stakeData.tierInfo.userTier && this.$refs.carousel) {
+      this.activeTier = this.stakeData.tierInfo.userTier.tier;
+      this.$refs.carousel.goSlide(this.stakeData.tierInfo.userTier.tier - 1);
+    }
+  },
   watch: {
     xnos (xnos) {
       if (this.stakeData && this.stakeData.tierInfo && this.stakeData.tierInfo.tiers && this.$refs.carousel) {
@@ -77,6 +85,13 @@ export default {
       if (stakeData.tierInfo && stakeData.tierInfo.userTier && this.$refs.carousel) {
         this.activeTier = stakeData.tierInfo.userTier.tier;
         this.$refs.carousel.goSlide(stakeData.tierInfo.userTier.tier - 1);
+      }
+    },
+    'this.$refs.carousel': function (carousel) {
+      console.log('carouse', carousel);
+      if (this.stakeData && this.stakeData.tierInfo && this.stakeData.tierInfo.userTier && carousel) {
+        this.activeTier = this.stakeData.tierInfo.userTier.tier;
+        carousel.goSlide(this.stakeData.tierInfo.userTier.tier - 1);
       }
     }
   }

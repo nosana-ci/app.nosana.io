@@ -54,7 +54,8 @@ export default {
       unstakeForm: false,
       stakeEndDate: null,
       countdownFinished: false,
-      xNOS: null
+      xNOS: null,
+      interval: null
     };
   },
   computed: {

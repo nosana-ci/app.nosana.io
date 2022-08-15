@@ -1,5 +1,6 @@
 <template>
   <div class="stake-block">
+    {{stakeData}}
     <!-- Extend popup -->
     <div class="modal stake-popup" :class="{ 'is-active': extendPopup }">
       <div class="modal-background" @click="extendPopup = false" />
@@ -63,9 +64,10 @@
           </h3>
           <form class="is-fullwidth" @submit.prevent="stake">
             <div
-              class="mt-5 py-5 has-radius-medium has-background-grey-lighter has-text-centered columns"
+              class="mt-5 has-radius-medium has-background-grey-lighter has-text-centered columns
+              is-flex is-align-items-center is-multiline"
             >
-              <div class="column is-two-thirds">
+              <div class="column is-8 is-full-mobile">
                 <div class="field has-background-grey-light has-radius-medium">
                   <div
                     class="control px-1 pr-3 py-2
@@ -106,15 +108,23 @@
                   </div>
                 </div>
               </div>
-              <div class="column is-one-third scores">
-                <div class="has-background-grey-lighter has-radius-medium p-3">
-                  <div class="box has-text-centered mb-3">
+              <div class="column is-1 p-1 is-2-mobile is-offset-5-mobile">
+                <div
+                  class="has-background-grey-light has-radius-medium
+                  is-flex is-align-items-center is-justify-content-center py-2"
+                >
+                  <img width="24" src="~assets/img/icons/arrow.svg">
+                </div>
+              </div>
+              <div class="column is-3 is-full-mobile scores">
+                <div class="has-background-grey-lighter has-radius-medium">
+                  <div class="box has-text-centered mb-3 p-2">
                     <h2 class="title is-4 has-text-success mb-0">
                       <ICountUp :end-val="parseFloat(NOS)" :options="{ decimalPlaces: 2 }" />
                     </h2>
                     <p>NOS</p>
                   </div>
-                  <div class="box has-text-centered">
+                  <div class="box has-text-centered p-2">
                     <h2 class="title is-4 has-text-success mb-0">
                       <ICountUp :end-val="parseFloat(xNOS)" :options="{ decimalPlaces: 2 }" />
                     </h2>
@@ -218,7 +228,7 @@
                           placeholder="0"
                           style="width: 100px; height: 35px; border: none;"
                         >
-                        <span class="is-size-7 pt-3 pl-2">NOS</span>
+                        <span class="is-size-7 pl-2 pr-2">NOS</span>
                       </div>
 
                       <div class="buttons are-small">
@@ -288,7 +298,7 @@
                 </button>
               </div>
             </form>
-            <div v-else>
+            <div v-else class="your-stake">
               <h3 class="has-text-centered subtitle is-4 has-text-weight-semibold">
                 Your Stake
               </h3>
@@ -525,12 +535,6 @@ export default {
       wallet = new FakeWallet(anchor.web3.Keypair.generate());
     }
     this.initAnchor(wallet);
-    if (!this.interval) {
-      this.interval = setInterval(() => {
-        console.log('refresh staking info..');
-        this.refreshStake();
-      }, 30000);
-    }
   },
   methods: {
     async initAnchor (wallet) {
@@ -825,6 +829,13 @@ export default {
   }
 }
 
+.your-stake {
+  .scores .box {
+    min-width: 200px;
+    border: none;
+  }
+}
+
 .balances {
   .balance {
     border-left: 1px solid $grey-dark;
@@ -864,5 +875,13 @@ form {
 
 .stake-popup {
   z-index: 39;
+  .scores {
+    h2 {
+      font-size: 1.1rem;
+    }
+    p {
+      font-size: 0.75rem;
+    }
+  }
 }
 </style>
