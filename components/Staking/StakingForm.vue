@@ -186,25 +186,6 @@
               </div>
             </div>
 
-            <!-- Extra tabs topup&extend, what to do with these? -->
-            <!-- <div>
-              <div v-if="userHasStakedBefore" class="tabs">
-                <ul>
-                  <li
-                    :class="{'is-active': extendStake === false}"
-                    @click="extendStake = false, extraUnstakeDays = 0"
-                  >
-                    <a>Topup</a></li>
-                  <li
-                    :class="{'is-active': extendStake === true}"
-                    @click="extendStake = true, amount = 0"
-                  >
-                    <a>Extend</a>
-                  </li>
-                </ul>
-              </div>
-            </div> -->
-
             <!--- Form --->
             <form
               v-if="!userHasStakedBefore"
@@ -298,24 +279,8 @@
                 >
                   Connect Wallet
                 </button>
-                <button
-                  v-else-if="userHasStakedBefore && extendStake"
-                  type="submit"
-                  class="button is-accent"
-                  :class="{'is-loading': loading}"
-                >
-                  Extend with {{ extraUnstakeDays }} days
-                </button>
-                <button
-                  v-else-if="userHasStakedBefore"
-                  type="submit"
-                  class="button is-accent"
-                  :class="{'is-loading': loading}"
-                >
-                  Topup with {{ amount }} NOS
-                </button>
                 <button v-else type="submit" class="button is-accent" :class="{'is-loading': loading}">
-                  Stake {{ amount }} NOS
+                  Stake NOS
                 </button>
               </div>
             </form>
@@ -568,6 +533,7 @@ export default {
       }
 
       const programId = new anchor.web3.PublicKey(process.env.NUXT_ENV_STAKE_PROGRAM_ID);
+      // const rewardsProgramId = new anchor.web3.PublicKey(process.env.NUXT_ENV_REWARD_PROGRAM_ID);
       const mint = new anchor.web3.PublicKey(process.env.NUXT_ENV_NOS_TOKEN);
       const accounts = {
         // solana native
@@ -580,22 +546,22 @@ export default {
         // custom
         authority: userKey,
         ataFrom: await getAssociatedTokenAddress(mint, userKey),
-        ataVault: undefined,
         ataTo: await getAssociatedTokenAddress(mint, userKey),
         stake: undefined,
         stats: undefined,
+        user: await getAssociatedTokenAddress(mint, userKey),
+        vault: undefined,
+        reward: undefined,
         mint
       };
 
       const idl = await anchor.Program.fetchIdl(process.env.NUXT_ENV_STAKE_PROGRAM_ID, this.provider);
       this.program = new anchor.Program(idl, programId, this.provider);
-      // get pda
-      const [ataVault, bump] = await anchor.web3.PublicKey.findProgramAddress(
-        [mint.toBuffer()],
+
+      [accounts.vault] = await anchor.web3.PublicKey.findProgramAddress(
+        [anchor.utils.bytes.utf8.encode('vault'), mint.toBuffer(), userKey.toBuffer()],
         programId
       );
-      accounts.ataVault = ataVault;
-      console.log(ataVault.toString(), bump);
 
       [accounts.stats] = await anchor.web3.PublicKey.findProgramAddress(
         [anchor.utils.bytes.utf8.encode('stats')],
@@ -605,6 +571,11 @@ export default {
         [anchor.utils.bytes.utf8.encode('stake'), mint.toBuffer(), userKey.toBuffer()],
         programId
       );
+      // [accounts.reward] = await anchor.web3.PublicKey.findProgramAddress(
+      //   [anchor.utils.bytes.utf8.encode('reward'), userKey.toBuffer()],
+      //   rewardsProgram.programId
+      // );
+
       await this.refreshStake();
       this.loading = false;
       this.accounts = accounts;
