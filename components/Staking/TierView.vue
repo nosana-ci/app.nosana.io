@@ -19,7 +19,7 @@
             :class="{'has-shadow-accent has-border-accent': activeTier === slide.tier}"
           >
             <div class="has-text-centered">
-              <div class="subtitle is-5">
+              <div class="subtitle is-6 has-text-accent">
                 Tier {{ slide.tier }}
               </div>
               <div class="title is-4">
@@ -37,16 +37,25 @@
                 <span v-if="slide.tier === 5">
                   Guaranteed NFT mint token
                 </span>
-                <span v-else>
-                  Top
-                  {{
+                <span v-else-if="slide.tier === 4">
+                  15 Tickets
+                </span>
+                <span v-else-if="slide.tier === 3">
+                  6 Tickets
+                </span>
+                <span v-else-if="slide.tier === 2">
+                  3 Tickets
+                </span>
+                <span v-else-if="slide.tier === 1">
+                  1 Ticket
+                </span>
+                <br><small class="is-size-7">Top
+                  <span v-if="slide.tier === 5">{{ slide.number }}</span>
+                  <span v-else>{{
                     stakeData.tierInfo.tiers.filter(s=>s.tier !== slide.tier && s.tier > slide.tier)
                       .reduce((a, o) => a + (o.percentage ? o.percentage : 0), 0) + slide.percentage
                   }}%
-                </span>
-                <br><small class="is-size-7"><span v-if="slide.tier !== 5">minus</span> top
-                  {{ stakeData.tierInfo.tiers.filter(s=>s.tier >= slide.tier)
-                    .reduce((a, o) => a + (o.number ? o.number : 0), 0) }}
+                  </span>
                 </small>
               </div>
             </div>
