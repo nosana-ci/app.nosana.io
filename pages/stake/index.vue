@@ -20,7 +20,7 @@
 
       <div class="tile is-vertical is-parent">
         <tier-view class="tile is-child" :stake-data="stakeData" :xnos="xNOS" />
-        <subscribe-view class="tile is-child" />
+        <subscribe-view style="flex-grow: 0" class="tile is-child" />
       </div>
     </div>
   </section>
