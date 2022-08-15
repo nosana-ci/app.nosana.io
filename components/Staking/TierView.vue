@@ -44,7 +44,10 @@
                       .reduce((a, o) => a + (o.percentage ? o.percentage : 0), 0) + slide.percentage
                   }}%
                 </span>
-                <br><small class="is-size-7"><span v-if="slide.tier !== 5">minus</span> top 100</small>
+                <br><small class="is-size-7"><span v-if="slide.tier !== 5">minus</span> top
+                  {{ stakeData.tierInfo.tiers.filter(s=>s.tier >= slide.tier)
+                    .reduce((a, o) => a + (o.number ? o.number : 0), 0) }}
+                </small>
               </div>
             </div>
           </slide>
