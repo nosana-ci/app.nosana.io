@@ -8,7 +8,8 @@
           :perspective="20"
           :display="3"
           :width="350"
-          :start-index="stakeData.tierInfo.userTier ? stakeData.tierInfo.userTier.tier : 0"
+          :start-index="stakeData.tierInfo.userTier ?
+            (activeTier = stakeData.tierInfo.userTier.tier && stakeData.tierInfo.userTier.tier) : 0"
           :height="320"
         >
           <slide
