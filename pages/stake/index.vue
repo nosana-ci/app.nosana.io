@@ -7,15 +7,21 @@
       Earn by <span class="has-text-accent">Staking</span>
     </h1>
     <p>Stake NOS and generate $NOS and $xNOS</p>
+    <div class="tile is-ancestor mt-6">
+      <div class="tile is-vertical is-parent">
+        <staking-form
+          class="tile is-child"
+          :stake-data="stakeData"
+          :stake-end-date="stakeEndDate"
+          @x-nos="updateXNOS"
+        />
+        <reward-countdown class="tile is-child" />
+      </div>
 
-    <div class="columns mt-6">
-      <staking-form :stake-data="stakeData" :stake-end-date="stakeEndDate" @x-nos="updateXNOS" />
-      <tier-view :stake-data="stakeData" :xnos="xNOS" />
-    </div>
-
-    <div class="columns">
-      <reward-countdown />
-      <subscribe-view />
+      <div class="tile is-vertical is-parent">
+        <tier-view class="tile is-child" :stake-data="stakeData" :xnos="xNOS" />
+        <subscribe-view class="tile is-child" />
+      </div>
     </div>
   </section>
 </template>

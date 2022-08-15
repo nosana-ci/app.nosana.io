@@ -1,5 +1,5 @@
 <template>
-  <div class="column is-half stake-block">
+  <div class="stake-block">
     <!-- Extend popup -->
     <div class="modal stake-popup" :class="{ 'is-active': extendPopup }">
       <div class="modal-background" @click="extendPopup = false" />
@@ -145,7 +145,7 @@
     </div>
 
     <!-- {{stakeData}} -->
-    <div class="has-background-light">
+    <div class="has-background-light" style="height: 100%">
       <div class="tabs">
         <ul>
           <li

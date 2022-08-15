@@ -1,10 +1,10 @@
 <template>
-  <div class="column is-half">
+  <div>
     <div
-      class="stake-block p-5 has-background-light is-flex is-justify-content-center is-align-items-center"
+      class="stake-block px-2 py-6 has-background-light is-flex is-justify-content-center is-align-items-center"
       style="height:100%"
     >
-      <div class="has-text-centered">
+      <div class="has-text-centered py-6">
         <h2 class="subtitle">
           <b>Reward program starting in</b>
         </h2>
