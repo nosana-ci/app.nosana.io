@@ -1,7 +1,7 @@
 <!-- eslint-disable vue/order-in-components -->
 <template>
   <div>
-    <div class="stake-block p-5 has-background-grey-lighter">
+    <div class="stake-block p-5 has-background-grey-lighter" style="height:100%">
       <client-only>
         <carousel-3d
           v-if="stakeData && stakeData.tierInfo"
@@ -9,7 +9,8 @@
           :perspective="20"
           :display="3"
           :width="350"
-          :start-index="stakeData.tierInfo.userTier ? stakeData.tierInfo.userTier.tier : 0"
+          :start-index="stakeData.tierInfo.userTier ?
+            stakeData.tierInfo.userTier.tier : stakeData.tierInfo.tiers ? stakeData.tierInfo.tiers.length - 1 : 0"
           :height="320"
         >
           <slide
@@ -19,33 +20,44 @@
             class="box has-background-light has-shadow"
             :class="{'has-shadow-accent has-border-accent': activeTier === slide.tier}"
           >
-            <div class="has-text-centered">
-              <div class="subtitle is-5">
-                Tier {{ slide.tier }}
+            <div class="columns is-mobile">
+              <div class="column is-4 is-flex is-flex-direction-column">
+                <div class="subtitle is-6 has-text-accent">
+                  Tier {{ slide.tier }}
+                </div>
+                <div class="title is-5 mb-1">
+                  {{ slide.name }}
+                </div>
+                <div>
+                  <small class="is-size-7">Top
+                    <span v-if="slide.tier === 1">{{ slide.number }}</span>
+                    <span v-else>{{
+                      stakeData.tierInfo.tiers.filter(s=>s.tier !== slide.tier && s.tier < slide.tier)
+                        .reduce((a, o) => a + (o.percentage ? o.percentage : 0), 0) + slide.percentage
+                    }}%
+                    </span>
+                  </small>
+                </div>
+                <div class="has-text-accent subtitle mt-auto has-border-accent p-1 has-radius">
+                  <span v-if="slide.tier === 1" style="min-width: 160px;z-index: 1;">
+                    <b>Guaranteed</b> NFT mint token
+                  </span>
+                  <span v-else-if="slide.tier === 2">
+                    <b class="title has-text-accent">15</b> Tickets
+                  </span>
+                  <span v-else-if="slide.tier === 3">
+                    <b class="title has-text-accent">6</b> Tickets
+                  </span>
+                  <span v-else-if="slide.tier === 4">
+                    <b class="title has-text-accent">3</b> Tickets
+                  </span>
+                  <span v-else-if="slide.tier === 5">
+                    <b class="title has-text-accent">1</b> Ticket
+                  </span>
+                </div>
               </div>
-              <div class="title is-4">
-                {{ slide.name }}
-              </div>
-              <div class="my-4" style="position:relative">
-                <img src="~assets/img/icons/globe.svg" style="width: 100px;">
-                <span
-                  class="has-text-accent m-0 title is-1"
-                  style="position: absolute; top: calc(50% - 30px); left:calc(50% - 14px);"
-                >{{ slide.tier }}</span>
-              </div>
-              <div class="has-text-accent subtitle">
-                <hr>
-                <span v-if="slide.tier === 5">
-                  Guaranteed NFT mint token
-                </span>
-                <span v-else>
-                  Top
-                  {{
-                    stakeData.tierInfo.tiers.filter(s=>s.tier !== slide.tier && s.tier > slide.tier)
-                      .reduce((a, o) => a + (o.percentage ? o.percentage : 0), 0) + slide.percentage
-                  }}%
-                </span>
-                <br><small class="is-size-7"><span v-if="slide.tier !== 5">minus</span> top 100</small>
+              <div class="column is-8">
+                <img :src="require(`@/assets/img/tiers/tier${slide.tier}.svg`)">
               </div>
             </div>
           </slide>
@@ -93,6 +105,11 @@ export default {
         this.activeTier = this.stakeData.tierInfo.userTier.tier;
         carousel.goSlide(this.stakeData.tierInfo.userTier.tier - 1);
       }
+    }
+  },
+  mounted () {
+    if (this.stakeData && this.stakeData.tierInfo && this.stakeData.tierInfo.userTier) {
+      this.activeTier = this.stakeData.tierInfo.userTier.tier;
     }
   }
 };
