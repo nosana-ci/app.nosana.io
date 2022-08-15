@@ -1,5 +1,5 @@
 <template>
-  <div class="column is-half">
+  <div>
     <div class="stake-block p-5 has-background-grey-lighter">
       <client-only>
         <carousel-3d
