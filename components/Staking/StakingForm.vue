@@ -635,6 +635,7 @@ export default {
       }
 
       const programId = new anchor.web3.PublicKey(process.env.NUXT_ENV_STAKE_PROGRAM_ID);
+      const rewardsProgramId = new anchor.web3.PublicKey(process.env.NUXT_ENV_REWARD_PROGRAM_ID);
       // const rewardsProgramId = new anchor.web3.PublicKey(process.env.NUXT_ENV_REWARD_PROGRAM_ID);
       const mint = new anchor.web3.PublicKey(process.env.NUXT_ENV_NOS_TOKEN);
       const accounts = {
@@ -673,10 +674,10 @@ export default {
         [anchor.utils.bytes.utf8.encode('stake'), mint.toBuffer(), userKey.toBuffer()],
         programId
       );
-      // [accounts.reward] = await anchor.web3.PublicKey.findProgramAddress(
-      //   [anchor.utils.bytes.utf8.encode('reward'), userKey.toBuffer()],
-      //   rewardsProgram.programId
-      // );
+      [accounts.reward] = await anchor.web3.PublicKey.findProgramAddress(
+        [anchor.utils.bytes.utf8.encode('reward'), userKey.toBuffer()],
+        rewardsProgramId
+      );
 
       await this.refreshStake();
       this.loading = false;
