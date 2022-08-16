@@ -10,7 +10,8 @@
           :display="3"
           :width="350"
           :start-index="stakeData.tierInfo.userTier ?
-            stakeData.tierInfo.tiers.length - stakeData.tierInfo.userTier.tier : 0"
+            (activeTier = stakeData.tierInfo.userTier.tier)
+            && (stakeData.tierInfo.tiers.length - stakeData.tierInfo.userTier.tier) : 0"
           :height="320"
         >
           <slide
@@ -86,7 +87,9 @@
               :class="{'user-ranking': userRanking === (index + 1)}"
             >
               <td><span>{{ index+1 }}</span></td>
-              <td class="blockchain-address">{{ user.address }}</td>
+              <td class="blockchain-address">
+                {{ user.address }}
+              </td>
               <td>{{ parseFloat(user.xnos / 1e6).toFixed() }}</td>
             </tr>
             <tr
@@ -102,7 +105,9 @@
             </tr>
             <tr v-if="leaderboard && userRanking && userRanking > leaderboard.length && stakeData" class="user-ranking">
               <td><span>{{ userRanking }}</span></td>
-              <td class="blockchain-address">{{ stakeData.address }}</td>
+              <td class="blockchain-address">
+                {{ stakeData.address }}
+              </td>
               <td>{{ parseFloat(stakeData.xnos / 1e6).toFixed() }}</td>
             </tr>
           </tbody>
@@ -145,13 +150,6 @@ export default {
       if (stakeData.tierInfo && stakeData.tierInfo.userTier && this.$refs.carousel) {
         this.activeTier = stakeData.tierInfo.userTier.tier;
         this.$refs.carousel.goSlide(stakeData.tierInfo.tiers.length - stakeData.tierInfo.userTier.tier);
-      }
-    },
-    'this.$refs.carousel': function (carousel) {
-      console.log('carouse', carousel);
-      if (this.stakeData && this.stakeData.tierInfo && this.stakeData.tierInfo.userTier && carousel) {
-        this.activeTier = this.stakeData.tierInfo.userTier.tier;
-        carousel.goSlide(this.stakeData.tierInfo.tiers.length - this.stakeData.tierInfo.userTier.tier);
       }
     }
   },
