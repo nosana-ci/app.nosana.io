@@ -111,87 +111,89 @@
               class="mt-5 has-radius-medium has-text-centered columns
               is-flex is-align-items-center is-multiline has-background-grey-lighter m-0 py-5"
             >
-              <div class="column is-8 is-full-mobile">
-                <div class="field has-background-grey-light has-radius-medium">
-                  <div
-                    class="control px-1 pr-3 py-2
+              <div class="column">
+                <div class="column is-full-mobile">
+                  <div class="field has-background-grey-light has-radius-medium">
+                    <div
+                      class="control px-1 pr-3 py-2
                       is-flex is-flex-direction-row is-align-items-center is-justify-content-space-between"
-                  >
-                    <div class="amount-logo px-3">
-                      <img width="30" src="~assets/img/icons/token.svg">
-                    </div>
-                    <div class="is-flex is-align-items-center is-flex-grow-1">
-                      <input
-                        v-model="amount"
-                        required
-                        class="input has-background-grey-light ml-3 my-3"
-                        :max="balance"
-                        min="1"
-                        step="0.00000001"
-                        type="number"
-                        placeholder="0"
-                        style="width: 100px; height: 35px; border: none;"
-                      >
-                      <span class="is-size-7 pt-3 pl-2">NOS</span>
-                    </div>
+                    >
+                      <div class="amount-logo px-3">
+                        <img width="30" src="~assets/img/icons/token.svg">
+                      </div>
+                      <div class="is-flex is-align-items-center is-flex-grow-1">
+                        <input
+                          v-model="amount"
+                          required
+                          class="input has-background-grey-light ml-3 my-3"
+                          :max="balance"
+                          min="1"
+                          step="0.00000001"
+                          type="number"
+                          placeholder="0"
+                          style="width: 100px; height: 35px; border: none;"
+                        >
+                        <span class="is-size-7 pt-3 pl-2">NOS</span>
+                      </div>
 
-                    <div class="buttons are-small">
-                      <button
-                        class="px-2 mr-1 button is-accent is-outlined has-text-weight-semibold is-uppercase"
-                        @click.prevent="amount = (balance/2)"
-                      >
-                        Half
-                      </button>
-                      <button
-                        class="px-2 button is-accent is-outlined has-text-weight-semibold is-uppercase is-size-7"
-                        @click.prevent="amount = balance"
-                      >
-                        Max
-                      </button>
+                      <div class="buttons are-small">
+                        <button
+                          class="px-2 mr-1 button is-accent is-outlined has-text-weight-semibold is-uppercase"
+                          @click.prevent="amount = (balance/2)"
+                        >
+                          Half
+                        </button>
+                        <button
+                          class="px-2 button is-accent is-outlined has-text-weight-semibold is-uppercase is-size-7"
+                          @click.prevent="amount = balance"
+                        >
+                          Max
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="column is-1 p-1 is-2-mobile is-offset-5-mobile">
+                  <div
+                    class="has-background-grey-light has-radius-medium
+                  is-flex is-align-items-center is-justify-content-center py-2"
+                  >
+                    <img width="24" src="~assets/img/icons/arrow.svg">
+                  </div>
+                </div>
+                <div class="column is-3 is-full-mobile scores">
+                  <div class="has-background-grey-lighter has-radius-medium">
+                    <div class="box has-text-centered mb-3 p-2">
+                      <h2 class="title is-4 has-text-success mb-0">
+                        <ICountUp :end-val="parseFloat(NOS)" :options="{ decimalPlaces: 2 }" />
+                      </h2>
+                      <p>NOS</p>
+                    </div>
+                    <div class="box has-text-centered p-2">
+                      <h2 class="title is-4 has-text-success mb-0">
+                        <ICountUp :end-val="parseFloat(xNOS)" :options="{ decimalPlaces: 2 }" />
+                      </h2>
+                      <p>xNOS</p>
                     </div>
                   </div>
                 </div>
               </div>
-              <div class="column is-1 p-1 is-2-mobile is-offset-5-mobile">
-                <div
-                  class="has-background-grey-light has-radius-medium
-                  is-flex is-align-items-center is-justify-content-center py-2"
-                >
-                  <img width="24" src="~assets/img/icons/arrow.svg">
-                </div>
-              </div>
-              <div class="column is-3 is-full-mobile scores">
-                <div class="has-background-grey-lighter has-radius-medium">
-                  <div class="box has-text-centered mb-3 p-2">
-                    <h2 class="title is-4 has-text-success mb-0">
-                      <ICountUp :end-val="parseFloat(NOS)" :options="{ decimalPlaces: 2 }" />
-                    </h2>
-                    <p>NOS</p>
-                  </div>
-                  <div class="box has-text-centered p-2">
-                    <h2 class="title is-4 has-text-success mb-0">
-                      <ICountUp :end-val="parseFloat(xNOS)" :options="{ decimalPlaces: 2 }" />
-                    </h2>
-                    <p>xNOS</p>
-                  </div>
-                </div>
-              </div>
+              <button
+                v-if="!loggedIn"
+                class="button is-accent is-fullwidth mt-5 has-text-weight-semibold"
+                @click.stop.prevent="$sol.loginModal = true"
+              >
+                Connect Wallet
+              </button>
+              <button
+                v-else
+                type="submit"
+                class="button is-accent is-fullwidth mt-5 has-text-weight-semibold"
+                :class="{'is-loading': loading}"
+              >
+                Increase stake
+              </button>
             </div>
-            <button
-              v-if="!loggedIn"
-              class="button is-accent is-fullwidth mt-5 has-text-weight-semibold"
-              @click.stop.prevent="$sol.loginModal = true"
-            >
-              Connect Wallet
-            </button>
-            <button
-              v-else
-              type="submit"
-              class="button is-accent is-fullwidth mt-5 has-text-weight-semibold"
-              :class="{'is-loading': loading}"
-            >
-              Increase stake
-            </button>
           </form>
         </div>
       </div>
@@ -246,88 +248,106 @@
             <!--- Form --->
             <form
               v-if="!userHasStakedBefore"
-              class="mt-5 columns is-multiline is-flex"
               @submit.prevent="stake"
             >
-              <div class="column is-two-thirds">
-                <div class="form-inputs has-background-grey-lighter has-radius-medium p-3 pt-5">
-                  <div class="field has-background-grey-light has-radius-medium">
-                    <div
-                      class="control px-1 pr-3 py-2
+              <div class="mt-5 columns">
+                <div class="column">
+                  <div class="form-inputs has-background-grey-lighter has-radius-medium p-3 pt-5">
+                    <div class="field has-background-grey-light has-radius-medium">
+                      <div
+                        class="control px-1 pr-3 py-2
                         is-flex is-flex-direction-row is-align-items-center is-justify-content-space-between"
-                    >
-                      <div class="amount-logo px-3">
-                        <img width="30" src="~assets/img/icons/token.svg">
-                      </div>
-                      <div class="is-flex is-align-items-center is-flex-grow-1">
-                        <input
-                          v-model="amount"
-                          required
-                          class="input has-background-grey-light ml-3 my-3"
-                          :max="balance"
-                          min="1"
-                          step="0.00000001"
-                          type="number"
-                          placeholder="0"
-                          style="width: 100px; height: 35px; border: none;"
-                        >
-                        <span class="is-size-7 pl-2 pr-2">NOS</span>
-                      </div>
-
-                      <div class="buttons are-small">
-                        <button
-                          class="px-2 mr-1 button is-accent is-outlined has-text-weight-semibold is-uppercase"
-                          @click.prevent="amount = (balance/2)"
-                        >
-                          Half
-                        </button>
-                        <button
-                          class="px-2 button is-accent is-outlined has-text-weight-semibold is-uppercase is-size-7"
-                          @click.prevent="amount = balance"
-                        >
-                          Max
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="field">
-                    <div class="mt-5 is-flex is-flex-direction-row is-align-items-center is-justify-content-center">
-                      <span class="is-size-7">Unstake period of</span>
-                      <input
-                        v-model="unstakeDays"
-                        required
-                        class="input mx-2 py-5 has-background-grey-light has-text-centered"
-                        type="number"
-                        :min="31"
-                        :max="365"
-                        placeholder="0"
-                        style="width: auto;"
                       >
-                      <span class="is-size-7">days</span>
+                        <div class="amount-logo px-3">
+                          <img width="30" src="~assets/img/icons/token.svg">
+                        </div>
+                        <div class="is-flex is-align-items-center is-flex-grow-1">
+                          <input
+                            v-model="amount"
+                            required
+                            class="input has-background-grey-light ml-3 my-3"
+                            :max="balance"
+                            min="1"
+                            step="0.00000001"
+                            type="number"
+                            placeholder="0"
+                            style="width: 100px; height: 35px; border: none;"
+                          >
+                          <span class="is-size-7 pl-2 pr-2">NOS</span>
+                        </div>
+
+                        <div class="buttons are-small">
+                          <button
+                            class="px-2 mr-1 button is-accent is-outlined has-text-weight-semibold is-uppercase"
+                            @click.prevent="amount = (balance/2)"
+                          >
+                            Half
+                          </button>
+                          <button
+                            class="px-2 button is-accent is-outlined has-text-weight-semibold is-uppercase is-size-7"
+                            @click.prevent="amount = balance"
+                          >
+                            Max
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="field">
+                      <div class="mt-5 is-flex is-flex-direction-row is-align-items-center is-justify-content-center">
+                        <span class="is-size-7">Unstake period of</span>
+                        <input
+                          v-model="unstakeDays"
+                          required
+                          class="input mx-2 py-5 has-background-grey-light has-text-centered"
+                          type="number"
+                          :min="31"
+                          :max="365"
+                          placeholder="0"
+                          style="width: auto;"
+                        >
+                        <span class="is-size-7">days</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- (New) Scores -->
+                <div class="column is-one-third scores">
+                  <div class="has-background-grey-lighter has-radius-medium p-3">
+                    <div class="box has-text-centered mb-3">
+                      <h2 class="title is-4 has-text-success mb-0">
+                        <ICountUp
+                          :end-val="parseFloat(NOS)"
+                          :options="{ decimalPlaces: 0, duration:0.1 }"
+                          style="opacity:0"
+                        />
+                        <ICountUp
+                          :end-val="parseFloat(NOS)"
+                          :options="{ decimalPlaces: 0 }"
+                          style="position:absolute;width: 100%;text-align: center;left: 0;"
+                        />
+                      </h2>
+                      <p>NOS</p>
+                    </div>
+                    <div class="box has-text-centered">
+                      <h2 class="title is-4 has-text-success mb-0">
+                        <ICountUp
+                          :end-val="parseFloat(xNOS)"
+                          :options="{ decimalPlaces: 0, duration:0.1 }"
+                          style="opacity:0"
+                        />
+                        <ICountUp
+                          :end-val="parseFloat(xNOS)"
+                          :options="{ decimalPlaces: 0 }"
+                          style="position:absolute;width: 100%;text-align: center;left: 0;"
+                        />
+                      </h2>
+                      <p>xNOS</p>
                     </div>
                   </div>
                 </div>
               </div>
-
-              <!-- (New) Scores -->
-              <div class="column is-one-third scores">
-                <div class="has-background-grey-lighter has-radius-medium p-3">
-                  <div class="box has-text-centered mb-3">
-                    <h2 class="title is-4 has-text-success mb-0">
-                      <ICountUp :end-val="parseFloat(NOS)" :options="{ decimalPlaces: 2 }" />
-                    </h2>
-                    <p>NOS</p>
-                  </div>
-                  <div class="box has-text-centered">
-                    <h2 class="title is-4 has-text-success mb-0">
-                      <ICountUp :end-val="parseFloat(xNOS)" :options="{ decimalPlaces: 2 }" />
-                    </h2>
-                    <p>xNOS</p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="column is-whole">
+              <div>
                 <!-- Buttons -->
                 <button
                   v-if="!loggedIn"
@@ -349,13 +369,31 @@
                 <div class="has-radius-medium p-3 is-flex is-align-items-center is-justify-content-center">
                   <div class="box has-text-centered mr-2 mb-0">
                     <h2 class="title is-4 mb-0">
-                      <ICountUp :end-val="parseFloat(NOS)" :options="{ decimalPlaces: 2 }" />
+                      <ICountUp
+                        :end-val="parseFloat(NOS)"
+                        :options="{ decimalPlaces: 0, duration:0.1 }"
+                        style="opacity:0"
+                      />
+                      <ICountUp
+                        :end-val="parseFloat(NOS)"
+                        :options="{ decimalPlaces: 0 }"
+                        style="position:absolute;width: 100%;text-align: center;left: 0;"
+                      />
                     </h2>
                     <p>NOS</p>
                   </div>
                   <div class="box has-text-centered ml-2 mb-0">
                     <h2 class="title is-4 mb-0">
-                      <ICountUp :end-val="parseFloat(xNOS)" :options="{ decimalPlaces: 2 }" />
+                      <ICountUp
+                        :end-val="parseFloat(xNOS)"
+                        :options="{ decimalPlaces: 0, duration:0.1 }"
+                        style="opacity:0"
+                      />
+                      <ICountUp
+                        :end-val="parseFloat(xNOS)"
+                        :options="{ decimalPlaces: 0 }"
+                        style="position:absolute;width: 100%;text-align: center;left: 0;"
+                      />
                     </h2>
                     <p>xNOS</p>
                   </div>
@@ -876,6 +914,7 @@ export default {
 }
 
 .scores {
+  min-width: fit-content;
   h2 {
     font-family: $family-sans-serif;
   }
