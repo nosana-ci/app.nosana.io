@@ -9,28 +9,57 @@
         </h3>
         <form class="is-fullwidth" @submit.prevent="stake">
           <div
-            class="mt-5 py-5 has-radius-medium has-background-grey-lighter has-text-centered"
+            class="mt-5 has-radius-medium has-text-centered columns
+            is-flex is-align-items-center is-multiline has-background-grey-lighter m-0 py-5"
           >
-            <div class="is-flex is-align-items-center is-justify-content-center">
-              <span>Extend unstake period with</span>
-              <input
-                v-model="extraUnstakeDays"
-                required
-                class="input mx-2 py-5 has-background-grey-light has-text-centered"
-                type="number"
-                :min="1"
-                :max="365 - parseInt($moment.duration(stakeData.duration, 'seconds').asDays())"
-                placeholder="0"
-                style="width: auto;"
-              >
-              <span>days</span>
+            <div class="column is-8 is-full-mobile">
+              <div class="is-flex is-align-items-center is-justify-content-center">
+                <span>Extend unstake period with</span>
+                <input
+                  v-model="extraUnstakeDays"
+                  required
+                  class="input mx-2 py-5 has-background-grey-light has-text-centered"
+                  type="number"
+                  :min="1"
+                  :max="365 - parseInt($moment.duration(stakeData.duration, 'seconds').asDays())"
+                  placeholder="0"
+                  style="width: auto;"
+                >
+                <span>days</span>
+              </div>
             </div>
-            <p class="mt-3">
+            <div class="column is-1 p-1 is-2-mobile is-offset-5-mobile">
+              <div
+                class="has-background-grey-light has-radius-medium
+                is-flex is-align-items-center is-justify-content-center py-2"
+              >
+                <img width="24" src="~assets/img/icons/arrow.svg">
+              </div>
+            </div>
+            <div class="column is-3 is-full-mobile scores">
+              <div class="has-background-grey-lighter has-radius-medium">
+                <div class="box has-text-centered mb-3 p-2">
+                  <h2 class="title is-4 has-text-success mb-0">
+                    <ICountUp :end-val="parseFloat(NOS)" :options="{ decimalPlaces: 2 }" />
+                  </h2>
+                  <p>NOS</p>
+                </div>
+                <div class="box has-text-centered p-2">
+                  <h2 class="title is-4 has-text-success mb-0">
+                    <ICountUp :end-val="parseFloat(xNOS)" :options="{ decimalPlaces: 2 }" />
+                  </h2>
+                  <p>xNOS</p>
+                </div>
+              </div>
+            </div>
+            <p class="mb-2 has-text-centered is-full column">
               <span v-if="extraUnstakeDays > 0">
                 New days:
                 {{ parseInt($moment.duration(stakeData.duration, 'seconds').asDays()) + parseInt(extraUnstakeDays) }}
               </span>
-              <span v-else>Current days: {{ parseInt($moment.duration(stakeData.duration, 'seconds').asDays()) }}</span>
+              <span v-else>
+                Current days: {{ parseInt($moment.duration(stakeData.duration, 'seconds').asDays()) }}
+              </span>
             </p>
           </div>
           <button
@@ -80,7 +109,7 @@
           <form class="is-fullwidth" @submit.prevent="stake">
             <div
               class="mt-5 has-radius-medium has-text-centered columns
-              is-flex is-align-items-center is-multiline has-background-grey-lighter m-0"
+              is-flex is-align-items-center is-multiline has-background-grey-lighter m-0 py-5"
             >
               <div class="column is-8 is-full-mobile">
                 <div class="field has-background-grey-light has-radius-medium">
@@ -174,14 +203,14 @@
         <ul>
           <li
             class="has-background-secondary px-4"
-            :class="{'is-active': unstakeForm === false}"
-            @click="unstakeForm = false"
+            :class="{'is-active': unstakeForm === false, 'is-inactive' : stakeEndDate}"
+            @click="!stakeEndDate ? unstakeForm = false : null"
           >
             <a class="p-4">Stake</a>
           </li>
           <li
             class="has-background-secondary px-4"
-            :class="{'is-active': unstakeForm === true, 'is-inactive' : !userHasStakedBefore}"
+            :class="{'is-active': unstakeForm === true || stakeEndDate, 'is-inactive' : !userHasStakedBefore}"
             @click="userHasStakedBefore ? unstakeForm = true : null"
           >
             <a class="p-4">Unstake</a>
@@ -382,51 +411,59 @@
             </form>
           </div>
         </div>
-        <!-- Time unstake is not 0, so show countdown + restake stuff -->
         <div v-if="userHasStakedBefore && stakeEndDate" class="container">
-          <span v-if="countdownFinished">
-            Claim your tokens!<br>
-          </span>
-          <span v-else>
-            You have unstaked your tokens.<br>
-            Unstaked at: {{ $moment.unix(stakeData.time_unstake).format('LL') }}<br>
+          <div class="unstaked">
+            <h3 class="has-text-centered subtitle is-4 has-text-weight-semibold">
+              You have unstaked<br>your tokens
+            </h3>
+            <span v-if="countdownFinished">
+              Claim your tokens!<br>
+            </span>
+            <div v-else class="has-text-centered is-block mb-1">
+              <h5 class="mb-0" style="line-height: 1rem;">Unstaked at:</h5>
+              <span class="is-size-7">{{ $moment.unix(stakeData.time_unstake).local() }}</span><br>
 
-            They will be released in
-          </span>
-          <client-only>
-            <countdown :end-time="new Date(stakeEndDate)" @finish="countdownFinished = true">
-              <span
-                slot="process"
-                slot-scope="{ timeObj }"
-              >
-                <h2 class="title py-1 has-text-weight-medium">{{
-                  `${timeObj.d}:${timeObj.h}:${timeObj.m}:${timeObj.s}`
-                }}</h2></span>
-              <span slot="finish">
-                <button
-                  v-if="!loggedIn"
-                  class="button is-accent is-outlined has-text-weight-semibold"
-                  @click.stop.prevent="$sol.loginModal = true"
-                >
-                  Connect Wallet
-                </button>
-                <button
-                  v-else
-                  class="button is-accent"
-                  :class="{'is-loading': loading}"
-                  @click.stop.prevent="claim()"
-                >
-                  Claim {{ parseFloat(stakeData.amount)/1e6 }} NOS
-                </button>
-              </span>
-            </countdown>
-          </client-only>
+              <div class="has-background-grey-lighter has-radius-medium p-3 pb-4 mt-5">
+                <h5 class="mb-3">They will be released in</h5>
+                <client-only>
+                  <countdown :end-time="stakeEndDate">
+                    <span
+                      slot="process"
+                      slot-scope="{ timeObj }"
+                    >
+                      <div class="is-flex is-justify-content-center">
+                        <div class="has-background-grey-light has-radius title mb-0 p-4">
+                          {{ timeObj.d }}
+                        </div>
+                        <div class="title mb-0 p-2">:</div>
+                        <div class="has-background-grey-light has-radius title mb-0 p-4">
+                          {{ timeObj.h }}
+                        </div>
+                        <div class="title mb-0 p-2">:</div>
+                        <div class="has-background-grey-light has-radius title mb-0 p-4">
+                          {{ timeObj.m }}
+                        </div>
+                        <div class="title mb-0 p-2">:</div>
+                        <div class="has-background-grey-light has-radius title mb-0 p-4">
+                          {{ timeObj.s }}
+                        </div>
+                      </div>
 
-          <form v-if="!countdownFinished" @submit.prevent="restake">
+                    </span>
+                    <span slot="finish">
+                      <h1 class="title">Now LIVE</h1>
+                    </span>
+                  </countdown>
+                </client-only>
+              </div>
+            </div>
+          </div>
+
+          <form v-if="!countdownFinished" class="mt-5 has-text-centered" @submit.prevent="restake">
             Or restake them here: <br>
             <button
               v-if="!loggedIn"
-              class="button is-accent is-outlined has-text-weight-semibold"
+              class="button is-accent is-outlined has-text-weight-semibold mt-2"
               @click.stop.prevent="$sol.loginModal = true"
             >
               Connect Wallet
@@ -434,7 +471,7 @@
             <button
               v-else-if="userHasStakedBefore"
               type="submit"
-              class="button is-accent"
+              class="button is-accent mt-2"
               :class="{'is-loading': loading}"
             >
               Restake {{ parseFloat(stakeData.amount)/1e6 }} NOS
@@ -806,6 +843,13 @@ export default {
 .stake-block {
   border-radius: 4px;
   height: 100%;
+}
+
+.unstaked {
+  max-width: 450px;
+  width: 100%;
+  text-align: center;
+  margin: 0 auto;
 }
 
 .tabs ul {
