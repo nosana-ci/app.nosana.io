@@ -10,13 +10,13 @@
           :display="3"
           :width="350"
           :start-index="stakeData.tierInfo.userTier ?
-            stakeData.tierInfo.userTier.tier : stakeData.tierInfo.tiers ? stakeData.tierInfo.tiers.length - 1 : 0"
+            stakeData.tierInfo.tiers.length - stakeData.tierInfo.userTier.tier : 0"
           :height="320"
         >
           <slide
             v-for="slide in stakeData.tierInfo.tiers"
             :key="slide.tier"
-            :index="slide.tier - 1"
+            :index="stakeData.tierInfo.tiers.length - slide.tier"
             class="box has-background-light has-shadow"
             :class="{'has-shadow-accent has-border-accent': activeTier === slide.tier}"
           >
@@ -38,8 +38,9 @@
                     </span>
                   </small>
                 </div>
-                <div :class="['tier-' + slide.tier]"
-                    class="has-text-accent subtitle mt-auto has-border-accent p-1 has-radius"
+                <div
+                  :class="['tier-' + slide.tier]"
+                  class="has-text-accent subtitle mt-auto has-border-accent p-1 has-radius"
                 >
                   <span v-if="slide.tier === 1">
                     <b>Guaranteed</b> NFT mint token
@@ -82,7 +83,7 @@ export default {
         const tiers = this.stakeData.tierInfo.tiers;
         for (let i = 0; i < tiers.length; i++) {
           if (tiers[i].requiredXNOS / 1e6 <= parseFloat(xnos)) {
-            this.$refs.carousel.goSlide(tiers[i].tier - 1);
+            this.$refs.carousel.goSlide(tiers.length - tiers[i].tier);
             break;
           }
         };
@@ -91,14 +92,14 @@ export default {
     stakeData (stakeData) {
       if (stakeData.tierInfo && stakeData.tierInfo.userTier && this.$refs.carousel) {
         this.activeTier = stakeData.tierInfo.userTier.tier;
-        this.$refs.carousel.goSlide(stakeData.tierInfo.userTier.tier - 1);
+        this.$refs.carousel.goSlide(stakeData.tierInfo.tiers.length - stakeData.tierInfo.userTier.tier);
       }
     },
     'this.$refs.carousel': function (carousel) {
       console.log('carouse', carousel);
       if (this.stakeData && this.stakeData.tierInfo && this.stakeData.tierInfo.userTier && carousel) {
         this.activeTier = this.stakeData.tierInfo.userTier.tier;
-        carousel.goSlide(this.stakeData.tierInfo.userTier.tier - 1);
+        carousel.goSlide(this.stakeData.tierInfo.tiers.length - this.stakeData.tierInfo.userTier.tier);
       }
     }
   },
