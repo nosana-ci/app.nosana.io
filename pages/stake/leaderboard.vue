@@ -58,12 +58,6 @@ export default {
   mounted () {
     this.getLeaderboard(this.queryPage);
   },
-  beforeDestroy () {
-    if (this.interval) {
-      clearInterval(this.interval);
-      this.interval = null;
-    }
-  },
   methods: {
     async getLeaderboard (page) {
       try {
