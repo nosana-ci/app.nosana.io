@@ -83,7 +83,7 @@
             <tr
               v-for="(user, index) in leaderboard"
               :key="user.address"
-              :class="'row-' + (index + 1) "
+              :class="{'user-ranking': userRanking === (index + 1)}"
             >
               <td><span>{{ index+1 }}</span></td>
               <td class="blockchain-address">{{ user.address }}</td>
@@ -100,16 +100,21 @@
                 No users
               </td>
             </tr>
+            <tr v-if="leaderboard && userRanking && userRanking > leaderboard.length && stakeData" class="user-ranking">
+              <td><span>{{ userRanking }}</span></td>
+              <td class="blockchain-address">{{ stakeData.address }}</td>
+              <td>{{ parseFloat(stakeData.xnos / 1e6).toFixed() }}</td>
+            </tr>
           </tbody>
         </table>
       </div>
-      <pagination-helper
+      <!-- <pagination-helper
         v-if="leaderboard && leaderboard.length > 0 && pagination"
-        :total-pages="Math.ceil(pagination.total / pagination.perPage)"
-        :per-page="pagination.perPage"
+        :total-pages="Math.ceil(parseInt(pagination.total) / parseInt(pagination.perPage))"
+        :per-page="parseInt(pagination.perPage)"
         :current-page="parseInt(pagination.currentPage)"
         @pagechanged="getLeaderboard"
-      />
+      /> -->
     </div>
   </div>
 </template>
@@ -162,8 +167,10 @@ export default {
         const leaderboard = await this.$axios.$get(
           `/stake/leaderboards?page=${page}&limit=5`
         );
-        this.leaderboard = leaderboard.data;
-        this.pagination = leaderboard.pagination;
+        this.leaderboard = leaderboard.stakes.data;
+        // this.userRanking = 7;
+        this.userRanking = leaderboard.userRanking;
+        this.pagination = leaderboard.stakes.pagination;
       } catch (error) {
         console.error(error);
       }
@@ -199,15 +206,26 @@ export default {
 }
 
 th {
-  color: #4D4F4C;
+  color: $text !important;
+  &:nth-child(2) {
+    text-align: center;
+  }
 }
 
 tr {
+  &.user-ranking {
+    background: rgba(3, 188, 0, 0.1) !important;
+  }
   .blockchain-address {
     font-family: $family-sans-serif;
   }
   td span {
     position: relative;
+  }
+  td:nth-child(2) {
+    text-align: center;
+    margin: 0 auto;
+    max-width: 300px;
   }
   td span:first-child {
     &:after {
@@ -223,21 +241,21 @@ tr {
     }
   }
 }
-.row-1 td span:first-child {
+tr:nth-child(1) td span:first-child {
   font-size: 18px;
   &:after {
     background: #F2C94C;
   }
 }
 
-.row-2 td span:first-child {
+tr:nth-child(2) td span:first-child {
   font-size: 18px;
   &:after {
     background: #D7D7D7;
   }
 }
 
-.row-3 td span:first-child {
+tr:nth-child(3) td span:first-child {
   font-size: 18px;
   &:after {
     background: #F2994A;
