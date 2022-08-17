@@ -21,7 +21,7 @@
                     {{ $auth.user.address }}
                   </a>
                 </h2>
-                <a v-if="!user.name" @click.prevent="editUser = true"><i class="fas fa-edit" /> Edit User info</a>
+                <nuxt-link v-if="!user.name" to="/account/edit"><i class="fas fa-edit" /> Edit User info</nuxt-link>
                 <p class="is-size-7 has-overflow-ellipses" style="height: 40px;">
                   <span v-if="user.description">{{ user.description }}</span>
                 </p>
