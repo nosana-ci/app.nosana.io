@@ -1,50 +1,155 @@
 <template>
-  <div>
-    <div class="title">
+  <section class="section">
+    <div class="title is-4">
       Edit User Profile
     </div>
 
-    <form @submit.prevent="updateUser">
-      <section class="modal-card-body">
-        <div class="field">
-          <label>Name*:</label>
-          <input v-model="name" required type="text" class="input">
+    <div class="level">
+      <div class="level-item has-text-centered">
+        <figure class="image is-128x128">
+          <img class="is-rounded" src="https://nosana.io/img/Nosana_Logomark_color.png" alt="" srcset="">
+        </figure>
+      </div>
+    </div>
+    <div class="level">
+      <div class="level-item has-text-centered">
+        <div class="subtitle">
+          <strong>Jane Doe</strong>
         </div>
-        <div class="field">
-          <label>Email*:</label>
-          <input v-model="email" required type="email" class="input">
-        </div>
-        <div class="field">
-          <label>Description:</label>
-          <textarea v-model="description" class="textarea" />
-        </div>
-        <div class="field">
-          <label>Icon URL:</label>
-          <input v-model="image" type="url" class="input">
-        </div>
-        <div class="field">
-          <label>Discord Username:</label>
-          <input v-model="discord" type="text" class="input">
-        </div>
-      </section>
+      </div>
+    </div>
 
-      <footer class="modal-card-foot has-text-right">
-        <button class="button" @click.prevent="editUser = false; removeQuery()">
+    <form class="p-6 m-6">
+      <div class="field has-text-centered p-4 m-4">
+        <ul class="steps is-horizontal has-content-centered">
+          <li class="steps-segment">
+            <span href="#" class="steps-marker">1</span>
+          </li>
+          <li class="steps-segment">
+            <span href="#" class="steps-marker">2</span>
+          </li>
+          <li class="steps-segment is-active">
+            <span class="steps-marker">3</span>
+          </li>
+          <li class="steps-segment">
+            <span class="steps-marker">4</span>
+          </li>
+          <li class="steps-segment">
+            <span class="steps-marker">5</span>
+          </li>
+        </ul>
+        <br>
+        <p>Lorem ipsum something to complete</p>
+      </div>
+
+      <br>
+      <br>
+
+      <div class="field">
+        <div class="buttons is-centered">
+          <button class="button is-medium is-dark">
+            <span class="icon is-small">
+              <i class="fab fa-github" />
+            </span>
+          </button>
+          <button class="button is-medium is-dark">
+            <span class="icon is-small">
+              <i class="fab fa-discord" />
+            </span>
+          </button>
+          <button class="button is-medium is-dark">
+            <span class="icon is-small">
+              <i class="fab fa-twitter" />
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <br>
+
+      <div class="field is-horizontal">
+        <div class="field-body">
+          <div class="field">
+            <label for="" class="label">First Name*</label>
+            <p class="control is-expanded has-icons-left">
+              <input class="input" type="text" placeholder="Jane">
+              <span class="icon is-small is-left">
+                <i class="fas fa-user" />
+              </span>
+            </p>
+          </div>
+
+          <div class="field">
+            <label for="" class="label">Last Name*</label>
+            <p class="control is-expanded has-icons-left">
+              <input class="input" type="text" placeholder="Doe">
+              <span class="icon is-small is-left">
+                <i class="fas fa-user" />
+              </span>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="" class="label">Email Address*</label>
+        <input v-model="email" class="input" type="email" placeholder="doe@nosana.io" required>
+      </div>
+
+      <div class="field">
+        <label for="" class="label">Country</label>
+        <multiselect
+          v-model="country"
+          :options="countries"
+          label="name"
+          placeholder="Select Country"
+          track-by="code"
+        >
+          <template slot="singleLabel" slot-scope="{ option }">
+            {{ option.name }}
+          </template>
+        </multiselect>
+      </div>
+
+      <div class="field">
+        <label class="label">I want to:</label>
+        <label class="checkbox">
+          <input type="checkbox">
+          Develop with Nosana
+        </label>
+        <br>
+        <label class="checkbox">
+          <input type="checkbox">
+          Earn with Nosana Network
+        </label>
+      </div>
+
+      <br>
+
+      <footer class="is-centered buttons has-radius">
+        <button class="button is-fullwidth">
           Cancel
         </button>
-        <input type="submit" class="button is-accent" value="Save">
+        <button class="button is-fullwidth is-outlined is-accent">
+          Save
+        </button>
       </footer>
     </form>
-    <button class="modal-close is-large" aria-label="close" @click="editUser = false; removeQuery()" />
-  </div>
+  </section>
 </template>
 
 <script>
+import Multiselect from 'vue-multiselect';
+import countries from '@/static/countries.json';
+
 export default {
-  components: {},
+  components: {
+    Multiselect
+  },
   middleware: 'auth',
   data () {
     return {
+      countries,
       user: null,
       image: null,
       description: null,
@@ -55,7 +160,8 @@ export default {
       repositories: null,
       commits: null,
       balance: null,
-      usedBalance: null
+      usedBalance: null,
+      country: null
     };
   },
   computed: {
