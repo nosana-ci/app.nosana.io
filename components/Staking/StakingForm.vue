@@ -471,21 +471,26 @@
                       slot="process"
                       slot-scope="{ timeObj }"
                     >
-                      <div class="is-flex is-justify-content-center">
-                        <div class="has-background-grey-light has-radius title mb-0 p-4">
-                          {{ timeObj.d }}
+                      <div class="columns is-mobile is-multiline">
+                        <div class="column is-3-desktop is-6-touch">
+                          <div class="has-background-grey-light has-radius title mb-0 p-4">
+                            {{ timeObj.d }}d
+                          </div>
                         </div>
-                        <div class="title mb-0 p-2">:</div>
-                        <div class="has-background-grey-light has-radius title mb-0 p-4">
-                          {{ timeObj.h }}
+                        <div class="column is-3-desktop is-6-touch">
+                          <div class="has-background-grey-light has-radius title mb-0 p-4">
+                            {{ timeObj.h }}h
+                          </div>
                         </div>
-                        <div class="title mb-0 p-2">:</div>
-                        <div class="has-background-grey-light has-radius title mb-0 p-4">
-                          {{ timeObj.m }}
+                        <div class="column is-3-desktop is-6-touch">
+                          <div class="has-background-grey-light has-radius title mb-0 p-4">
+                            {{ timeObj.m }}m
+                          </div>
                         </div>
-                        <div class="title mb-0 p-2">:</div>
-                        <div class="has-background-grey-light has-radius title mb-0 p-4">
-                          {{ timeObj.s }}
+                        <div class="column is-3-desktop is-6-touch">
+                          <div class="has-background-grey-light has-radius title mb-0 p-4">
+                            {{ timeObj.s }}s
+                          </div>
                         </div>
                       </div>
 
@@ -887,7 +892,7 @@ export default {
 }
 
 .unstaked {
-  max-width: 450px;
+  max-width: 500px;
   width: 100%;
   text-align: center;
   margin: 0 auto;

@@ -76,7 +76,9 @@
              stakeData.tierInfo.userTier.tier !== 1"
            class="has-shadow next-tier box has-background-light has-text-centered mb-6 py-2"
       >
-        <p class="has-text-weight-semibold is-size-5 mb-0">Next tier</p>
+        <p class="has-text-weight-semibold is-size-5 mb-0">
+          Next tier
+        </p>
         <span>Only</span>
         <span class="has-text-accent is-size-5">{{
           ((parseFloat(
