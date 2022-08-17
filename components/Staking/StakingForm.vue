@@ -298,7 +298,7 @@
                           required
                           class="input mx-2 py-5 has-background-grey-light has-text-centered"
                           type="number"
-                          :min="31"
+                          :min="14"
                           :max="365"
                           placeholder="0"
                           style="width: auto;"
@@ -456,32 +456,41 @@
               Claim your tokens!<br>
             </span>
             <div v-else class="has-text-centered is-block mb-1">
-              <h5 class="mb-0" style="line-height: 1rem;">Unstaked at:</h5>
+              <h5 class="mb-0" style="line-height: 1rem;">
+                Unstaked at:
+              </h5>
               <span class="is-size-7">{{ $moment.unix(stakeData.time_unstake).local() }}</span><br>
 
               <div class="has-background-grey-lighter has-radius-medium p-3 pb-4 mt-5">
-                <h5 class="mb-3">They will be released in</h5>
+                <h5 class="mb-3">
+                  They will be released in
+                </h5>
                 <client-only>
                   <countdown :end-time="stakeEndDate">
                     <span
                       slot="process"
                       slot-scope="{ timeObj }"
                     >
-                      <div class="is-flex is-justify-content-center">
-                        <div class="has-background-grey-light has-radius title mb-0 p-4">
-                          {{ timeObj.d }}
+                      <div class="columns is-mobile is-multiline">
+                        <div class="column is-3-desktop is-6-touch">
+                          <div class="has-background-grey-light has-radius title mb-0 p-4">
+                            {{ timeObj.d }}d
+                          </div>
                         </div>
-                        <div class="title mb-0 p-2">:</div>
-                        <div class="has-background-grey-light has-radius title mb-0 p-4">
-                          {{ timeObj.h }}
+                        <div class="column is-3-desktop is-6-touch">
+                          <div class="has-background-grey-light has-radius title mb-0 p-4">
+                            {{ timeObj.h }}h
+                          </div>
                         </div>
-                        <div class="title mb-0 p-2">:</div>
-                        <div class="has-background-grey-light has-radius title mb-0 p-4">
-                          {{ timeObj.m }}
+                        <div class="column is-3-desktop is-6-touch">
+                          <div class="has-background-grey-light has-radius title mb-0 p-4">
+                            {{ timeObj.m }}m
+                          </div>
                         </div>
-                        <div class="title mb-0 p-2">:</div>
-                        <div class="has-background-grey-light has-radius title mb-0 p-4">
-                          {{ timeObj.s }}
+                        <div class="column is-3-desktop is-6-touch">
+                          <div class="has-background-grey-light has-radius title mb-0 p-4">
+                            {{ timeObj.s }}s
+                          </div>
                         </div>
                       </div>
 
@@ -883,7 +892,7 @@ export default {
 }
 
 .unstaked {
-  max-width: 450px;
+  max-width: 500px;
   width: 100%;
   text-align: center;
   margin: 0 auto;
