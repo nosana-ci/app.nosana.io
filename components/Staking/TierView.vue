@@ -18,15 +18,15 @@
             v-for="slide in stakeData.tierInfo.tiers"
             :key="slide.tier"
             :index="stakeData.tierInfo.tiers.length - slide.tier"
-            class="box has-background-light has-shadow"
+            class="box has-background-light has-shadow has-radius"
             :class="{'has-shadow-accent has-border-accent': activeTier === slide.tier}"
           >
             <div class="columns is-mobile">
               <div class="column is-4 is-flex is-flex-direction-column">
-                <div class="subtitle is-6 has-text-accent">
+                <div class="subtitle is-6 is-size-7-touch has-text-accent">
                   Tier {{ slide.tier }}
                 </div>
-                <div class="title is-5 mb-1">
+                <div class="title is-5 mb-1 is-size-7-touch">
                   {{ slide.name }}
                 </div>
                 <div>
@@ -41,22 +41,22 @@
                 </div>
                 <div
                   :class="['tier-' + slide.tier]"
-                  class="has-text-accent subtitle mt-auto has-border-accent p-1 has-radius"
+                  class="has-text-accent subtitle mt-auto is-size-7-touch has-border-accent p-1 has-radius"
                 >
                   <span v-if="slide.tier === 1">
-                    <b>Guaranteed</b> NFT mint token
+                    <b>Guaranteed</b><br>NFT mint token
                   </span>
                   <span v-else-if="slide.tier === 2">
-                    <b class="title has-text-accent">15</b> Tickets
+                    <b class="title has-text-accent is-size-5-touch">15</b> Tickets
                   </span>
                   <span v-else-if="slide.tier === 3">
-                    <b class="title has-text-accent">6</b> Tickets
+                    <b class="title has-text-accent is-size-5-touch">6</b> Tickets
                   </span>
                   <span v-else-if="slide.tier === 4">
-                    <b class="title has-text-accent">3</b> Tickets
+                    <b class="title has-text-accent is-size-5-touch">3</b> Tickets
                   </span>
                   <span v-else-if="slide.tier === 5">
-                    <b class="title has-text-accent">1</b> Ticket
+                    <b class="title has-text-accent is-size-5-touch">1</b> Ticket
                   </span>
                 </div>
               </div>
@@ -180,6 +180,7 @@ export default {
 <style lang="scss" scoped>
 .carousel-3d-slide{
   filter: blur(2px);
+  border-radius: 4px;
   &.current {
     filter: none;
   }
