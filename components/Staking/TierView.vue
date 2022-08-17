@@ -30,15 +30,20 @@
                 <div class="title is-5 mb-1 is-size-7-touch">
                   {{ slide.name }}
                 </div>
-                <div>
-                  <small class="is-size-7">Top
+                <div style="line-height: 1">
+                  <span class="is-size-7">
+                    <small>Top<br></small>
                     <span v-if="slide.tier === 1">{{ slide.number }}</span>
                     <span v-else>{{
                       stakeData.tierInfo.tiers.filter(s=>s.tier !== slide.tier && s.tier < slide.tier)
                         .reduce((a, o) => a + (o.percentage ? o.percentage : 0), 0) + slide.percentage
                     }}%
+                      <span v-if="slide.tier > 2">
+                        - {{ stakeData.tierInfo.tiers.filter(s=>s.tier !== slide.tier && s.tier < slide.tier)
+                          .reduce((a, o) => a + (o.percentage ? o.percentage : 0), 0) }}%
+                      </span>
                     </span>
-                  </small>
+                  </span>
                 </div>
                 <div
                   :class="['tier-' + slide.tier]"
@@ -102,9 +107,16 @@
         v-if="leaderboard && leaderboard.length > 0"
         class="table-container has-background-light p-5 mb-0  has-radius-medium"
       >
-        <h3 class="has-text-centered subtitle is-4 has-text-weight-semibold">
-          Leaderboard
-        </h3>
+        <div class="is-flex">
+          <h3 class="has-text-centered subtitle is-4 has-text-weight-semibold">
+            Leaderboard
+          </h3>
+          <span v-if="userRanking && pagination" class="is-pulled-right ml-auto">
+            {{ userRanking }}/{{ pagination.total }}
+            <small v-if="userRanking > 100">(Top
+              {{ (userRanking - 100)/(pagination.total - 100) * 100 }}%)</small>
+          </span>
+        </div>
         <table class="table is-striped is-fullwidth is-hoverable">
           <thead>
             <tr>
