@@ -111,10 +111,11 @@
           <h3 class="has-text-centered subtitle is-4 has-text-weight-semibold">
             Leaderboard
           </h3>
-          <span v-if="userRanking && pagination" class="is-pulled-right ml-auto">
+          <span v-if="userRanking && pagination && stakeData && stakeData.tierInfo" class="is-pulled-right ml-auto">
             {{ userRanking }}/{{ pagination.total }}
-            <small v-if="userRanking > 100">(Top
-              {{ (userRanking - 100)/(pagination.total - 100) * 100 }}%)</small>
+            <small v-if="userRanking > stakeData.tierInfo.tiers.find(t => t.tier === 1).number">(Top
+              {{ (userRanking - stakeData.tierInfo.tiers.find(t => t.tier === 1).number)
+                /(pagination.total - stakeData.tierInfo.tiers.find(t => t.tier === 1).number) * 100 }}%)</small>
           </span>
         </div>
         <table class="table is-striped is-fullwidth is-hoverable">
