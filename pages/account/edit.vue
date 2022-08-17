@@ -93,7 +93,12 @@
 
       <div class="field">
         <label for="" class="label">Email Address*</label>
-        <input v-model="email" class="input" type="email" placeholder="doe@nosana.io" required>
+        <p class="control is-expanded has-icons-left">
+          <input v-model="email" class="input" type="email" placeholder="doe@nosana.io" required>
+          <span class="icon is-small is-left">
+            <i class="fas fa-envelope" />
+          </span>
+        </p>
       </div>
 
       <div class="field">
@@ -102,7 +107,7 @@
           v-model="country"
           :options="countries"
           label="name"
-          placeholder="Select Country"
+          placeholder="🗺 Select Country"
           track-by="code"
         >
           <template slot="singleLabel" slot-scope="{ option }">
