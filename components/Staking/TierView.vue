@@ -69,20 +69,30 @@
         </carousel-3d>
       </client-only>
 
-      <!-- TODO: bg numbers here as in design -->
+      <!-- TODO: background numbers here as in design -->
       <div v-if="stakeData &&
              stakeData.tierInfo &&
-             stakeData.tierInfo.userTier &&
-             stakeData.tierInfo.userTier.tier !== 1"
+             parseFloat(stakeData.xnos) > 0 &&
+             (!stakeData.tierInfo.userTier ||
+               (stakeData.tierInfo.userTier &&
+                 stakeData.tierInfo.userTier.tier !== 1))"
            class="has-shadow next-tier box has-background-light has-text-centered mb-6 py-2"
       >
         <p class="has-text-weight-semibold is-size-5 mb-0">Next tier</p>
         <span>Only</span>
-        <span class="has-text-accent is-size-5">{{
+        <span v-if="stakeData.tierInfo.userTier" class="has-text-accent is-size-5">{{
           ((parseFloat(
             stakeData.tierInfo.tiers.find(e => e.tier === stakeData.tierInfo.userTier.tier - 1).requiredXNOS)
             - parseFloat(stakeData.xnos)) / 1e6).toFixed()
         }}</span>
+        <!-- if user is not in tier -->
+        <span v-else class="has-text-accent is-size-5">
+          {{
+            ((parseFloat(
+              stakeData.tierInfo.tiers[stakeData.tierInfo.tiers.length - 1].requiredXNOS)
+              - parseFloat(stakeData.xnos)) / 1e6).toFixed()
+          }}
+        </span>
         <span>xNOS left</span>
       </div>
 
@@ -124,7 +134,10 @@
                 No users
               </td>
             </tr>
-            <tr v-if="leaderboard && userRanking && userRanking > leaderboard.length && stakeData" class="user-ranking">
+            <tr
+              v-if="leaderboard && userRanking && userRanking > leaderboard.length && stakeData"
+              class="user-ranking"
+            >
               <td><span>{{ userRanking }}</span></td>
               <td class="blockchain-address">
                 {{ stakeData.address }}
