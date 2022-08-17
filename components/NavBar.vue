@@ -49,7 +49,7 @@
               </nuxt-link>
             </h2>
             <h2 v-else class="title is-6 has-text-weight-semibold">
-              <nuxt-link to="/account?settings=true">
+              <nuxt-link to="/account/edit">
                 <i class="fas fa-edit" /> Edit User info
               </nuxt-link>
             </h2>
