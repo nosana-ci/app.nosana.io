@@ -206,6 +206,7 @@ export default {
       if (stakeData.tierInfo && stakeData.tierInfo.userTier && this.$refs.carousel) {
         this.activeTier = stakeData.tierInfo.userTier.tier;
         this.$refs.carousel.goSlide(stakeData.tierInfo.tiers.length - stakeData.tierInfo.userTier.tier);
+        this.getLeaderboard(this.queryPage);
       }
     }
   },
