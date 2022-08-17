@@ -1,68 +1,128 @@
 <template>
   <div>
-    <nav class="navbar is-transparent" role="navigation" aria-label="main navigation">
-      <div class="container">
-        <div class="navbar-brand">
-          <nuxt-link class="navbar-item" to="/">
-            <img class="logo" :src="require('@/assets/img/Nosana_Logo_horizontal_color_black.svg')">
-          </nuxt-link>
+    <div class="is-flex is-justify-content-center">
+      <div class="py-4 px-6 has-text-centered">
+        <nuxt-link to="/">
+          <img class="logo" width="150" :src="require('@/assets/img/Nosana_Logo_horizontal_color_black.svg')">
+        </nuxt-link>
+      </div>
+      <a
+        id="navbar-burger"
+        role="button"
+        class="navbar-burger"
+        aria-label="menu"
+        :class="{'is-active': mobileMenu}"
+        aria-expanded="false"
+        data-target="navbar"
+        @click="mobileMenu = !mobileMenu"
+      >
+        <span aria-hidden="true" />
+        <span aria-hidden="true" />
+        <span aria-hidden="true" />
+      </a>
+    </div>
 
-          <a
-            role="button"
-            class="navbar-burger"
-            aria-label="menu"
-            :class="{'is-active': mobileMenu}"
-            aria-expanded="false"
-            data-target="navbar"
-            @click="mobileMenu = !mobileMenu"
+    <div :class="{'is-hidden-mobile': !mobileMenu}">
+      <hr class="has-background-grey-lighter">
+      <div class="my-4">
+        <div v-if="!loggedIn" class="has-text-centered">
+          <nuxt-link
+            class="button is-accent has-text-weight-semibold has-text-centered"
+            exact-active-class="is-active"
+            to="/account"
+            :class="{'is-outlined': loggedIn}"
           >
-            <span aria-hidden="true" />
-            <span aria-hidden="true" />
-            <span aria-hidden="true" />
-          </a>
+            <div class="blockchain-address" style="max-width: 185px;" @click="$sol.loginModal = true">
+              Connect Wallet
+            </div>
+          </nuxt-link>
         </div>
+        <div v-else class="is-flex is-align-items-flex-start is-justify-content-flex-start">
+          <div class="user-icon mr-4">
+            <img v-if="$auth.user.image" style="height: 26px" :src="$auth.user.image">
+          </div>
+          <div style="max-width: 100%;">
+            <h2 v-if="$auth.user.name" class="title is-6 has-text-weight-semibold">
+              {{ $auth.user.name }}
+              <nuxt-link to="/account?settings=true">
+                <i class="fas fa-edit" />
+              </nuxt-link>
+            </h2>
+            <h2 v-else class="title is-6 has-text-weight-semibold">
+              <nuxt-link to="/account?settings=true">
+                <i class="fas fa-edit" /> Edit User info
+              </nuxt-link>
+            </h2>
 
-        <div id="navbar" class="navbar-menu" :class="{'is-active': mobileMenu}">
-          <div class="navbar-start" />
-          <div class="navbar-end is-align-items-center">
-            <div @click="mobileMenu = false">
-              <nuxt-link class="navbar-item" to="/" exact-active-class="is-active">
-                <div>Pipelines</div>
-              </nuxt-link>
-            </div>
-            <div v-if="!loggedIn" class="navbar-item" exact-active-class="is-active" @click="mobileMenu = false">
-              <nuxt-link
-                class="button is-accent is-outlined has-text-weight-semibold"
-                exact-active-class="is-active"
-                to="/account"
-                @click="$sol.loginModal = true"
-              >
-                <div>
-                  Connect Wallet
-                </div>
-              </nuxt-link>
-            </div>
-            <div v-else class="navbar-item" exact-active-class="is-active" @click="mobileMenu = false">
-              <nuxt-link class="button is-accent has-text-weight-semibold" exact-active-class="is-active" to="/account">
-                <div class="blockchain-address" style="max-width: 140px;">
-                  {{ $auth.user.address }}
-                </div>
-              </nuxt-link>
-            </div>
+            <h2 class="subtitle is-7 mb-1">
+              <a target="_blank" :href="`https://solscan.io/address/${$auth.user.address}`" class="blockchain-address" style="max-width: 140px;">
+                {{ $auth.user.address }}
+              </a>
+            </h2>
           </div>
         </div>
       </div>
-    </nav>
+      <aside class="menu">
+        <ul class="menu-list">
+          <li>
+            <nuxt-link
+              to="/account"
+              exact-active-class="is-active"
+              @click.native="mobileMenu = false;"
+            >
+              <span class="icon is-medium p-1 m-1 has-radius">
+                <i class="fa-solid fa-user" />
+              </span>
+              Account
+            </nuxt-link>
+          </li>
+          <li>
+            <nuxt-link
+              to="/pipelines"
+              exact-active-class="is-active"
+              @click.native="mobileMenu = false;"
+            >
+              <span class="icon is-medium p-1 m-1 has-radius">
+                <i class="fa-solid fa-bars-staggered" />
+              </span>
+              Developer Hub
+            </nuxt-link>
+          </li>
+          <li>
+            <nuxt-link
+              to="/stake"
+              exact-active-class="is-active"
+              @click.native="mobileMenu = false;"
+            >
+              <span class="icon is-medium p-1 m-1 has-radius">
+                <i class="fa-solid fa-coins" />
+              </span>
+              Node Hub
+            </nuxt-link>
+          </li>
+          <li>
+            <nuxt-link
+              to="/stats"
+              exact-active-class="is-active"
+              @click.native="mobileMenu = false;"
+            >
+              <span class="icon is-medium p-1 m-1 has-radius">
+                <i class="fa-solid fa-chart-line" />
+              </span>
+              Network Statistics
+            </nuxt-link>
+          </li>
+        </ul>
+      </aside>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
-  components: {},
+  components: { },
   data () {
-    return {
-      mobileMenu: false
-    };
+    return { mobileMenu: false };
   },
   computed: {
     loggedIn () {
@@ -72,46 +132,29 @@ export default {
 };
 </script>
 
-<style lang="scss">
-.navbar {
-  &.is-transparent {
-    background: transparent;
+<style scoped lang="scss">
+.menu {
+font-size: 14px;
+}
+
+.user-icon {
+  border-radius: 100%;
+  background: $secondary;
+  display:flex;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  align-items: center;
+  border: 1px solid grey;
+}
+.menu-list {
+  li {
+    margin: 5px 0;
   }
-
-  .logo {
-    height: 38px;
-    max-width: none;
-    max-height: none;
-    margin-top: 0px;
-    margin-right: 8px;
-  }
-
-  .navbar-menu {
-    margin-top: 8px;
-    justify-content: center;
-
-    .navbar-item {
-      font-weight: 500;
-      padding: 10px 20px;
-      text-align: center;
-      font-size: .9rem;
-
-      &:after {
-        display: block;
-        width: 0;
-        height: 2px;
-        position: absolute;
-        transition: width 0.5s;
-        bottom: 10px;
-        content: "";
-      }
-
-      &.is-active {
-        font-weight: 700;
-
-        &:after {
-          width: calc(100% - 1.5rem - 15px);
-        }
+  a{
+    &.is-active {
+      i {
+        color: $accent;
       }
     }
   }

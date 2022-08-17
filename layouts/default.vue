@@ -4,27 +4,48 @@
     <client-only>
       <sol-wallet />
     </client-only>
-    <nav-bar />
-    <Nuxt />
-    <nos-footer />
+    <div class="columns m-0 is-fullheight">
+      <div
+        class="column is-narrow has-background-light is-flex is-flex-direction-column sidebar"
+      >
+        <nav-bar />
+        <stake-block class="mt-auto is-hidden-mobile" />
+      </div>
+      <div class="column">
+        <Nuxt />
+        <nos-footer />
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import NavBar from '@/components/NavBar';
 import SolWallet from '@/components/SolWallet';
+import StakeBlock from '@/components/Staking/StakeBlock';
 
 export default {
   components: {
     NavBar,
-    SolWallet
+    SolWallet,
+    StakeBlock
   }
 };
 </script>
 
 <style lang="scss">
+@import "bulma/sass/utilities/mixins";
 html {
   min-height: 100vh;
   background-size: cover;
+}
+.sidebar {
+  height: fit-content;
+  min-height: 100vh;
+}
+@include mobile {
+  .sidebar {
+    min-height: 0;
+  }
 }
 </style>

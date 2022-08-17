@@ -1,275 +1,152 @@
 <template>
   <section class="section">
-    <div class="container">
+    <h1 class="title has-text-centered">
+      Welcome to the Nosana Network
+    </h1>
+    <div>
       <div class="columns">
-        <div class="column is-4">
-          <h1 class="title is-4">
-            Projects on <b v-if="network === 'devnet'" class="has-text-accent">DevNet</b>
-            <b v-else class="has-text-accent">TestNet</b>
-          </h1>
-          <p class="has-limited-width-small">
-            Below you can find open-source repositories of projects that are running
-            their pipelines on the Nosana TestNet
+        <div class="column is-half">
+          <p class="block has-limited-width-small has-text-justified is-horizontal-centered">
+            In this dashboard you can see the pipelines that are running on the Nosana Network.
+            You can also create and run your own CI/CD pipelines for your open-source project in the
+            <nuxt-link to="/pipelines">
+              Developer Hub
+            </nuxt-link>
           </p>
         </div>
-        <div class="column is-8">
-          <div class="columns">
-            <div class="column is-one-third">
-              <a
-                class="box is-secondary step"
-                :class="{'has-background-white': loggedIn}"
-                @click="$sol.loginModal = true"
-              >
-                <div class="is-flex is-justify-content-space-between">
-                  <div>1</div>
-                  <div v-if="loggedIn">
-                    <img :src="require('@/assets/img/icons/done.svg')">
-                  </div>
-                  <div v-else>
-                    <img :src="require('@/assets/img/icons/pending.svg')">
-                  </div>
-                </div>
-                <div class="has-text-centered my-2">
-                  <img src="~assets/img/icons/wallet.svg">
-                  <p>Connect Wallet</p>
-                </div>
-              </a>
-            </div>
-            <div class="column is-one-third">
-              <nuxt-link
-                class="box is-secondary step"
-                :class="{'has-background-white': user && repositories
-                  && repositories.filter(r => r.user_id === user.user_id).length, 'disabled': !loggedIn}"
-                to="/repositories/new"
-              >
-                <div class="is-flex is-justify-content-space-between">
-                  <div>2</div>
-                  <div v-if="user && repositories && repositories.filter(r => r.user_id === user.user_id).length">
-                    <img :src="require('@/assets/img/icons/done.svg')">
-                  </div>
-                  <div v-else>
-                    <img :src="require('@/assets/img/icons/pending.svg')">
-                  </div>
-                </div>
-                <div class="has-text-centered my-2">
-                  <img v-if="loggedIn" src="~assets/img/icons/repository.svg">
-                  <img v-else src="~assets/img/icons/repository_grey.svg">
-                  <p>Add Repository</p>
-                </div>
-              </nuxt-link>
-            </div>
-            <div class="column is-one-third">
-              <nuxt-link
-                class="box is-secondary step"
-                :class="{'has-background-white': user && repositories
-                           && repositories.filter(r => r.user_id === user.user_id).length,
-                         'disabled': !(loggedIn && user && repositories
-                           && repositories.filter(r => r.user_id === user.user_id).length)}"
-                to="/account?edit=true"
-              >
-                <div class="is-flex is-justify-content-space-between">
-                  <div>3</div>
-                  <div v-if="user && user.isApproved">
-                    <img :src="require('@/assets/img/icons/done.svg')">
-                  </div>
-                  <div v-else-if="user && user.name">
-                    <img :src="require('@/assets/img/icons/running.svg')">
-                  </div>
-                  <div v-else>
-                    <img :src="require('@/assets/img/icons/pending.svg')">
-                  </div>
-                </div>
-                <div class="has-text-centered my-2">
-                  <img
-                    v-if="loggedIn && user && repositories
-                      && repositories.filter(r => r.user_id === user.user_id).length"
-                    src="~assets/img/icons/project.svg"
-                  >
-                  <img v-else src="~assets/img/icons/project_grey.svg">
-                  <p>Request Funds</p>
-                </div>
-              </nuxt-link>
-            </div>
+        <div class="column is-half">
+          <p class="block has-limited-width-small has-text-justified is-horizontal-centered">
+            You can also earn <b>$NOS</b> by becoming a Node to use your spare CPU power to run pipelines.
+            Head over to the
+            <nuxt-link to="/stake">
+              Staking Section
+            </nuxt-link>
+            to start earning and for a chance to receive a NFT burner phone.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="columns mt-5 is-multiline has-background-light pb-5">
+      <div class="column is-one-third">
+        <div class="box has-background-white m-3 is-flex is-flex-direction-column" style="height: 100%">
+          <div class="has-background-light is-flex mb-5 mt-2 is-align-items-center pl-5" style="max-height:45px">
+            <img src="~assets/img/icons/globe.svg" style="height: 70px;">
           </div>
+          <h2 class="subtitle">
+            <b>Account completetion</b>
+          </h2>
+          <p class="block is-size-7">
+            Make sure to boost your account to 100%.
+            This means you’ll be among the first to hear about Network updates,
+            Node support, NFT drops, Rewarddrops & more.
+          </p>
+          <p class="block mt-auto">
+            <nuxt-link to="/account" class="button is-accent is-wide is-small is-outlined">
+              <b>Account</b>
+            </nuxt-link>
+          </p>
         </div>
       </div>
-      <div class="is-flex is-justify-content-space-between has-background-secondary columns p-2">
-        <div style="max-width: 100%; width: 400px">
-          <input v-model="search" class="input" placeholder="search repositories">
+      <div class="column is-one-third">
+        <div class="box has-background-white m-3 is-flex is-flex-direction-column" style="height: 100%">
+          <div class="has-background-light is-flex mb-5 mt-2 is-align-items-center pl-5" style="max-height:45px">
+            <img src="~assets/img/icons/globe.svg" style="height: 70px;">
+          </div>
+          <h2 class="subtitle">
+            <b>CI/CD Pipelines</b>
+          </h2>
+          <p class="block is-size-7">
+            Our decentralized crowd-hosted platform has computing options for every development need.
+            Whether you’re building mobile apps or the next DEX.
+            If it works in a container, it works on the Nosana Network.
+            We can run any container command, letting you ship faster than ever before.
+          </p>
+          <p class="block mt-auto">
+            <nuxt-link to="/pipelines" class="button is-accent is-wide is-small is-outlined">
+              <b>Developer Hub</b>
+            </nuxt-link>
+          </p>
         </div>
-        <nuxt-link to="/repositories/new" class="button is-accent is-small has-text-white">
-          + Add new repository
-        </nuxt-link>
       </div>
-      <div v-if="repositories" class="columns is-multiline mt-4 has-background-secondary">
-        <div v-if="!filteredRepositories.length" class="has-text-centered subtitle">
-          No repositories found..
+      <div class="column is-one-third">
+        <div class="box has-background-white m-3 is-flex is-flex-direction-column" style="height: 100%">
+          <div class="has-background-light is-flex mb-5 mt-2 is-align-items-center pl-5" style="max-height:45px">
+            <img src="~assets/img/icons/globe.svg" style="height: 70px;">
+          </div>
+          <h2 class="subtitle">
+            <b>Staking is live!</b>
+          </h2>
+          <p class="block is-size-7">
+            Stake your $NOS tokens to earn monthly $NOS rewards,
+            with daily distribution and instant claim functionality you want to be part of this!
+            Or just restake your rewards to earn even more rewards!
+            You also earn xNOS tokens, which gives you exclusive access to our NFT raffles.
+          </p>
+          <p class="block mt-auto">
+            <nuxt-link to="/stake" class="button is-accent is-wide is-small is-outlined">
+              <b>Staking</b>
+            </nuxt-link>
+          </p>
         </div>
-        <template v-for="repository in filteredRepositories">
-          <div :key="repository.id" class="column is-6 is-3-fullhd is-3-widescreen is-4-desktop">
-            <a class="box has-background-white is-clickable" @click="$router.push('/repositories/'+repository.id)">
-              <div class="is-flex is-align-items-flex-start is-justify-content-flex-start">
-                <div class="project-icon mr-4">
-                  <img style="height: 32px" :src="repository.image">
-                </div>
-                <div>
-                  <h2 class="title is-6 has-text-weight-semibold" style="min-height: 36px">
-                    {{ repository.repository }}
-                  </h2>
-                  <h2 class="subtitle is-6 mb-1">
-                    <span>{{ repository.name }}</span>
-                  </h2>
-                  <p class="is-size-7 has-overflow-ellipses" style="height: 40px;">
-                    <span>{{ repository.description }}</span>
-                  </p>
-                </div>
-              </div>
-
-              <div class="mt-2">
-                <span v-if="repositories">
-                  <div v-if="!repository.commits.length">
-                    no pipelines
-                  </div>
-                  <div
-                    v-else
-                    class="is-flex is-align-items-flex-end"
-                  >
-                    <div class="mr-2">
-                      <div
-                        class="tag is-small"
-                        :class="{
-                          'is-accent': repository.commits[0].status === 'COMPLETED',
-                          'is-info': repository.commits[0].status === 'RUNNING',
-                          'is-warning': repository.commits[0].status === 'QUEUED',
-                          'is-danger': repository.commits[0].status === 'FAILED'
-                        }"
-                      >{{ repository.commits[0].status }}</div>
-                      <div class="is-size-7">
-                        {{ $moment(repository.commits[0].updated_at ).fromNow() }}
-                      </div>
-                    </div>
-                    <div
-                      v-for="commit in repository.commits.slice().reverse()"
-                      :key="commit.id"
-                      class="mx-1"
-                      @click.stop=""
-                    >
-                      <nuxt-link :to="`/jobs/${commit.id}`">
-                        <commit-status
-                          :status="commit.status"
-                          class="has-tooltip-arrow"
-                          :data-tooltip="commit.commit.substring(0,7)"
-                        />
-                      </nuxt-link>
-                    </div>
-                  </div>
-                </span>
-                <span v-else>Loading..</span>
-              </div>
+      </div>
+      <div class="column is-one-third">
+        <div class="box has-background-white m-3 is-flex is-flex-direction-column" style="height: 100%">
+          <div class="has-background-light is-flex mb-5 mt-2 is-align-items-center pl-5" style="max-height:45px">
+            <img src="~assets/img/icons/globe.svg" style="height: 70px;">
+          </div>
+          <h2 class="subtitle">
+            <b>Nosana WorkFLOWS</b>
+          </h2>
+          <p class="block is-size-7">
+            Nosana aims to connect all of your tools to automate every step of your development workflow.
+            Easily deploy to any cloud, create tickets in Jira, or test that brandnew Smart Contract.
+            Use our YAML to create your own custom pipelines.
+            With Nosana’s open source flows available on Nosana’s GitHub the possibilities are endless.
+          </p>
+          <p class="block mt-auto">
+            <nuxt-link to="/repositories/new" class="button is-accent is-wide is-small is-outlined">
+              <b>Add new repository</b>
+            </nuxt-link>
+          </p>
+        </div>
+      </div>
+      <div class="column is-one-third">
+        <div class="box has-background-white m-3 is-flex is-flex-direction-column" style="height: 100%">
+          <div class="has-background-light is-flex mb-5 mt-2 is-align-items-center pl-5" style="max-height:45px">
+            <img src="~assets/img/icons/globe.svg" style="height: 70px;">
+          </div>
+          <h2 class="subtitle">
+            <b>The Burner Phones NFT mint</b>
+          </h2>
+          <p class="block is-size-7">
+            We don’t do minting fees – a Burner Phone costs exactly 0 SOL. Are you a Nosana Network user?
+            Stake $NOS for a chance to mint your very own and have exclusive rights to earn $NOS with our Network.
+          </p>
+          <p class="block mt-auto">
+            <a href="https://nosana.io/nft" target="_blank" class="button is-accent is-wide is-small is-outlined">
+              <b>Learn more</b>
             </a>
+          </p>
+        </div>
+      </div>
+      <div class="column is-one-third">
+        <div class="box has-background-white m-3 is-flex is-flex-direction-column" style="height: 100%">
+          <div class="has-background-light is-flex mb-5 mt-2 is-align-items-center pl-5" style="max-height:45px">
+            <img src="~assets/img/icons/globe.svg" style="height: 70px;">
           </div>
-        </template>
+          <h2 class="subtitle">
+            <b>Network Statistics</b>
+          </h2>
+          <p class="block is-size-7">
+            Want to learn more about how the Network is doing? Check it out here!
+          </p>
+          <p class="block mt-auto">
+            <nuxt-link to="/stats" class="button is-accent is-wide is-small is-outlined">
+              <b>Statistics</b>
+            </nuxt-link>
+          </p>
+        </div>
       </div>
     </div>
   </section>
 </template>
-
-<script>
-export default {
-  data () {
-    return {
-      repositories: null,
-      commits: null,
-      projects: null,
-      user: null,
-      search: null,
-      interval: null,
-      network: process.env.NUXT_ENV_SOL_NETWORK
-    };
-  },
-  computed: {
-    loggedIn () {
-      return this.$auth && this.$auth.loggedIn;
-    },
-    filteredRepositories () {
-      let filteredRepositories = this.repositories;
-      // Search campaigns
-      if (filteredRepositories && this.search !== null) {
-        filteredRepositories =
-        filteredRepositories.filter(r => r.repository.toLowerCase().includes(this.search.toLowerCase()) ||
-            (r.repository.description && r.repository.description.toLowerCase().includes(this.search.toLowerCase())) ||
-            (r.repository.name && r.repository.name.toLowerCase().includes(this.search.toLowerCase())));
-      }
-
-      return filteredRepositories;
-    }
-  },
-  watch: {
-    '$auth.loggedIn' (loggedIn) {
-      if (loggedIn) {
-        this.getUser();
-      }
-    }
-  },
-  created () {
-    if (this.loggedIn) {
-      this.getUser();
-    }
-    this.getActiveRepositories();
-    if (!this.interval) {
-      this.interval = setInterval(() => {
-        console.log('refreshing repositories..');
-        this.getActiveRepositories();
-      }, 20000);
-    }
-  },
-  beforeDestroy () {
-    if (this.interval) {
-      clearInterval(this.interval);
-      this.interval = null;
-    }
-  },
-  methods: {
-    async getUser () {
-      try {
-        const user = await this.$axios.$get('/user');
-        this.user = user;
-      } catch (error) {
-        this.$modal.show({
-          color: 'danger',
-          text: error,
-          title: 'Error'
-        });
-      }
-    },
-    async getActiveRepositories () {
-      try {
-        const repositories = await this.$axios.$get('/repositories/active');
-        this.repositories = repositories;
-      } catch (error) {
-        this.$modal.show({
-          color: 'danger',
-          text: error,
-          title: 'Error'
-        });
-      }
-    }
-  }
-};
-</script>
-
-<style lang="scss" scoped>
-.project-icon {
-border-radius: 100%;
-background: $secondary;
-display:flex;
-justify-content: center;
-min-width: 75px;
-height: 75px;
-align-items: center;
-border: 1px solid grey;
-}
-.step {
-   min-height: 160px;
- }
-</style>

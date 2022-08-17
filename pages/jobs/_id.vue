@@ -91,143 +91,115 @@
           <div v-if="commit.job_content">
             <small v-if="commit.cache_blockchain && parseInt(commit.cache_blockchain['timeEnd'],16)">
               Finished {{ $moment(parseInt(commit.cache_blockchain['timeEnd'],16)*1e3).fromNow() }}<br>
-              Duration
-              {{ (parseInt(commit.cache_blockchain['timeEnd'],16))
-                - (parseInt(commit.cache_blockchain['timeStart'],16)) }} seconds
+              Duration: {{ secondsToHms(commit.cache_blockchain['timeStart'], commit.cache_blockchain['timeEnd']) }}
             </small>
             <small
               v-else-if="nowSeconds && commit.cache_blockchain && parseInt(commit.cache_blockchain['timeStart'],16)"
             >
               Running for {{ nowSeconds - (parseInt(commit.cache_blockchain['timeStart'],16)) }} seconds
             </small>
-            <template v-for="gitCommand in ['clone', 'checkout']">
-              <div
-                :key="gitCommand"
-                class="box is-info"
-              >
-                <div>
+          </div>
+          <div
+            v-if="commit.job_content"
+            class="box mt-2 px-4 content-block has-background-black"
+          >
+            <div v-if="commit.cache_result && commit.cache_result.results">
+              <div class="has-text-centered block">
+                <div class="tag is-medium">
+                  <b>Node:</b>&nbsp;{{ commit.cache_result['nos-id'] }}
+                </div>
+              </div>
+              <div v-for="(res, index) in commit.cache_result.results" :key="index">
+                <div v-if="index !== 'docker-cmds' && index.startsWith('cmd-')">
                   <div
-                    class="is-clickable is-flex is-flex-wrap-wrap is-align-items-center"
-                    @click="step !== gitCommand ? step = gitCommand : step = null"
+                    class="is-flex is-justify-content-space-between is-align-items-center command is-clickable"
+                    @click="toggleResult(index)"
                   >
-                    <h3
-                      class="subtitle m-0"
-                      :class="{
-                        'has-text-success':
-                          commit.cache_result && commit.cache_result.results[gitCommand]
-                          && !commit.cache_result.results[gitCommand][0].includes('error'),
-                        'has-text-danger':
-                          commit.cache_result && commit.cache_result.results[gitCommand]
-                          && commit.cache_result.results[gitCommand][0].includes('error')
-                      }"
+                    <p
+                      class="has-text-link has-text-weight-bold row-count"
+                      :class="{'has-text-danger': res.exit}"
                     >
-                      <i
-                        v-if="commit.cache_result && commit.cache_result.results[gitCommand]
-                          && commit.cache_result.results[gitCommand][0].includes('error')"
-                        class="fas fa-times"
-                      />
-                      <i
-                        v-else-if="commit.cache_result && commit.cache_result.results[gitCommand]"
-                        class="fas fa-check"
-                      />
-                      <span>git {{ gitCommand }}</span>
-                    </h3>
-                    <div class="is-size-7 has-overresult-ellipses mr-4" style="margin-left: auto">
-                      <span v-if="commit.cache_result">node: {{ commit.cache_result['nos-id'] }}</span>
-                      <span v-else>pending</span>
-                    </div>
-                    <div>
-                      <i class="fas fa-chevron-down" :class="{'fa-chevron-up': step === gitCommand}" />
-                    </div>
+                      {{ commit.job_content.pipeline.commands[parseInt(index.split('-')[1])] }}
+                    </p>
+                    <i class="fas fa-chevron-down ml-2 has-text-link" :class="{'fa-chevron-up': !hideResults[index]}" />
                   </div>
-                  <div v-if="step === gitCommand">
-                    <div>
-                      <template
-                        v-if="commit.cache_result && commit.cache_result.results[gitCommand]
-                          && !commit.cache_result.results[gitCommand][0].includes('error')"
+                  <p class="has-text-white row-count log" :class="{'hidden-log': hideResults[index]}">
+                    <span class="pre">{{ res.out }}</span>
+                    <span class="pre has-text-danger">{{ res.err }}</span>
+                  </p>
+                </div>
+                <div v-else-if="index !== 'docker-cmds'">
+                  <div
+                    class="is-flex is-justify-content-space-between is-align-items-center command is-clickable"
+                    @click="toggleResult(index)"
+                  >
+                    <p class="has-text-link has-text-weight-bold row-count">
+                      {{ 'git ' + index }}
+                    </p>
+                    <i class="fas fa-chevron-down ml-2 has-text-link" :class="{'fa-chevron-up': !hideResults[index]}" />
+                  </div>
+                  <p class="has-text-white row-count log" :class="{'hidden-log': hideResults[index]}">
+                    {{ res }}
+                  </p>
+                </div>
+                <div v-else>
+                  <div
+                    v-for="(item, i) of res[1]"
+                    :key="item.cmd"
+                  >
+                    <div
+                      v-if="item.cmd"
+                      class="is-flex is-justify-content-space-between is-align-items-center command is-clickable"
+                      @click="toggleResult(i)"
+                    >
+                      <p
+                        class="row-count has-text-weight-bold has-text-link"
+                        :class="{'has-text-danger': item.error}"
                       >
-                        <pre>{{ commit.cache_result.results[gitCommand] }}</pre>
-                      </template>
-                      <template v-else-if="commit.cache_result && commit.cache_result.results[gitCommand]">
-                        <pre
-                          class="has-text-danger"
-                        ><template
-                        v-for="(error, index) in commit.cache_result.results[gitCommand]"
-                        ><p v-if="index !== 0" :key="error">{{ error }}</p></template></pre>
-                      </template>
-                      <div v-else>
-                        No results yet..
+                        {{ item.cmd }}
+                      </p>
+                      <div>
+                        <p v-if="item.time && i > 0" class="tag">
+                          {{ timeStamp(res[1][i - 1]['time'], item.time) }}
+                        </p>
+                        <i class="fas fa-chevron-down ml-2 has-text-link" :class="{'fa-chevron-up': !hideResults[i]}" />
                       </div>
                     </div>
+                    <div v-if="item.log && Array.isArray(item.log)">
+                      <p
+                        v-for="(log, ik) in item.log"
+                        v-show=" log[1] !== ''"
+                        :key="ik"
+                        class="row-count  log"
+                        :class="{'has-text-white': log[0] === 1,
+                                 'has-text-danger': log[0] === 2,
+                                 'hidden-log': hideResults[i] }"
+                      >
+                        {{ log[1] }}
+                      </p>
+                    </div>
+                    <p
+                      v-else-if="item.log"
+                      class="row-count has-text-white log"
+                      :class="{'hidden-log': hideResults[i]}"
+                    >
+                      <span class="pre">{{ item.log | truncate(10000, '...\n') }}</span>
+                      <span class="pre has-text-danger">{{ item.error }}</span>
+                    </p>
                   </div>
                 </div>
               </div>
-            </template>
-            <div v-for="(command, index) in commit.job_content.pipeline.commands" :key="index" class="box is-info">
-              <div>
-                <div
-                  class="is-clickable is-flex is-flex-wrap-wrap is-align-items-center"
-                  @click="step !== index ? step = index : step = null"
-                >
-                  <template
-                    v-if="(commit.cache_result && commit.cache_result.results)
-                      && ((commit.cache_result.results[`cmd-${index}`]
-                        && commit.cache_result.results[`cmd-${index}`].exit === 0) ||
-                        (commit.cache_result.results['docker-cmds']
-                          && commit.cache_result.results['docker-cmds'][0] === 'success'))"
-                  >
-                    <h3 class="subtitle m-0 has-text-success">
-                      <i
-                        v-if="commit.cache_result && commit.cache_result.results"
-                        class="fas fa-check"
-                      />
-                      <span>{{ command }}</span>
-                    </h3>
-                  </template>
-                  <template v-else>
-                    <h3
-                      class="subtitle m-0"
-                      :class="{'has-text-danger': commit.cache_result && commit.cache_result.results}"
-                    >
-                      <i
-                        v-if="commit.cache_result && commit.cache_result.results"
-                        class="fas fa-times"
-                      />
-                      <span>{{ command }}</span>
-                    </h3>
-                  </template>
-                  <div class="is-size-7 has-overresult-ellipses mr-4" style="margin-left: auto">
-                    <span v-if="commit.cache_result">node: {{ commit.cache_result['nos-id'] }}</span>
-                    <span v-else>pending</span>
-                  </div>
-                  <div>
-                    <i class="fas fa-chevron-down" :class="{'fa-chevron-up': step === index}" />
-                  </div>
+            </div>
+            <div v-else>
+              <div
+                v-for="(command, index) in ['git clone', 'git checkout'].concat(commit.job_content.pipeline.commands)"
+                :key="index"
+              >
+                <div class="has-text-link row-count">
+                  {{ command }}
                 </div>
-                <div v-if="step === index">
-                  <div>
-                    <div v-if="!commit.cache_result">
-                      No results yet..
-                    </div>
-                    <pre
-                      v-if="commit.cache_result && commit.cache_result.results
-                        && (commit.cache_result.results[`cmd-${index}`]
-                          && commit.cache_result.results[`cmd-${index}`].out)"
-                    >{{ commit.cache_result.results[`cmd-${index}`].out }}</pre>
-                    <pre
-                      v-if="commit.cache_result && commit.cache_result.results
-                        && (commit.cache_result.results[`cmd-${index}`]
-                          && commit.cache_result.results[`cmd-${index}`].err)"
-                      class="has-text-danger"
-                    >{{ commit.cache_result.results[`cmd-${index}`].err }}</pre>
-                    <pre
-                      v-if="commit.cache_result && commit.cache_result.results
-                        && (commit.cache_result.results['docker-cmds']
-                          && commit.cache_result.results['docker-cmds'][1].find(c => c.cmd === command))"
-                      :class="{'has-text-danger':
-                        commit.cache_result.results['docker-cmds'][1].find(c => c.cmd === command).error}"
-                    >{{ commit.cache_result.results['docker-cmds'][1].find(c => c.cmd === command).log }}</pre>
-                  </div>
+                <div class="log row-count has-text-white">
+                  pending...
                 </div>
               </div>
             </div>
@@ -260,6 +232,15 @@ import bs58 from 'bs58';
 import { parse } from 'yaml';
 
 export default {
+  filters: {
+    truncate: function (text, length, suffix) {
+      if (text.length > length) {
+        return text.substring(0, length) + suffix;
+      } else {
+        return text;
+      }
+    }
+  },
   data () {
     return {
       commit: null,
@@ -269,7 +250,8 @@ export default {
       user: null,
       refreshInterval: null,
       clockInterval: null,
-      nowSeconds: null
+      nowSeconds: null,
+      hideResults: {}
     };
   },
   watch: {
@@ -300,6 +282,39 @@ export default {
     }
   },
   methods: {
+    toggleResult (i) {
+      if (i in this.hideResults) {
+        this.hideResults[i] = !this.hideResults[i];
+      } else {
+        this.$set(this.hideResults, i, true);
+      }
+    },
+    secondsToHms (start, end) {
+      const startTime = parseInt(start, 16);
+      const endTime = parseInt(end, 16);
+      const totalTime = endTime - startTime;
+      const h = Math.floor(totalTime / 3600);
+      const m = Math.floor(totalTime % 3600 / 60);
+      const s = Math.floor(totalTime % 3600 % 60);
+
+      const hours = h > 0 ? h + (h === 1 ? ' hour, ' : ' hours, ') : '';
+      const minutes = m > 0 ? m + (m === 1 ? ' minute, ' : ' minutes, ') : '';
+      const seconds = s > 0 ? s + (s === 1 ? ' second' : ' seconds') : '';
+      return hours + minutes + seconds;
+    },
+    timeStamp (start, end) {
+      const totalTime = end - start;
+      console.log(totalTime);
+      const h = Math.floor(totalTime / 3600);
+      const m = Math.floor(totalTime % 3600 / 60);
+      const s = Math.floor(totalTime % 3600 % 60);
+      const hours = h > 0 && h < 10 ? '0' + h + ':' : (h >= 10 ? h + ':' : '');
+      const minutes = m > 0 && m < 10 ? '0' + m + ':' : (m >= 10 ? m + ':' : '00:');
+      const seconds = s > 0 && s < 10 ? '0' + s : (s >= 10 ? s : '00');
+
+      const time = hours + minutes + seconds;
+      return time;
+    },
     updateClock () {
       this.nowSeconds = parseInt((new Date()).getTime() / 1e3);
     },
@@ -394,5 +409,41 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.pre {
+  white-space: pre-line;
+}
+.log {
+  word-break: break-word;
+  padding-left: 2.5em;
+  text-indent:-1.25em;
+  max-width: 80%;
+}
+.content-block{
+  counter-reset: line;
+}
+.hidden-log {
+  overflow:hidden;
+  height:0;
+}
+.command {
+  &:hover {
+    background: $grey-darker;
+  }
+}
 
+.row-count{
+  &:before{
+    counter-increment: line;
+    font-family: $family-headers;
+    font-weight: normal;
+    content: counter(line);
+    display: inline-block;
+    padding: 0 .5em;
+    margin-right: .5em;
+    color: $accent !important;
+  }
+  &.has-text-danger:before {
+    color: $red;
+  }
+}
 </style>

@@ -76,7 +76,7 @@
               <td>{{ commit.payload.message.split("\n")[0] }}</td>
               <td>
                 <a :href="commit.payload.url" target="_blank" @click.stop>{{
-                  commit.commit
+                  commit.commit | shortenHashes
                 }}</a>
               </td>
               <td>{{ $moment(commit.created_at).fromNow() }}</td>
@@ -123,8 +123,19 @@
 import PaginationHelper from '@/components/Pagination/PaginationHelper.vue';
 export default {
   components: { PaginationHelper },
+  filters: {
+    shortenHashes (value) {
+      if (!value) {
+        return;
+      }
+      const firstCharacters = value.slice(0, 8);
+      // const lastCharacters = value.slice(value.length - 4, value.length);
+      return firstCharacters; // + '... ' + lastCharacters;
+    }
+  },
   data () {
     return {
+      queryPage: this.$route.query.page || 1,
       showPipeline: true,
       pagination: null,
       commits: null,
@@ -143,7 +154,7 @@ export default {
     }
   },
   created () {
-    this.getCommits();
+    this.getCommits(this.queryPage);
     this.getRepository();
     if (this.$auth && this.$auth.loggedIn) {
       this.getUser();
@@ -171,7 +182,7 @@ export default {
         });
       }
     },
-    async getCommits (page = 1) {
+    async getCommits (page) {
       try {
         const commits = await this.$axios.$get(
           `/repositories/${this.$route.params.id}/commits?page=${page}`
