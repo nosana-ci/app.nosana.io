@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/first-attribute-linebreak -->
 <!-- eslint-disable vue/order-in-components -->
 <template>
   <div>
@@ -67,7 +68,27 @@
         </carousel-3d>
       </client-only>
 
-      <div class="table-container has-background-light p-5 mb-0  has-radius-medium">
+      <!-- TODO: bg numbers here as in design -->
+      <div v-if="stakeData &&
+             stakeData.tierInfo &&
+             stakeData.tierInfo.userTier &&
+             stakeData.tierInfo.userTier.tier !== 1"
+           class="has-shadow next-tier box has-background-light has-text-centered mb-6 py-2"
+      >
+        <p class="has-text-weight-semibold is-size-5 mb-0">Next tier</p>
+        <span>Only</span>
+        <span class="has-text-accent is-size-5">{{
+          ((parseFloat(
+            stakeData.tierInfo.tiers.find(e => e.tier === stakeData.tierInfo.userTier.tier - 1).requiredXNOS)
+            - parseFloat(stakeData.xnos)) / 1e6).toFixed()
+        }}</span>
+        <span>xNOS left</span>
+      </div>
+
+      <div
+        v-if="leaderboard && leaderboard.length > 0"
+        class="table-container has-background-light p-5 mb-0  has-radius-medium"
+      >
         <h3 class="has-text-centered subtitle is-4 has-text-weight-semibold">
           Leaderboard
         </h3>
@@ -260,5 +281,15 @@ tr:nth-child(3) td span:first-child {
   &:after {
     background: #F2994A;
   }
+}
+
+.next-tier {
+  margin: 0 auto;
+  margin-top: -10px;
+  max-width: 300px;
+  width: 100%;
+  // span:first-child {
+  //   font-size: ;
+  // }
 }
 </style>
