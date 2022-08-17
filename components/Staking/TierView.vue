@@ -1,5 +1,3 @@
-<!-- eslint-disable vue/first-attribute-linebreak -->
-<!-- eslint-disable vue/order-in-components -->
 <template>
   <div>
     <div class="stake-block p-5 has-background-grey-lighter" style="height:100%">
@@ -75,32 +73,54 @@
       </client-only>
 
       <!-- TODO: background numbers here as in design -->
-      <div v-if="stakeData &&
-             stakeData.tierInfo &&
-             parseFloat(stakeData.xnos) > 0 &&
-             (!stakeData.tierInfo.userTier ||
-               (stakeData.tierInfo.userTier &&
-                 stakeData.tierInfo.userTier.tier !== 1))"
-           class="has-shadow next-tier box has-background-light has-text-centered mb-6 py-2"
+      <div
+        v-if="stakeData &&
+          stakeData.tierInfo &&
+          parseFloat(stakeData.xnos) > 0 &&
+          (!stakeData.tierInfo.userTier ||
+            (stakeData.tierInfo.userTier &&
+              stakeData.tierInfo.userTier.tier !== 1))"
+        class="next-tier-wrap has-shadow box has-background-light has-text-centered mb-6 p-0"
       >
-        <p class="has-text-weight-semibold is-size-5 mb-0">
-          Next tier
-        </p>
-        <span>Only</span>
-        <span v-if="stakeData.tierInfo.userTier" class="has-text-accent is-size-5">{{
-          ((parseFloat(
-            stakeData.tierInfo.tiers.find(e => e.tier === stakeData.tierInfo.userTier.tier - 1).requiredXNOS)
-            - parseFloat(stakeData.xnos)) / 1e6).toFixed()
-        }}</span>
-        <!-- if user is not in tier -->
-        <span v-else class="has-text-accent is-size-5">
-          {{
+        <div class="next-tier py-2">
+          <div
+            v-if="stakeData.tierInfo.userTier"
+            class="tier-bg tier-bg-prev"
+          >
+            <span>
+              {{ stakeData.tierInfo.userTier.tier }}
+            </span>
+          </div>
+          <p class="has-text-weight-semibold is-size-5 mb-0">
+            Next tier
+          </p>
+          <span>Only</span>
+          <span v-if="stakeData.tierInfo.userTier" class="has-text-accent is-size-5">{{
             ((parseFloat(
-              stakeData.tierInfo.tiers[stakeData.tierInfo.tiers.length - 1].requiredXNOS)
+              stakeData.tierInfo.tiers.find(e => e.tier === stakeData.tierInfo.userTier.tier - 1).requiredXNOS)
               - parseFloat(stakeData.xnos)) / 1e6).toFixed()
-          }}
-        </span>
-        <span>xNOS left</span>
+          }}</span>
+          <!-- if user is not in tier -->
+          <span v-else class="has-text-accent is-size-5">
+            {{
+              ((parseFloat(
+                stakeData.tierInfo.tiers[stakeData.tierInfo.tiers.length - 1].requiredXNOS)
+                - parseFloat(stakeData.xnos)) / 1e6).toFixed()
+            }}
+          </span>
+          <span>xNOS left</span>
+          <div v-if="stakeData.tierInfo.userTier" class="tier-bg tier-bg-next">
+            <span>
+              {{ stakeData.tierInfo.tiers.find(e => e.tier === stakeData.tierInfo.userTier.tier - 1).tier }}
+            </span>
+          </div>
+          <div
+            v-else
+            class="tier-bg tier-bg-next"
+          >
+            <span>{{ stakeData.tierInfo.tiers[stakeData.tierInfo.tiers.length - 1].tier }}</span>
+          </div>
+        </div>
       </div>
 
       <div
@@ -199,6 +219,7 @@ export default {
       if (stakeData.tierInfo && stakeData.tierInfo.userTier && this.$refs.carousel) {
         this.activeTier = stakeData.tierInfo.userTier.tier;
         this.$refs.carousel.goSlide(stakeData.tierInfo.tiers.length - stakeData.tierInfo.userTier.tier);
+        this.getLeaderboard(this.queryPage);
       }
     }
   },
@@ -309,14 +330,52 @@ tr:nth-child(3) td span:first-child {
     background: #F2994A;
   }
 }
-
-.next-tier {
+.next-tier-wrap {
   margin: 0 auto;
   margin-top: -10px;
   max-width: 300px;
   width: 100%;
-  // span:first-child {
-  //   font-size: ;
-  // }
+  overflow: hidden;
+  position: relative;
+}
+
+.next-tier {
+  box-shadow: inset 0px 1px 12px 10px white;
+}
+.tier-bg {
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  position: absolute;
+  font-size: 100px;
+  -webkit-text-stroke-width: 2px;
+  -webkit-text-stroke-color: rgba(0,0,0,.1);
+  color: transparent;
+  bottom: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 100%;
+  &:before {
+    top: 50%;
+    transform: translateY(-50%);
+    content: " ";
+    position:absolute;
+    height: 100%;
+    width: 60px;
+  }
+  &-next {
+    right: -10px;
+    &:before {
+      right: 5px;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,1) 100%);
+    }
+  }
+  &-prev {
+    left: -10px;
+    &:before {
+      left: 5px;
+      background: linear-gradient(90deg, rgba(255,255,255,1) 0%, transparent 100%);
+    }
+  }
 }
 </style>
