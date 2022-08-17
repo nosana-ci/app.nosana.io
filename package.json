@@ -29,6 +29,7 @@
     "vue-awesome-countdown": "^1.1.4",
     "vue-carousel-3d": "^1.0.1",
     "vue-countup-v2": "4.0.0",
+    "vue-multiselect": "^2.1.6",
     "vue-prism-editor": "1.3.0",
     "yaml": "2.0.0"
   },
