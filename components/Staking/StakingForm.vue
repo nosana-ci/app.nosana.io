@@ -473,22 +473,22 @@
                     >
                       <div class="columns is-mobile is-multiline">
                         <div class="column is-3-desktop is-6-touch">
-                          <div class="has-background-grey-light has-radius title mb-0 p-4">
+                          <div class="has-background-grey-light has-radius title mb-0 py-4 px-2">
                             {{ timeObj.d }}d
                           </div>
                         </div>
                         <div class="column is-3-desktop is-6-touch">
-                          <div class="has-background-grey-light has-radius title mb-0 p-4">
+                          <div class="has-background-grey-light has-radius title mb-0 py-4 px-2">
                             {{ timeObj.h }}h
                           </div>
                         </div>
                         <div class="column is-3-desktop is-6-touch">
-                          <div class="has-background-grey-light has-radius title mb-0 p-4">
+                          <div class="has-background-grey-light has-radius title mb-0 py-4 px-2">
                             {{ timeObj.m }}m
                           </div>
                         </div>
                         <div class="column is-3-desktop is-6-touch">
-                          <div class="has-background-grey-light has-radius title mb-0 p-4">
+                          <div class="has-background-grey-light has-radius title mb-0 py-4 px-2">
                             {{ timeObj.s }}s
                           </div>
                         </div>
