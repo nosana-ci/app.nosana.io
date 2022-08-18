@@ -67,7 +67,6 @@
         </carousel-3d>
       </client-only>
 
-      <!-- TODO: background numbers here as in design -->
       <div
         v-if="stakeData &&
           stakeData.tierInfo &&
@@ -125,7 +124,7 @@
         <h3 class="has-text-centered subtitle is-4 has-text-weight-semibold">
           Leaderboard
         </h3>
-        <table class="table is-striped is-fullwidth is-hoverable">
+        <table class="table is-striped is-fullwidth is-hoverable mb-3">
           <thead>
             <tr>
               <th>Place</th>
@@ -137,7 +136,7 @@
             <tr
               v-for="(user, index) in leaderboard"
               :key="user.address"
-              :class="{'user-ranking': userRanking === (index + 1)}"
+              :class="{'user-ranking': userInfo && userInfo.rank === (index + 1)}"
             >
               <td><span>{{ index+1 }}</span></td>
               <td class="blockchain-address">
@@ -157,17 +156,20 @@
               </td>
             </tr>
             <tr
-              v-if="leaderboard && userRanking && userRanking > leaderboard.length && stakeData"
+              v-if="leaderboard && userInfo && userInfo.rank > leaderboard.length && stakeData"
               class="user-ranking"
             >
-              <td><span>{{ userRanking }}</span></td>
+              <td><span>{{ userInfo.rank }}</span></td>
               <td class="blockchain-address">
-                {{ stakeData.address }}
+                {{ userInfo.address }}
               </td>
-              <td>{{ parseFloat(stakeData.xnos / 1e6).toFixed() }}</td>
+              <td>{{ parseFloat(userInfo.xnos / 1e6).toFixed() }}</td>
             </tr>
           </tbody>
         </table>
+        <div class="is-fullwidth has-text-centered has-text-weight-semibold">
+          <nuxt-link to="/stake/leaderboard" class="has-text-accent">See all</nuxt-link>
+        </div>
       </div>
       <!-- <pagination-helper
         v-if="leaderboard && leaderboard.length > 0 && pagination"
@@ -187,7 +189,8 @@ export default {
       activeTier: null,
       leaderboard: null,
       queryPage: this.$route.query.page || 1,
-      pagination: null
+      pagination: null,
+      userInfo: null
     };
   },
   watch: {
@@ -224,7 +227,7 @@ export default {
         );
         this.leaderboard = leaderboard.stakes.data;
         // this.userRanking = 7;
-        this.userRanking = leaderboard.userRanking;
+        this.userInfo = leaderboard.user;
         this.pagination = leaderboard.stakes.pagination;
       } catch (error) {
         console.error(error);
