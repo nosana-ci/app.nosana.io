@@ -140,6 +140,7 @@
               {{ ((userInfo.rank - stakeData.tierInfo.tiers.find(t => t.tier === 1).number)
                 /(pagination.total - stakeData.tierInfo.tiers.find(t => t.tier === 1).number) * 100).toFixed()
               }}%)</small>
+
           </span>
         </div>
         <table class="table is-striped is-fullwidth is-hoverable">
