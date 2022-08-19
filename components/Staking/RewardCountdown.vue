@@ -75,7 +75,7 @@ export default {
   components: {
     ICountUp
   },
-  props: ['xnos'],
+  props: ['xnos', 'stakeData'],
   data () {
     return {
       totals: null
@@ -84,7 +84,11 @@ export default {
   computed: {
     expectedRewards () {
       if (!this.totals) { return null; }
-      return (this.xnos * 1e6 / this.totals.xnos) * (8000000 / 365);
+      let totalXnos = this.totals.xnos;
+      if (this.stakeData) {
+        totalXnos -= this.stakeData.amount;
+      }
+      return (this.xnos * 1e6 / (totalXnos + this.xnos * 1e6)) * (8000000 / 365);
     }
   },
   mounted () {

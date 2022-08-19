@@ -15,7 +15,7 @@
           :stake-end-date="stakeEndDate"
           @x-nos="updateXNOS"
         />
-        <reward-countdown :xnos="xNOS" class="tile is-child" />
+        <reward-countdown :xnos="xNOS" stake-data="stakeData" class="tile is-child" />
       </div>
 
       <div class="tile is-vertical is-parent">
