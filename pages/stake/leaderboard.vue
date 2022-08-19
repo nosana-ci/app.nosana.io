@@ -17,11 +17,25 @@
         </thead>
         <tbody>
           <tr
+            v-if="leaderboard && userInfo && userInfo.rank < rankings[0] + 1"
+            class="user-ranking"
+          >
+            <td :class="{'ranking-jump-down' : userInfo.rank < rankings[0] - 2}">
+              <span>{{ userInfo.rank }}</span>
+            </td>
+            <td class="blockchain-address">
+              {{ userInfo.address }}
+            </td>
+            <td>{{ parseFloat(userInfo.xnos / 1e6).toFixed() }}</td>
+          </tr>
+          <tr
             v-for="(user, index) in leaderboard"
             :key="user.address"
             :class="{'user-ranking': userInfo && userInfo.rank === (rankings[index] + 1)}"
           >
-            <td :class="['rank-' + (rankings[index] + 1) ]"><span>{{ rankings[index] + 1 }}</span></td>
+            <td :class="['rank-' + (rankings[index] + 1) ]">
+              <span>{{ rankings[index] + 1 }}</span>
+            </td>
             <td class="blockchain-address">
               {{ user.address }}
             </td>
@@ -39,10 +53,12 @@
             </td>
           </tr>
           <tr
-            v-if="leaderboard && userInfo && userInfo.rank > leaderboard.length"
+            v-if="leaderboard && userInfo && userInfo.rank > rankings[leaderboard.length - 1] + 1"
             class="user-ranking"
           >
-            <td><span>{{ userInfo.rank }}</span></td>
+            <td :class="{'ranking-jump-up' : userInfo.rank > rankings[leaderboard.length - 1] + 2}">
+              <span>{{ userInfo.rank }}</span>
+            </td>
             <td class="blockchain-address">
               {{ userInfo.address }}
             </td>
@@ -156,6 +172,29 @@ tr {
   font-size: 18px;
   &:after {
     background: #D7D7D7;
+  }
+}
+
+.ranking-jump-up {
+  position:relative;
+  &:before {
+    content: '⋮';
+    position: absolute;
+    display: block;
+    top: -15px;
+    left: 15px;
+    z-index: 1;
+  }
+}
+.ranking-jump-down {
+  position:relative;
+  &:before {
+    content: '⋮';
+    position: absolute;
+    display: block;
+    bottom: -15px;
+    left: 15px;
+    z-index: 1;
   }
 }
 

@@ -178,7 +178,9 @@
               v-if="leaderboard && userInfo && userInfo.rank > leaderboard.length && stakeData"
               class="user-ranking"
             >
-              <td><span>{{ userInfo.rank }}</span></td>
+              <td :class="{'ranking-jump-up' : userInfo.rank > (leaderboard.length + 1)}">
+                <span>{{ userInfo.rank }}</span>
+              </td>
               <td class="blockchain-address">
                 {{ userInfo.address }}
               </td>
@@ -352,6 +354,18 @@ tr:nth-child(3) td span:first-child {
 
 .next-tier {
   box-shadow: inset 0px 1px 12px 10px white;
+}
+
+.ranking-jump-up {
+  position:relative;
+  &:before {
+    content: '⋮';
+    position: absolute;
+    display: block;
+    top: -15px;
+    left: 15px;
+    z-index: 1;
+  }
 }
 .tier-bg {
   font-weight: bold;
