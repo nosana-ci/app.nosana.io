@@ -19,47 +19,46 @@
       </div>
     </div>
 
-    <form class="p-6 m-6">
-      <div class="field has-text-centered p-4 m-4">
-        <ul class="steps is-horizontal has-content-centered">
-          <li
-            v-for="(idx, index) in completionRange"
-            :key="index"
-            class="steps-segment"
-            :class="{ 'is-active': index === completionIndex }"
-          >
-            <span href="#" class="steps-marker">
-              <span class="icon is-small">
-                <i class="fa-solid fa-circle-check" />
-              </span>
-            </span>
-          </li>
-        </ul>
-        <br>
-        <p>Profile completion</p>
-      </div>
+    <form class="m-6 px-6">
+      <!-- <div class="field has-text-centered p-4 m-4"> -->
+        <!-- <ul class="steps is-horizontal has-content-centered"> -->
+          <!-- <li -->
+            <!-- v-for="(idx, index) in completionRange" -->
+            <!-- :key="index" -->
+            <!-- class="steps-segment" -->
+            <!-- :class="{ 'is-active': index === completionIndex }" -->
+          <!-- > -->
+            <!-- <span href="#" class="steps-marker"> -->
+              <!-- <span class="icon is-small"> -->
+                <!-- <i class="fa-solid fa-circle-check" /> -->
+              <!-- </span> -->
+            <!-- </span> -->
+          <!-- </li> -->
+        <!-- </ul> -->
+        <!-- <br> -->
+        <!-- <p>Profile completion</p> -->
+      <!-- </div> -->
 
-      <div class="field">
-        <div class="buttons is-centered">
-          <button class="button is-medium is-dark">
-            <span class="icon is-small">
-              <i class="fab fa-github" />
-            </span>
-          </button>
-          <button class="button is-medium is-dark">
-            <span class="icon is-small">
-              <i class="fab fa-discord" />
-            </span>
-          </button>
-          <button class="button is-medium is-dark">
-            <span class="icon is-small">
-              <i class="fab fa-twitter" />
-            </span>
-          </button>
-        </div>
-      </div>
-
-      <br>
+      <!-- <div class="field"> -->
+        <!-- <div class="buttons is-centered"> -->
+          <!-- <button class="button is-medium is-dark"> -->
+            <!-- <span class="icon is-small"> -->
+              <!-- <i class="fab fa-github" /> -->
+            <!-- </span> -->
+          <!-- </button> -->
+          <!-- <button class="button is-medium is-dark"> -->
+            <!-- <span class="icon is-small"> -->
+              <!-- <i class="fab fa-discord" /> -->
+            <!-- </span> -->
+          <!-- </button> -->
+          <!-- <button class="button is-medium is-dark"> -->
+            <!-- <span class="icon is-small"> -->
+              <!-- <i class="fab fa-twitter" /> -->
+            <!-- </span> -->
+          <!-- </button> -->
+        <!-- </div> -->
+      <!-- </div> -->
+      <!-- <br> -->
 
       <div class="field is-horizontal">
         <div class="field-body">
@@ -196,7 +195,7 @@ export default {
         this.discord = user.discord;
         this.github = user.github;
         this.twitter = user.twitter;
-        this.country = user.country;
+        this.country = JSON.parse(user.country);
         this.wantToDevelop = user.wantToDevelop;
         this.wantToEarn = user.wantToEarn;
         this.image = user.image;
