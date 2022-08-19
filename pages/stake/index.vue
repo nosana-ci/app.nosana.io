@@ -8,9 +8,10 @@
     </h1>
     <p>Stake NOS and generate $NOS and $xNOS</p>
     <div class="tile is-ancestor mt-6">
-      <div class="tile is-vertical is-parent">
+      <div class="tile is-vertical is-parent" style="max-width: 650px">
         <staking-form
           class="tile is-child"
+          style="flex-grow: 0"
           :stake-data="stakeData"
           :stake-end-date="stakeEndDate"
           @x-nos="updateXNOS"
