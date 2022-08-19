@@ -148,6 +148,7 @@
             <tr>
               <th>Place</th>
               <th>Address</th>
+              <th>Unstake days</th>
               <th>xNOS</th>
             </tr>
           </thead>
@@ -161,6 +162,7 @@
               <td class="blockchain-address">
                 {{ user.address }}
               </td>
+              <td><span>{{ parseInt(user.duration/(3600*24)) }}</span></td>
               <td>{{ parseFloat(user.xnos / 1e6).toFixed() }}</td>
             </tr>
             <tr
@@ -184,6 +186,7 @@
               <td class="blockchain-address">
                 {{ userInfo.address }}
               </td>
+              <td><span>{{ parseInt(userInfo.duration/(3600*24)) }}</span></td>
               <td>{{ parseFloat(userInfo.xnos / 1e6).toFixed() }}</td>
             </tr>
           </tbody>
@@ -305,9 +308,8 @@ tr {
     position: relative;
   }
   td:nth-child(2) {
-    text-align: center;
     margin: 0 auto;
-    max-width: 300px;
+    max-width: 250px;
   }
   td span:first-child {
     &:after {
