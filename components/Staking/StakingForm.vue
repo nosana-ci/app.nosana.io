@@ -364,8 +364,11 @@
                 Your Stake
               </h3>
               <div class="scores">
-                <div class="has-radius-medium p-3 is-flex is-align-items-center is-justify-content-center">
-                  <div class="box has-text-centered mr-2 mb-0">
+                <div
+                  class="has-radius-medium p-3
+                is-flex is-flex-wrap-wrap is-align-items-center is-justify-content-center"
+                >
+                  <div class="box has-text-centered m-2">
                     <h2 class="title is-4 mb-0">
                       <ICountUp
                         :end-val="parseFloat(NOS)"
@@ -380,7 +383,7 @@
                     </h2>
                     <p>NOS</p>
                   </div>
-                  <div class="box has-text-centered ml-2 mb-0">
+                  <div class="box has-text-centered m-2">
                     <h2 class="title is-4 mb-0">
                       <ICountUp
                         :end-val="parseFloat(xNOS)"
