@@ -74,50 +74,61 @@
 
       <div
         v-if="stakeData &&
-          stakeData.tierInfo &&
-          parseFloat(stakeData.xnos) > 0 &&
-          (!stakeData.tierInfo.userTier ||
-            (stakeData.tierInfo.userTier &&
-              stakeData.tierInfo.userTier.tier !== 1))"
+          stakeData.tierInfo"
         class="next-tier-wrap has-shadow box has-background-light has-text-centered mb-6 p-0"
       >
         <div class="next-tier py-2">
-          <div
-            v-if="stakeData.tierInfo.userTier"
-            class="tier-bg tier-bg-prev"
-          >
-            <span>
+          <div class="tier-bg tier-bg-prev">
+            <span v-if="stakeData.tierInfo.userTier">
               {{ stakeData.tierInfo.userTier.tier }}
             </span>
+            <span v-else>
+              {{ expectedTier }}
+            </span>
           </div>
-          <p class="has-text-weight-semibold is-size-5 mb-0">
-            Next tier
+          <p
+            class="has-text-weight-semibold is-size-5 mb-0"
+          >
+            <span v-if="stakeData.tierInfo.userTier && stakeData.tierInfo.userTier.tier === 1 || expectedTier === 1">
+              Top {{ stakeData.tierInfo.tiers.find(t => t.tier === 1).number }}
+            </span>
+            <span v-else>Next tier</span>
           </p>
-          <span>Only</span>
-          <span v-if="stakeData.tierInfo.userTier" class="has-text-accent is-size-5">{{
-            ((parseFloat(
-              stakeData.tierInfo.tiers.find(e => e.tier === stakeData.tierInfo.userTier.tier - 1).requiredXNOS)
-              - parseFloat(stakeData.xnos)) / 1e6).toFixed()
-          }}</span>
-          <!-- if user is not in tier -->
-          <span v-else class="has-text-accent is-size-5">
+          <span v-if="stakeData.tierInfo.userTier" class="has-text-accent is-size-5">
+            <span>Only</span>
             {{
               ((parseFloat(
-                stakeData.tierInfo.tiers[stakeData.tierInfo.tiers.length - 1].requiredXNOS)
+                stakeData.tierInfo.tiers.find(e => e.tier === stakeData.tierInfo.userTier.tier - 1).requiredXNOS)
                 - parseFloat(stakeData.xnos)) / 1e6).toFixed()
             }}
+            <span>xNOS left</span>
           </span>
-          <span>xNOS left</span>
+          <!-- if user is not in tier -->
+          <span
+            v-else-if="stakeData.tierInfo.tiers.find(e => e.tier === expectedTier - 1)"
+            class="has-text-accent is-size-5"
+          >
+            <span>Only</span>
+            {{
+              ((parseFloat(
+                stakeData.tierInfo.tiers.find(e => e.tier === expectedTier - 1).requiredXNOS)
+                - parseFloat(xnos)*1e6) / 1e6).toFixed()
+            }}
+            <span>xNOS left</span>
+          </span>
+
           <div v-if="stakeData.tierInfo.userTier" class="tier-bg tier-bg-next">
             <span>
               {{ stakeData.tierInfo.tiers.find(e => e.tier === stakeData.tierInfo.userTier.tier - 1).tier }}
             </span>
           </div>
           <div
-            v-else
+            v-else-if="stakeData.tierInfo.tiers.find(e => e.tier === expectedTier - 1)"
             class="tier-bg tier-bg-next"
           >
-            <span>{{ stakeData.tierInfo.tiers[stakeData.tierInfo.tiers.length - 1].tier }}</span>
+            <span>
+              {{ stakeData.tierInfo.tiers.find(e => e.tier === expectedTier - 1).tier }}
+            </span>
           </div>
         </div>
       </div>
@@ -216,7 +227,8 @@ export default {
       leaderboard: null,
       queryPage: this.$route.query.page || 1,
       pagination: null,
-      userInfo: null
+      userInfo: null,
+      expectedTier: null
     };
   },
   watch: {
@@ -224,7 +236,8 @@ export default {
       if (this.stakeData && this.stakeData.tierInfo && this.stakeData.tierInfo.tiers && this.$refs.carousel) {
         const tiers = this.stakeData.tierInfo.tiers;
         for (let i = 0; i < tiers.length; i++) {
-          if (tiers[i].requiredXNOS / 1e6 <= parseFloat(xnos)) {
+          if (tiers[i].requiredXNOS / 1e6 <= parseFloat(xnos) || i + 1 === tiers.length) {
+            this.expectedTier = tiers[i].tier;
             this.$refs.carousel.goSlide(tiers.length - tiers[i].tier);
             break;
           }
@@ -232,6 +245,9 @@ export default {
       }
     },
     stakeData (stakeData) {
+      if (stakeData.tierInfo && stakeData.tierInfo.tiers && this.expectedTier === null) {
+        this.expectedTier = stakeData.tierInfo.tiers.length;
+      }
       if (stakeData.tierInfo && stakeData.tierInfo.userTier && this.$refs.carousel) {
         this.activeTier = stakeData.tierInfo.userTier.tier;
         this.$refs.carousel.goSlide(stakeData.tierInfo.tiers.length - stakeData.tierInfo.userTier.tier);

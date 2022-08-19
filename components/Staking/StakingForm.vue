@@ -79,12 +79,16 @@
           </button>
         </form>
       </div>
-      <button class="modal-close is-large" aria-label="close" @click="extendPopup = false" />
+      <button
+        class="modal-close is-large"
+        aria-label="close"
+        @click="extendPopup = false, amount = 0, extraUnstakeDays = 0"
+      />
     </div>
 
     <!-- Topup popup -->
     <div class="modal stake-popup" :class="{ 'is-active': topupPopup }">
-      <div class="modal-background" @click="topupPopup = false" />
+      <div class="modal-background" @click="topupPopup = false,amount = 0, extraUnstakeDays = 0" />
       <div class="modal-content">
         <div v-if="stakeData && stakeData.duration" class="modal-content has-background-white has-radius-medium p-5">
           <h3 class="has-text-centered subtitle is-4 has-text-weight-semibold">
@@ -231,16 +235,6 @@
                   <a v-if="balance === 0" href="https://nosana.io/token" target="_blank" class="is-size-7">Buy NOS tokens</a>
                 </div>
               </div>
-              <div class="column is-one-third">
-                <div class="balance pl-3">
-                  <span class="is-size-7">Staked<br></span>
-                  <span v-if="stakeData && stakeData.amount">
-                    {{ parseFloat(stakeData.amount/1e6) }}
-                  </span>
-                  <span v-else>0</span>
-                  <small class="is-size-6">NOS</small>
-                </div>
-              </div>
             </div>
 
             <!--- Form --->
@@ -313,6 +307,7 @@
                 <div class="column is-one-third scores">
                   <div class="has-background-grey-lighter has-radius-medium p-3">
                     <div class="box has-text-centered mb-3">
+                      <!-- <p>Expected daily rewards</p> -->
                       <h2 class="title is-4 has-text-success mb-0">
                         <ICountUp
                           :end-val="parseFloat(NOS)"
@@ -568,7 +563,7 @@ export default {
       accounts: null,
       balance: null,
       amount: null,
-      unstakeDays: 365,
+      unstakeDays: 14,
       extraUnstakeDays: null,
       extendStake: false,
       unstakeForm: false,
@@ -730,6 +725,8 @@ export default {
         });
         this.topupPopup = false;
       } catch (error) {
+        this.amount = 0;
+        this.extraUnstakeDays = 0;
         this.topupPopup = false;
         this.$modal.show({
           color: 'danger',
@@ -796,6 +793,8 @@ export default {
         });
         this.extendPopup = false;
       } catch (error) {
+        this.amount = 0;
+        this.extraUnstakeDays = 0;
         this.extendPopup = false;
         this.$modal.show({
           color: 'danger',
