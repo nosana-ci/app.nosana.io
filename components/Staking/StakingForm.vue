@@ -48,7 +48,7 @@
                   <h2 class="title is-4 has-text-success mb-0">
                     <ICountUp :end-val="parseFloat(xNOS)" :options="{ decimalPlaces: 2 }" />
                   </h2>
-                  <p>xNOS</p>
+                  <p>xNOS score</p>
                 </div>
               </div>
             </div>
@@ -176,7 +176,7 @@
                     <h2 class="title is-4 has-text-success mb-0">
                       <ICountUp :end-val="parseFloat(xNOS)" :options="{ decimalPlaces: 2 }" />
                     </h2>
-                    <p>xNOS</p>
+                    <p>xNOS score</p>
                   </div>
                 </div>
               </div>
@@ -242,7 +242,7 @@
               v-if="!userHasStakedBefore"
               @submit.prevent="stake"
             >
-              <div class="mt-5 columns">
+              <div class="mt-5 columns is-multiline">
                 <div class="column">
                   <div class="form-inputs has-background-grey-lighter has-radius-medium p-3 pt-5">
                     <div class="field has-background-grey-light has-radius-medium">
@@ -305,9 +305,12 @@
 
                 <!-- (New) Scores -->
                 <div class="column is-one-third scores">
-                  <div class="has-background-grey-lighter has-radius-medium p-3">
-                    <div class="box has-text-centered mb-3">
-                      <!-- <p>Expected daily rewards</p> -->
+                  <div
+                    class="has-background-grey-lighter has-radius-medium p-3
+                  is-flex is-justify-content-center is-align-items-center"
+                  >
+                    <!-- <div class="box has-text-centered mb-3">
+                      <p>Expected daily rewards</p>
                       <h2 class="title is-4 has-text-success mb-0">
                         <ICountUp
                           :end-val="parseFloat(NOS)"
@@ -321,9 +324,9 @@
                         />
                       </h2>
                       <p>NOS</p>
-                    </div>
+                    </div> -->
                     <div class="box has-text-centered">
-                      <h2 class="title is-4 has-text-success mb-0">
+                      <h2 class="title is-3 has-text-success mb-0">
                         <ICountUp
                           :end-val="parseFloat(xNOS)"
                           :options="{ decimalPlaces: 0, duration:0.1 }"
@@ -335,7 +338,7 @@
                           style="position:absolute;width: 100%;text-align: center;left: 0;"
                         />
                       </h2>
-                      <p>xNOS</p>
+                      <p>xNOS score</p>
                     </div>
                   </div>
                 </div>
@@ -408,6 +411,7 @@
                 <!-- Buttons -->
                 <button
                   class="button is-accent is-fullwidth mt-5 has-text-weight-semibold"
+                  style="font-size: 18px"
                   :class="{'is-loading': loading}"
                   @click="topupPopup = true, amount = 0, extraUnstakeDays = 0"
                 >

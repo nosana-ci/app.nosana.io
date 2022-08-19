@@ -90,32 +90,37 @@
           <p
             class="has-text-weight-semibold is-size-5 mb-0"
           >
-            <span v-if="stakeData.tierInfo.userTier && stakeData.tierInfo.userTier.tier === 1 || expectedTier === 1">
+            <span
+              v-if="stakeData.tierInfo.userTier && stakeData.tierInfo.userTier.tier === 1 || expectedTier === 1"
+              class="py-4"
+            >
               Top {{ stakeData.tierInfo.tiers.find(t => t.tier === 1).number }}
             </span>
             <span v-else>Next tier</span>
           </p>
-          <span v-if="stakeData.tierInfo.userTier" class="has-text-accent is-size-5">
-            <span>Only</span>
+          <span
+            v-if="stakeData.tierInfo.userTier
+              && stakeData.tierInfo.tiers.find(e => e.tier === stakeData.tierInfo.userTier.tier - 1)"
+            class="has-text-accent is-size-5"
+          >
             {{
               ((parseFloat(
                 stakeData.tierInfo.tiers.find(e => e.tier === stakeData.tierInfo.userTier.tier - 1).requiredXNOS)
                 - parseFloat(stakeData.xnos)) / 1e6).toFixed()
             }}
-            <span>xNOS left</span>
+            <small class="has-text-black-ter">xNOS needed</small>
           </span>
           <!-- if user is not in tier -->
           <span
             v-else-if="stakeData.tierInfo.tiers.find(e => e.tier === expectedTier - 1)"
             class="has-text-accent is-size-5"
           >
-            <span>Only</span>
             {{
               ((parseFloat(
                 stakeData.tierInfo.tiers.find(e => e.tier === expectedTier - 1).requiredXNOS)
                 - parseFloat(xnos)*1e6) / 1e6).toFixed()
             }}
-            <span>xNOS left</span>
+            <small class="has-text-black-ter">xNOS needed</small>
           </span>
 
           <div v-if="stakeData.tierInfo.userTier" class="tier-bg tier-bg-next">
