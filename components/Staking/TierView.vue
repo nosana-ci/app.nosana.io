@@ -7,6 +7,7 @@
           ref="carousel"
           :perspective="20"
           :display="3"
+          :loop="false"
           :width="350"
           :start-index="stakeData.tierInfo.userTier ?
             (activeTier = stakeData.tierInfo.userTier.tier)

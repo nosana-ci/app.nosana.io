@@ -85,10 +85,11 @@ export default {
     expectedRewards () {
       if (!this.totals) { return null; }
       let totalXnos = this.totals.xnos;
-      if (this.stakeData) {
+      console.log('txnos', totalXnos);
+      if (this.stakeData && this.stakeData.amount) {
         totalXnos -= this.stakeData.amount;
       }
-      return (this.xnos * 1e6 / (totalXnos + this.xnos * 1e6)) * (8000000 / 365);
+      return ((this.xnos * 1e6) / (totalXnos + (this.xnos * 1e6))) * (8000000 / 365);
     }
   },
   mounted () {
