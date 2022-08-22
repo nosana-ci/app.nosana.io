@@ -62,6 +62,11 @@
               </span>
             </p>
           </div>
+          <div v-if="errors" style="width: 100%">
+            <div v-for="error in errors" :key="error" class="has-text-danger">
+              {{ error }}
+            </div>
+          </div>
           <button
             v-if="!loggedIn"
             class="button is-accent is-fullwidth mt-5 has-text-weight-semibold"
@@ -178,6 +183,11 @@
                     </h2>
                     <p>xNOS score</p>
                   </div>
+                </div>
+              </div>
+              <div v-if="errors" style="width: 100%">
+                <div v-for="error in errors" :key="error" class="has-text-danger">
+                  {{ error }}
                 </div>
               </div>
               <button
