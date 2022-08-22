@@ -40,9 +40,9 @@
               <div class="has-background-grey-lighter has-radius-medium">
                 <div class="box has-text-centered mb-3 p-2">
                   <h2 class="title is-4 has-text-success mb-0">
-                    <ICountUp :end-val="parseFloat(NOS)" :options="{ decimalPlaces: 2 }" />
+                    <ICountUp :end-val="parseFloat(multiplier)" :options="{ decimalPlaces: 2, prefix: 'x' }" />
                   </h2>
-                  <p>NOS</p>
+                  <p>multiplier</p>
                 </div>
                 <div class="box has-text-centered p-2">
                   <h2 class="title is-4 has-text-success mb-0">
@@ -306,25 +306,8 @@
                 <!-- (New) Scores -->
                 <div class="column is-one-third scores">
                   <div
-                    class="has-background-grey-lighter has-radius-medium p-3
-                  is-flex is-justify-content-center is-align-items-center"
+                    class="has-background-grey-lighter has-radius-medium p-3"
                   >
-                    <!-- <div class="box has-text-centered mb-3">
-                      <p>Expected daily rewards</p>
-                      <h2 class="title is-4 has-text-success mb-0">
-                        <ICountUp
-                          :end-val="parseFloat(NOS)"
-                          :options="{ decimalPlaces: 0, duration:0.1 }"
-                          style="opacity:0"
-                        />
-                        <ICountUp
-                          :end-val="parseFloat(NOS)"
-                          :options="{ decimalPlaces: 0 }"
-                          style="position:absolute;width: 100%;text-align: center;left: 0;"
-                        />
-                      </h2>
-                      <p>NOS</p>
-                    </div> -->
                     <div class="box has-text-centered">
                       <h2 class="title is-3 has-text-success mb-0">
                         <ICountUp
@@ -339,6 +322,21 @@
                         />
                       </h2>
                       <p>xNOS score</p>
+                    </div>
+                    <div class="box has-text-centered mb-3">
+                      <h2 class="title is-4 has-text-success mb-0">
+                        <ICountUp
+                          :end-val="parseFloat(multiplier)"
+                          :options="{ decimalPlaces: 2, duration:0.1, prefix: 'x' }"
+                          style="opacity:0"
+                        />
+                        <ICountUp
+                          :end-val="parseFloat(multiplier)"
+                          :options="{ decimalPlaces: 2, prefix: 'x' }"
+                          style="position:absolute;width: 100%;text-align: center;left: 0;"
+                        />
+                      </h2>
+                      <p>multiplier</p>
                     </div>
                   </div>
                 </div>
@@ -380,6 +378,21 @@
                       />
                     </h2>
                     <p>NOS</p>
+                  </div>
+                  <div class="box has-text-centered m-2" style="min-width: 0">
+                    <h2 class="title is-4 mb-0">
+                      <ICountUp
+                        :end-val="parseFloat(multiplier)"
+                        :options="{ decimalPlaces: 2, duration:0.1, prefix: 'x' }"
+                        style="opacity:0"
+                      />
+                      <ICountUp
+                        :end-val="parseFloat(multiplier)"
+                        :options="{ decimalPlaces: 2, prefix: 'x' }"
+                        style="position:absolute;width: 100%;text-align: center;left: 0;"
+                      />
+                    </h2>
+                    <p>multiplier</p>
                   </div>
                   <div class="box has-text-centered m-2">
                     <h2 class="title is-4 mb-0">
@@ -590,6 +603,21 @@ export default {
       }
       const amount = parseFloat(this.amount) || 0;
       return (parseFloat(this.stakeData.amount / 1e6) + parseFloat(amount)).toFixed(2);
+    },
+    multiplier () {
+      let unstakeTime;
+      if (this.userHasStakedBefore) {
+        if (this.extraUnstakeDays) {
+          unstakeTime = parseInt(this.stakeData.duration) + (this.extraUnstakeDays * SECONDS_PER_DAY);
+        } else {
+          unstakeTime = this.stakeData.duration;
+        }
+      } else {
+        unstakeTime = this.unstakeDays * SECONDS_PER_DAY;
+      }
+      const multiplierSeconds = (SECONDS_PER_DAY * 365) / 3; // 4 months
+      const multiplier = unstakeTime / multiplierSeconds;
+      return multiplier + 1;
     },
     xNOS () {
       if (!this.unstakeDays && !this.userHasStakedBefore) {
@@ -942,7 +970,7 @@ export default {
 
 .your-stake {
   .scores .box {
-    min-width: 200px;
+    min-width: 180px;
     border: none;
   }
 }
