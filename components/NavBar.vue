@@ -43,7 +43,7 @@
               <img v-if="$auth.user.image" :src="$auth.user.image" class="is-rounded has-border">
               <img
                 v-else-if="userTier"
-                :src="require(`@/assets/img/tiers/tier${userTier.tier}.svg`)"
+                :src="require(`@/assets/img/tiers/icons/tier${userTier.tier}.png`)"
                 class="is-rounded has-border"
               >
             </figure>
@@ -66,6 +66,9 @@
                 {{ $auth.user.address }}
               </a>
             </h2>
+            <div class="">
+              <a class="has-text-danger is-size-7" @click.prevent="$sol.logout">Logout</a>
+            </div>
           </div>
         </div>
       </div>

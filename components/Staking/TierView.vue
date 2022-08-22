@@ -145,12 +145,18 @@
               :key="user.address"
               :class="{'user-ranking': userInfo && userInfo.rank === (index + 1)}"
             >
-              <td><span>{{ index+1 }}</span></td>
+              <td class="is-family-monospace">
+                <span>{{ index+1 }}</span>
+              </td>
               <td class="blockchain-address">
                 {{ user.address }}
               </td>
-              <td>{{ parseInt(user.duration/(3600*24)) }}</td>
-              <td>{{ parseFloat(user.xnos / 1e6).toFixed() }}</td>
+              <td class="is-family-monospace">
+                {{ parseInt(user.duration/(3600*24)) }}
+              </td>
+              <td class="is-family-monospace">
+                {{ parseFloat(user.xnos / 1e6).toFixed() }}
+              </td>
             </tr>
             <tr
               v-if="!leaderboard || !leaderboard.length"
@@ -167,14 +173,18 @@
               v-if="leaderboard && userInfo && userInfo.rank > leaderboard.length && stakeData"
               class="user-ranking"
             >
-              <td :class="{'ranking-jump-up' : userInfo.rank > (leaderboard.length + 1)}">
+              <td class="is-family-monospace" :class="{'ranking-jump-up' : userInfo.rank > (leaderboard.length + 1)}">
                 <span>{{ userInfo.rank }}</span>
               </td>
               <td class="blockchain-address">
                 {{ userInfo.address }}
               </td>
-              <td>{{ parseInt(userInfo.duration/(3600*24)) }}</td>
-              <td>{{ parseFloat(userInfo.xnos / 1e6).toFixed() }}</td>
+              <td class="is-family-monospace">
+                {{ parseInt(userInfo.duration/(3600*24)) }}
+              </td>
+              <td class="is-family-monospace">
+                {{ parseFloat(userInfo.xnos / 1e6).toFixed() }}
+              </td>
             </tr>
           </tbody>
         </table>
