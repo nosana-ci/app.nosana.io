@@ -112,7 +112,7 @@
           </span>
           <!-- if user is not in tier -->
           <span
-            v-else-if="stakeData.tierInfo.tiers.find(e => e.tier === expectedTier - 1)"
+            v-else-if="!stakeData.tierInfo.userTier && stakeData.tierInfo.tiers.find(e => e.tier === expectedTier - 1)"
             class="has-text-accent is-size-5"
           >
             {{
@@ -133,7 +133,7 @@
             </span>
           </div>
           <div
-            v-else-if="stakeData.tierInfo.tiers.find(e => e.tier === expectedTier - 1)"
+            v-else-if="!stakeData.tierInfo.userTier && stakeData.tierInfo.tiers.find(e => e.tier === expectedTier - 1)"
             class="tier-bg tier-bg-next"
           >
             <span>
