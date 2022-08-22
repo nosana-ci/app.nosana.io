@@ -342,6 +342,11 @@
                 </div>
               </div>
               <div>
+                <div v-if="errors">
+                  <div v-for="error in errors" :key="error" class="has-text-danger">
+                    {{ error }}
+                  </div>
+                </div>
                 <!-- Buttons -->
                 <button
                   v-if="!loggedIn"
@@ -590,6 +595,29 @@ export default {
     };
   },
   computed: {
+    errors () {
+      const errors = [];
+      if (this.balance !== null && this.xNOS && parseFloat(this.balance) < this.xNOS) {
+        errors.push('Balance too low');
+      }
+      let unstakeTime;
+      if (this.userHasStakedBefore) {
+        if (this.extraUnstakeDays) {
+          unstakeTime = parseInt(this.stakeData.duration) + (this.extraUnstakeDays * SECONDS_PER_DAY);
+        } else {
+          unstakeTime = this.stakeData.duration;
+        }
+      } else {
+        unstakeTime = this.unstakeDays * SECONDS_PER_DAY;
+      }
+      if (unstakeTime < (14 * SECONDS_PER_DAY)) {
+        errors.push('Minimum unstake period is 14 days');
+      }
+      if (unstakeTime > (365 * SECONDS_PER_DAY)) {
+        errors.push('Maximum unstake period is 365 days');
+      }
+      return errors;
+    },
     userHasStakedBefore () {
       return this.stakeData !== null && (this.stakeData.user_id !== null && this.stakeData.user_id !== undefined);
     },
