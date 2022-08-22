@@ -435,6 +435,23 @@
               >
                 Extend unstake period
               </button>
+              <div v-if="accounts" class="mt-6 mb-3">
+                <div class="is-flex is-align-items-center">
+                  <span class="is-size-7">Stake Account</span>
+                  <a target="_blank" :href="`https://explorer.solana.com/address/${accounts.stake}/anchor-account`" class="ml-auto is-size-7">View on Solana explorer</a>
+                </div>
+                <hr class="my-2">
+                <div class="is-flex is-align-items-center">
+                  <span class="is-size-7">Stake Vault</span>
+                  <a target="_blank" :href="`https://explorer.solana.com/address/${accounts.vault}/tokens`" class="ml-auto is-size-7">View on Solana explorer</a>
+                </div>
+                <hr class="my-2">
+                <div class="is-flex is-align-items-center">
+                  <span class="is-size-7">Reward Account</span>
+                  <a target="_blank" :href="`https://explorer.solana.com/address/${accounts.reward}/anchor-account`" class="ml-auto is-size-7">View on Solana explorer</a>
+                </div>
+                <hr class="my-2">
+              </div>
               <div class="column is-whole">
                 <!-- Buttons -->
                 <button
