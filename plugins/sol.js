@@ -211,6 +211,7 @@ export default (context, inject) => {
 
       async logout () {
         await this.switch();
+        context.$stake.clear();
         await context.$auth.logout();
       },
 

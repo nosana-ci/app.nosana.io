@@ -25,6 +25,10 @@ export default (context, inject) => {
       }
     },
     methods: {
+      clear () {
+        this.stakeData = null;
+        this.stakeDataEnd = null;
+      },
       async refreshStake () {
         const stakeData = await context.$axios.$get('/user/stake');
         if (stakeData && stakeData.user_id && parseInt(stakeData.time_unstake) !== 0 && parseInt(stakeData.time_unstake) !== '00') {
