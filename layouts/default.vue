@@ -40,11 +40,14 @@ html {
   background-size: cover;
 }
 .sidebar {
+  position: sticky;
+  top: 0;
   height: fit-content;
   min-height: 100vh;
 }
 @include mobile {
   .sidebar {
+    position: relative;
     min-height: 0;
   }
 }

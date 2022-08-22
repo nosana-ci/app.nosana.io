@@ -40,15 +40,15 @@
               <div class="has-background-grey-lighter has-radius-medium">
                 <div class="box has-text-centered mb-3 p-2">
                   <h2 class="title is-4 has-text-success mb-0">
-                    <ICountUp :end-val="parseFloat(NOS)" :options="{ decimalPlaces: 2 }" />
+                    <ICountUp :end-val="parseFloat(multiplier)" :options="{ decimalPlaces: 2, prefix: 'x' }" />
                   </h2>
-                  <p>NOS</p>
+                  <p>multiplier</p>
                 </div>
                 <div class="box has-text-centered p-2">
                   <h2 class="title is-4 has-text-success mb-0">
                     <ICountUp :end-val="parseFloat(xNOS)" :options="{ decimalPlaces: 2 }" />
                   </h2>
-                  <p>xNOS</p>
+                  <p>xNOS score</p>
                 </div>
               </div>
             </div>
@@ -79,12 +79,16 @@
           </button>
         </form>
       </div>
-      <button class="modal-close is-large" aria-label="close" @click="extendPopup = false" />
+      <button
+        class="modal-close is-large"
+        aria-label="close"
+        @click="extendPopup = false, amount = 0, extraUnstakeDays = 0"
+      />
     </div>
 
     <!-- Topup popup -->
     <div class="modal stake-popup" :class="{ 'is-active': topupPopup }">
-      <div class="modal-background" @click="topupPopup = false" />
+      <div class="modal-background" @click="topupPopup = false,amount = 0, extraUnstakeDays = 0" />
       <div class="modal-content">
         <div v-if="stakeData && stakeData.duration" class="modal-content has-background-white has-radius-medium p-5">
           <h3 class="has-text-centered subtitle is-4 has-text-weight-semibold">
@@ -172,7 +176,7 @@
                     <h2 class="title is-4 has-text-success mb-0">
                       <ICountUp :end-val="parseFloat(xNOS)" :options="{ decimalPlaces: 2 }" />
                     </h2>
-                    <p>xNOS</p>
+                    <p>xNOS score</p>
                   </div>
                 </div>
               </div>
@@ -231,16 +235,6 @@
                   <a v-if="balance === 0" href="https://nosana.io/token" target="_blank" class="is-size-7">Buy NOS tokens</a>
                 </div>
               </div>
-              <div class="column is-one-third">
-                <div class="balance pl-3">
-                  <span class="is-size-7">Staked<br></span>
-                  <span v-if="stakeData && stakeData.amount">
-                    {{ parseFloat(stakeData.amount/1e6) }}
-                  </span>
-                  <span v-else>0</span>
-                  <small class="is-size-6">NOS</small>
-                </div>
-              </div>
             </div>
 
             <!--- Form --->
@@ -248,7 +242,7 @@
               v-if="!userHasStakedBefore"
               @submit.prevent="stake"
             >
-              <div class="mt-5 columns">
+              <div class="mt-5 columns is-multiline">
                 <div class="column">
                   <div class="form-inputs has-background-grey-lighter has-radius-medium p-3 pt-5">
                     <div class="field has-background-grey-light has-radius-medium">
@@ -311,41 +305,48 @@
 
                 <!-- (New) Scores -->
                 <div class="column is-one-third scores">
-                  <div class="has-background-grey-lighter has-radius-medium p-3">
+                  <div
+                    class="has-background-grey-lighter has-radius-medium p-3"
+                  >
+                    <div class="box has-text-centered">
+                      <h2 class="title is-3 has-text-success mb-0">
+                        <ICountUp
+                          :end-val="parseFloat(xNOS)"
+                          :options="{ decimalPlaces: 0, duration:0.1 }"
+                          style="opacity:0"
+                        />
+                        <ICountUp
+                          :end-val="parseFloat(xNOS)"
+                          :options="{ decimalPlaces: 0 }"
+                          style="position:absolute;width: 100%;text-align: center;left: 0;"
+                        />
+                      </h2>
+                      <p>xNOS score</p>
+                    </div>
                     <div class="box has-text-centered mb-3">
                       <h2 class="title is-4 has-text-success mb-0">
                         <ICountUp
-                          :end-val="parseFloat(NOS)"
-                          :options="{ decimalPlaces: 0, duration:0.1 }"
+                          :end-val="parseFloat(multiplier)"
+                          :options="{ decimalPlaces: 2, duration:0.1, prefix: 'x' }"
                           style="opacity:0"
                         />
                         <ICountUp
-                          :end-val="parseFloat(NOS)"
-                          :options="{ decimalPlaces: 0 }"
+                          :end-val="parseFloat(multiplier)"
+                          :options="{ decimalPlaces: 2, prefix: 'x' }"
                           style="position:absolute;width: 100%;text-align: center;left: 0;"
                         />
                       </h2>
-                      <p>NOS</p>
-                    </div>
-                    <div class="box has-text-centered">
-                      <h2 class="title is-4 has-text-success mb-0">
-                        <ICountUp
-                          :end-val="parseFloat(xNOS)"
-                          :options="{ decimalPlaces: 0, duration:0.1 }"
-                          style="opacity:0"
-                        />
-                        <ICountUp
-                          :end-val="parseFloat(xNOS)"
-                          :options="{ decimalPlaces: 0 }"
-                          style="position:absolute;width: 100%;text-align: center;left: 0;"
-                        />
-                      </h2>
-                      <p>xNOS</p>
+                      <p>multiplier</p>
                     </div>
                   </div>
                 </div>
               </div>
               <div>
+                <div v-if="errors">
+                  <div v-for="error in errors" :key="error" class="has-text-danger">
+                    {{ error }}
+                  </div>
+                </div>
                 <!-- Buttons -->
                 <button
                   v-if="!loggedIn"
@@ -364,8 +365,11 @@
                 Your Stake
               </h3>
               <div class="scores">
-                <div class="has-radius-medium p-3 is-flex is-align-items-center is-justify-content-center">
-                  <div class="box has-text-centered mr-2 mb-0">
+                <div
+                  class="has-radius-medium p-3
+                is-flex is-flex-wrap-wrap is-align-items-center is-justify-content-center"
+                >
+                  <div class="box has-text-centered m-2">
                     <h2 class="title is-4 mb-0">
                       <ICountUp
                         :end-val="parseFloat(NOS)"
@@ -380,7 +384,22 @@
                     </h2>
                     <p>NOS</p>
                   </div>
-                  <div class="box has-text-centered ml-2 mb-0">
+                  <div class="box has-text-centered m-2" style="min-width: 0">
+                    <h2 class="title is-4 mb-0">
+                      <ICountUp
+                        :end-val="parseFloat(multiplier)"
+                        :options="{ decimalPlaces: 2, duration:0.1, prefix: 'x' }"
+                        style="opacity:0"
+                      />
+                      <ICountUp
+                        :end-val="parseFloat(multiplier)"
+                        :options="{ decimalPlaces: 2, prefix: 'x' }"
+                        style="position:absolute;width: 100%;text-align: center;left: 0;"
+                      />
+                    </h2>
+                    <p>multiplier</p>
+                  </div>
+                  <div class="box has-text-centered m-2">
                     <h2 class="title is-4 mb-0">
                       <ICountUp
                         :end-val="parseFloat(xNOS)"
@@ -410,6 +429,7 @@
                 <!-- Buttons -->
                 <button
                   class="button is-accent is-fullwidth mt-5 has-text-weight-semibold"
+                  style="font-size: 18px"
                   :class="{'is-loading': loading}"
                   @click="topupPopup = true, amount = 0, extraUnstakeDays = 0"
                 >
@@ -473,22 +493,22 @@
                     >
                       <div class="columns is-mobile is-multiline">
                         <div class="column is-3-desktop is-6-touch">
-                          <div class="has-background-grey-light has-radius title mb-0 p-4">
+                          <div class="has-background-grey-light has-radius title mb-0 py-4 px-2">
                             {{ timeObj.d }}d
                           </div>
                         </div>
                         <div class="column is-3-desktop is-6-touch">
-                          <div class="has-background-grey-light has-radius title mb-0 p-4">
+                          <div class="has-background-grey-light has-radius title mb-0 py-4 px-2">
                             {{ timeObj.h }}h
                           </div>
                         </div>
                         <div class="column is-3-desktop is-6-touch">
-                          <div class="has-background-grey-light has-radius title mb-0 p-4">
+                          <div class="has-background-grey-light has-radius title mb-0 py-4 px-2">
                             {{ timeObj.m }}m
                           </div>
                         </div>
                         <div class="column is-3-desktop is-6-touch">
-                          <div class="has-background-grey-light has-radius title mb-0 p-4">
+                          <div class="has-background-grey-light has-radius title mb-0 py-4 px-2">
                             {{ timeObj.s }}s
                           </div>
                         </div>
@@ -565,7 +585,7 @@ export default {
       accounts: null,
       balance: null,
       amount: null,
-      unstakeDays: 365,
+      unstakeDays: 14,
       extraUnstakeDays: null,
       extendStake: false,
       unstakeForm: false,
@@ -575,6 +595,29 @@ export default {
     };
   },
   computed: {
+    errors () {
+      const errors = [];
+      if (this.balance !== null && this.xNOS && parseFloat(this.balance) < this.xNOS) {
+        errors.push('Balance too low');
+      }
+      let unstakeTime;
+      if (this.userHasStakedBefore) {
+        if (this.extraUnstakeDays) {
+          unstakeTime = parseInt(this.stakeData.duration) + (this.extraUnstakeDays * SECONDS_PER_DAY);
+        } else {
+          unstakeTime = this.stakeData.duration;
+        }
+      } else {
+        unstakeTime = this.unstakeDays * SECONDS_PER_DAY;
+      }
+      if (unstakeTime < (14 * SECONDS_PER_DAY)) {
+        errors.push('Minimum unstake period is 14 days');
+      }
+      if (unstakeTime > (365 * SECONDS_PER_DAY)) {
+        errors.push('Maximum unstake period is 365 days');
+      }
+      return errors;
+    },
     userHasStakedBefore () {
       return this.stakeData !== null && (this.stakeData.user_id !== null && this.stakeData.user_id !== undefined);
     },
@@ -588,6 +631,21 @@ export default {
       }
       const amount = parseFloat(this.amount) || 0;
       return (parseFloat(this.stakeData.amount / 1e6) + parseFloat(amount)).toFixed(2);
+    },
+    multiplier () {
+      let unstakeTime;
+      if (this.userHasStakedBefore) {
+        if (this.extraUnstakeDays) {
+          unstakeTime = parseInt(this.stakeData.duration) + (this.extraUnstakeDays * SECONDS_PER_DAY);
+        } else {
+          unstakeTime = this.stakeData.duration;
+        }
+      } else {
+        unstakeTime = this.unstakeDays * SECONDS_PER_DAY;
+      }
+      const multiplierSeconds = (SECONDS_PER_DAY * 365) / 3; // 4 months
+      const multiplier = unstakeTime / multiplierSeconds;
+      return multiplier + 1;
     },
     xNOS () {
       if (!this.unstakeDays && !this.userHasStakedBefore) {
@@ -727,6 +785,8 @@ export default {
         });
         this.topupPopup = false;
       } catch (error) {
+        this.amount = 0;
+        this.extraUnstakeDays = 0;
         this.topupPopup = false;
         this.$modal.show({
           color: 'danger',
@@ -793,6 +853,8 @@ export default {
         });
         this.extendPopup = false;
       } catch (error) {
+        this.amount = 0;
+        this.extraUnstakeDays = 0;
         this.extendPopup = false;
         this.$modal.show({
           color: 'danger',
@@ -879,7 +941,7 @@ export default {
       this.loading = false;
     },
     async refreshStake () {
-      await this.$parent.refreshStake();
+      await this.$stake.refreshStake();
     }
   }
 };
@@ -936,7 +998,7 @@ export default {
 
 .your-stake {
   .scores .box {
-    min-width: 200px;
+    min-width: 180px;
     border: none;
   }
 }

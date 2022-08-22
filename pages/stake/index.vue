@@ -8,14 +8,15 @@
     </h1>
     <p>Stake NOS and generate $NOS and $xNOS</p>
     <div class="tile is-ancestor mt-6">
-      <div class="tile is-vertical is-parent">
+      <div class="tile is-vertical is-parent" style="max-width: 650px">
         <staking-form
           class="tile is-child"
+          style="flex-grow: 0"
           :stake-data="stakeData"
           :stake-end-date="stakeEndDate"
           @x-nos="updateXNOS"
         />
-        <reward-countdown class="tile is-child" />
+        <reward-countdown :xnos="xNOS" :stake-data="stakeData" class="tile is-child" />
       </div>
 
       <div class="tile is-vertical is-parent">
@@ -44,7 +45,6 @@ export default {
       loading: false,
       program: null,
       provider: null,
-      stakeData: null,
       accounts: null,
       balance: null,
       amount: null,
@@ -52,24 +52,22 @@ export default {
       extraUnstakeDays: null,
       extendStake: false,
       unstakeForm: false,
-      stakeEndDate: null,
       countdownFinished: false,
-      xNOS: null,
-      interval: null
+      xNOS: null
     };
   },
   computed: {
+    stakeData () {
+      return this.$stake ? this.$stake.stakeData : null;
+    },
+    stakeEndDate () {
+      return this.$stake ? this.$stake.stakeEndDate : null;
+    },
     loggedIn () {
       return this.$sol && this.$sol.publicKey;
     }
   },
   mounted () {
-    if (!this.interval) {
-      this.interval = setInterval(() => {
-        console.log('refresh staking info..');
-        this.refreshStake();
-      }, 30000);
-    }
   },
   beforeDestroy () {
     if (this.interval) {
@@ -80,16 +78,6 @@ export default {
   methods: {
     updateXNOS (xNOS) {
       this.xNOS = xNOS;
-    },
-    async refreshStake () {
-      const stakeData = await this.$axios.$get('/user/stake');
-      if (stakeData && stakeData.user_id && parseInt(stakeData.time_unstake) !== 0 && parseInt(stakeData.time_unstake) !== '00') {
-        this.stakeEndDate = this.$moment.unix(stakeData.time_unstake).add(stakeData.duration, 's');
-        // this.stakeEndDate = this.$moment.unix(1659698174);
-      } else {
-        this.stakeEndDate = null;
-      }
-      this.stakeData = stakeData;
     }
   }
 };

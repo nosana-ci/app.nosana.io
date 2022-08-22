@@ -1,5 +1,3 @@
-<!-- eslint-disable vue/first-attribute-linebreak -->
-<!-- eslint-disable vue/order-in-components -->
 <template>
   <div>
     <div class="stake-block p-5 has-background-grey-lighter" style="height:100%">
@@ -9,11 +7,13 @@
           ref="carousel"
           :perspective="20"
           :display="3"
+          :loop="false"
           :width="350"
           :start-index="stakeData.tierInfo.userTier ?
             (activeTier = stakeData.tierInfo.userTier.tier)
             && (stakeData.tierInfo.tiers.length - stakeData.tierInfo.userTier.tier) : 0"
           :height="320"
+          @after-slide-change="refreshNextTier = !refreshNextTier"
         >
           <slide
             v-for="slide in stakeData.tierInfo.tiers"
@@ -74,33 +74,41 @@
         </carousel-3d>
       </client-only>
 
-      <!-- TODO: background numbers here as in design -->
-      <div v-if="stakeData &&
-             stakeData.tierInfo &&
-             parseFloat(stakeData.xnos) > 0 &&
-             (!stakeData.tierInfo.userTier ||
-               (stakeData.tierInfo.userTier &&
-                 stakeData.tierInfo.userTier.tier !== 1))"
-           class="has-shadow next-tier box has-background-light has-text-centered mb-6 py-2"
+      <div
+        v-if="stakeData &&
+          stakeData.tierInfo"
+        class="next-tier-wrap has-shadow box has-background-light has-text-centered mb-6 p-0"
       >
-        <p class="has-text-weight-semibold is-size-5 mb-0">
-          Next tier
-        </p>
-        <span>Only</span>
-        <span v-if="stakeData.tierInfo.userTier" class="has-text-accent is-size-5">{{
-          ((parseFloat(
-            stakeData.tierInfo.tiers.find(e => e.tier === stakeData.tierInfo.userTier.tier - 1).requiredXNOS)
-            - parseFloat(stakeData.xnos)) / 1e6).toFixed()
-        }}</span>
-        <!-- if user is not in tier -->
-        <span v-else class="has-text-accent is-size-5">
-          {{
-            ((parseFloat(
-              stakeData.tierInfo.tiers[stakeData.tierInfo.tiers.length - 1].requiredXNOS)
-              - parseFloat(stakeData.xnos)) / 1e6).toFixed()
-          }}
-        </span>
-        <span>xNOS left</span>
+        <div class="next-tier py-2">
+          <div class="tier-bg tier-bg-prev">
+            <span>
+              {{ expectedTier }}
+            </span>
+          </div>
+          <div class="has-text-weight-semibold is-size-5 mb-0">
+            <div
+              v-if="stakeData.tierInfo.userTier && stakeData.tierInfo.userTier.tier === 1 || expectedTier === 1"
+              class="py-4"
+            >
+              Top {{ stakeData.tierInfo.tiers.find(t => t.tier === 1).number }}
+            </div>
+            <span v-else>Next tier</span>
+          </div>
+          <span v-if="nextTier" class="has-text-accent is-size-5">
+            <span v-if="nextTier.tier !== 5">
+              {{
+                ((parseFloat(
+                  nextTier.requiredXNOS)
+                  - parseFloat(xnos)*1e6) / 1e6).toFixed()
+              }}
+            </span>
+            <small class="has-text-black-ter">xNOS needed</small>
+          </span>
+
+          <div v-if="nextTier" class="tier-bg tier-bg-next">
+            <span>{{ nextTier.tier }}</span>
+          </div>
+        </div>
       </div>
 
       <div
@@ -111,11 +119,17 @@
           <h3 class="has-text-centered subtitle is-4 has-text-weight-semibold">
             Leaderboard
           </h3>
-          <span v-if="userRanking && pagination && stakeData && stakeData.tierInfo" class="is-pulled-right ml-auto">
-            {{ userRanking }}/{{ pagination.total }}
-            <small v-if="userRanking > stakeData.tierInfo.tiers.find(t => t.tier === 1).number">(Top
-              {{ (userRanking - stakeData.tierInfo.tiers.find(t => t.tier === 1).number)
-                /(pagination.total - stakeData.tierInfo.tiers.find(t => t.tier === 1).number) * 100 }}%)</small>
+          <span
+            v-if="
+              userInfo && userInfo.rank && pagination && stakeData && stakeData.tierInfo"
+            class="is-pulled-right ml-auto"
+          >
+            {{ userInfo.rank }}/{{ pagination.total }}
+            <small v-if="userInfo.rank > stakeData.tierInfo.tiers.find(t => t.tier === 1).number">(Top
+              {{ ((userInfo.rank - stakeData.tierInfo.tiers.find(t => t.tier === 1).number)
+                /(pagination.total - stakeData.tierInfo.tiers.find(t => t.tier === 1).number) * 100).toFixed()
+              }}%)</small>
+
           </span>
         </div>
         <table class="table is-striped is-fullwidth is-hoverable">
@@ -123,6 +137,7 @@
             <tr>
               <th>Place</th>
               <th>Address</th>
+              <th>Unstake days</th>
               <th>xNOS</th>
             </tr>
           </thead>
@@ -130,13 +145,20 @@
             <tr
               v-for="(user, index) in leaderboard"
               :key="user.address"
-              :class="{'user-ranking': userRanking === (index + 1)}"
+              :class="{'user-ranking': userInfo && userInfo.rank === (index + 1)}"
             >
-              <td><span>{{ index+1 }}</span></td>
+              <td class="is-family-monospace">
+                <span>{{ index+1 }}</span>
+              </td>
               <td class="blockchain-address">
                 {{ user.address }}
               </td>
-              <td>{{ parseFloat(user.xnos / 1e6).toFixed() }}</td>
+              <td class="is-family-monospace">
+                {{ parseInt(user.duration/(3600*24)) }}
+              </td>
+              <td class="is-family-monospace">
+                {{ parseFloat(user.xnos / 1e6).toFixed() }}
+              </td>
             </tr>
             <tr
               v-if="!leaderboard || !leaderboard.length"
@@ -150,17 +172,29 @@
               </td>
             </tr>
             <tr
-              v-if="leaderboard && userRanking && userRanking > leaderboard.length && stakeData"
+              v-if="leaderboard && userInfo && userInfo.rank > leaderboard.length && stakeData"
               class="user-ranking"
             >
-              <td><span>{{ userRanking }}</span></td>
-              <td class="blockchain-address">
-                {{ stakeData.address }}
+              <td class="is-family-monospace" :class="{'ranking-jump-up' : userInfo.rank > (leaderboard.length + 1)}">
+                <span>{{ userInfo.rank }}</span>
               </td>
-              <td>{{ parseFloat(stakeData.xnos / 1e6).toFixed() }}</td>
+              <td class="blockchain-address">
+                {{ userInfo.address }}
+              </td>
+              <td class="is-family-monospace">
+                {{ parseInt(userInfo.duration/(3600*24)) }}
+              </td>
+              <td class="is-family-monospace">
+                {{ parseFloat(userInfo.xnos / 1e6).toFixed() }}
+              </td>
             </tr>
           </tbody>
         </table>
+        <div class="is-fullwidth has-text-centered has-text-weight-semibold">
+          <nuxt-link to="/stake/leaderboard" class="has-text-accent">
+            See all
+          </nuxt-link>
+        </div>
       </div>
       <!-- <pagination-helper
         v-if="leaderboard && leaderboard.length > 0 && pagination"
@@ -180,15 +214,44 @@ export default {
       activeTier: null,
       leaderboard: null,
       queryPage: this.$route.query.page || 1,
-      pagination: null
+      pagination: null,
+      userInfo: null,
+      expectedTier: null,
+      refreshNextTier: false
     };
+  },
+  computed: {
+    nextTier () {
+      let tier;
+      // eslint-disable-next-line no-unused-expressions
+      this.refreshNextTier;
+      if (this.stakeData && this.stakeData.tierInfo) {
+        if (this.$refs.carousel) {
+          tier =
+          this.stakeData.tierInfo.tiers[this.stakeData.tierInfo.tiers.length - this.$refs.carousel.currentIndex - 1];
+        }
+        if (this.expectedTier) {
+          if (!tier || tier.tier >= this.expectedTier) {
+            tier = this.stakeData.tierInfo.tiers.find(e => e.tier === this.expectedTier - 1);
+          }
+        } else if (!tier) {
+          tier =
+            this.stakeData.tierInfo.tiers[this.stakeData.tierInfo.tiers.length - 1];
+        }
+      }
+
+      return tier;
+    }
   },
   watch: {
     xnos (xnos) {
-      if (this.stakeData && this.stakeData.tierInfo && this.stakeData.tierInfo.tiers && this.$refs.carousel) {
+      if (!xnos || !parseFloat(xnos)) {
+        this.expectedTier = null;
+      } else if (this.stakeData && this.stakeData.tierInfo && this.stakeData.tierInfo.tiers && this.$refs.carousel) {
         const tiers = this.stakeData.tierInfo.tiers;
         for (let i = 0; i < tiers.length; i++) {
-          if (tiers[i].requiredXNOS / 1e6 <= parseFloat(xnos)) {
+          if (tiers[i].requiredXNOS / 1e6 <= parseFloat(xnos) || i + 1 === tiers.length) {
+            this.expectedTier = tiers[i].tier;
             this.$refs.carousel.goSlide(tiers.length - tiers[i].tier);
             break;
           }
@@ -196,9 +259,15 @@ export default {
       }
     },
     stakeData (stakeData) {
-      if (stakeData.tierInfo && stakeData.tierInfo.userTier && this.$refs.carousel) {
+      if (stakeData.tierInfo && stakeData.tierInfo.userTier) {
         this.activeTier = stakeData.tierInfo.userTier.tier;
-        this.$refs.carousel.goSlide(stakeData.tierInfo.tiers.length - stakeData.tierInfo.userTier.tier);
+        if (this.expectedTier === null) {
+          this.expectedTier = stakeData.tierInfo.userTier.tier;
+        }
+        // if(this.$refs.carousel) {
+        // this.$refs.carousel.goSlide(stakeData.tierInfo.tiers.length - stakeData.tierInfo.userTier.tier);
+        // }
+        this.getLeaderboard(this.queryPage);
       }
     }
   },
@@ -216,7 +285,7 @@ export default {
         );
         this.leaderboard = leaderboard.stakes.data;
         // this.userRanking = 7;
-        this.userRanking = leaderboard.userRanking;
+        this.userInfo = leaderboard.user;
         this.pagination = leaderboard.stakes.pagination;
       } catch (error) {
         console.error(error);
@@ -271,9 +340,8 @@ tr {
     position: relative;
   }
   td:nth-child(2) {
-    text-align: center;
     margin: 0 auto;
-    max-width: 300px;
+    max-width: 250px;
   }
   td span:first-child {
     &:after {
@@ -309,14 +377,64 @@ tr:nth-child(3) td span:first-child {
     background: #F2994A;
   }
 }
-
-.next-tier {
+.next-tier-wrap {
   margin: 0 auto;
   margin-top: -10px;
   max-width: 300px;
   width: 100%;
-  // span:first-child {
-  //   font-size: ;
-  // }
+  overflow: hidden;
+  position: relative;
+}
+
+.next-tier {
+  box-shadow: inset 0px 1px 12px 10px white;
+}
+
+.ranking-jump-up {
+  position:relative;
+  &:before {
+    content: '⋮';
+    position: absolute;
+    display: block;
+    top: -15px;
+    left: 15px;
+    z-index: 1;
+  }
+}
+.tier-bg {
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  position: absolute;
+  font-size: 100px;
+  -webkit-text-stroke-width: 2px;
+  -webkit-text-stroke-color: rgba(0,0,0,.1);
+  color: transparent;
+  bottom: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 100%;
+  &:before {
+    top: 50%;
+    transform: translateY(-50%);
+    content: " ";
+    position:absolute;
+    height: 100%;
+    width: 60px;
+  }
+  &-next {
+    right: -10px;
+    &:before {
+      right: 5px;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,1) 100%);
+    }
+  }
+  &-prev {
+    left: -10px;
+    &:before {
+      left: 5px;
+      background: linear-gradient(90deg, rgba(255,255,255,1) 0%, transparent 100%);
+    }
+  }
 }
 </style>

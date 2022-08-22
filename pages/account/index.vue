@@ -8,9 +8,14 @@
         <div class="columns">
           <div v-if="user" class="column is-4">
             <div class="is-flex is-align-items-flex-start is-justify-content-flex-start">
-              <div class="project-icon mr-4">
-                <img v-if="user.image" style="height: 32px" :src="user.image">
-              </div>
+              <figure class="image is-64x64 mr-4">
+                <img v-if="user.image" :src="user.image" class="is-rounded has-border">
+                <img
+                  v-else-if="userTier"
+                  :src="require(`@/assets/img/tiers/icons/tier${userTier.tier}.png`)"
+                  class="is-rounded has-border"
+                >
+              </figure>
               <div style="max-width: 100%;">
                 <h2 v-if="user.name" class="title is-6 has-text-weight-semibold">
                   {{ user.name }}
@@ -181,6 +186,12 @@ export default {
     };
   },
   computed: {
+    userTier () {
+      return this.$stake && this.$stake.stakeData &&
+      this.$stake.stakeData.tierInfo && this.$stake.stakeData.tierInfo.userTier
+        ? this.$stake.stakeData.tierInfo.userTier
+        : null;
+    },
     loggedIn () {
       return this.$auth && this.$auth.loggedIn;
     },

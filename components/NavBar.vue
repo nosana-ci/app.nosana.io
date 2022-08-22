@@ -38,8 +38,15 @@
           </nuxt-link>
         </div>
         <div v-else class="is-flex is-align-items-flex-start is-justify-content-flex-start">
-          <div class="user-icon mr-4">
-            <img v-if="$auth.user.image" style="height: 26px" :src="$auth.user.image">
+          <div class="mr-4">
+            <figure class="image is-32x32">
+              <img v-if="$auth.user.image" :src="$auth.user.image" class="is-rounded has-border">
+              <img
+                v-else-if="userTier"
+                :src="require(`@/assets/img/tiers/icons/tier${userTier.tier}.png`)"
+                class="is-rounded has-border"
+              >
+            </figure>
           </div>
           <div style="max-width: 100%;">
             <h2 v-if="$auth.user.name" class="title is-6 has-text-weight-semibold">
@@ -59,6 +66,9 @@
                 {{ $auth.user.address }}
               </a>
             </h2>
+            <div class="">
+              <a class="has-text-danger is-size-7" @click.prevent="$sol.logout">Logout</a>
+            </div>
           </div>
         </div>
       </div>
@@ -125,6 +135,12 @@ export default {
     return { mobileMenu: false };
   },
   computed: {
+    userTier () {
+      return this.$stake && this.$stake.stakeData &&
+      this.$stake.stakeData.tierInfo && this.$stake.stakeData.tierInfo.userTier
+        ? this.$stake.stakeData.tierInfo.userTier
+        : null;
+    },
     loggedIn () {
       return (this.$auth && this.$auth.loggedIn);
     }
@@ -137,16 +153,6 @@ export default {
 font-size: 14px;
 }
 
-.user-icon {
-  border-radius: 100%;
-  background: $secondary;
-  display:flex;
-  justify-content: center;
-  min-width: 40px;
-  height: 40px;
-  align-items: center;
-  border: 1px solid grey;
-}
 .menu-list {
   li {
     margin: 5px 0;
