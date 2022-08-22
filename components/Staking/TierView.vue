@@ -79,7 +79,7 @@
           stakeData.tierInfo"
         class="next-tier-wrap has-shadow box has-background-light has-text-centered mb-6 p-0"
       >
-        <div class="next-tier py-2">
+        <div class="next-tier py-2" @click="requiredXnos(nextTier)">
           <div class="tier-bg tier-bg-prev">
             <span>
               {{ expectedTier }}
@@ -278,6 +278,12 @@ export default {
     this.getLeaderboard(this.queryPage);
   },
   methods: {
+    requiredXnos (tier) {
+      if (tier && tier.tier !== 5) {
+        console.log('emit', tier);
+        this.$emit('rxnos', tier.requiredXNOS);
+      }
+    },
     async getLeaderboard (page) {
       try {
         const leaderboard = await this.$axios.$get(
@@ -388,6 +394,11 @@ tr:nth-child(3) td span:first-child {
 
 .next-tier {
   box-shadow: inset 0px 1px 12px 10px white;
+  border: 1px solid transparent;
+  cursor: pointer;
+  &:hover {
+    border-color: $accent;
+  }
 }
 
 .ranking-jump-up {
