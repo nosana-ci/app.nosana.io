@@ -79,8 +79,16 @@
               :key="user.address + 1"
               class="has-background-dark"
             >
-              <td colspan="4" style="text-align:center">
-                Tier {{ calculateTier(rankings[index] + 1).tier.tier }}
+              <td colspan="4" style="text-align:center;position:relative">
+                <figure class="image is-32x32" style="position: absolute;top: 2px;">
+                  <img
+                    class="is-rounded"
+                    :src="require(`@/assets/img/tiers/tier${calculateTierWithoutEdge(rankings[index] + 1).tier}.svg`)"
+                    style="height: 20px"
+                  >
+                </figure>
+
+                Tier {{ calculateTierWithoutEdge(rankings[index] + 1).tier }}
               </td>
             </tr>
             <tr
