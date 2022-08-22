@@ -123,7 +123,11 @@
             <small class="has-text-black-ter">xNOS needed</small>
           </span>
 
-          <div v-if="stakeData.tierInfo.userTier" class="tier-bg tier-bg-next">
+          <div
+            v-if="stakeData.tierInfo.userTier &&
+              stakeData.tierInfo.tiers.find(e => e.tier === stakeData.tierInfo.userTier.tier - 1)"
+            class="tier-bg tier-bg-next"
+          >
             <span>
               {{ stakeData.tierInfo.tiers.find(e => e.tier === stakeData.tierInfo.userTier.tier - 1).tier }}
             </span>
