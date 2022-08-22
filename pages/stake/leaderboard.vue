@@ -1,62 +1,47 @@
 <template>
   <section class="section">
-    <div v-if="tiers" class="columns">
+    <h3 class="title is-4">
+      Leaderboard
+    </h3>
+    <div v-if="tiers" class="is-flex is-flex-wrap-wrap">
       <div
         v-for="slide in tiers"
         :key="slide.tier"
         :index="tiers.length - slide.tier"
-        class="column"
+        class="column tier-select"
       >
         <div
-          class="box is-clickable has-background-light has-shadow has-radius"
+          class="box is-clickable has-background-light has-shadow has-radius p-0"
           @click="gotoTier(slide)"
         >
-          <div class="columns is-mobile">
-            <div class="column is-5 is-flex is-flex-direction-column">
-              <div class="subtitle is-6 is-size-7-touch has-text-accent">
-                Tier {{ slide.tier }}
-              </div>
-              <div class="title is-6 mb-1 is-size-7-touch">
-                {{ slide.name }}
-              </div>
-              <div style="line-height: 1" class="is-hidden-touch">
-                <span class="is-size-7">
-                  <small>Top<br></small>
-                  <span v-if="slide.tier === 1">{{ slide.number }}</span>
-                  <span v-else>{{
-                    tiers.filter(s=>s.tier !== slide.tier && s.tier < slide.tier)
-                      .reduce((a, o) => a + (o.percentage ? o.percentage : 0), 0) + slide.percentage
-                  }}%
-                    <span v-if="slide.tier > 2">
-                      - {{ tiers.filter(s=>s.tier !== slide.tier && s.tier < slide.tier)
-                        .reduce((a, o) => a + (o.percentage ? o.percentage : 0), 0) }}%
+          <div class="columns is-mobile is-gapless">
+            <div class="column is-flex is-flex-direction-column">
+              <div class="pl-3 py-3 pr-0 tier-wrapper">
+                <div class="subtitle has-text-accent mb-0">
+                  <span class="is-size-7-touch">Tier</span><br class="is-hidden-desktop"> {{ slide.tier }}
+                </div>
+                <div class="title is-5 mb-1 is-hidden-touch mt-2">
+                  {{ slide.name }}
+                </div>
+                <div style="line-height: 1" class="is-hidden-touch">
+                  <span class="is-size-7">
+                    <small>Top</small>
+                    <span v-if="slide.tier === 1">{{ slide.number }}</span>
+                    <span v-else>{{
+                      tiers.filter(s=>s.tier !== slide.tier && s.tier < slide.tier)
+                        .reduce((a, o) => a + (o.percentage ? o.percentage : 0), 0) + slide.percentage
+                    }}%
+                      <span v-if="slide.tier > 2">
+                        - {{ tiers.filter(s=>s.tier !== slide.tier && s.tier < slide.tier)
+                          .reduce((a, o) => a + (o.percentage ? o.percentage : 0), 0) }}%
+                      </span>
                     </span>
                   </span>
-                </span>
-              </div>
-              <div
-                :class="['tier-' + slide.tier]"
-                class="has-text-accent subtitle mt-auto is-size-7 has-border-accent p-1 has-radius is-hidden-touch"
-              >
-                <span v-if="slide.tier === 1">
-                  <b>Guaranteed</b><br>NFT mint token
-                </span>
-                <span v-else-if="slide.tier === 2">
-                  <b class="title has-text-accent is-size-5">15</b> Tickets
-                </span>
-                <span v-else-if="slide.tier === 3">
-                  <b class="title has-text-accent is-size-5">6</b> Tickets
-                </span>
-                <span v-else-if="slide.tier === 4">
-                  <b class="title has-text-accent is-size-5">3</b> Tickets
-                </span>
-                <span v-else-if="slide.tier === 5">
-                  <b class="title has-text-accent is-size-5">1</b> Ticket
-                </span>
+                </div>
               </div>
             </div>
-            <div class="column is-7 is-hidden-touch">
-              <img :src="require(`@/assets/img/tiers/tier${slide.tier}.svg`)">
+            <div class="column is-narrow is-hidden-touch">
+              <img :src="require(`@/assets/img/tiers/tier${slide.tier}.svg`)" style="height: 130px;">
             </div>
           </div>
         </div>
@@ -66,9 +51,6 @@
       v-if="leaderboard && leaderboard.length > 0"
       class="table-container has-background-light p-5 mb-0  has-radius-medium"
     >
-      <h3 class="has-text-centered subtitle is-4 has-text-weight-semibold">
-        Leaderboard
-      </h3>
       <table class="table is-striped is-fullwidth is-hoverable mb-3">
         <thead>
           <tr>
@@ -76,40 +58,45 @@
             <th>Address</th>
             <th>Unstake days</th>
             <th>xNOS</th>
-            <th>Tier</th>
           </tr>
         </thead>
         <tbody>
-          <tr
-            v-if="leaderboard && userInfo && userInfo.rank < rankings[0] + 1"
-            class="user-ranking"
-          >
+          <tr v-if="leaderboard && userInfo && userInfo.rank < rankings[0] + 1" class="user-ranking">
             <td :class="{'ranking-jump-down' : userInfo.rank < rankings[0] - 2}">
               <span>{{ userInfo.rank }}</span>
             </td>
             <td class="blockchain-address">
-              {{ userInfo.address }}
+              tt{{ userInfo.address }}
             </td>
             <td>{{ parseInt(userInfo.duration/(3600*24)) }}</td>
             <td>{{ parseFloat(userInfo.xnos / 1e6).toFixed() }}</td>
-            <td>{{ calculateTier(userInfo.rank).tier.tier }}</td>
           </tr>
-          <tr
+          <template
             v-for="(user, index) in leaderboard"
-            :key="user.address"
-            :class="{'user-ranking': userInfo && userInfo.rank === (rankings[index] + 1),
-                     'first-in-tier' : calculateTier(rankings[index] + 1).firstInTier}"
           >
-            <td :class="['rank-' + (rankings[index] + 1) ]">
-              <span>{{ rankings[index] + 1 }}</span>
-            </td>
-            <td class="blockchain-address">
-              {{ user.address }}
-            </td>
-            <td>{{ parseInt(user.duration/(3600*24)) }}</td>
-            <td>{{ parseFloat(user.xnos / 1e6).toFixed() }}</td>
-            <td>{{ calculateTier(rankings[index] + 1).tier.tier }}</td>
-          </tr>
+            <tr
+              v-if="calculateTier(rankings[index] + 1).firstInTier || index === 0"
+              :key="user.address + 1"
+              class="has-background-dark"
+            >
+              <td colspan="4" style="text-align:center">
+                Tier {{ calculateTier(rankings[index] + 1).tier.tier }}
+              </td>
+            </tr>
+            <tr
+              :key="user.address"
+              :class="{'user-ranking': userInfo && userInfo.rank === (rankings[index] + 1)}"
+            >
+              <td :class="['rank-' + (rankings[index] + 1) ]">
+                <span>{{ rankings[index] + 1 }}</span>
+              </td>
+              <td class="blockchain-address">
+                {{ user.address }}
+              </td>
+              <td>{{ parseInt(user.duration/(3600*24)) }}</td>
+              <td>{{ parseFloat(user.xnos / 1e6).toFixed() }}</td>
+            </tr>
+          </template>
           <tr
             v-if="!leaderboard || !leaderboard.length"
             class="has-text-centered has-text-weight-bold"
@@ -133,7 +120,6 @@
             </td>
             <td>{{ parseInt(userInfo.duration/(3600*24)) }}</td>
             <td>{{ parseFloat(userInfo.xnos / 1e6).toFixed() }}</td>
-            <td>{{ calculateTier(userInfo.rank).tier.tier }}</td>
           </tr>
         </tbody>
       </table>
@@ -233,6 +219,7 @@ export default {
 };
 </script>
 <style scoped lang="scss">
+@import "bulma/sass/utilities/mixins";
   /* Table */
 .table {
   background-color: transparent;
@@ -250,7 +237,24 @@ th {
     text-align: center;
   }
 }
-
+.tier-select {
+  min-width: 250px;
+  max-width: 20%
+}
+@include touch {
+ .tier-select {
+  padding: 5px;
+  min-width: fit-content;
+  .box {
+    box-shadow: none;
+  }
+  .tier-wrapper {
+    text-align: center;
+    padding: 2px 5px !important;
+  }
+  max-width: 20%
+}
+}
 .box {
   &:hover {
     border: 1px solid $accent;
@@ -259,7 +263,15 @@ th {
 
 tr {
   &.first-in-tier {
+    position: relative;
     border-top: 3px dashed $accent;
+    &:before {
+      content: "Tier";
+      display: block;
+      position: absolute;
+      width:100%;
+      background: $grey;
+    }
   }
   &.user-ranking {
     background: rgba(3, 188, 0, 0.1) !important;
