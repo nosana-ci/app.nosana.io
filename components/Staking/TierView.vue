@@ -95,11 +95,13 @@
             <span v-else>Next tier</span>
           </div>
           <span v-if="nextTier" class="has-text-accent is-size-5">
-            {{
-              ((parseFloat(
-                nextTier.requiredXNOS)
-                - parseFloat(xnos)*1e6) / 1e6).toFixed()
-            }}
+            <span v-if="nextTier.tier !== 5">
+              {{
+                ((parseFloat(
+                  nextTier.requiredXNOS)
+                  - parseFloat(xnos)*1e6) / 1e6).toFixed()
+              }}
+            </span>
             <small class="has-text-black-ter">xNOS needed</small>
           </span>
 
@@ -232,6 +234,9 @@ export default {
           if (!tier || tier.tier >= this.expectedTier) {
             tier = this.stakeData.tierInfo.tiers.find(e => e.tier === this.expectedTier - 1);
           }
+        } else if (!tier) {
+          tier =
+            this.stakeData.tierInfo.tiers[this.stakeData.tierInfo.tiers.length - 1];
         }
       }
 
@@ -240,7 +245,9 @@ export default {
   },
   watch: {
     xnos (xnos) {
-      if (this.stakeData && this.stakeData.tierInfo && this.stakeData.tierInfo.tiers && this.$refs.carousel) {
+      if (!xnos || !parseFloat(xnos)) {
+        this.expectedTier = null;
+      } else if (this.stakeData && this.stakeData.tierInfo && this.stakeData.tierInfo.tiers && this.$refs.carousel) {
         const tiers = this.stakeData.tierInfo.tiers;
         for (let i = 0; i < tiers.length; i++) {
           if (tiers[i].requiredXNOS / 1e6 <= parseFloat(xnos) || i + 1 === tiers.length) {
@@ -252,12 +259,11 @@ export default {
       }
     },
     stakeData (stakeData) {
-      if (stakeData.tierInfo && stakeData.tierInfo.tiers && this.expectedTier === null) {
-        this.expectedTier = stakeData.tierInfo.tiers.length;
-      }
       if (stakeData.tierInfo && stakeData.tierInfo.userTier) {
         this.activeTier = stakeData.tierInfo.userTier.tier;
-        this.expectedTier = stakeData.tierInfo.userTier.tier;
+        if (this.expectedTier === null) {
+          this.expectedTier = stakeData.tierInfo.userTier.tier;
+        }
         // if(this.$refs.carousel) {
         // this.$refs.carousel.goSlide(stakeData.tierInfo.tiers.length - stakeData.tierInfo.userTier.tier);
         // }
