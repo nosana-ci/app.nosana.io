@@ -13,6 +13,7 @@
             (activeTier = stakeData.tierInfo.userTier.tier)
             && (stakeData.tierInfo.tiers.length - stakeData.tierInfo.userTier.tier) : 0"
           :height="320"
+          @after-slide-change="refreshNextTier = !refreshNextTier"
         >
           <slide
             v-for="slide in stakeData.tierInfo.tiers"
@@ -80,65 +81,30 @@
       >
         <div class="next-tier py-2">
           <div class="tier-bg tier-bg-prev">
-            <span v-if="stakeData.tierInfo.userTier">
-              {{ stakeData.tierInfo.userTier.tier }}
-            </span>
-            <span v-else>
+            <span>
               {{ expectedTier }}
             </span>
           </div>
-          <p
-            class="has-text-weight-semibold is-size-5 mb-0"
-          >
-            <span
+          <div class="has-text-weight-semibold is-size-5 mb-0">
+            <div
               v-if="stakeData.tierInfo.userTier && stakeData.tierInfo.userTier.tier === 1 || expectedTier === 1"
               class="py-4"
             >
               Top {{ stakeData.tierInfo.tiers.find(t => t.tier === 1).number }}
-            </span>
+            </div>
             <span v-else>Next tier</span>
-          </p>
-          <span
-            v-if="stakeData.tierInfo.userTier
-              && stakeData.tierInfo.tiers.find(e => e.tier === stakeData.tierInfo.userTier.tier - 1)"
-            class="has-text-accent is-size-5"
-          >
+          </div>
+          <span v-if="nextTier" class="has-text-accent is-size-5">
             {{
               ((parseFloat(
-                stakeData.tierInfo.tiers.find(e => e.tier === stakeData.tierInfo.userTier.tier - 1).requiredXNOS)
-                - parseFloat(stakeData.xnos)) / 1e6).toFixed()
-            }}
-            <small class="has-text-black-ter">xNOS needed</small>
-          </span>
-          <!-- if user is not in tier -->
-          <span
-            v-else-if="stakeData.tierInfo.tiers.find(e => e.tier === expectedTier - 1)"
-            class="has-text-accent is-size-5"
-          >
-            {{
-              ((parseFloat(
-                stakeData.tierInfo.tiers.find(e => e.tier === expectedTier - 1).requiredXNOS)
+                nextTier.requiredXNOS)
                 - parseFloat(xnos)*1e6) / 1e6).toFixed()
             }}
             <small class="has-text-black-ter">xNOS needed</small>
           </span>
 
-          <div
-            v-if="stakeData.tierInfo.userTier &&
-              stakeData.tierInfo.tiers.find(e => e.tier === stakeData.tierInfo.userTier.tier - 1)"
-            class="tier-bg tier-bg-next"
-          >
-            <span>
-              {{ stakeData.tierInfo.tiers.find(e => e.tier === stakeData.tierInfo.userTier.tier - 1).tier }}
-            </span>
-          </div>
-          <div
-            v-else-if="stakeData.tierInfo.tiers.find(e => e.tier === expectedTier - 1)"
-            class="tier-bg tier-bg-next"
-          >
-            <span>
-              {{ stakeData.tierInfo.tiers.find(e => e.tier === expectedTier - 1).tier }}
-            </span>
+          <div v-if="nextTier" class="tier-bg tier-bg-next">
+            <span>{{ nextTier.tier }}</span>
           </div>
         </div>
       </div>
@@ -179,12 +145,18 @@
               :key="user.address"
               :class="{'user-ranking': userInfo && userInfo.rank === (index + 1)}"
             >
-              <td><span>{{ index+1 }}</span></td>
+              <td class="is-family-monospace">
+                <span>{{ index+1 }}</span>
+              </td>
               <td class="blockchain-address">
                 {{ user.address }}
               </td>
-              <td>{{ parseInt(user.duration/(3600*24)) }}</td>
-              <td>{{ parseFloat(user.xnos / 1e6).toFixed() }}</td>
+              <td class="is-family-monospace">
+                {{ parseInt(user.duration/(3600*24)) }}
+              </td>
+              <td class="is-family-monospace">
+                {{ parseFloat(user.xnos / 1e6).toFixed() }}
+              </td>
             </tr>
             <tr
               v-if="!leaderboard || !leaderboard.length"
@@ -201,14 +173,18 @@
               v-if="leaderboard && userInfo && userInfo.rank > leaderboard.length && stakeData"
               class="user-ranking"
             >
-              <td :class="{'ranking-jump-up' : userInfo.rank > (leaderboard.length + 1)}">
+              <td class="is-family-monospace" :class="{'ranking-jump-up' : userInfo.rank > (leaderboard.length + 1)}">
                 <span>{{ userInfo.rank }}</span>
               </td>
               <td class="blockchain-address">
                 {{ userInfo.address }}
               </td>
-              <td>{{ parseInt(userInfo.duration/(3600*24)) }}</td>
-              <td>{{ parseFloat(userInfo.xnos / 1e6).toFixed() }}</td>
+              <td class="is-family-monospace">
+                {{ parseInt(userInfo.duration/(3600*24)) }}
+              </td>
+              <td class="is-family-monospace">
+                {{ parseFloat(userInfo.xnos / 1e6).toFixed() }}
+              </td>
             </tr>
           </tbody>
         </table>
@@ -238,8 +214,29 @@ export default {
       queryPage: this.$route.query.page || 1,
       pagination: null,
       userInfo: null,
-      expectedTier: null
+      expectedTier: null,
+      refreshNextTier: false
     };
+  },
+  computed: {
+    nextTier () {
+      let tier;
+      // eslint-disable-next-line no-unused-expressions
+      this.refreshNextTier;
+      if (this.stakeData && this.stakeData.tierInfo) {
+        if (this.$refs.carousel) {
+          tier =
+          this.stakeData.tierInfo.tiers[this.stakeData.tierInfo.tiers.length - this.$refs.carousel.currentIndex - 1];
+        }
+        if (this.expectedTier) {
+          if (!tier || tier.tier >= this.expectedTier) {
+            tier = this.stakeData.tierInfo.tiers.find(e => e.tier === this.expectedTier - 1);
+          }
+        }
+      }
+
+      return tier;
+    }
   },
   watch: {
     xnos (xnos) {
@@ -258,9 +255,12 @@ export default {
       if (stakeData.tierInfo && stakeData.tierInfo.tiers && this.expectedTier === null) {
         this.expectedTier = stakeData.tierInfo.tiers.length;
       }
-      if (stakeData.tierInfo && stakeData.tierInfo.userTier && this.$refs.carousel) {
+      if (stakeData.tierInfo && stakeData.tierInfo.userTier) {
         this.activeTier = stakeData.tierInfo.userTier.tier;
-        this.$refs.carousel.goSlide(stakeData.tierInfo.tiers.length - stakeData.tierInfo.userTier.tier);
+        this.expectedTier = stakeData.tierInfo.userTier.tier;
+        // if(this.$refs.carousel) {
+        // this.$refs.carousel.goSlide(stakeData.tierInfo.tiers.length - stakeData.tierInfo.userTier.tier);
+        // }
         this.getLeaderboard(this.queryPage);
       }
     }

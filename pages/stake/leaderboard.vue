@@ -62,14 +62,21 @@
         </thead>
         <tbody>
           <tr v-if="leaderboard && userInfo && userInfo.rank < rankings[0] + 1" class="user-ranking">
-            <td :class="{'ranking-jump-down' : userInfo.rank < rankings[0] - 2}">
+            <td
+              class="is-family-monospace"
+              :class="{'ranking-jump-down' : userInfo.rank < rankings[0] - 2}"
+            >
               <span>{{ userInfo.rank }}</span>
             </td>
             <td class="blockchain-address">
               tt{{ userInfo.address }}
             </td>
-            <td>{{ parseInt(userInfo.duration/(3600*24)) }}</td>
-            <td>{{ parseFloat(userInfo.xnos / 1e6).toFixed() }}</td>
+            <td class="is-family-monospace">
+              {{ parseInt(userInfo.duration/(3600*24)) }}
+            </td>
+            <td class="is-family-monospace">
+              {{ parseFloat(userInfo.xnos / 1e6).toFixed() }}
+            </td>
           </tr>
           <template
             v-for="(user, index) in leaderboard"
@@ -79,22 +86,35 @@
               :key="user.address + 1"
               class="has-background-dark"
             >
-              <td colspan="4" style="text-align:center">
-                Tier {{ calculateTier(rankings[index] + 1).tier.tier }}
+              <td colspan="4" style="text-align:center;position:relative">
+                <figure class="image is-32x32" style="position: absolute;top: 2px;">
+                  <img
+                    class="is-rounded"
+                    :src="
+                      require(`@/assets/img/tiers/icons/tier${calculateTierWithoutEdge(rankings[index] + 1).tier}.png`)"
+                    style="height: 20px"
+                  >
+                </figure>
+
+                Tier {{ calculateTierWithoutEdge(rankings[index] + 1).tier }}
               </td>
             </tr>
             <tr
               :key="user.address"
               :class="{'user-ranking': userInfo && userInfo.rank === (rankings[index] + 1)}"
             >
-              <td :class="['rank-' + (rankings[index] + 1) ]">
+              <td class="is-family-monospace" :class="['rank-' + (rankings[index] + 1) ]">
                 <span>{{ rankings[index] + 1 }}</span>
               </td>
               <td class="blockchain-address">
                 {{ user.address }}
               </td>
-              <td>{{ parseInt(user.duration/(3600*24)) }}</td>
-              <td>{{ parseFloat(user.xnos / 1e6).toFixed() }}</td>
+              <td class="is-family-monospace">
+                {{ parseInt(user.duration/(3600*24)) }}
+              </td>
+              <td class="is-family-monospace">
+                {{ parseFloat(user.xnos / 1e6).toFixed() }}
+              </td>
             </tr>
           </template>
           <tr
@@ -112,14 +132,21 @@
             v-if="leaderboard && userInfo && userInfo.rank > rankings[leaderboard.length - 1] + 1"
             class="user-ranking"
           >
-            <td :class="{'ranking-jump-up' : userInfo.rank > rankings[leaderboard.length - 1] + 2}">
+            <td
+              class="is-family-monospace"
+              :class="{'ranking-jump-up' : userInfo.rank > rankings[leaderboard.length - 1] + 2}"
+            >
               <span>{{ userInfo.rank }}</span>
             </td>
             <td class="blockchain-address">
               {{ userInfo.address }}
             </td>
-            <td>{{ parseInt(userInfo.duration/(3600*24)) }}</td>
-            <td>{{ parseFloat(userInfo.xnos / 1e6).toFixed() }}</td>
+            <td class="is-family-monospace">
+              {{ parseInt(userInfo.duration/(3600*24)) }}
+            </td>
+            <td class="is-family-monospace">
+              {{ parseFloat(userInfo.xnos / 1e6).toFixed() }}
+            </td>
           </tr>
         </tbody>
       </table>
