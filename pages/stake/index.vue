@@ -10,6 +10,7 @@
     <div class="tile is-ancestor mt-6">
       <div class="tile is-vertical is-parent" style="max-width: 650px">
         <staking-form
+          ref="stakingForm"
           class="tile is-child"
           style="flex-grow: 0"
           :stake-data="stakeData"
@@ -20,7 +21,7 @@
       </div>
 
       <div class="tile is-vertical is-parent">
-        <tier-view class="tile is-child" :stake-data="stakeData" :xnos="xNOS" />
+        <tier-view class="tile is-child" :stake-data="stakeData" :xnos="xNOS" @rxnos="fillStake" />
         <subscribe-view style="flex-grow: 0" class="tile is-child" />
       </div>
     </div>
@@ -76,6 +77,17 @@ export default {
     }
   },
   methods: {
+    fillStake (xnos) {
+      console.log('TEST', this.$refs.stakingForm.xNOS);
+      if (this.$refs.stakingForm.userHasStakedBefore) {
+        this.$refs.stakingForm.topupPopup = true;
+        this.$refs.stakingForm.amount =
+      (((xnos / 1e6) - this.$refs.stakingForm.xNOS) + 1) / this.$refs.stakingForm.multiplier;
+      } else {
+        this.$refs.stakingForm.amount =
+      ((xnos / 1e6) + 1) / this.$refs.stakingForm.multiplier;
+      }
+    },
     updateXNOS (xNOS) {
       this.xNOS = xNOS;
     }
