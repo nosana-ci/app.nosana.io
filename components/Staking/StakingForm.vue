@@ -913,7 +913,7 @@ export default {
       this.loading = false;
     },
     async refreshStake () {
-      await this.$parent.refreshStake();
+      await this.$stake.refreshStake();
     }
   }
 };
