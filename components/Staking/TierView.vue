@@ -158,7 +158,7 @@
                 {{ parseInt(user.duration/(3600*24)) }}
               </td>
               <td class="is-family-monospace">
-                {{ parseFloat(user.xnos / 1e6).toFixed() }}
+                {{ parseFloat(user.xnos / 1e6).toFixed() | formatNumber }}
               </td>
             </tr>
             <tr
@@ -186,7 +186,7 @@
                 {{ parseInt(userInfo.duration/(3600*24)) }}
               </td>
               <td class="is-family-monospace">
-                {{ parseFloat(userInfo.xnos / 1e6).toFixed() }}
+                {{ parseFloat(userInfo.xnos / 1e6).toFixed() | formatNumber }}
               </td>
             </tr>
           </tbody>
@@ -209,6 +209,11 @@
 </template>
 <script>
 export default {
+  filters: {
+    formatNumber (num) {
+      return Number(num).toLocaleString('en-US');
+    }
+  },
   props: ['stakeData', 'xnos'],
   data () {
     return {
