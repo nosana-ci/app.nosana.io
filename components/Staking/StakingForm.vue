@@ -903,50 +903,43 @@ export default {
       this.loading = false;
     },
     async unstake () {
+      // check if user has has reward account
+      const preInstructions = [];
       try {
-        // check if user has has reward account
-        const rewardAcc = (await this.rewardsProgram.account.rewardAccount.fetch(this.accounts.reward)).reflection;
-        console.log('rewardAcc', rewardAcc);
+        const rewardAccount = (await this.rewardsProgram.account.rewardAccount.fetch(this.accounts.reward)).reflection;
+        console.log('User has reward account', rewardAccount);
+        preInstructions.push(
+          // await this.rewardsProgram.methods.claim().accounts(this.accounts).instruction(),
+          await this.rewardsProgram.methods.close().accounts(this.accounts).instruction()
+        );
+      } catch (error) {
+        console.log('Theres no reward account to close');
+      }
+
+      try {
         await this.program.methods
           .unstake()
           .accounts(this.accounts)
-          .preInstructions([await this.rewardsProgram.methods.close().accounts(this.accounts).instruction()])
+          .preInstructions(preInstructions)
           .rpc();
+
+        setTimeout(async () => {
+          await this.refreshStake();
+        }, 1000);
+        this.amount = null;
+        await this.getBalance();
+        this.$modal.show({
+          color: 'success',
+          text: 'Successfully unstaked NOS',
+          title: 'Unstaked'
+        });
       } catch (e) {
-        // if the user does not have reward account, unstake without closing the account
-        if (e.message.includes('Account does not exist')) {
-          console.log('user doesnt have reward account, try unstaking without closing');
-          try {
-            const response = await this.program.methods
-              .unstake()
-              .accounts(this.accounts)
-              .rpc();
-            console.log(response);
-          } catch (error) {
-            this.$modal.show({
-              color: 'danger',
-              text: error,
-              title: 'Error'
-            });
-          }
-        } else {
-          this.$modal.show({
-            color: 'danger',
-            text: e,
-            title: 'Error'
-          });
-        }
+        this.$modal.show({
+          color: 'danger',
+          text: e,
+          title: 'Error'
+        });
       }
-      setTimeout(async () => {
-        await this.refreshStake();
-      }, 1000);
-      this.amount = null;
-      await this.getBalance();
-      this.$modal.show({
-        color: 'success',
-        text: 'Successfully unstaked NOS',
-        title: 'Unstaked'
-      });
       this.loading = false;
     },
     async restake () {
