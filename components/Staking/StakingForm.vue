@@ -2,7 +2,7 @@
   <div class="stake-block">
     <!-- Extend popup -->
     <div class="modal stake-popup" :class="{ 'is-active': extendPopup }">
-      <div class="modal-background" @click="extendPopup = false" />
+      <div class="modal-background" @click="extendPopup = false, amount = 0, extraUnstakeDays = 0" />
       <div v-if="stakeData && stakeData.duration" class="modal-content has-background-white has-radius-medium p-5">
         <h3 class="has-text-centered subtitle is-4 has-text-weight-semibold">
           Extend unstake period
