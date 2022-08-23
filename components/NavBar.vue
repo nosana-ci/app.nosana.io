@@ -49,8 +49,8 @@
             </figure>
           </div>
           <div style="max-width: 100%;">
-            <h2 v-if="$auth.user.firstName" class="title is-6 has-text-weight-semibold">
-              {{ $auth.user.firstName }} {{ $auth.user.lastName }}
+            <h2 v-if="$auth.user.name" class="title is-6 has-text-weight-semibold">
+              {{ $auth.user.name }}
               <nuxt-link to="/account/edit">
                 <i class="fas fa-edit" />
               </nuxt-link>
@@ -107,7 +107,7 @@
               <span class="icon is-medium p-1 m-1 has-radius">
                 <i class="fa-solid fa-coins" />
               </span>
-              Node Hub
+              Staking & Rewards
             </nuxt-link>
           </li>
           <li>
