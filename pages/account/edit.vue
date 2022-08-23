@@ -110,16 +110,6 @@
         </p>
       </div>
 
-      <div class="field has-background-grey-light py-2 px-5 has-radius">
-        <label for="" class="is-small-has-text-grey">Image Link</label>
-        <p class="control is-expanded has-icons-left">
-          <input v-model="image" class="input" type="url" placeholder="https://nosana.io/img/NOS_logo.png">
-          <span class="icon is-small is-left">
-            <i class="fas fa-image" />
-          </span>
-        </p>
-      </div>
-
       <!-- <div class="field has-background-grey-lighter py-2 px-5 has-radius"> -->
         <!-- <label for="" class="is-small has-text-grey">Country</label> -->
         <!-- <multiselect -->
@@ -149,7 +139,17 @@
         </label>
       </div>
 
-      <div v-if="wantToDevelop || wantToEarn" class="field has-background-grey-lighter py-2 px-5 has-radius">
+      <div v-if="wantToDevelop" class="field has-background-grey-light py-2 px-5 has-radius">
+        <label for="" class="is-small-has-text-grey">Image Link</label>
+        <p class="control is-expanded has-icons-left">
+          <input v-model="image" class="input" type="url" placeholder="https://nosana.io/img/NOS_logo.png">
+          <span class="icon is-small is-left">
+            <i class="fas fa-image" />
+          </span>
+        </p>
+      </div>
+
+      <div v-if="wantToDevelop" class="field has-background-grey-lighter py-2 px-5 has-radius">
         <label for="" class="is-small has-text-grey">Description</label>
         <p class="control is-expanded has-icons-left">
           <textarea v-model="description" class="textarea" placeholder="Tell us about yourself" />
