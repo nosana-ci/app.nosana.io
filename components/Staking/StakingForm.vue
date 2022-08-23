@@ -906,14 +906,15 @@ export default {
       this.loading = false;
     },
     async unstake () {
+      this.loading = true;
       // check if user has has reward account
       const preInstructions = [];
       try {
         const rewardAccount = (await this.rewardsProgram.account.rewardAccount.fetch(this.accounts.reward)).reflection;
         console.log('User has reward account', rewardAccount);
         preInstructions.push(
-          await this.rewardsProgram.methods.claim()
-            .accounts({ ...this.accounts, vault: this.rewardVault }).instruction(),
+          // await this.rewardsProgram.methods.claim()
+          //   .accounts({ ...this.accounts, vault: this.rewardVault }).instruction(),
           await this.rewardsProgram.methods.close().accounts(this.accounts).instruction()
         );
       } catch (error) {
