@@ -15,7 +15,7 @@
             Feel free to reach out to <a href="mailto:team@nosana.io">team@nosana.io</a> if you have any questions.
           </p>
         </div>
-        <div v-if="!user || !user.firstName" class="column is-8">
+        <div v-if="!user || !user.name" class="column is-8">
           <div class="columns">
             <div class="column is-one-third">
               <a
@@ -76,7 +76,7 @@
                   <div v-if="user && user.isApproved">
                     <img :src="require('@/assets/img/icons/done.svg')">
                   </div>
-                  <div v-else-if="user && user.firstName">
+                  <div v-else-if="user && user.name">
                     <img :src="require('@/assets/img/icons/running.svg')">
                   </div>
                   <div v-else>

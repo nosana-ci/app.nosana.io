@@ -20,8 +20,8 @@
         <label for="" class="is-small has-text-grey">Profile Completed</label>
         <div class="level py-2">
           <div v-for="(idx, index) in completionArray" :key="index" class="level-item has-text-centered p-1">
-            <progress v-if="index < userCompletion" class="progress is-success is-small" value="100"></progress>
-            <progress v-else class="progress is-success is-small" value="0"></progress>
+            <progress v-if="index < userCompletion" class="progress is-success is-small" value="100" />
+            <progress v-else class="progress is-success is-small" value="0" />
           </div>
         </div>
       </div>
@@ -44,7 +44,7 @@
       <!-- <br> -->
       <!-- <p>Profile completion</p> -->
       <!-- </div> -->
-<!--  -->
+      <!--  -->
       <!-- <div class="field"> -->
       <!-- <div class="buttons is-centered"> -->
       <!-- <button class="button is-medium is-light has-background-grey"> -->
@@ -67,27 +67,27 @@
       <!-- <br> -->
 
       <!-- <div class="field is-horizontal"> -->
-        <!-- <div class="field-body"> -->
-          <!-- <div class="field has-background-grey-lighter py-2 px-5 has-radius"> -->
-            <!-- <label for="" class="is-small has-text-grey">First Name*</label> -->
-            <!-- <p class="control is-expanded has-icons-left"> -->
-              <!-- <input v-model="firstName" class="input" type="text" placeholder="Jane"> -->
-              <!-- <span class="icon is-small is-left"> -->
-                <!-- <i class="fas fa-user" /> -->
-              <!-- </span> -->
-            <!-- </p> -->
-          <!-- </div> -->
-<!--  -->
-          <!-- <div class="field has-background-grey-lighter py-2 px-5 has-radius"> -->
-            <!-- <label for="" class="is-small has-text-grey">Last Name*</label> -->
-            <!-- <p class="control is-expanded has-icons-left"> -->
-              <!-- <input v-model="lastName" class="input" type="text" placeholder="Doe"> -->
-              <!-- <span class="icon is-small is-left"> -->
-                <!-- <i class="fas fa-user" /> -->
-              <!-- </span> -->
-            <!-- </p> -->
-          <!-- </div> -->
-        <!-- </div> -->
+      <!-- <div class="field-body"> -->
+      <!-- <div class="field has-background-grey-lighter py-2 px-5 has-radius"> -->
+      <!-- <label for="" class="is-small has-text-grey">First Name*</label> -->
+      <!-- <p class="control is-expanded has-icons-left"> -->
+      <!-- <input v-model="firstName" class="input" type="text" placeholder="Jane"> -->
+      <!-- <span class="icon is-small is-left"> -->
+      <!-- <i class="fas fa-user" /> -->
+      <!-- </span> -->
+      <!-- </p> -->
+      <!-- </div> -->
+      <!--  -->
+      <!-- <div class="field has-background-grey-lighter py-2 px-5 has-radius"> -->
+      <!-- <label for="" class="is-small has-text-grey">Last Name*</label> -->
+      <!-- <p class="control is-expanded has-icons-left"> -->
+      <!-- <input v-model="lastName" class="input" type="text" placeholder="Doe"> -->
+      <!-- <span class="icon is-small is-left"> -->
+      <!-- <i class="fas fa-user" /> -->
+      <!-- </span> -->
+      <!-- </p> -->
+      <!-- </div> -->
+      <!-- </div> -->
       <!-- </div> -->
 
       <div class="field has-background-grey-lighter py-2 px-5 has-radius">
@@ -121,18 +121,18 @@
       </div>
 
       <!-- <div class="field has-background-grey-lighter py-2 px-5 has-radius"> -->
-        <!-- <label for="" class="is-small has-text-grey">Country</label> -->
-        <!-- <multiselect -->
-          <!-- v-model="country" -->
-          <!-- :options="countries" -->
-          <!-- label="name" -->
-          <!-- placeholder="🗺 Select Country" -->
-          <!-- track-by="code" -->
-        <!-- > -->
-          <!-- <template slot="singleLabel" slot-scope="{ option }"> -->
-            <!-- {{ option.name }} -->
-          <!-- </template> -->
-        <!-- </multiselect> -->
+      <!-- <label for="" class="is-small has-text-grey">Country</label> -->
+      <!-- <multiselect -->
+      <!-- v-model="country" -->
+      <!-- :options="countries" -->
+      <!-- label="name" -->
+      <!-- placeholder="🗺 Select Country" -->
+      <!-- track-by="code" -->
+      <!-- > -->
+      <!-- <template slot="singleLabel" slot-scope="{ option }"> -->
+      <!-- {{ option.name }} -->
+      <!-- </template> -->
+      <!-- </multiselect> -->
       <!-- </div> -->
 
       <div class="field has-background-grey-lighter py-2 px-5 has-radius">
