@@ -468,13 +468,19 @@
 
           <!--- Unstake form --->
           <div v-if="unstakeForm && userHasStakedBefore">
-            <p>
-              Unstake your tokens here. Be aware that after you unstake,
-              you will have to wait till your unstake period ends to claim your tokens<br><br>
-              If you would to unstake now, you can claim your tokens on:
-              {{ $moment().add(stakeData.duration, 'seconds').format('LL') }}
-            </p>
-            <br>
+            <div class="has-text-centered has-limited-width-small is-horizontal-centered mb-6">
+              <h3 class="has-text-centered subtitle is-4 has-text-weight-semibold">
+                Unstake your<br>tokens here.
+              </h3>
+              <p>
+                Be aware that after you unstake,
+                you will have to wait till your unstake period ends to claim your tokens<br><br>
+                If you would to unstake now, you can claim your tokens on:
+              </p>
+              <h1 class="subtitle is-5 mt-4">
+                {{ $moment().add(stakeData.duration, 'seconds').format('LL') }}
+              </h1>
+            </div>
             <form @submit.prevent="unstake">
               <button
                 v-if="!loggedIn"
