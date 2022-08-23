@@ -59,7 +59,7 @@
       <div class="field is-horizontal">
         <div class="field-body">
           <div class="field has-background-grey-lighter py-2 px-5 has-radius">
-            <label for="" class="label is-small has-text-grey">First Name*</label>
+            <label for="" class="is-small has-text-grey">First Name*</label>
             <p class="control is-expanded has-icons-left">
               <input v-model="firstName" class="input" type="text" placeholder="Jane" required>
               <span class="icon is-small is-left">
@@ -69,7 +69,7 @@
           </div>
 
           <div class="field has-background-grey-lighter py-2 px-5 has-radius">
-            <label for="" class="label is-small has-text-grey">Last Name*</label>
+            <label for="" class="is-small has-text-grey">Last Name*</label>
             <p class="control is-expanded has-icons-left">
               <input v-model="lastName" class="input" type="text" placeholder="Doe" required>
               <span class="icon is-small is-left">
@@ -81,7 +81,7 @@
       </div>
 
       <div class="field has-background-grey-lighter py-2 px-5 has-radius">
-        <label for="" class="label is-small has-text-grey">Email Address*</label>
+        <label for="" class="is-small has-text-grey">Email Address*</label>
         <p class="control is-expanded has-icons-left">
           <input v-model="email" class="input" type="email" placeholder="doe@nosana.io" required>
           <span class="icon is-small is-left">
@@ -91,7 +91,7 @@
       </div>
 
       <div class="field has-background-grey-lighter py-2 px-5 has-radius">
-        <label for="" class="label is-small has-text-grey">Country</label>
+        <label for="" class="is-small has-text-grey">Country</label>
         <multiselect
           v-model="country"
           :options="countries"
@@ -106,7 +106,8 @@
       </div>
 
       <div class="field has-background-grey-lighter py-2 px-5 has-radius">
-        <label class="label is-small has-text-grey">I want to:</label>
+        <label class="is-small has-text-grey">I want to:</label>
+        <br>
         <label class="checkbox">
           <input v-model="wantToDevelop" type="checkbox">
           Develop with Nosana
