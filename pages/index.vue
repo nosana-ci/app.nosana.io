@@ -4,6 +4,15 @@
       Welcome to the Nosana Network
     </h1>
     <div>
+      <div class="buttons is-centered p-6 mx-6">
+        <div
+          class="button is-accent is-large has-text-weight-semibold mx-6 px-6"
+          exact-active-class="is-active"
+          @click="$sol.loginModal = true"
+        >
+          Connect Wallet
+        </div>
+      </div>
       <div class="columns">
         <div class="column is-half">
           <p class="block has-limited-width-small has-text-justified is-horizontal-centered">
@@ -33,7 +42,7 @@
             <img src="~assets/img/icons/globe.svg" style="height: 70px;">
           </div>
           <h2 class="subtitle">
-            <b>Account completetion</b>
+            <b>Account completion</b>
           </h2>
           <p class="block is-size-7">
             Make sure to boost your account to 100%.
@@ -41,7 +50,7 @@
             Node support, NFT drops, Rewarddrops & more.
           </p>
           <p class="block mt-auto">
-            <nuxt-link to="/account" class="button is-accent is-wide is-small is-outlined">
+            <nuxt-link to="/account/edit" class="button is-accent is-wide is-small is-outlined">
               <b>Account</b>
             </nuxt-link>
           </p>
@@ -94,18 +103,22 @@
           <div class="has-background-light is-flex mb-5 mt-2 is-align-items-center pl-5" style="max-height:45px">
             <img src="~assets/img/icons/globe.svg" style="height: 70px;">
           </div>
-          <h2 class="subtitle">
-            <b>Nosana WorkFLOWS</b>
+          <h2 v-if="countdown > 0" class="subtitle">
+            <b>Staking rewards protocol starts in {{ countdown }} days</b>
+          </h2>
+          <h2 v-else class="subtitle">
+            <b>Staking rewards is live!</b>
           </h2>
           <p class="block is-size-7">
-            Nosana aims to connect all of your tools to automate every step of your development workflow.
-            Easily deploy to any cloud, create tickets in Jira, or test that brandnew Smart Contract.
-            Use our YAML to create your own custom pipelines.
-            With Nosana’s open source flows available on Nosana’s GitHub the possibilities are endless.
+            Receiving token rewards is one of the major benefits of staking.
+            The reward pool comes from future usage of the network in the form of network fees.
+            As the network is still very much in development, the current rewards pool will come from the mining pool.
+            The Nosana Network has 20 million tokens reserved for network participants.
+            In the first year, a portion of these will be released daily into the reward pool.
           </p>
           <p class="block mt-auto">
-            <nuxt-link to="/repositories/new" class="button is-accent is-wide is-small is-outlined">
-              <b>Add new repository</b>
+            <nuxt-link to="stake" class="button is-accent is-wide is-small is-outlined">
+              <b>Stake</b>
             </nuxt-link>
           </p>
         </div>
@@ -116,7 +129,7 @@
             <img src="~assets/img/icons/globe.svg" style="height: 70px;">
           </div>
           <h2 class="subtitle">
-            <b>The Burner Phones NFT mint</b>
+            <b>The Burner Phone countdown starts soon!</b>
           </h2>
           <p class="block is-size-7">
             We don’t do minting fees – a Burner Phone costs exactly 0 SOL. Are you a Nosana Network user?
@@ -150,3 +163,22 @@
     </div>
   </section>
 </template>
+
+<script>
+export default {
+  data () {
+    return {
+    };
+  },
+  computed: {
+    countdown () {
+      const endDate = new Date('2022-08-29T13:14:15.000Z');
+      const now = new Date();
+      const diff = endDate.getTime() - now.getTime();
+      const diffInDays = Math.floor(diff / (1000 * 60 * 60 * 24));
+      return diffInDays;
+    }
+  }
+};
+
+</script>

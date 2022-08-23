@@ -7,8 +7,11 @@
           <b v-else class="has-text-accent">TestNet</b>
         </h1>
         <p class="has-limited-width-small">
-          Below you can find open-source repositories of projects that are running
-          their pipelines on the Nosana TestNet
+          If it works in a container, it works on the Nosana Network.
+          We can run any container command, letting you ship faster than ever before.
+          All you have to do right now is connect your GitHub account and request your funds.
+          If you have a valid account, we try to release the free testnet credits within 5 days.
+          Feel free to reach out to <a href="mailto:team@nosana.io">team@nosana.io</a> if you have any questions.
         </p>
       </div>
       <div class="column is-8">
