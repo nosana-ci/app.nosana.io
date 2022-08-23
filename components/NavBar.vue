@@ -49,14 +49,14 @@
             </figure>
           </div>
           <div style="max-width: 100%;">
-            <h2 v-if="$auth.user.name" class="title is-6 has-text-weight-semibold">
-              {{ $auth.user.name }}
-              <nuxt-link to="/account?settings=true">
+            <h2 v-if="$auth.user.firstName" class="title is-6 has-text-weight-semibold">
+              {{ $auth.user.firstName }} {{ $auth.user.lastName }}
+              <nuxt-link to="/account/edit">
                 <i class="fas fa-edit" />
               </nuxt-link>
             </h2>
             <h2 v-else class="title is-6 has-text-weight-semibold">
-              <nuxt-link to="/account?settings=true">
+              <nuxt-link to="/account/edit">
                 <i class="fas fa-edit" /> Edit User info
               </nuxt-link>
             </h2>
