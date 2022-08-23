@@ -903,14 +903,26 @@ export default {
       this.loading = false;
     },
     async unstake () {
+      // check if user has has reward account
+      const preInstructions = [];
       try {
-        this.loading = true;
-        const response = await this.program.methods
+        const rewardAccount = (await this.rewardsProgram.account.rewardAccount.fetch(this.accounts.reward)).reflection;
+        console.log('User has reward account', rewardAccount);
+        preInstructions.push(
+          // await this.rewardsProgram.methods.claim().accounts(this.accounts).instruction(),
+          await this.rewardsProgram.methods.close().accounts(this.accounts).instruction()
+        );
+      } catch (error) {
+        console.log('Theres no reward account to close');
+      }
+
+      try {
+        await this.program.methods
           .unstake()
           .accounts(this.accounts)
-          .preInstructions([await this.rewardsProgram.methods.close().accounts(this.accounts).instruction()])
+          .preInstructions(preInstructions)
           .rpc();
-        console.log(response);
+
         setTimeout(async () => {
           await this.refreshStake();
         }, 1000);
@@ -921,10 +933,10 @@ export default {
           text: 'Successfully unstaked NOS',
           title: 'Unstaked'
         });
-      } catch (error) {
+      } catch (e) {
         this.$modal.show({
           color: 'danger',
-          text: error,
+          text: e,
           title: 'Error'
         });
       }
