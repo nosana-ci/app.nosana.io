@@ -214,24 +214,25 @@ export default {
     },
     calculateTierWithoutEdge (rank) {
       if (!this.tiers || !rank) { return null; };
-      let rankPercentage;
       let tier;
-      if (rank > this.tiers.find(t => t.tier === 1).number) {
-        rankPercentage = ((rank - this.tiers.find(t => t.tier === 1).number) /
-                (this.pagination.total - this.tiers.find(t => t.tier === 1).number) * 100).toFixed();
-      } else {
-        tier = this.tiers.find(t => t.tier === 1);
-      }
-      if (!tier) {
-        let percentage = 0;
-        for (let i = 1; i < this.tiers.length; i++) {
-          percentage += this.tiers[i].percentage;
-          if (rankPercentage <= percentage) {
-            tier = this.tiers[i];
+      const top = this.tiers.find(t => t.tier === 1).number;
+      const tierUsers = this.tiers.filter(t => t.tier !== 1)
+        .map(t => ({ ...t, users: Math.ceil(t.percentage / 100.0 * (this.pagination.total - top)) }));
+      console.log(tierUsers);
+      if (rank > top) {
+        let requiredRank = 0;
+        for (let i = 0; i < tierUsers.length; i++) {
+          requiredRank += tierUsers[i].users;
+          console.log(requiredRank);
+          if (rank - top <= requiredRank) {
+            tier = this.tiers.find(t => t.tier === tierUsers[i].tier);
             break;
           }
         }
+      } else {
+        tier = this.tiers.find(t => t.tier === 1);
       }
+
       return tier;
     },
     async getLeaderboard (page) {

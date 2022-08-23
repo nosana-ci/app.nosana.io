@@ -105,7 +105,7 @@
         <p class="control is-expanded has-icons-left">
           <input v-model="email" class="input" type="email" placeholder="doe@nosana.io">
           <span class="icon is-small is-left">
-            <i class="fas fa-envelope" />
+            <i class="fas fa-image" />
           </span>
         </p>
       </div>
@@ -171,14 +171,14 @@
 </template>
 
 <script>
-// import Multiselect from 'vue-multiselect';
+// // import Multiselect from 'vue-multiselect';
 import countries from '@/static/countries.json';
 
 const range = index => [...Array(index).keys()];
 
 export default {
   components: {
-    // Multiselect
+    // // Multiselect
   },
   middleware: 'auth',
   data () {
@@ -236,6 +236,7 @@ export default {
       try {
         const user = await this.$axios.$get('/user');
         this.name = user.name;
+        this.description = user.description;
         this.description = user.description;
         this.firstName = user.firstName;
         this.lastName = user.lastName;
