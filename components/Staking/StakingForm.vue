@@ -625,7 +625,8 @@ export default {
       countdownFinished: false,
       topupPopup: false,
       extendPopup: false,
-      rewardsProgram: null
+      rewardsProgram: null,
+      rewardVault: null
     };
   },
   computed: {
@@ -756,6 +757,8 @@ export default {
         reward: undefined,
         mint
       };
+
+      this.rewardVault = await anchor.web3.PublicKey.findProgramAddress([mint.toBuffer()], rewardsProgramId);
 
       const idl = await anchor.Program.fetchIdl(process.env.NUXT_ENV_STAKE_PROGRAM_ID, this.provider);
       this.program = new anchor.Program(idl, programId, this.provider);
@@ -903,17 +906,25 @@ export default {
       this.loading = false;
     },
     async unstake () {
+      this.loading = true;
       // check if user has has reward account
       const preInstructions = [];
       try {
         const rewardAccount = (await this.rewardsProgram.account.rewardAccount.fetch(this.accounts.reward)).reflection;
         console.log('User has reward account', rewardAccount);
         preInstructions.push(
-          // await this.rewardsProgram.methods.claim().accounts(this.accounts).instruction(),
+          // await this.rewardsProgram.methods.claim()
+          //   .accounts({ ...this.accounts, vault: this.rewardVault }).instruction(),
           await this.rewardsProgram.methods.close().accounts(this.accounts).instruction()
         );
       } catch (error) {
-        console.log('Theres no reward account to close');
+        if (!error.message.includes('Account does not exist')) {
+          this.$modal.show({
+            color: 'danger',
+            text: error,
+            title: 'Error'
+          });
+        }
       }
 
       try {
@@ -933,10 +944,10 @@ export default {
           text: 'Successfully unstaked NOS',
           title: 'Unstaked'
         });
-      } catch (e) {
+      } catch (error) {
         this.$modal.show({
           color: 'danger',
-          text: e,
+          text: error,
           title: 'Error'
         });
       }

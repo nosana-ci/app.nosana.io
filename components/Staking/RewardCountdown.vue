@@ -26,7 +26,7 @@
         </h2>
         <div>
           <client-only>
-            <countdown :end-time="new Date('2022-08-29T13:14:15.000Z')">
+            <countdown :end-time="new Date('2022-08-30T13:00:00.000Z')">
               <span
                 slot="process"
                 slot-scope="{ timeObj }"
@@ -84,8 +84,7 @@ export default {
   computed: {
     expectedRewards () {
       if (!this.totals) { return null; }
-      let totalXnos = this.totals.xnos;
-      console.log('txnos', totalXnos);
+      let totalXnos = parseFloat(this.totals.xnos);
       if (this.stakeData && this.stakeData.amount) {
         totalXnos -= this.stakeData.amount;
       }
