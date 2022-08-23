@@ -110,3 +110,8 @@ export default {
   }
 };
 </script>
+<style scoped lang="scss">
+h2 {
+  font-family: $family-sans-serif;
+}
+</style>
