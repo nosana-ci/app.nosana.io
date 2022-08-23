@@ -50,7 +50,7 @@
             Node support, NFT drops, Rewarddrops & more.
           </p>
           <p class="block mt-auto">
-            <nuxt-link to="/accoun/edit" class="button is-accent is-wide is-small is-outlined">
+            <nuxt-link to="/account/edit" class="button is-accent is-wide is-small is-outlined">
               <b>Account</b>
             </nuxt-link>
           </p>
