@@ -18,12 +18,15 @@
     <form class="mx-auto" style="max-width: 522px;" @submit.prevent="updateUser">
       <div class="field has-background-grey-lighter py-2 px-5 has-radius has-text-centered">
         <label for="" class="is-small has-text-grey">Profile Completed</label>
-        <div class="level is-mobile">
-          <div v-for="(idx, index) in completionArray" :key="index" class="level-item has-text-centered">
-            <progress v-if="index < userCompletion" class="progress is-success is-small" value="100" />
-            <progress v-else class="progress is-success is-small" value="0" />
-          </div>
-        </div>
+        <progress class="progress is-success" :value="userCompletion" :max="100">
+          {{ userCompletion }}
+        </progress>
+        <!-- <div class="level is-mobile"> -->
+          <!-- <div v-for="(idx, index) in completionArray" :key="index" class="level-item has-text-centered"> -->
+            <!-- <progress v-if="index < userCompletion" class="progress is-success is-small mx-1" value="100" /> -->
+            <!-- <progress v-else class="progress is-success is-small" value="0" /> -->
+          <!-- </div> -->
+        <!-- </div> -->
       </div>
 
       <!-- <div class="field has-text-centered p-4 m-4"> -->
@@ -220,7 +223,8 @@ export default {
       ];
     },
     userCompletion () {
-      return this.completionArray.filter(el => (el !== null && el !== undefined) && el !== '' && el !== false).length;
+      const finishedItems = this.completionArray.filter(el => (el !== null && el !== undefined) && el !== '' && el !== false).length;
+      return Math.round(finishedItems / this.completionArray.length * 100);
     }
   },
   created () {
