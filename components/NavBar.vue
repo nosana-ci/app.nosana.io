@@ -29,7 +29,7 @@
           <nuxt-link
             class="button is-accent has-text-weight-semibold has-text-centered"
             exact-active-class="is-active"
-            to="/account"
+            to="/account/edit"
             :class="{'is-outlined': loggedIn}"
           >
             <div class="blockchain-address" style="max-width: 185px;" @click="$sol.loginModal = true">
@@ -76,7 +76,7 @@
         <ul class="menu-list">
           <li>
             <nuxt-link
-              to="/account"
+              to="/account/edit"
               exact-active-class="is-active"
               @click.native="mobileMenu = false;"
             >

@@ -39,7 +39,7 @@
       <div class="column is-one-third">
         <div class="box has-background-white m-3 is-flex is-flex-direction-column" style="height: 100%">
           <div class="has-background-light is-flex mb-5 mt-2 is-align-items-center pl-5" style="max-height:45px">
-            <img src="~assets/img/icons/globe.svg" style="height: 70px;">
+            <img src="~assets/img/icons/account.svg" style="height: 70px;">
           </div>
           <h2 class="subtitle">
             <b>Account completion</b>
@@ -59,7 +59,7 @@
       <div class="column is-one-third">
         <div class="box has-background-white m-3 is-flex is-flex-direction-column" style="height: 100%">
           <div class="has-background-light is-flex mb-5 mt-2 is-align-items-center pl-5" style="max-height:45px">
-            <img src="~assets/img/icons/globe.svg" style="height: 70px;">
+            <img src="~assets/img/icons/pipelines.svg" style="height: 70px;">
           </div>
           <h2 class="subtitle">
             <b>CI/CD Pipelines</b>
@@ -80,7 +80,7 @@
       <div class="column is-one-third">
         <div class="box has-background-white m-3 is-flex is-flex-direction-column" style="height: 100%">
           <div class="has-background-light is-flex mb-5 mt-2 is-align-items-center pl-5" style="max-height:45px">
-            <img src="~assets/img/icons/globe.svg" style="height: 70px;">
+            <img src="~assets/img/icons/nos.svg" style="height: 70px;">
           </div>
           <h2 class="subtitle">
             <b>Staking is live!</b>
@@ -101,7 +101,7 @@
       <div class="column is-one-third">
         <div class="box has-background-white m-3 is-flex is-flex-direction-column" style="height: 100%">
           <div class="has-background-light is-flex mb-5 mt-2 is-align-items-center pl-5" style="max-height:45px">
-            <img src="~assets/img/icons/globe.svg" style="height: 70px;">
+            <img src="~assets/img/icons/nos.svg" style="height: 70px;">
           </div>
           <h2 v-if="countdown > 0" class="subtitle">
             <b>Staking rewards protocol starts in {{ countdown }} days</b>
@@ -126,7 +126,7 @@
       <div class="column is-one-third">
         <div class="box has-background-white m-3 is-flex is-flex-direction-column" style="height: 100%">
           <div class="has-background-light is-flex mb-5 mt-2 is-align-items-center pl-5" style="max-height:45px">
-            <img src="~assets/img/icons/globe.svg" style="height: 70px;">
+            <img src="~assets/img/icons/phone.svg" style="height: 70px;">
           </div>
           <h2 class="subtitle">
             <b>The Burner Phone countdown starts soon!</b>
@@ -145,7 +145,7 @@
       <div class="column is-one-third">
         <div class="box has-background-white m-3 is-flex is-flex-direction-column" style="height: 100%">
           <div class="has-background-light is-flex mb-5 mt-2 is-align-items-center pl-5" style="max-height:45px">
-            <img src="~assets/img/icons/globe.svg" style="height: 70px;">
+            <img src="~assets/img/icons/stats.svg" style="height: 70px;">
           </div>
           <h2 class="subtitle">
             <b>Network Statistics</b>
@@ -171,15 +171,15 @@ export default {
     };
   },
   computed: {
+    loggedIn () {
+      return (this.$auth && this.$auth.loggedIn);
+    },
     countdown () {
       const endDate = new Date('2022-08-29T13:14:15.000Z');
       const now = new Date();
       const diff = endDate.getTime() - now.getTime();
       const diffInDays = Math.floor(diff / (1000 * 60 * 60 * 24));
       return diffInDays;
-    },
-    loggedIn () {
-      return (this.$auth && this.$auth.loggedIn);
     }
   }
 };

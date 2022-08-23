@@ -67,7 +67,7 @@
             <div v-else>
               <nuxt-link
                 class="button is-accent px-5"
-                to="/account"
+                to="/account/edit"
                 exact-active-class="is-active"
                 @click="
                   $sol.loginModal = false;

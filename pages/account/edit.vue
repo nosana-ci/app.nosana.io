@@ -1,9 +1,5 @@
 <template>
   <section class="section">
-    <div class="title is-4">
-      Edit User Profile
-    </div>
-
     <div class="level">
       <div class="level-item has-text-centered">
         <figure class="image is-128x128">
@@ -281,7 +277,7 @@ export default {
         console.log(user);
         this.$auth.fetchUser();
         this.user = user;
-        this.$router.push('/account');
+        // this.$router.push('/account');
       } catch (error) {
         this.$modal.show({
           color: 'danger',
