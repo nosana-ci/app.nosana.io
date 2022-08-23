@@ -107,7 +107,7 @@
               <span class="icon is-medium p-1 m-1 has-radius">
                 <i class="fa-solid fa-coins" />
               </span>
-              Node Hub
+              Staking & Rewards
             </nuxt-link>
           </li>
           <li>
