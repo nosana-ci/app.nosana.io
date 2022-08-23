@@ -126,7 +126,7 @@
           </div>
         </template>
       </div>
-      <div v-if="user" class="mb-6">
+      <div v-if="user && userRepositories && userRepositories.length" class="mb-6">
         <nuxt-link to="/repositories/new" class="button is-accent is-outlined is-pulled-right">
           Add new repository
         </nuxt-link>
