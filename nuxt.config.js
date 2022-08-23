@@ -57,7 +57,9 @@ export default {
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
     { src: '@/plugins/sol.js', mode: 'client' },
+    { src: '@/plugins/stake.js', mode: 'client' },
     { src: '@/plugins/axios.js', mode: 'client' },
+    { src: '@/plugins/countdown.js', mode: 'client' },
     '@/plugins/modal.js'
   ],
 
@@ -98,18 +100,27 @@ export default {
     fullPathRedirect: true,
     redirect: {
       login: '/login',
-      logout: '/login',
+      logout: '/',
       home: false
     },
     plugins: [
-      { src: '~/plugins/axios.js' }
+      { src: '~/plugins/axios.js' },
+      { src: '~/plugins/carousel.js', mode: 'client' }
     ]
   },
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
+    extend (config) {
+      config.module.rules.push({
+        test: /\.mjs$/,
+        include: /node_modules/,
+        type: 'javascript/auto'
+      });
+    },
     transpile: [
       'countup.js',
       'vue-countup-v2',
+      '@solana/spl-token',
       '@solana/wallet-adapter-base',
       '@solana/wallet-adapter-sollet',
       '@solana/wallet-adapter-bitkeep',

@@ -49,6 +49,9 @@ export default (context, inject) => {
 
     },
     methods: {
+      getWallet () {
+        return wallet;
+      },
       connect (adapter) {
         if (adapter) {
           adapter.on('connect', this.onConnect);
@@ -101,6 +104,13 @@ export default (context, inject) => {
           this.getBalance();
 
           this.publicKey = wallet.publicKey.toString();
+          if (context.$auth && context.$auth.loggedIn) {
+            if (context.$auth.user.address === this.publicKey) {
+              this.loginModal = false;
+            } else {
+              context.$auth.logout(true);
+            }
+          }
           // this.loginModal = false
           // if (context.query.redirect) {
           //   context.app.router.push(context.query.redirect)
@@ -201,6 +211,7 @@ export default (context, inject) => {
 
       async logout () {
         await this.switch();
+        context.$stake.clear();
         await context.$auth.logout();
       },
 
