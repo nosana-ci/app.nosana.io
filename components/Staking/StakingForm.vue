@@ -737,7 +737,7 @@ export default {
       const programId = new anchor.web3.PublicKey(process.env.NUXT_ENV_STAKE_PROGRAM_ID);
       const rewardsProgramId = new anchor.web3.PublicKey(process.env.NUXT_ENV_REWARD_PROGRAM_ID);
 
-      const mint = new anchor.web3.PublicKey(process.env.NUXT_ENV_NOS_TOKEN);
+      const mint = new anchor.web3.PublicKey(process.env.NUXT_ENV_NOS_TOKEN_STAKE);
       const accounts = {
         // solana native
         systemProgram: anchor.web3.SystemProgram.programId,
