@@ -904,30 +904,49 @@ export default {
     },
     async unstake () {
       try {
-        this.loading = true;
-        const response = await this.program.methods
+        // check if user has has reward account
+        const rewardAcc = (await this.rewardsProgram.account.rewardAccount.fetch(this.accounts.reward)).reflection;
+        console.log('rewardAcc', rewardAcc);
+        await this.program.methods
           .unstake()
           .accounts(this.accounts)
           .preInstructions([await this.rewardsProgram.methods.close().accounts(this.accounts).instruction()])
           .rpc();
-        console.log(response);
-        setTimeout(async () => {
-          await this.refreshStake();
-        }, 1000);
-        this.amount = null;
-        await this.getBalance();
-        this.$modal.show({
-          color: 'success',
-          text: 'Successfully unstaked NOS',
-          title: 'Unstaked'
-        });
-      } catch (error) {
-        this.$modal.show({
-          color: 'danger',
-          text: error,
-          title: 'Error'
-        });
+      } catch (e) {
+        // if the user does not have reward account, unstake without closing the account
+        if (!e.message.includes('AccountNotInitialized')) {
+          console.log('user doesnt have reward account, try unstaking without closing');
+          try {
+            const response = await this.program.methods
+              .unstake()
+              .accounts(this.accounts)
+              .rpc();
+            console.log(response);
+          } catch (error) {
+            this.$modal.show({
+              color: 'danger',
+              text: error,
+              title: 'Error'
+            });
+          }
+        } else {
+          this.$modal.show({
+            color: 'danger',
+            text: e,
+            title: 'Error'
+          });
+        }
       }
+      setTimeout(async () => {
+        await this.refreshStake();
+      }, 1000);
+      this.amount = null;
+      await this.getBalance();
+      this.$modal.show({
+        color: 'success',
+        text: 'Successfully unstaked NOS',
+        title: 'Unstaked'
+      });
       this.loading = false;
     },
     async restake () {
