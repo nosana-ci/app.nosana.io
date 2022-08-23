@@ -700,7 +700,7 @@ export default {
       }
       const multiplierSeconds = (SECONDS_PER_DAY * 365) / 3; // 4 months
       const multiplier = unstakeTime / multiplierSeconds;
-      const xNOS = (parseFloat(amount) + parseFloat(amount) * multiplier).toFixed(2);
+      const xNOS = !this.stakeEndDate ? (parseFloat(amount) + parseFloat(amount) * multiplier).toFixed(2) : 0;
       this.$emit('x-nos', xNOS);
       return xNOS;
     }

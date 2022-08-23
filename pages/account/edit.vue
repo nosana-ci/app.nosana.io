@@ -10,12 +10,22 @@
     <div class="level">
       <div class="level-item has-text-centered">
         <div class="subtitle">
-          <strong>{{ `${firstName || 'Jane'} ${lastName || 'Doe'}` }}</strong>
+          <strong>{{ name ? name : 'Username' }}</strong>
         </div>
       </div>
     </div>
 
     <form class="mx-auto" style="max-width: 522px;" @submit.prevent="updateUser">
+      <div class="field has-background-grey-lighter py-2 px-5 has-radius has-text-centered">
+        <label for="" class="is-small has-text-grey">Profile Completed</label>
+        <div class="level py-2">
+          <div v-for="(idx, index) in completionArray" :key="index" class="level-item has-text-centered p-1">
+            <progress v-if="index < userCompletion" class="progress is-success is-small" value="100"></progress>
+            <progress v-else class="progress is-success is-small" value="0"></progress>
+          </div>
+        </div>
+      </div>
+
       <!-- <div class="field has-text-centered p-4 m-4"> -->
       <!-- <ul class="steps is-horizontal has-content-centered"> -->
       <!-- <li -->
@@ -56,57 +66,78 @@
       <!-- </div> -->
       <!-- <br> -->
 
-      <div class="field is-horizontal">
-        <div class="field-body">
-          <div class="field has-background-grey-lighter py-2 px-5 has-radius">
-            <label for="" class="label is-small has-text-grey">First Name*</label>
-            <p class="control is-expanded has-icons-left">
-              <input v-model="firstName" class="input" type="text" placeholder="Jane" required>
-              <span class="icon is-small is-left">
-                <i class="fas fa-user" />
-              </span>
-            </p>
-          </div>
+      <!-- <div class="field is-horizontal"> -->
+        <!-- <div class="field-body"> -->
+          <!-- <div class="field has-background-grey-lighter py-2 px-5 has-radius"> -->
+            <!-- <label for="" class="is-small has-text-grey">First Name*</label> -->
+            <!-- <p class="control is-expanded has-icons-left"> -->
+              <!-- <input v-model="firstName" class="input" type="text" placeholder="Jane"> -->
+              <!-- <span class="icon is-small is-left"> -->
+                <!-- <i class="fas fa-user" /> -->
+              <!-- </span> -->
+            <!-- </p> -->
+          <!-- </div> -->
+<!--  -->
+          <!-- <div class="field has-background-grey-lighter py-2 px-5 has-radius"> -->
+            <!-- <label for="" class="is-small has-text-grey">Last Name*</label> -->
+            <!-- <p class="control is-expanded has-icons-left"> -->
+              <!-- <input v-model="lastName" class="input" type="text" placeholder="Doe"> -->
+              <!-- <span class="icon is-small is-left"> -->
+                <!-- <i class="fas fa-user" /> -->
+              <!-- </span> -->
+            <!-- </p> -->
+          <!-- </div> -->
+        <!-- </div> -->
+      <!-- </div> -->
 
-          <div class="field has-background-grey-lighter py-2 px-5 has-radius">
-            <label for="" class="label is-small has-text-grey">Last Name*</label>
-            <p class="control is-expanded has-icons-left">
-              <input v-model="lastName" class="input" type="text" placeholder="Doe" required>
-              <span class="icon is-small is-left">
-                <i class="fas fa-user" />
-              </span>
-            </p>
-          </div>
-        </div>
+      <div class="field has-background-grey-lighter py-2 px-5 has-radius">
+        <label for="" class="is-small has-text-grey">Name</label>
+        <p class="control is-expanded has-icons-left">
+          <input v-model="name" type="text" class="input" placeholder="Nosana">
+          <span class="icon is-small is-left">
+            <i class="fas fa-user" />
+          </span>
+        </p>
       </div>
 
       <div class="field has-background-grey-lighter py-2 px-5 has-radius">
-        <label for="" class="label is-small has-text-grey">Email Address*</label>
+        <label for="" class="is-small has-text-grey">Email Address</label>
         <p class="control is-expanded has-icons-left">
-          <input v-model="email" class="input" type="email" placeholder="doe@nosana.io" required>
+          <input v-model="email" class="input" type="email" placeholder="doe@nosana.io">
           <span class="icon is-small is-left">
             <i class="fas fa-envelope" />
           </span>
         </p>
       </div>
 
-      <div class="field has-background-grey-lighter py-2 px-5 has-radius">
-        <label for="" class="label is-small has-text-grey">Country</label>
-        <multiselect
-          v-model="country"
-          :options="countries"
-          label="name"
-          placeholder="🗺 Select Country"
-          track-by="code"
-        >
-          <template slot="singleLabel" slot-scope="{ option }">
-            {{ option.name }}
-          </template>
-        </multiselect>
+      <div class="field has-background-grey-light py-2 px-5 has-radius">
+        <label for="" class="is-small-has-text-grey">Image Link</label>
+        <p class="control is-expanded has-icons-left">
+          <input v-model="image" class="input" type="url" placeholder="https://nosana.io/img/NOS_logo.png">
+          <span class="icon is-small is-left">
+            <i class="fas fa-image" />
+          </span>
+        </p>
       </div>
 
+      <!-- <div class="field has-background-grey-lighter py-2 px-5 has-radius"> -->
+        <!-- <label for="" class="is-small has-text-grey">Country</label> -->
+        <!-- <multiselect -->
+          <!-- v-model="country" -->
+          <!-- :options="countries" -->
+          <!-- label="name" -->
+          <!-- placeholder="🗺 Select Country" -->
+          <!-- track-by="code" -->
+        <!-- > -->
+          <!-- <template slot="singleLabel" slot-scope="{ option }"> -->
+            <!-- {{ option.name }} -->
+          <!-- </template> -->
+        <!-- </multiselect> -->
+      <!-- </div> -->
+
       <div class="field has-background-grey-lighter py-2 px-5 has-radius">
-        <label class="label is-small has-text-grey">I want to:</label>
+        <label class="is-small has-text-grey">I want to:</label>
+        <br>
         <label class="checkbox">
           <input v-model="wantToDevelop" type="checkbox">
           Develop with Nosana
@@ -116,6 +147,13 @@
           <input v-model="wantToEarn" type="checkbox">
           Earn with Nosana Network
         </label>
+      </div>
+
+      <div v-if="wantToDevelop || wantToEarn" class="field has-background-grey-lighter py-2 px-5 has-radius">
+        <label for="" class="is-small has-text-grey">Description</label>
+        <p class="control is-expanded has-icons-left">
+          <textarea v-model="description" class="textarea" placeholder="Tell us about yourself" />
+        </p>
       </div>
 
       <br>
@@ -133,20 +171,22 @@
 </template>
 
 <script>
-import Multiselect from 'vue-multiselect';
+// import Multiselect from 'vue-multiselect';
 import countries from '@/static/countries.json';
 
 const range = index => [...Array(index).keys()];
 
 export default {
   components: {
-    Multiselect
+    // Multiselect
   },
   middleware: 'auth',
   data () {
     return {
       countries,
       user: null,
+      name: null,
+      description: null,
       firstName: null,
       lastName: null,
       email: null,
@@ -170,6 +210,17 @@ export default {
   computed: {
     loggedIn () {
       return this.$auth && this.$auth.loggedIn;
+    },
+    userTier () {
+      return this.$stake?.stakeData?.tierInfo?.userTier;
+    },
+    completionArray () {
+      return [
+        this.name, this.email, this.wantToDevelop || this.wantToEarn, this.description, this.userTier, this.image
+      ];
+    },
+    userCompletion () {
+      return this.completionArray.filter(el => (el !== null && el !== undefined) && el !== '' && el !== false).length;
     }
   },
   created () {
@@ -181,6 +232,7 @@ export default {
       try {
         const user = await this.$axios.$get('/user');
         this.name = user.name;
+        this.description = user.description;
         this.firstName = user.firstName;
         this.lastName = user.lastName;
         this.email = user.email;
@@ -205,6 +257,7 @@ export default {
       this.loading = true;
       const userUpdate = {
         name: this.name,
+        description: this.description,
         firstName: this.firstName,
         lastName: this.lastName,
         email: this.email,
