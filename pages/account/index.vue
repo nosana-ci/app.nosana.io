@@ -206,43 +206,7 @@ export default {
     this.getUserJobPrices();
   },
   methods: {
-    async getUser () {
-      try {
-        const user = await this.$axios.$get('/user');
-        this.user = user;
-        this.balance = (await this.$sol.getNosBalance(this.user.generated_address)).uiAmount;
-      } catch (error) {
-        this.$modal.show({
-          color: 'danger',
-          text: error,
-          title: 'Error'
-        });
-      }
-    },
-    async getUserJobPrices () {
-      try {
-        const totalCosts = await this.$axios.$get('/user/jobs/price');
-        this.usedBalance = totalCosts / 1e6;
-      } catch (error) {
-        this.$modal.show({
-          color: 'danger',
-          text: error,
-          title: 'Error'
-        });
-      }
-    },
-    async getUserRepositories () {
-      try {
-        const repositories = await this.$axios.$get('/user/repositories');
-        this.repositories = repositories;
-      } catch (error) {
-        this.$modal.show({
-          color: 'danger',
-          text: error,
-          title: 'Error'
-        });
-      }
-    }
+
   }
 
 };
