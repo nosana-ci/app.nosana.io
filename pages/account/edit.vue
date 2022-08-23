@@ -18,8 +18,8 @@
     <form class="mx-auto" style="max-width: 522px;" @submit.prevent="updateUser">
       <div class="field has-background-grey-lighter py-2 px-5 has-radius has-text-centered">
         <label for="" class="is-small has-text-grey">Profile Completed</label>
-        <div class="level py-2">
-          <div v-for="(idx, index) in completionArray" :key="index" class="level-item has-text-centered p-1">
+        <div class="level is-mobile">
+          <div v-for="(idx, index) in completionArray" :key="index" class="level-item has-text-centered">
             <progress v-if="index < userCompletion" class="progress is-success is-small" value="100"></progress>
             <progress v-else class="progress is-success is-small" value="0"></progress>
           </div>
@@ -225,8 +225,12 @@ export default {
   },
   created () {
     this.getUser();
+    this.refreshStake();
   },
   methods: {
+    async refreshStake () {
+      await this.$stake.refreshStake();
+    },
 
     async getUser () {
       try {
