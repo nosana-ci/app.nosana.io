@@ -20,7 +20,7 @@
             :key="slide.tier"
             :index="stakeData.tierInfo.tiers.length - slide.tier"
             class="box has-background-light has-shadow has-radius"
-            :class="{'has-shadow-accent has-border-accent': activeTier === slide.tier}"
+            :class="{'has-shadow-accent has-border-accent is-active': activeTier === slide.tier}"
           >
             <div class="columns is-mobile">
               <div class="column is-4 is-flex is-flex-direction-column">
@@ -66,8 +66,9 @@
                   </span>
                 </div>
               </div>
-              <div class="column is-8">
-                <img :src="require(`@/assets/img/tiers/tier${slide.tier}.svg`)">
+              <div class="column is-8 tier-image">
+                <img v-if="activeTier === slide.tier" :src="require(`@/assets/img/tiers/tier${slide.tier}_active.svg`)">
+                <img v-else :src="require(`@/assets/img/tiers/tier${slide.tier}.svg`)">
               </div>
             </div>
           </slide>
