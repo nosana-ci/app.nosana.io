@@ -19,7 +19,9 @@
               <div style="max-width: 100%;">
                 <h2 v-if="user.name" class="title is-6 has-text-weight-semibold">
                   {{ user.name }}
-                  <a @click.prevent="editUser = true"><i class="fas fa-edit" /></a>
+                  <nuxt-link to="/account/edit">
+                    <i class="fas fa-edit" />
+                  </nuxt-link>
                 </h2>
                 <h2 class="subtitle is-6 mb-1">
                   <a target="_blank" :href="`https://solscan.io/address/${$auth.user.address}`" class="blockchain-address" style="max-width: 140px;">
@@ -83,13 +85,13 @@
                 </nuxt-link>
               </div>
               <div class="column is-one-third">
-                <a
+                <nuxt-link
+                  to="/account/edit"
                   class="box is-secondary step"
                   :class="{'has-background-white': user && repositories
                              && repositories.filter(r => r.user_id === user.user_id).length,
                            'disabled': !(loggedIn && user && repositories
                              && repositories.filter(r => r.user_id === user.user_id).length)}"
-                  @click.stop="editUser = true"
                 >
                   <div class="is-flex is-justify-content-space-between">
                     <div>3</div>
@@ -112,7 +114,7 @@
                     <img v-else src="~assets/img/icons/project_grey.svg">
                     <p>Request Funds</p>
                   </div>
-                </a>
+                </nuxt-link>
               </div>
             </div>
           </div>
@@ -178,7 +180,6 @@ export default {
       discord: null,
       email: null,
       name: null,
-      editUser: false,
       repositories: null,
       commits: null,
       balance: null,
@@ -204,25 +205,12 @@ export default {
       return Math.min(reward + this.usedBalance, 10000);
     }
   },
-  watch: {
-    '$route.query.settings' () {
-      if (this.$route.query.settings) {
-        this.editUser = true;
-      }
-    }
-  },
   created () {
     this.getUser();
     this.getUserRepositories();
     this.getUserJobPrices();
-    if (this.$route.query.settings) {
-      this.editUser = true;
-    }
   },
   methods: {
-    removeQuery () {
-      this.$router.replace({ query: null });
-    },
     async getUser () {
       try {
         const user = await this.$axios.$get('/user');
@@ -264,26 +252,6 @@ export default {
           title: 'Error'
         });
       }
-    },
-    async updateUser () {
-      try {
-        const user = await this.$axios.$post('/user', {
-          name: this.name,
-          image: this.image,
-          description: this.description,
-          discord: this.discord,
-          email: this.email
-        });
-        this.$auth.fetchUser();
-        this.user = user;
-        this.editUser = false;
-      } catch (error) {
-        this.$modal.show({
-          color: 'danger',
-          text: error,
-          title: 'Error'
-        });
-      }
     }
   }
 
@@ -291,17 +259,4 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.modal-card{
-  overflow: auto;
-}
-.project-icon {
-  border-radius: 100%;
-  background: $secondary;
-  display:flex;
-  justify-content: center;
-  min-width: 75px;
-  height: 75px;
-  align-items: center;
-  border: 1px solid grey;
-}
 </style>
