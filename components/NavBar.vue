@@ -49,8 +49,8 @@
             </figure>
           </div>
           <div style="max-width: 100%;">
-            <h2 v-if="$auth.user.name" class="title is-6 has-text-weight-semibold">
-              {{ $auth.user.name }}
+            <h2 v-if="$auth.user.firstName" class="title is-6 has-text-weight-semibold">
+              {{ $auth.user.firstName }} {{ $auth.user.lastName }}
               <nuxt-link to="/account/edit">
                 <i class="fas fa-edit" />
               </nuxt-link>
