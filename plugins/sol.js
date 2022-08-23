@@ -14,7 +14,10 @@ const network = process.env.NUXT_ENV_SOL_NETWORK;
 const NOS_TOKEN_PROGRAM_ID = process.env.NUXT_ENV_NOS_TOKEN;
 
 // You can also provide a custom RPC endpoint
-const endpoint = clusterApiUrl(network);
+let endpoint = network;
+if (!endpoint.includes('http')) {
+  endpoint = clusterApiUrl(network);
+}
 const web3 = new Connection(endpoint, 'confirmed');
 
 // @solana/wallet-adapter-wallets includes all the adapters but supports tree shaking --
