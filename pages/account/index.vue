@@ -17,8 +17,8 @@
                 >
               </figure>
               <div style="max-width: 100%;">
-                <h2 v-if="user.name" class="title is-6 has-text-weight-semibold">
-                  {{ user.name }}
+                <h2 v-if="user.firstName" class="title is-6 has-text-weight-semibold">
+                  {{ user.firstName }} {{ user.lastName }}
                   <nuxt-link to="/account/edit">
                     <i class="fas fa-edit" />
                   </nuxt-link>
@@ -28,7 +28,7 @@
                     {{ $auth.user.address }}
                   </a>
                 </h2>
-                <nuxt-link v-if="!user.name" to="/account/edit">
+                <nuxt-link v-if="!user.firstName" to="/account/edit">
                   <i class="fas fa-edit" /> Edit User info
                 </nuxt-link>
                 <p class="is-size-7 has-overflow-ellipses" style="height: 40px;">
@@ -37,7 +37,7 @@
               </div>
             </div>
           </div>
-          <div v-if="!user || !user.name" class="column is-8">
+          <div v-if="!user || !user.firstName" class="column is-8">
             <div class="columns">
               <div class="column is-one-third">
                 <a
@@ -98,7 +98,7 @@
                     <div v-if="user && user.isApproved">
                       <img :src="require('@/assets/img/icons/done.svg')">
                     </div>
-                    <div v-else-if="user && user.name">
+                    <div v-else-if="user && user.firstName">
                       <img :src="require('@/assets/img/icons/running.svg')">
                     </div>
                     <div v-else>
@@ -175,11 +175,6 @@ export default {
   data () {
     return {
       user: null,
-      image: null,
-      description: null,
-      discord: null,
-      email: null,
-      name: null,
       repositories: null,
       commits: null,
       balance: null,
@@ -214,11 +209,6 @@ export default {
     async getUser () {
       try {
         const user = await this.$axios.$get('/user');
-        this.name = user.name;
-        this.description = user.description;
-        this.discord = user.discord;
-        this.email = user.email;
-        this.image = user.image;
         this.user = user;
         this.balance = (await this.$sol.getNosBalance(this.user.generated_address)).uiAmount;
       } catch (error) {

@@ -228,6 +228,7 @@ export default {
         console.log(user);
         this.$auth.fetchUser();
         this.user = user;
+        this.$router.push('/account');
       } catch (error) {
         this.$modal.show({
           color: 'danger',
