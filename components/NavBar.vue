@@ -51,7 +51,7 @@
           <div style="max-width: 100%;">
             <h2 v-if="$auth.user.name" class="title is-6 has-text-weight-semibold">
               {{ $auth.user.name }}
-              <nuxt-link to="/account?settings=true">
+              <nuxt-link to="/account/edit">
                 <i class="fas fa-edit" />
               </nuxt-link>
             </h2>

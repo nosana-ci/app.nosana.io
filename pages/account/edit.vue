@@ -19,44 +19,44 @@
       </div>
     </div>
 
-    <form class="m-6 px-6">
+    <form class="m-6 px-6" @submit.prevent="updateUser">
       <!-- <div class="field has-text-centered p-4 m-4"> -->
-        <!-- <ul class="steps is-horizontal has-content-centered"> -->
-          <!-- <li -->
-            <!-- v-for="(idx, index) in completionRange" -->
-            <!-- :key="index" -->
-            <!-- class="steps-segment" -->
-            <!-- :class="{ 'is-active': index === completionIndex }" -->
-          <!-- > -->
-            <!-- <span href="#" class="steps-marker"> -->
-              <!-- <span class="icon is-small"> -->
-                <!-- <i class="fa-solid fa-circle-check" /> -->
-              <!-- </span> -->
-            <!-- </span> -->
-          <!-- </li> -->
-        <!-- </ul> -->
-        <!-- <br> -->
-        <!-- <p>Profile completion</p> -->
+      <!-- <ul class="steps is-horizontal has-content-centered"> -->
+      <!-- <li -->
+      <!-- v-for="(idx, index) in completionRange" -->
+      <!-- :key="index" -->
+      <!-- class="steps-segment" -->
+      <!-- :class="{ 'is-active': index === completionIndex }" -->
+      <!-- > -->
+      <!-- <span href="#" class="steps-marker"> -->
+      <!-- <span class="icon is-small"> -->
+      <!-- <i class="fa-solid fa-circle-check" /> -->
+      <!-- </span> -->
+      <!-- </span> -->
+      <!-- </li> -->
+      <!-- </ul> -->
+      <!-- <br> -->
+      <!-- <p>Profile completion</p> -->
       <!-- </div> -->
 
       <!-- <div class="field"> -->
-        <!-- <div class="buttons is-centered"> -->
-          <!-- <button class="button is-medium is-dark"> -->
-            <!-- <span class="icon is-small"> -->
-              <!-- <i class="fab fa-github" /> -->
-            <!-- </span> -->
-          <!-- </button> -->
-          <!-- <button class="button is-medium is-dark"> -->
-            <!-- <span class="icon is-small"> -->
-              <!-- <i class="fab fa-discord" /> -->
-            <!-- </span> -->
-          <!-- </button> -->
-          <!-- <button class="button is-medium is-dark"> -->
-            <!-- <span class="icon is-small"> -->
-              <!-- <i class="fab fa-twitter" /> -->
-            <!-- </span> -->
-          <!-- </button> -->
-        <!-- </div> -->
+      <!-- <div class="buttons is-centered"> -->
+      <!-- <button class="button is-medium is-dark"> -->
+      <!-- <span class="icon is-small"> -->
+      <!-- <i class="fab fa-github" /> -->
+      <!-- </span> -->
+      <!-- </button> -->
+      <!-- <button class="button is-medium is-dark"> -->
+      <!-- <span class="icon is-small"> -->
+      <!-- <i class="fab fa-discord" /> -->
+      <!-- </span> -->
+      <!-- </button> -->
+      <!-- <button class="button is-medium is-dark"> -->
+      <!-- <span class="icon is-small"> -->
+      <!-- <i class="fab fa-twitter" /> -->
+      <!-- </span> -->
+      <!-- </button> -->
+      <!-- </div> -->
       <!-- </div> -->
       <!-- <br> -->
 
@@ -125,13 +125,9 @@
       <br>
 
       <footer class="is-centered buttons has-radius">
-        <button class="button is-fullwidth">
-          Cancel
-        </button>
         <button
           class="button is-fullwidth is-outlined is-accent"
           :class="{ 'is-loading': loading }"
-          @click="updateUser"
         >
           Save
         </button>
