@@ -4,7 +4,7 @@
       Welcome to the Nosana Network
     </h1>
     <div>
-      <div class="buttons is-centered p-6 mx-6">
+      <div v-if="!loggedIn" class="buttons is-centered p-6 mx-6">
         <div
           class="button is-accent is-large has-text-weight-semibold mx-6 px-6"
           exact-active-class="is-active"
@@ -177,6 +177,9 @@ export default {
       const diff = endDate.getTime() - now.getTime();
       const diffInDays = Math.floor(diff / (1000 * 60 * 60 * 24));
       return diffInDays;
+    },
+    loggedIn () {
+      return (this.$auth && this.$auth.loggedIn);
     }
   }
 };
