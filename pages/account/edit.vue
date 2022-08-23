@@ -1,9 +1,5 @@
 <template>
   <section class="section">
-    <div class="title is-4">
-      Edit User Profile
-    </div>
-
     <div class="level">
       <div class="level-item has-text-centered">
         <figure class="image is-128x128">
@@ -19,7 +15,7 @@
       </div>
     </div>
 
-    <form class="m-6 px-6" @submit.prevent="updateUser">
+    <form class="mx-auto" style="max-width: 522px;" @submit.prevent="updateUser">
       <!-- <div class="field has-text-centered p-4 m-4"> -->
       <!-- <ul class="steps is-horizontal has-content-centered"> -->
       <!-- <li -->
@@ -38,22 +34,22 @@
       <!-- <br> -->
       <!-- <p>Profile completion</p> -->
       <!-- </div> -->
-
+<!--  -->
       <!-- <div class="field"> -->
       <!-- <div class="buttons is-centered"> -->
-      <!-- <button class="button is-medium is-dark"> -->
+      <!-- <button class="button is-medium is-light has-background-grey"> -->
       <!-- <span class="icon is-small"> -->
-      <!-- <i class="fab fa-github" /> -->
+      <!-- <i class="fab fa-github fa-font-light" /> -->
       <!-- </span> -->
       <!-- </button> -->
-      <!-- <button class="button is-medium is-dark"> -->
+      <!-- <button class="button is-medium is-light has-background-grey"> -->
       <!-- <span class="icon is-small"> -->
-      <!-- <i class="fab fa-discord" /> -->
+      <!-- <i class="fab fa-discord fa-font-light" /> -->
       <!-- </span> -->
       <!-- </button> -->
-      <!-- <button class="button is-medium is-dark"> -->
+      <!-- <button class="button is-medium is-light has-background-grey"> -->
       <!-- <span class="icon is-small"> -->
-      <!-- <i class="fab fa-twitter" /> -->
+      <!-- <i class="fab fa-twitter fa-font-light" /> -->
       <!-- </span> -->
       <!-- </button> -->
       <!-- </div> -->
@@ -62,8 +58,8 @@
 
       <div class="field is-horizontal">
         <div class="field-body">
-          <div class="field">
-            <label for="" class="label">First Name*</label>
+          <div class="field has-background-grey-lighter py-2 px-5 has-radius">
+            <label for="" class="label is-small has-text-grey">First Name*</label>
             <p class="control is-expanded has-icons-left">
               <input v-model="firstName" class="input" type="text" placeholder="Jane" required>
               <span class="icon is-small is-left">
@@ -72,8 +68,8 @@
             </p>
           </div>
 
-          <div class="field">
-            <label for="" class="label">Last Name*</label>
+          <div class="field has-background-grey-lighter py-2 px-5 has-radius">
+            <label for="" class="label is-small has-text-grey">Last Name*</label>
             <p class="control is-expanded has-icons-left">
               <input v-model="lastName" class="input" type="text" placeholder="Doe" required>
               <span class="icon is-small is-left">
@@ -84,8 +80,8 @@
         </div>
       </div>
 
-      <div class="field">
-        <label for="" class="label">Email Address*</label>
+      <div class="field has-background-grey-lighter py-2 px-5 has-radius">
+        <label for="" class="label is-small has-text-grey">Email Address*</label>
         <p class="control is-expanded has-icons-left">
           <input v-model="email" class="input" type="email" placeholder="doe@nosana.io" required>
           <span class="icon is-small is-left">
@@ -94,8 +90,8 @@
         </p>
       </div>
 
-      <div class="field">
-        <label for="" class="label">Country</label>
+      <div class="field has-background-grey-lighter py-2 px-5 has-radius">
+        <label for="" class="label is-small has-text-grey">Country</label>
         <multiselect
           v-model="country"
           :options="countries"
@@ -109,8 +105,8 @@
         </multiselect>
       </div>
 
-      <div class="field">
-        <label class="label">I want to:</label>
+      <div class="field has-background-grey-lighter py-2 px-5 has-radius">
+        <label class="label is-small has-text-grey">I want to:</label>
         <label class="checkbox">
           <input v-model="wantToDevelop" type="checkbox">
           Develop with Nosana
@@ -228,7 +224,7 @@ export default {
         console.log(user);
         this.$auth.fetchUser();
         this.user = user;
-        this.$router.push('/account');
+        // this.$router.push('/account');
       } catch (error) {
         this.$modal.show({
           color: 'danger',
