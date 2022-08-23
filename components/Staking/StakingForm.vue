@@ -936,6 +936,7 @@ export default {
         const response = await this.program.methods
           .restake()
           .accounts(this.accounts)
+          .postInstructions([await this.rewardsProgram.methods.enter().accounts(this.accounts).instruction()])
           .rpc();
         console.log(response);
         setTimeout(async () => {
