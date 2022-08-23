@@ -81,11 +81,11 @@ export default {
       console.log('TEST', this.$refs.stakingForm.xNOS);
       if (this.$refs.stakingForm.userHasStakedBefore) {
         this.$refs.stakingForm.topupPopup = true;
-        this.$refs.stakingForm.amount =
-      (((xnos / 1e6) - this.$refs.stakingForm.xNOS) + 1) / this.$refs.stakingForm.multiplier;
+        this.$refs.stakingForm.amount = Math.ceil(
+          (((xnos / 1e6) - this.$refs.stakingForm.xNOS) + 1) / this.$refs.stakingForm.multiplier);
       } else {
-        this.$refs.stakingForm.amount =
-      ((xnos / 1e6) + 1) / this.$refs.stakingForm.multiplier;
+        this.$refs.stakingForm.amount = Math.ceil(
+          ((xnos / 1e6) + 1) / this.$refs.stakingForm.multiplier);
       }
     },
     updateXNOS (xNOS) {
