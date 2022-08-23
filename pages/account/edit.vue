@@ -10,12 +10,22 @@
     <div class="level">
       <div class="level-item has-text-centered">
         <div class="subtitle">
-          <strong>{{ name }}</strong>
+          <strong>{{ name ? name : 'Username' }}</strong>
         </div>
       </div>
     </div>
 
     <form class="mx-auto" style="max-width: 522px;" @submit.prevent="updateUser">
+      <div class="field has-background-grey-lighter py-2 px-5 has-radius has-text-centered">
+        <label for="" class="is-small has-text-grey">Profile Completed</label>
+        <div class="level py-2">
+          <div v-for="(idx, index) in completionRange" :key="index" class="level-item has-text-centered p-1">
+            <progress v-if="index < userCompletion" class="progress is-success is-small" value="100"></progress>
+            <progress v-else class="progress is-success is-small" value="0"></progress>
+          </div>
+        </div>
+      </div>
+
       <!-- <div class="field has-text-centered p-4 m-4"> -->
       <!-- <ul class="steps is-horizontal has-content-centered"> -->
       <!-- <li -->
@@ -190,6 +200,15 @@ export default {
   computed: {
     loggedIn () {
       return this.$auth && this.$auth.loggedIn;
+    },
+    userTier () {
+      return this.$stake?.stakeData?.tierInfo?.userTier;
+    },
+    userCompletion () {
+      const completionArray =
+        [this.name, this.email, this.wantToDevelop || this.wantToEarn, this.description, this.userTier];
+      // return this.name, email, iWantTo, description, staking, developerAccountConnected,
+      return completionArray.filter(el => el !== null && el !== undefined).length;
     }
   },
   created () {
