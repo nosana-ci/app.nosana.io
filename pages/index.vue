@@ -180,9 +180,6 @@ export default {
       const diff = endDate.getTime() - now.getTime();
       const diffInDays = Math.floor(diff / (1000 * 60 * 60 * 24));
       return diffInDays;
-    },
-    loggedIn () {
-      return (this.$auth && this.$auth.loggedIn);
     }
   }
 };
