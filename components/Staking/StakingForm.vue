@@ -914,7 +914,7 @@ export default {
           .rpc();
       } catch (e) {
         // if the user does not have reward account, unstake without closing the account
-        if (!e.message.includes('AccountNotInitialized')) {
+        if (e.message.includes('Account does not exist')) {
           console.log('user doesnt have reward account, try unstaking without closing');
           try {
             const response = await this.program.methods
