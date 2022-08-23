@@ -18,8 +18,8 @@
     <form class="mx-auto" style="max-width: 522px;" @submit.prevent="updateUser">
       <div class="field has-background-grey-lighter py-2 px-5 has-radius has-text-centered">
         <label for="" class="is-small has-text-grey">Profile Completed</label>
-        <div class="level py-2">
-          <div v-for="(idx, index) in completionArray" :key="index" class="level-item has-text-centered p-1">
+        <div class="level is-mobile">
+          <div v-for="(idx, index) in completionArray" :key="index" class="level-item has-text-centered">
             <progress v-if="index < userCompletion" class="progress is-success is-small" value="100" />
             <progress v-else class="progress is-success is-small" value="0" />
           </div>
@@ -105,16 +105,6 @@
         <p class="control is-expanded has-icons-left">
           <input v-model="email" class="input" type="email" placeholder="doe@nosana.io">
           <span class="icon is-small is-left">
-            <i class="fas fa-envelope" />
-          </span>
-        </p>
-      </div>
-
-      <div class="field has-background-grey-light py-2 px-5 has-radius">
-        <label for="" class="is-small-has-text-grey">Image Link</label>
-        <p class="control is-expanded has-icons-left">
-          <input v-model="image" class="input" type="url" placeholder="https://nosana.io/img/NOS_logo.png">
-          <span class="icon is-small is-left">
             <i class="fas fa-image" />
           </span>
         </p>
@@ -149,7 +139,17 @@
         </label>
       </div>
 
-      <div v-if="wantToDevelop || wantToEarn" class="field has-background-grey-lighter py-2 px-5 has-radius">
+      <div v-if="wantToDevelop" class="field has-background-grey-light py-2 px-5 has-radius">
+        <label for="" class="is-small-has-text-grey">Image Link</label>
+        <p class="control is-expanded has-icons-left">
+          <input v-model="image" class="input" type="url" placeholder="https://nosana.io/img/NOS_logo.png">
+          <span class="icon is-small is-left">
+            <i class="fas fa-image" />
+          </span>
+        </p>
+      </div>
+
+      <div v-if="wantToDevelop" class="field has-background-grey-lighter py-2 px-5 has-radius">
         <label for="" class="is-small has-text-grey">Description</label>
         <p class="control is-expanded has-icons-left">
           <textarea v-model="description" class="textarea" placeholder="Tell us about yourself" />
@@ -171,14 +171,14 @@
 </template>
 
 <script>
-// import Multiselect from 'vue-multiselect';
+// // import Multiselect from 'vue-multiselect';
 import countries from '@/static/countries.json';
 
 const range = index => [...Array(index).keys()];
 
 export default {
   components: {
-    // Multiselect
+    // // Multiselect
   },
   middleware: 'auth',
   data () {
@@ -225,13 +225,18 @@ export default {
   },
   created () {
     this.getUser();
+    this.refreshStake();
   },
   methods: {
+    async refreshStake () {
+      await this.$stake.refreshStake();
+    },
 
     async getUser () {
       try {
         const user = await this.$axios.$get('/user');
         this.name = user.name;
+        this.description = user.description;
         this.description = user.description;
         this.firstName = user.firstName;
         this.lastName = user.lastName;
