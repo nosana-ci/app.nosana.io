@@ -74,10 +74,9 @@
           </slide>
         </carousel-3d>
       </client-only>
-
       <div
         v-if="stakeData &&
-          stakeData.tierInfo"
+          stakeData.tierInfo && !stakeEndDate"
         class="next-tier-wrap has-shadow box has-background-light has-text-centered mb-6 p-0"
       >
         <div class="next-tier py-2" @click="requiredXnos(nextTier)">
@@ -227,6 +226,9 @@ export default {
     };
   },
   computed: {
+    stakeEndDate () {
+      return this.$stake ? this.$stake.stakeEndDate : null;
+    },
     nextTier () {
       let tier;
       // eslint-disable-next-line no-unused-expressions
