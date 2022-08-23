@@ -17,8 +17,8 @@
                 >
               </figure>
               <div style="max-width: 100%;">
-                <h2 v-if="user.firstName" class="title is-6 has-text-weight-semibold">
-                  {{ user.firstName }} {{ user.lastName }}
+                <h2 v-if="user.name" class="title is-6 has-text-weight-semibold">
+                  {{ user.name }}
                   <nuxt-link to="/account/edit">
                     <i class="fas fa-edit" />
                   </nuxt-link>
@@ -28,7 +28,7 @@
                     {{ $auth.user.address }}
                   </a>
                 </h2>
-                <nuxt-link v-if="!user.firstName" to="/account/edit">
+                <nuxt-link v-if="!user.name" to="/account/edit">
                   <i class="fas fa-edit" /> Edit User info
                 </nuxt-link>
                 <p class="is-size-7 has-overflow-ellipses" style="height: 40px;">
@@ -37,7 +37,7 @@
               </div>
             </div>
           </div>
-          <div v-if="!user || !user.firstName" class="column is-8">
+          <div v-if="!user || !user.name" class="column is-8">
             <div class="columns">
               <div class="column is-one-third">
                 <a
@@ -98,7 +98,7 @@
                     <div v-if="user && user.isApproved">
                       <img :src="require('@/assets/img/icons/done.svg')">
                     </div>
-                    <div v-else-if="user && user.firstName">
+                    <div v-else-if="user && user.name">
                       <img :src="require('@/assets/img/icons/running.svg')">
                     </div>
                     <div v-else>

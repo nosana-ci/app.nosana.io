@@ -103,7 +103,7 @@
             <div class="balance pl-3">
               <span v-if="balance === null" class="is-size-7">Loading..<br></span>
               <span v-else class="is-size-7">NOS Balance<br></span>
-              <span @click="amount = balance">{{ balance }} NOS</span>
+              <span @click="amount = parseInt(balance)">{{ balance }} NOS</span>
               <a v-if="balance === 0" href="https://nosana.io/token" target="_blank" class="is-size-7">Buy NOS tokens</a>
             </div>
             <div class="balance pl-3 ml-6">
@@ -136,7 +136,7 @@
                         class="input has-background-grey-light ml-3 my-3"
                         :max="balance"
                         min="1"
-                        step="0.00000001"
+                        step="0.1"
                         type="number"
                         placeholder="0"
                         style="width: 100px; height: 35px; border: none;"
@@ -147,13 +147,13 @@
                     <div class="buttons are-small">
                       <button
                         class="px-2 mr-1 button is-accent is-outlined has-text-weight-semibold is-uppercase"
-                        @click.prevent="amount = (balance/2)"
+                        @click.prevent="amount = parseInt((balance/2))"
                       >
                         Half
                       </button>
                       <button
                         class="px-2 button is-accent is-outlined has-text-weight-semibold is-uppercase is-size-7"
-                        @click.prevent="amount = balance"
+                        @click.prevent="amount = parseInt(balance)"
                       >
                         Max
                       </button>
@@ -241,7 +241,7 @@
                 <div class="balance pl-3">
                   <span v-if="balance === null" class="is-size-7">Loading..<br></span>
                   <span v-else class="is-size-7">NOS Balance<br></span>
-                  <span @click="amount = balance">{{ balance }} NOS</span>
+                  <span @click="amount = parseInt(balance)">{{ balance }} NOS</span>
                   <a v-if="balance === 0" href="https://nosana.io/token" target="_blank" class="is-size-7">Buy NOS tokens</a>
                 </div>
               </div>
@@ -270,7 +270,7 @@
                             class="input has-background-grey-light ml-3 my-3"
                             :max="balance"
                             min="1"
-                            step="0.00000001"
+                            step="0.1"
                             type="number"
                             placeholder="0"
                             style="width: 100px; height: 35px; border: none;"
@@ -281,13 +281,13 @@
                         <div class="buttons are-small">
                           <button
                             class="px-2 mr-1 button is-accent is-outlined has-text-weight-semibold is-uppercase"
-                            @click.prevent="amount = (balance/2)"
+                            @click.prevent="amount = parseInt((balance/2))"
                           >
                             Half
                           </button>
                           <button
                             class="px-2 button is-accent is-outlined has-text-weight-semibold is-uppercase is-size-7"
-                            @click.prevent="amount = balance"
+                            @click.prevent="amount = parseInt(balance)"
                           >
                             Max
                           </button>
@@ -737,7 +737,7 @@ export default {
       const programId = new anchor.web3.PublicKey(process.env.NUXT_ENV_STAKE_PROGRAM_ID);
       const rewardsProgramId = new anchor.web3.PublicKey(process.env.NUXT_ENV_REWARD_PROGRAM_ID);
 
-      const mint = new anchor.web3.PublicKey(process.env.NUXT_ENV_NOS_TOKEN);
+      const mint = new anchor.web3.PublicKey(process.env.NUXT_ENV_NOS_TOKEN_STAKE);
       const accounts = {
         // solana native
         systemProgram: anchor.web3.SystemProgram.programId,
