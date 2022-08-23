@@ -632,7 +632,7 @@ export default {
   computed: {
     errors () {
       const errors = [];
-      if (this.balance !== null && this.xNOS && parseFloat(this.balance) < this.xNOS) {
+      if (this.balance !== null && this.amount && parseFloat(this.balance) < this.amount) {
         errors.push('Balance too low');
       }
       let unstakeTime;
