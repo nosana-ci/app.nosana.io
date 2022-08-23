@@ -624,7 +624,8 @@ export default {
       unstakeForm: false,
       countdownFinished: false,
       topupPopup: false,
-      extendPopup: false
+      extendPopup: false,
+      rewardsProgram: null
     };
   },
   computed: {
@@ -734,7 +735,7 @@ export default {
 
       const programId = new anchor.web3.PublicKey(process.env.NUXT_ENV_STAKE_PROGRAM_ID);
       const rewardsProgramId = new anchor.web3.PublicKey(process.env.NUXT_ENV_REWARD_PROGRAM_ID);
-      // const rewardsProgramId = new anchor.web3.PublicKey(process.env.NUXT_ENV_REWARD_PROGRAM_ID);
+
       const mint = new anchor.web3.PublicKey(process.env.NUXT_ENV_NOS_TOKEN);
       const accounts = {
         // solana native
@@ -759,6 +760,9 @@ export default {
       const idl = await anchor.Program.fetchIdl(process.env.NUXT_ENV_STAKE_PROGRAM_ID, this.provider);
       this.program = new anchor.Program(idl, programId, this.provider);
 
+      const idlReward = await anchor.Program.fetchIdl(process.env.NUXT_ENV_REWARD_PROGRAM_ID, this.provider);
+      this.rewardsProgram = new anchor.Program(idlReward, rewardsProgramId, this.provider);
+
       [accounts.vault] = await anchor.web3.PublicKey.findProgramAddress(
         [anchor.utils.bytes.utf8.encode('vault'), mint.toBuffer(), userKey.toBuffer()],
         programId
@@ -766,7 +770,7 @@ export default {
 
       [accounts.stats] = await anchor.web3.PublicKey.findProgramAddress(
         [anchor.utils.bytes.utf8.encode('stats')],
-        programId
+        rewardsProgramId
       );
       [accounts.stake] = await anchor.web3.PublicKey.findProgramAddress(
         [anchor.utils.bytes.utf8.encode('stake'), mint.toBuffer(), userKey.toBuffer()],
@@ -844,6 +848,7 @@ export default {
         const response = await this.program.methods
           .stake(new anchor.BN(stakeAmount), new anchor.BN(stakeDurationSeconds))
           .accounts(this.accounts)
+          .postInstructions([await this.rewardsProgram.methods.enter().accounts(this.accounts).instruction()])
           .rpc();
         console.log(response);
         setTimeout(async () => {
@@ -903,6 +908,7 @@ export default {
         const response = await this.program.methods
           .unstake()
           .accounts(this.accounts)
+          .preInstructions([await this.rewardsProgram.methods.close().accounts(this.accounts).instruction()])
           .rpc();
         console.log(response);
         setTimeout(async () => {
@@ -930,6 +936,7 @@ export default {
         const response = await this.program.methods
           .restake()
           .accounts(this.accounts)
+          .postInstructions([await this.rewardsProgram.methods.enter().accounts(this.accounts).instruction()])
           .rpc();
         console.log(response);
         setTimeout(async () => {

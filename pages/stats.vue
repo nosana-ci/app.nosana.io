@@ -50,7 +50,8 @@ export default {
   data () {
     return {
       stats: null,
-      interval: null
+      interval: null,
+      network: process.env.NUXT_ENV_SOL_NETWORK
     };
   },
   created () {

@@ -74,10 +74,9 @@
           </slide>
         </carousel-3d>
       </client-only>
-
       <div
         v-if="stakeData &&
-          stakeData.tierInfo"
+          stakeData.tierInfo && !stakeEndDate"
         class="next-tier-wrap has-shadow box has-background-light has-text-centered mb-6 p-0"
       >
         <div class="next-tier py-2" @click="requiredXnos(nextTier)">
@@ -158,7 +157,7 @@
                 {{ parseInt(user.duration/(3600*24)) }}
               </td>
               <td class="is-family-monospace">
-                {{ parseFloat(user.xnos / 1e6).toFixed() }}
+                {{ parseFloat(user.xnos / 1e6).toFixed() | formatNumber }}
               </td>
             </tr>
             <tr
@@ -186,7 +185,7 @@
                 {{ parseInt(userInfo.duration/(3600*24)) }}
               </td>
               <td class="is-family-monospace">
-                {{ parseFloat(userInfo.xnos / 1e6).toFixed() }}
+                {{ parseFloat(userInfo.xnos / 1e6).toFixed() | formatNumber }}
               </td>
             </tr>
           </tbody>
@@ -209,6 +208,11 @@
 </template>
 <script>
 export default {
+  filters: {
+    formatNumber (num) {
+      return Number(num).toLocaleString('en-US');
+    }
+  },
   props: ['stakeData', 'xnos'],
   data () {
     return {
@@ -222,6 +226,9 @@ export default {
     };
   },
   computed: {
+    stakeEndDate () {
+      return this.$stake ? this.$stake.stakeEndDate : null;
+    },
     nextTier () {
       let tier;
       // eslint-disable-next-line no-unused-expressions
