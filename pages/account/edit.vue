@@ -19,7 +19,7 @@
       <div class="field has-background-grey-lighter py-2 px-5 has-radius has-text-centered">
         <label for="" class="is-small has-text-grey">Profile Completed</label>
         <div class="level py-2">
-          <div v-for="(idx, index) in completionRange" :key="index" class="level-item has-text-centered p-1">
+          <div v-for="(idx, index) in completionArray" :key="index" class="level-item has-text-centered p-1">
             <progress v-if="index < userCompletion" class="progress is-success is-small" value="100"></progress>
             <progress v-else class="progress is-success is-small" value="0"></progress>
           </div>
@@ -106,6 +106,16 @@
           <input v-model="email" class="input" type="email" placeholder="doe@nosana.io">
           <span class="icon is-small is-left">
             <i class="fas fa-envelope" />
+          </span>
+        </p>
+      </div>
+
+      <div class="field has-background-grey-light py-2 px-5 has-radius">
+        <label for="" class="is-small-has-text-grey">Image Link</label>
+        <p class="control is-expanded has-icons-left">
+          <input v-model="image" class="input" type="url" placeholder="https://nosana.io/img/NOS_logo.png">
+          <span class="icon is-small is-left">
+            <i class="fas fa-image" />
           </span>
         </p>
       </div>
@@ -204,11 +214,13 @@ export default {
     userTier () {
       return this.$stake?.stakeData?.tierInfo?.userTier;
     },
+    completionArray () {
+      return [
+        this.name, this.email, this.wantToDevelop || this.wantToEarn, this.description, this.userTier, this.image
+      ];
+    },
     userCompletion () {
-      const completionArray =
-        [this.name, this.email, this.wantToDevelop || this.wantToEarn, this.description, this.userTier];
-      // return this.name, email, iWantTo, description, staking, developerAccountConnected,
-      return completionArray.filter(el => el !== null && el !== undefined).length;
+      return this.completionArray.filter(el => (el !== null && el !== undefined) && el !== '' && el !== false).length;
     }
   },
   created () {
