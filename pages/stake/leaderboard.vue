@@ -91,7 +91,8 @@
                   <img
                     class="is-rounded"
                     :src="
-                      require(`@/assets/img/tiers/icons/tier${calculateTierWithoutEdge(rankings[index] + 1).tier}.png`)"
+                      require(
+                        `@/assets/img/tiers/icons/small/tier${calculateTierWithoutEdge(rankings[index] + 1).tier}.svg`)"
                     style="height: 20px"
                   >
                 </figure>

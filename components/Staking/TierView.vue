@@ -115,7 +115,7 @@
         v-if="leaderboard && leaderboard.length > 0"
         class="table-container has-background-light p-5 mb-0  has-radius-medium"
       >
-        <div class="is-flex">
+        <div class="is-flex is-flex-wrap-wrap">
           <h3 class="has-text-centered subtitle is-4 has-text-weight-semibold">
             Leaderboard
           </h3>

@@ -12,8 +12,8 @@
                 <img v-if="user.image" :src="user.image" class="is-rounded has-border">
                 <img
                   v-else-if="userTier"
-                  :src="require(`@/assets/img/tiers/icons/tier${userTier.tier}.png`)"
-                  class="is-rounded has-border"
+                  :src="require(`@/assets/img/tiers/icons/tier${userTier.tier}.svg`)"
+                  class="is-rounded"
                 >
               </figure>
               <div style="max-width: 100%;">
