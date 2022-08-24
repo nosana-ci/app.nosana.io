@@ -19,7 +19,7 @@
             In this dashboard you can see the pipelines that are running on the Nosana Network.
             You can also create and run your own CI/CD pipelines for your open-source project in the
             <nuxt-link to="/pipelines">
-              Developer Hub
+              Pipelines
             </nuxt-link>
           </p>
         </div>
@@ -72,7 +72,7 @@
           </p>
           <p class="block mt-auto">
             <nuxt-link to="/pipelines" class="button is-accent is-wide is-small is-outlined">
-              <b>Developer Hub</b>
+              <b>Pipelines</b>
             </nuxt-link>
           </p>
         </div>
