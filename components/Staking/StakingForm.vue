@@ -843,7 +843,7 @@ export default {
         color: 'info',
         text:
           'Are you aware you will not have acces to your tokens untill you unstake AND the unstake duration has passed?\n\n' +
-          'For more information about Nosana Staking click <a class="has-text-accent" href="https://nosana.io/staking" target="_blank">here</a>.',
+          'For more information about Nosana Staking click <a class="has-text-accent" href="https://nosana.io/stake" target="_blank">here</a>.',
         title: 'Are you sure you want to stake?',
         onConfirm: () => {
           this.stake();
