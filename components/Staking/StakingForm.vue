@@ -477,7 +477,7 @@
               <p>
                 Be aware that after you unstake,
                 you will have to wait till your unstake period ends to claim your tokens<br><br>
-                If you would to unstake now, you can claim your tokens on:
+                If you were to unstake now, you can claim your tokens on:
               </p>
               <h1 class="subtitle is-5 mt-4">
                 {{ $moment().add(stakeData.duration, 'seconds').format('LL') }}
