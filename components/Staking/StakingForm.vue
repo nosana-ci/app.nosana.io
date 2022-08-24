@@ -251,7 +251,7 @@
             <!--- Form --->
             <form
               v-if="!userHasStakedBefore"
-              @submit.prevent="stake"
+              @submit.prevent="stakeConfirm"
             >
               <div class="mt-5 columns is-multiline">
                 <div class="column">
@@ -837,6 +837,18 @@ export default {
         });
       }
       this.loading = false;
+    },
+    stakeConfirm () {
+      this.$modal.show({
+        color: 'info',
+        text:
+          'Are you aware you will not have acces to your tokens untill you unstake AND the unstake duration has passed?\n\n' +
+          'For more information about Nosana Staking click <a class="has-text-accent" href="https://nosana.io/staking" target="_blank">here</a>.',
+        title: 'Are you sure you want to stake?',
+        onConfirm: () => {
+          this.stake();
+        }
+      });
     },
     async stake () {
       if (this.userHasStakedBefore && this.amount) {
