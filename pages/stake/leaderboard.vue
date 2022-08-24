@@ -171,7 +171,6 @@ export default {
       return Number(num).toLocaleString('en-US');
     }
   },
-  middleware: 'auth',
   data () {
     return {
       loading: false,
@@ -218,12 +217,10 @@ export default {
       const top = this.tiers.find(t => t.tier === 1).number;
       const tierUsers = this.tiers.filter(t => t.tier !== 1)
         .map(t => ({ ...t, users: Math.ceil(t.percentage / 100.0 * (this.pagination.total - top)) }));
-      console.log(tierUsers);
       if (rank > top) {
         let requiredRank = 0;
         for (let i = 0; i < tierUsers.length; i++) {
           requiredRank += tierUsers[i].users;
-          console.log(requiredRank);
           if (rank - top <= requiredRank) {
             tier = this.tiers.find(t => t.tier === tierUsers[i].tier);
             break;

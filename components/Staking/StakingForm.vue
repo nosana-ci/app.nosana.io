@@ -363,7 +363,7 @@
                 <button
                   v-if="!loggedIn"
                   class="button is-accent is-outlined has-text-weight-semibold"
-                  @click.stop.prevent="$sol.loginModal = true"
+                  @click.stop.prevent="$sol.loginModal = true; $sol.skipLogin = true"
                 >
                   Connect Wallet
                 </button>

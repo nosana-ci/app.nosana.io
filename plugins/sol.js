@@ -45,7 +45,8 @@ export default (context, inject) => {
         wallets,
         error: null,
         token: null,
-        user: null
+        user: null,
+        skipLogin: false
       };
     },
     created () {

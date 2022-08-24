@@ -40,7 +40,6 @@ export default {
     SubscribeView,
     TierView
   },
-  middleware: 'auth',
   data () {
     return {
       loading: false,
@@ -78,7 +77,6 @@ export default {
   },
   methods: {
     fillStake (xnos) {
-      console.log('TEST', this.$refs.stakingForm.xNOS);
       if (this.$refs.stakingForm.userHasStakedBefore) {
         this.$refs.stakingForm.topupPopup = true;
         this.$refs.stakingForm.amount = Math.ceil(

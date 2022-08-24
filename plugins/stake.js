@@ -30,7 +30,8 @@ export default (context, inject) => {
         this.stakeDataEnd = null;
       },
       async refreshStake () {
-        const stakeData = await context.$axios.$get('/user/stake');
+        const userAddress = context.$sol && context.$sol.publicKey ? `?userAddress=${context.$sol.publicKey}` : '';
+        const stakeData = await context.$axios.$get('/user/stake' + userAddress);
         if (stakeData && stakeData.user_id && parseInt(stakeData.time_unstake) !== 0 && parseInt(stakeData.time_unstake) !== '00') {
           this.stakeEndDate = context.$moment.unix(stakeData.time_unstake).add(stakeData.duration, 's');
           // this.stakeEndDate = this.$moment.unix(1659698174);
