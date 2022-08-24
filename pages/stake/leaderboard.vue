@@ -69,7 +69,7 @@
               <span>{{ userInfo.rank }}</span>
             </td>
             <td class="blockchain-address">
-              tt{{ userInfo.address }}
+              {{ userInfo.address }}
             </td>
             <td class="is-family-monospace">
               {{ parseInt(userInfo.duration/(3600*24)) }}
