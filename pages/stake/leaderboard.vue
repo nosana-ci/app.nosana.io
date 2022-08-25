@@ -69,7 +69,7 @@
               <span>{{ userInfo.rank }}</span>
             </td>
             <td class="blockchain-address">
-              tt{{ userInfo.address }}
+              {{ userInfo.address }}
             </td>
             <td class="is-family-monospace">
               {{ parseInt(userInfo.duration/(3600*24)) }}
@@ -196,7 +196,7 @@ export default {
           const percentage = this.tiers.filter(s => s.tier !== tier.tier && s.tier < tier.tier)
             .reduce((a, o) => a + (o.percentage ? o.percentage : 0), 0) / 100;
           const top = this.tiers.find(t => t.tier === 1).number;
-          const position = percentage * (this.pagination.total - top) + top;
+          const position = percentage * (this.pagination.total - top) + top + 1;
           page = Math.ceil(position / parseInt(this.pagination.perPage));
         }
         if (page !== parseInt(this.pagination.currentPage)) {

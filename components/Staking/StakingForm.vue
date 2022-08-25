@@ -251,7 +251,7 @@
             <!--- Form --->
             <form
               v-if="!userHasStakedBefore"
-              @submit.prevent="stake"
+              @submit.prevent="stakeConfirm"
             >
               <div class="mt-5 columns is-multiline">
                 <div class="column">
@@ -813,6 +813,9 @@ export default {
         const response = await this.program.methods
           .topup(new anchor.BN(stakeAmount))
           .accounts(this.accounts)
+          .postInstructions([
+            await this.rewardsProgram.methods
+              .sync().accounts({ ...this.accounts, vault: this.rewardVault }).instruction()])
           .rpc();
         console.log(response);
         setTimeout(async () => {
@@ -837,6 +840,18 @@ export default {
         });
       }
       this.loading = false;
+    },
+    stakeConfirm () {
+      this.$modal.show({
+        color: 'info',
+        text:
+          'Are you aware you will not have acces to your tokens untill you unstake AND the unstake duration has passed?\n\n' +
+          'For more information about Nosana Staking click <a class="has-text-accent" href="https://nosana.io/stake" target="_blank">here</a>.',
+        title: 'Are you sure you want to stake?',
+        onConfirm: () => {
+          this.stake();
+        }
+      });
     },
     async stake () {
       if (this.userHasStakedBefore && this.amount) {
@@ -882,7 +897,11 @@ export default {
         const response = await this.program.methods
           .extend(new anchor.BN(stakeDurationSeconds))
           .accounts(this.accounts)
+          .postInstructions([
+            await this.rewardsProgram.methods
+              .sync().accounts({ ...this.accounts, vault: this.rewardVault }).instruction()])
           .rpc();
+
         console.log(response);
         setTimeout(async () => {
           await this.refreshStake();
