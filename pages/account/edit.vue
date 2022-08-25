@@ -11,7 +11,7 @@
             alt=""
             srcset=""
           >
-          <img v-else class="is-rounded" src="https://nosana.io/img/NOS_logo.png" alt="" srcset="">
+          <img v-else class="is-rounded" :src="require(`@/assets/img/default-profile.svg`)" alt="" srcset="">
         </figure>
       </div>
     </div>
