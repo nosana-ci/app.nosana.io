@@ -6,17 +6,6 @@
     >
       <div class="has-text-centered py-6">
         <div v-if="expectedRewards !== null" class="box has-text-centered mb-6">
-          <p
-            v-if="(stakeData && stakeData.amount) ||
-              ($parent.$refs.stakingForm && $parent.$refs.stakingForm.amount)"
-            class="is-pulled-right"
-          >
-            APY
-            {{ ((expectedRewards*365) /
-              ((stakeData && stakeData.amount ? (stakeData.amount / 1e6) : 0) +
-                ($parent.$refs.stakingForm && $parent.$refs.stakingForm.amount) ?
-                  $parent.$refs.stakingForm.amount : 0) * 100).toFixed(1) }}%
-          </p>
           <p>Expected daily rewards</p>
           <h2 class="title is-3 has-text-success mb-0">
             <ICountUp
@@ -31,6 +20,17 @@
             />
           </h2>
           <p>NOS</p>
+          <p
+            v-if="(stakeData && stakeData.amount) ||
+              ($parent.$refs.stakingForm && $parent.$refs.stakingForm.amount)"
+            class="has-text-centered is-italic is-size-7"
+          >
+            APY
+            {{ ((expectedRewards*365) /
+              ((stakeData && stakeData.amount ? (stakeData.amount / 1e6) : 0) +
+                ($parent.$refs.stakingForm && $parent.$refs.stakingForm.amount) ?
+                  $parent.$refs.stakingForm.amount : 0) * 100).toFixed(1) }}%
+          </p>
         </div>
         <h2 class="subtitle">
           <b>Reward program starting in</b>
