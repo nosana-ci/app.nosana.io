@@ -813,6 +813,9 @@ export default {
         const response = await this.program.methods
           .topup(new anchor.BN(stakeAmount))
           .accounts(this.accounts)
+          .postInstructions([
+            await this.rewardsProgram.methods
+              .sync().accounts({ ...this.accounts, vault: this.rewardVault }).instruction()])
           .rpc();
         console.log(response);
         setTimeout(async () => {
@@ -894,7 +897,11 @@ export default {
         const response = await this.program.methods
           .extend(new anchor.BN(stakeDurationSeconds))
           .accounts(this.accounts)
+          .postInstructions([
+            await this.rewardsProgram.methods
+              .sync().accounts({ ...this.accounts, vault: this.rewardVault }).instruction()])
           .rpc();
+
         console.log(response);
         setTimeout(async () => {
           await this.refreshStake();
