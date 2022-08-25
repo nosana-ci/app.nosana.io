@@ -3,7 +3,15 @@
     <div class="level">
       <div class="level-item has-text-centered">
         <figure class="image is-128x128">
-          <img class="is-rounded" src="https://nosana.io/img/NOS_logo.png" alt="" srcset="">
+          <img v-if="image" class="is-rounded" :src="image" alt="" srcset="">
+          <img
+            v-else-if="userTier"
+            class="is-rounded"
+            :src="require(`@/assets/img/tiers/icons/tier${userTier.tier}.svg`)"
+            alt=""
+            srcset=""
+          >
+          <img v-else class="is-rounded" :src="require(`@/assets/img/default-profile.svg`)" alt="" srcset="">
         </figure>
       </div>
     </div>
