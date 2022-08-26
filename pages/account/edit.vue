@@ -148,6 +148,11 @@
           <input v-model="wantToEarn" type="checkbox">
           Earn with Nosana Network
         </label>
+        <br>
+        <label class="checkbox">
+          <input v-model="wantToParticipateNft" type="checkbox">
+          Participate in the next free NFT raffle
+        </label>
       </div>
 
       <div v-if="wantToDevelop" class="field has-background-grey-light py-2 px-5 has-radius">
@@ -207,6 +212,7 @@ export default {
       country: null,
       wantToDevelop: null,
       wantToEarn: null,
+      wantToParticipateNft: null,
       image: null,
       completionIndex: 0,
       balance: null,
@@ -227,7 +233,9 @@ export default {
     },
     completionArray () {
       return [
-        this.name, this.email, this.wantToDevelop || this.wantToEarn, this.description, this.userTier, this.image
+        this.name, this.email,
+        this.wantToDevelop || this.wantToEarn || this.wantToParticipateNft,
+        this.description, this.userTier, this.image
       ];
     },
     userCompletion () {
@@ -259,6 +267,7 @@ export default {
         this.country = JSON.parse(user.country);
         this.wantToDevelop = user.wantToDevelop;
         this.wantToEarn = user.wantToEarn;
+        this.wantToParticipateNft = user.wantToParticipateNft;
         this.image = user.image;
         this.completionIndex = user.completionIndex ?? 0;
       } catch (error) {
@@ -284,6 +293,7 @@ export default {
         country: this.country,
         wantToDevelop: this.wantToDevelop,
         wantToEarn: this.wantToEarn,
+        want_to_participate_nft: this.wantToParticipateNft,
         image: this.image,
         completionIndex: this.completionIndex
       };
