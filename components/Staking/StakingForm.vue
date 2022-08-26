@@ -1087,7 +1087,6 @@ export default {
       flex-wrap:wrap;
       align-items: center;
       .box {
-        width: calc(50% - 20px);
         margin: 5px 10px !important;
       }
     }
