@@ -20,6 +20,17 @@
             />
           </h2>
           <p>NOS</p>
+          <p
+            v-if="(stakeData && stakeData.amount) ||
+              ($parent.$refs.stakingForm && $parent.$refs.stakingForm.amount)"
+            class="has-text-centered is-italic is-size-7"
+          >
+            APY
+            {{ ((expectedRewards*365) /
+              ((stakeData && stakeData.amount ? (stakeData.amount / 1e6) : 0) +
+                ($parent.$refs.stakingForm && $parent.$refs.stakingForm.amount) ?
+                  $parent.$refs.stakingForm.amount : 0) * 100).toFixed(1) }}%
+          </p>
         </div>
         <h2 class="subtitle">
           <b>Reward program starting in</b>
