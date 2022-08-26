@@ -258,16 +258,16 @@ export default {
         this.name = user.name;
         this.description = user.description;
         this.description = user.description;
-        this.firstName = user.firstName;
-        this.lastName = user.lastName;
+        this.firstName = user.first_name;
+        this.lastName = user.last_name;
         this.email = user.email;
         this.discord = user.discord;
         this.github = user.github;
         this.twitter = user.twitter;
         this.country = JSON.parse(user.country);
-        this.wantToDevelop = user.wantToDevelop;
-        this.wantToEarn = user.wantToEarn;
-        this.wantToParticipateNft = user.wantToParticipateNft;
+        this.wantToDevelop = user.want_to_develop;
+        this.wantToEarn = user.want_to_earn;
+        this.wantToParticipateNft = user.want_to_participate_nft;
         this.image = user.image;
         this.completionIndex = user.completionIndex ?? 0;
       } catch (error) {
@@ -293,7 +293,7 @@ export default {
         country: this.country,
         wantToDevelop: this.wantToDevelop,
         wantToEarn: this.wantToEarn,
-        want_to_participate_nft: this.wantToParticipateNft,
+        wantToParticipateNft: this.wantToParticipateNft,
         image: this.image,
         completionIndex: this.completionIndex
       };
