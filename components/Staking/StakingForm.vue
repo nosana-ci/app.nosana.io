@@ -254,7 +254,7 @@
               @submit.prevent="stakeConfirm"
             >
               <div class="mt-5 columns is-multiline">
-                <div class="column">
+                <div class="column" style="min-width:fit-content">
                   <div class="form-inputs has-background-grey-lighter has-radius-medium p-3 pt-5">
                     <div class="field has-background-grey-light has-radius-medium">
                       <div
@@ -316,11 +316,11 @@
                 </div>
 
                 <!-- (New) Scores -->
-                <div class="column is-one-third scores">
+                <div class="column scores first-stake">
                   <div
                     class="has-background-grey-lighter has-radius-medium p-3"
                   >
-                    <div class="box has-text-centered">
+                    <div class="box has-text-centered" style="min-width: 149px">
                       <h2 class="title is-3 has-text-success mb-0">
                         <ICountUp
                           :end-val="parseFloat(xNOS)"
@@ -335,7 +335,7 @@
                       </h2>
                       <p>xNOS score</p>
                     </div>
-                    <div class="box has-text-centered mb-3">
+                    <div class="box has-text-centered mb-3" style="min-width: 149px">
                       <h2 class="title is-4 has-text-success mb-0">
                         <ICountUp
                           :end-val="parseFloat(multiplier)"
@@ -1077,6 +1077,20 @@ export default {
   }
   .box {
     border: none;
+  }
+}
+@media only screen and (max-width: 1618px) {
+  .first-stake {
+    > div {
+      display:flex;
+      justify-content: center;
+      flex-wrap:wrap;
+      align-items: center;
+      .box {
+        width: calc(50% - 20px);
+        margin: 5px 10px !important;
+      }
+    }
   }
 }
 
