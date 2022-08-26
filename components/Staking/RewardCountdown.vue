@@ -28,8 +28,8 @@
             APY
             {{ ((expectedRewards*365) /
               ((stakeData && stakeData.amount ? (stakeData.amount / 1e6) : 0) +
-                ($parent.$refs.stakingForm && $parent.$refs.stakingForm.amount) ?
-                  $parent.$refs.stakingForm.amount : 0) * 100).toFixed(1) }}%
+                (($parent.$refs.stakingForm && $parent.$refs.stakingForm.amount) ?
+                  parseInt($parent.$refs.stakingForm.amount) : 0)) * 100).toFixed(1) }}%
           </p>
         </div>
         <h2 class="subtitle">
