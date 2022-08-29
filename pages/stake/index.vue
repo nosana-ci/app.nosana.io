@@ -16,8 +16,9 @@
           :stake-data="stakeData"
           :stake-end-date="stakeEndDate"
           @x-nos="updateXNOS"
+          @reward-info="updateRewardInfo"
         />
-        <reward-countdown :xnos="xNOS" :stake-data="stakeData" class="tile is-child" />
+        <reward-countdown :xnos="xNOS" :stake-data="stakeData" :reward-info="rewardInfo" class="tile is-child" />
       </div>
 
       <div class="tile is-vertical is-parent">
@@ -53,7 +54,8 @@ export default {
       extendStake: false,
       unstakeForm: false,
       countdownFinished: false,
-      xNOS: null
+      xNOS: null,
+      rewardInfo: null
     };
   },
   computed: {
@@ -88,6 +90,9 @@ export default {
     },
     updateXNOS (xNOS) {
       this.xNOS = xNOS;
+    },
+    updateRewardInfo (info) {
+      this.rewardInfo = info;
     }
   }
 };

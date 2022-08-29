@@ -789,6 +789,14 @@ export default {
       await this.refreshStake();
       this.loading = false;
       this.accounts = accounts;
+
+      const globalStats = await this.rewardsProgram.account.statsAccount.fetch(accounts.stats);
+      const rewardAccount = await this.rewardsProgram.account.rewardAccount.fetch(this.accounts.reward);
+      const rewardInfo = {
+        global: globalStats,
+        rewardAccount
+      };
+      this.$emit('reward-info', rewardInfo);
       this.getBalance();
     },
     async getBalance () {

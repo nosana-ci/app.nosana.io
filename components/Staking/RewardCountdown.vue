@@ -32,12 +32,12 @@
                   parseInt($parent.$refs.stakingForm.amount) : 0)) * 100).toFixed(1) }}%
           </p>
         </div>
-        <h2 class="subtitle">
+        <h2 v-if="!countdownFinished" class="subtitle">
           <b>Reward program starting in</b>
         </h2>
         <div>
           <client-only>
-            <countdown :end-time="new Date('2022-08-30T13:00:00.000Z')">
+            <countdown :end-time="date" @onFinish="finish()">
               <span
                 slot="process"
                 slot-scope="{ timeObj }"
@@ -70,7 +70,26 @@
 
               </span>
               <span slot="finish">
-                <h1 class="title">Now LIVE</h1>
+                <h2 class="subtitle">
+                  <b>Claim your rewards</b>
+                </h2>
+                Rewards: {{ reward }}
+                <button
+                  v-if="!loggedIn"
+                  class="button is-accent is-fullwidth mt-5 has-text-weight-semibold"
+                  @click.stop.prevent="$sol.loginModal = true"
+                >
+                  Connect Wallet
+                </button>
+                <button
+                  v-else
+                  class="button is-accent is-fullwidth mt-5 has-text-weight-semibold"
+                  :class="{'is-loading': loading}"
+                  :disabled="reward == 0"
+                  @click="claimRewards"
+                >
+                  Claim rewards
+                </button>
               </span>
             </countdown>
           </client-only>
@@ -86,13 +105,23 @@ export default {
   components: {
     ICountUp
   },
-  props: ['xnos', 'stakeData'],
+  props: ['xnos', 'stakeData', 'rewardInfo'],
   data () {
     return {
-      totals: null
+      totals: null,
+      date: new Date('2022-08-30T13:00:00.000Z'),
+      loading: false
     };
   },
   computed: {
+    countdownFinished: {
+      get () {
+        return new Date() > this.date;
+      },
+      set (val) {
+        this.countdownFinished = val;
+      }
+    },
     expectedRewards () {
       if (!this.totals) { return null; }
       let totalXnos = parseFloat(this.totals.xnos);
@@ -100,12 +129,42 @@ export default {
         totalXnos -= this.stakeData.amount;
       }
       return ((this.xnos * 1e6) / (totalXnos + (this.xnos * 1e6))) * (8000000 / 365);
+    },
+    loggedIn () {
+      return this.$sol && this.$sol.publicKey;
+    },
+    reward () {
+      console.log('rewardInfo', this.rewardInfo);
+      // #########STEP 1 with 2 users in reward pool
+      // total_xnos = 200
+      // total_reflection=2000
+      // rate = 2000/200 = 10
+
+      // user1:
+      // 100xnos
+      // reflection=1000
+      // if claimed: 1000/10 - 100 = 0
+      let reward = 0;
+      if (this.rewardInfo) {
+        reward = (this.rewardInfo.rewardAccount.reflection / this.rewardInfo.global.rate) -
+        this.rewardInfo.rewardAccount.xnos;
+
+        console.log(this.rewardInfo.rewardAccount.reflection.toString(), this.rewardInfo.global.rate.toString(),
+          this.rewardInfo.rewardAccount.xnos.toString());
+      }
+      return reward;
     }
   },
   mounted () {
     this.getStakeTotals();
   },
   methods: {
+    finish () {
+      this.countdownFinished = true;
+    },
+    async claimRewards () {
+      await console.log('claim rewards here');
+    },
     async getStakeTotals () {
       try {
         this.totals = await this.$axios.$get('/stake/totals');
