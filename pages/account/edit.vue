@@ -269,7 +269,7 @@ export default {
         this.wantToEarn = user.want_to_earn;
         this.wantToParticipateNft = user.want_to_participate_nft;
         this.image = user.image;
-        this.completionIndex = user.completionIndex ?? 0;
+        this.completionIndex = user.completion_index ?? 0;
       } catch (error) {
         this.$modal.show({
           color: 'danger',
