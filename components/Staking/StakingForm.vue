@@ -742,6 +742,7 @@ export default {
       const programId = new anchor.web3.PublicKey(process.env.NUXT_ENV_STAKE_PROGRAM_ID);
       const rewardsProgramId = new anchor.web3.PublicKey(process.env.NUXT_ENV_REWARD_PROGRAM_ID);
       const poolProgramId = new anchor.web3.PublicKey(process.env.NUXT_ENV_POOL_PROGRAM_ID);
+      const poolId = new anchor.web3.PublicKey(process.env.NUXT_ENV_POOL_ID);
 
       const mint = new anchor.web3.PublicKey(process.env.NUXT_ENV_NOS_TOKEN_STAKE);
       const accounts = {
@@ -765,7 +766,10 @@ export default {
       };
 
       [this.rewardVault] = await anchor.web3.PublicKey.findProgramAddress([mint.toBuffer()], rewardsProgramId);
-      [this.poolVault] = await anchor.web3.PublicKey.findProgramAddress([mint.toBuffer()], poolProgramId);
+      [this.poolVault] = await anchor.web3.PublicKey.findProgramAddress(
+        [anchor.utils.bytes.utf8.encode('vault'), poolId.toBuffer()],
+        poolProgramId
+      );
 
       const idl = await anchor.Program.fetchIdl(process.env.NUXT_ENV_STAKE_PROGRAM_ID, this.provider);
       this.program = new anchor.Program(idl, programId, this.provider);
@@ -799,18 +803,22 @@ export default {
       this.accounts = accounts;
       this.poolAccounts = {
         ...this.accounts,
-        pool: poolProgramId,
+        pool: poolId,
         vault: this.poolVault,
         rewardsVault: this.rewardVault,
-        rewardsStats: this.accounts.stats
+        rewardsStats: this.accounts.stats,
+        rewardsProgram: rewardsProgramId
       };
 
+      const poolInfo = await this.poolProgram.account.poolAccount.fetch(process.env.NUXT_ENV_POOL_ID);
       const globalStats = await this.rewardsProgram.account.statsAccount.fetch(accounts.stats);
       const rewardAccount = await this.rewardsProgram.account.rewardAccount.fetch(this.accounts.reward);
       const rewardInfo = {
         global: globalStats,
         rewardAccount
       };
+      console.log('poolInfo', poolInfo);
+      console.log('poolInfo emission', poolInfo.emission.toString());
       this.$emit('reward-info', rewardInfo);
       this.getBalance();
     },
@@ -836,11 +844,11 @@ export default {
         const response = await this.program.methods
           .topup(new anchor.BN(stakeAmount))
           .accounts(this.accounts)
-          // .preInstructions([
-          //   await this.poolProgram.methods
-          //     .claimFee()
-          //     .accounts(this.poolAccounts)
-          // ])
+          .preInstructions([
+            await this.poolProgram.methods
+              .claimFee()
+              .accounts(this.poolAccounts).instruction()
+          ])
           .postInstructions([
             await this.rewardsProgram.methods
               .sync().accounts({ ...this.accounts, vault: this.rewardVault }).instruction()])
@@ -896,6 +904,11 @@ export default {
         const response = await this.program.methods
           .stake(new anchor.BN(stakeAmount), new anchor.BN(stakeDurationSeconds))
           .accounts(this.accounts)
+          .preInstructions([
+            await this.poolProgram.methods
+              .claimFee()
+              .accounts(this.poolAccounts).instruction()
+          ])
           .postInstructions([await this.rewardsProgram.methods.enter().accounts(this.accounts).instruction()])
           .rpc();
         console.log(response);
@@ -925,6 +938,11 @@ export default {
         const response = await this.program.methods
           .extend(new anchor.BN(stakeDurationSeconds))
           .accounts(this.accounts)
+          .preInstructions([
+            await this.poolProgram.methods
+              .claimFee()
+              .accounts(this.poolAccounts).instruction()
+          ])
           .postInstructions([
             await this.rewardsProgram.methods
               .sync().accounts({ ...this.accounts, vault: this.rewardVault }).instruction()])
@@ -962,6 +980,9 @@ export default {
         const rewardAccount = (await this.rewardsProgram.account.rewardAccount.fetch(this.accounts.reward)).reflection;
         console.log('User has reward account', rewardAccount);
         preInstructions.push(
+          await this.poolProgram.methods
+            .claimFee()
+            .accounts(this.poolAccounts).instruction(),
           await this.rewardsProgram.methods
             .claim()
             .accounts({ ...this.accounts, vault: this.rewardVault }).instruction(),
@@ -1009,6 +1030,11 @@ export default {
         const response = await this.program.methods
           .restake()
           .accounts(this.accounts)
+          .preInstructions([
+            await this.poolProgram.methods
+              .claimFee()
+              .accounts(this.poolAccounts).instruction()
+          ])
           .postInstructions([await this.rewardsProgram.methods.enter().accounts(this.accounts).instruction()])
           .rpc();
         console.log(response);
@@ -1032,7 +1058,6 @@ export default {
       this.loading = false;
     },
     async claimRewards () {
-      console.log('lets goo claim rewards');
       try {
         const response = await this.rewardsProgram.methods
           .claim()

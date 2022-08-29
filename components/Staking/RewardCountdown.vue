@@ -153,7 +153,6 @@ export default {
     this.getStakeTotals();
     if (!this.interval) {
       this.interval = setInterval(() => {
-        console.log('refreshing rewards..');
         this.calculateRewards();
       }, 1000);
     }
