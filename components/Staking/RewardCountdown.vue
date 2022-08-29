@@ -115,7 +115,7 @@ export default {
       nosPerSecond: 8000000 / (365 * 3600 * 24),
       lastClaim: new Date('2022-08-29T13:00:00.000'),
       interval: null,
-      rate: this.rewardInfo ? this.rewardInfo.global.rate : 0
+      rate: this.rewardInfo ? this.rewardInfo.global.rate : null
     };
   },
   computed: {
@@ -141,7 +141,7 @@ export default {
     reward () {
       let reward = 0;
       if (this.countdownFinished) {
-        if (this.rewardInfo) {
+        if (this.rewardInfo && this.rate) {
           reward = (this.rewardInfo.rewardAccount.reflection / this.rate) -
           this.rewardInfo.rewardAccount.xnos;
         }
