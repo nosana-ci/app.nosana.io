@@ -551,6 +551,7 @@
 
                     </span>
                     <span slot="finish">
+                      <!-- TODO: add claim button -->
                       <h1 class="title">Now LIVE</h1>
                     </span>
                   </countdown>
@@ -628,7 +629,9 @@ export default {
       topupPopup: false,
       extendPopup: false,
       rewardsProgram: null,
-      rewardVault: null
+      rewardVault: null,
+      poolProgram: null,
+      poolAccounts: null
     };
   },
   computed: {
@@ -738,6 +741,7 @@ export default {
 
       const programId = new anchor.web3.PublicKey(process.env.NUXT_ENV_STAKE_PROGRAM_ID);
       const rewardsProgramId = new anchor.web3.PublicKey(process.env.NUXT_ENV_REWARD_PROGRAM_ID);
+      const poolProgramId = new anchor.web3.PublicKey(process.env.NUXT_ENV_POOL_PROGRAM_ID);
 
       const mint = new anchor.web3.PublicKey(process.env.NUXT_ENV_NOS_TOKEN_STAKE);
       const accounts = {
@@ -760,13 +764,17 @@ export default {
         mint
       };
 
-      this.rewardVault = await anchor.web3.PublicKey.findProgramAddress([mint.toBuffer()], rewardsProgramId);
+      [this.rewardVault] = await anchor.web3.PublicKey.findProgramAddress([mint.toBuffer()], rewardsProgramId);
+      [this.poolVault] = await anchor.web3.PublicKey.findProgramAddress([mint.toBuffer()], poolProgramId);
 
       const idl = await anchor.Program.fetchIdl(process.env.NUXT_ENV_STAKE_PROGRAM_ID, this.provider);
       this.program = new anchor.Program(idl, programId, this.provider);
 
       const idlReward = await anchor.Program.fetchIdl(process.env.NUXT_ENV_REWARD_PROGRAM_ID, this.provider);
       this.rewardsProgram = new anchor.Program(idlReward, rewardsProgramId, this.provider);
+
+      const idlPool = await anchor.Program.fetchIdl(process.env.NUXT_ENV_POOL_PROGRAM_ID, this.provider);
+      this.poolProgram = new anchor.Program(idlPool, poolProgramId, this.provider);
 
       [accounts.vault] = await anchor.web3.PublicKey.findProgramAddress(
         [anchor.utils.bytes.utf8.encode('vault'), mint.toBuffer(), userKey.toBuffer()],
@@ -789,6 +797,13 @@ export default {
       await this.refreshStake();
       this.loading = false;
       this.accounts = accounts;
+      this.poolAccounts = {
+        ...this.accounts,
+        pool: poolProgramId,
+        vault: this.poolVault,
+        rewardsVault: this.rewardVault,
+        rewardsStats: this.accounts.stats
+      };
 
       const globalStats = await this.rewardsProgram.account.statsAccount.fetch(accounts.stats);
       const rewardAccount = await this.rewardsProgram.account.rewardAccount.fetch(this.accounts.reward);
@@ -821,6 +836,11 @@ export default {
         const response = await this.program.methods
           .topup(new anchor.BN(stakeAmount))
           .accounts(this.accounts)
+          // .preInstructions([
+          //   await this.poolProgram.methods
+          //     .claimFee()
+          //     .accounts(this.poolAccounts)
+          // ])
           .postInstructions([
             await this.rewardsProgram.methods
               .sync().accounts({ ...this.accounts, vault: this.rewardVault }).instruction()])
@@ -942,8 +962,9 @@ export default {
         const rewardAccount = (await this.rewardsProgram.account.rewardAccount.fetch(this.accounts.reward)).reflection;
         console.log('User has reward account', rewardAccount);
         preInstructions.push(
-          // await this.rewardsProgram.methods.claim()
-          //   .accounts({ ...this.accounts, vault: this.rewardVault }).instruction(),
+          await this.rewardsProgram.methods
+            .claim()
+            .accounts({ ...this.accounts, vault: this.rewardVault }).instruction(),
           await this.rewardsProgram.methods.close().accounts(this.accounts).instruction()
         );
       } catch (error) {
@@ -1005,6 +1026,33 @@ export default {
         this.$modal.show({
           color: 'danger',
           text: error,
+          title: 'Error'
+        });
+      }
+      this.loading = false;
+    },
+    async claimRewards () {
+      console.log('lets goo claim rewards');
+      try {
+        this.loading = true;
+        const response = await this.rewardsProgram.methods
+          .claim()
+          .accounts({ ...this.accounts, vault: this.rewardVault }).instruction();
+        console.log(response);
+        setTimeout(async () => {
+          await this.refreshStake();
+        }, 1000);
+        this.amount = null;
+        await this.getBalance();
+        this.$modal.show({
+          color: 'success',
+          text: 'Successfully claimed rewards',
+          title: 'Unstaked'
+        });
+      } catch (error) {
+        this.$modal.show({
+          color: 'danger',
+          text: error.message,
           title: 'Error'
         });
       }

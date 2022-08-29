@@ -18,7 +18,13 @@
           @x-nos="updateXNOS"
           @reward-info="updateRewardInfo"
         />
-        <reward-countdown :xnos="xNOS" :stake-data="stakeData" :reward-info="rewardInfo" class="tile is-child" />
+        <reward-countdown
+          :xnos="xNOS"
+          :stake-data="stakeData"
+          :reward-info="rewardInfo"
+          class="tile is-child"
+          @claim-rewards="$refs.stakingForm.claimRewards()"
+        />
       </div>
 
       <div class="tile is-vertical is-parent">
