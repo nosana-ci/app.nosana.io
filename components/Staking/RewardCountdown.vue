@@ -37,7 +37,7 @@
         </h2>
         <div>
           <client-only>
-            <countdown :end-time="date" @onFinish="finish()">
+            <countdown :end-time="date" @onFinish="countdownFinished = true">
               <span
                 slot="process"
                 slot-scope="{ timeObj }"
@@ -100,6 +100,7 @@
 </template>
 <script>
 import ICountUp from 'vue-countup-v2';
+import { BN } from '@project-serum/anchor';
 
 export default {
   components: {
@@ -110,7 +111,11 @@ export default {
     return {
       totals: null,
       date: new Date('2022-08-30T13:00:00.000Z'),
-      loading: false
+      loading: false,
+      nosPerSecond: 8000000 / (365 * 3600 * 24),
+      lastClaim: new Date('2022-08-29T13:00:00.000'),
+      interval: null,
+      rate: this.rewardInfo.global.rate
     };
   },
   computed: {
@@ -134,36 +139,35 @@ export default {
       return this.$sol && this.$sol.publicKey;
     },
     reward () {
-      console.log('rewardInfo', this.rewardInfo);
-      // #########STEP 1 with 2 users in reward pool
-      // total_xnos = 200
-      // total_reflection=2000
-      // rate = 2000/200 = 10
-
-      // user1:
-      // 100xnos
-      // reflection=1000
-      // if claimed: 1000/10 - 100 = 0
       let reward = 0;
       if (this.rewardInfo) {
-        reward = (this.rewardInfo.rewardAccount.reflection / this.rewardInfo.global.rate) -
+        reward = (this.rewardInfo.rewardAccount.reflection / this.rate) -
         this.rewardInfo.rewardAccount.xnos;
-
-        console.log(this.rewardInfo.rewardAccount.reflection.toString(), this.rewardInfo.global.rate.toString(),
-          this.rewardInfo.rewardAccount.xnos.toString());
       }
-      return reward;
+      return +(reward / 1e6).toFixed(4);
     }
   },
   mounted () {
     this.getStakeTotals();
+    if (!this.interval) {
+      this.interval = setInterval(() => {
+        console.log('refreshing rewards..');
+        this.calculateRewards();
+      }, 1000);
+    }
+  },
+  beforeDestroy () {
+    if (this.interval) {
+      clearInterval(this.interval);
+      this.interval = null;
+    }
   },
   methods: {
-    finish () {
-      this.countdownFinished = true;
-    },
-    async claimRewards () {
-      await console.log('claim rewards here');
+    claimRewards () {
+      this.loading = true;
+      // quick fix TODO: would be nice to have the programs in the stake plugin
+      this.$emit('claim-rewards');
+      this.loading = false;
     },
     async getStakeTotals () {
       try {
@@ -175,6 +179,19 @@ export default {
           title: 'Error'
         });
       }
+    },
+    getRate (xnos, reflection) {
+      return xnos / reflection;
+    },
+    calculateRewards () {
+      const now = new Date().getTime();
+      const diff = this.lastClaim.getTime() - now;
+      const secondsBetween = Math.abs(diff / 1000);
+
+      const fees = new BN(parseInt(secondsBetween) * parseInt(this.nosPerSecond * 1e6));
+      const newTotalXnos = this.rewardInfo.global.totalXnos.add(fees);
+
+      this.rate = new BN(this.rewardInfo.global.totalReflection / newTotalXnos);
     }
   }
 };

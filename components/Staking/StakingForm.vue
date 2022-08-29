@@ -1034,10 +1034,9 @@ export default {
     async claimRewards () {
       console.log('lets goo claim rewards');
       try {
-        this.loading = true;
         const response = await this.rewardsProgram.methods
           .claim()
-          .accounts({ ...this.accounts, vault: this.rewardVault }).instruction();
+          .accounts({ ...this.accounts, vault: this.rewardVault }).rpc();
         console.log(response);
         setTimeout(async () => {
           await this.refreshStake();
@@ -1056,7 +1055,6 @@ export default {
           title: 'Error'
         });
       }
-      this.loading = false;
     },
     async claim () {
       try {
