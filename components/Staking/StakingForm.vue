@@ -370,6 +370,18 @@
                 <button v-else type="submit" class="button is-accent" :class="{'is-loading': loading}">
                   Stake NOS
                 </button>
+                <br>
+                <br>
+                <div class="container has-text-centered">
+                  <a
+                    href="NOSANA_STAKING_REPORT_2.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    download
+                  >
+                    <small>OP:CODES Audit Report</small>
+                  </a>
+                </div>
               </div>
             </form>
             <div v-else class="your-stake">
