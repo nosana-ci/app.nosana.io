@@ -109,7 +109,7 @@ export default {
   data () {
     return {
       totals: null,
-      date: new Date('2022-08-30T13:00:00.000Z'),
+      date: new Date('2022-08-29T14:30:00.000Z'),
       loading: false
     };
   },
@@ -152,7 +152,7 @@ export default {
         console.log(this.rewardInfo.rewardAccount.reflection.toString(), this.rewardInfo.global.rate.toString(),
           this.rewardInfo.rewardAccount.xnos.toString());
       }
-      return reward;
+      return +reward.toFixed(6);
     }
   },
   mounted () {
