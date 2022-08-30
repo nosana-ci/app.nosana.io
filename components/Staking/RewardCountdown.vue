@@ -159,7 +159,6 @@ export default {
       totals: null,
       date: new Date('2022-08-30T08:00:00.000Z'),
       loading: false,
-      lastClaim: new Date('2022-08-29T13:00:00.000'),
       interval: null,
       rate: null
     };
@@ -173,6 +172,14 @@ export default {
     },
     stakeData () {
       return this.$stake ? this.$stake.stakeData : null;
+    },
+    lastClaim () {
+      let lastClaimDate;
+      if (this.$stake && this.$stake.poolInfo) {
+        const unix = parseInt(this.poolInfo.claimedTokens / this.poolInfo.emission) + parseInt(this.poolInfo.startTime);
+        lastClaimDate = new Date(unix * 1000);
+      }
+      return lastClaimDate;
     },
     countdownFinished: {
       get () {
@@ -274,8 +281,8 @@ export default {
       return xnos / reflection;
     },
     calculateRewards () {
-      this.rate = this.rewardInfo ? this.rewardInfo.global.rate : null;
-      if (this.rewardInfo) {
+      if (this.rewardInfo && this.poolInfo) {
+        this.rate = this.rewardInfo.global.rate;
         const now = new Date().getTime();
         const diff = this.lastClaim.getTime() - now;
         const secondsBetween = Math.abs(diff / 1000);
