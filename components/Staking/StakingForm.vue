@@ -719,6 +719,9 @@ export default {
     }
   },
   watch: {
+    '$stake.accounts': function () {
+      this.getBalance();
+    },
     '$sol.publicKey': function (pubkey) {
       if (pubkey) {
         const wallet = this.$sol.getWallet();
@@ -979,30 +982,6 @@ export default {
         });
       }
       this.loading = false;
-    },
-    async claimRewards () {
-      try {
-        const response = await this.$stake.rewardsProgram.methods
-          .claim()
-          .accounts({ ...this.$stake.accounts, vault: this.$stake.rewardVault }).rpc();
-        console.log(response);
-        setTimeout(async () => {
-          await this.refreshStake();
-        }, 1000);
-        this.amount = null;
-        await this.getBalance();
-        this.$modal.show({
-          color: 'success',
-          text: 'Successfully claimed rewards',
-          title: 'Unstaked'
-        });
-      } catch (error) {
-        this.$modal.show({
-          color: 'danger',
-          text: error.message,
-          title: 'Error'
-        });
-      }
     },
     async claim () {
       try {

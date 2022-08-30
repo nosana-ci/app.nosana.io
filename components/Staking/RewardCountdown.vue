@@ -224,7 +224,13 @@ export default {
       try {
         const response = await this.$stake.rewardsProgram.methods
           .claim()
-          .accounts({ ...this.$stake.accounts, vault: this.$stake.rewardVault }).rpc();
+          .accounts({ ...this.$stake.accounts, vault: this.$stake.rewardVault })
+          .preInstructions([
+            await this.$stake.poolProgram.methods
+              .claimFee()
+              .accounts(this.$stake.poolAccounts).instruction()
+          ])
+          .rpc();
         console.log(response);
         setTimeout(async () => {
           await this.$stake.refreshStake();

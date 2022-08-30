@@ -146,7 +146,15 @@ export default (context, inject) => {
         const globalStats = await this.rewardsProgram.account.statsAccount.fetch(accounts.stats);
         let rewardAccount;
         if (context.$auth.loggedIn) {
-          rewardAccount = await this.rewardsProgram.account.rewardAccount.fetch(this.accounts.reward);
+          try {
+            rewardAccount = await this.rewardsProgram.account.rewardAccount.fetch(this.accounts.reward);
+          } catch (error) {
+            if (!error.message.includes('Account does not exist')) {
+              throw new Error(error.message);
+            } else {
+              console.log('Account does not exists, skip');
+            }
+          }
         }
         const rewardInfo = {
           global: globalStats,
