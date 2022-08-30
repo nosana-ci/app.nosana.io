@@ -88,15 +88,14 @@
           <p class="block is-size-7">
             Staking $NOS contract has been audited by our partners at <a href="https://opcodes.fr/" target="_blank" rel="noopener noreferrer">OPCODES</a>.
             We are confident that the contract is safe to use.
-            Download it at the link below.
+            Read it at the link below.
           </p>
           <p class="block mt-auto">
             <a
-              href="NOSANA_STAKING_REPORT_2.pdf"
+              href="https://gitlab.com/nosana-ci/apps/platform/spl/-/blob/main/audits/NOSANA_STAKING_REPORT_2.pdf"
               class="button is-accent is-wide is-small is-outlined"
               target="_blank"
               rel="noopener noreferrer"
-              download
             >
               <strong>Audit Report</strong>
             </a>

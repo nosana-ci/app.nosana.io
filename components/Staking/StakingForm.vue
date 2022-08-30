@@ -372,14 +372,13 @@
                 </button>
                 <br>
                 <br>
-                <div class="container has-text-centered">
+                <div class="has-text-centered">
                   <a
-                    href="NOSANA_STAKING_REPORT_2.pdf"
+                    href="https://gitlab.com/nosana-ci/apps/platform/spl/-/blob/main/audits/NOSANA_STAKING_REPORT_2.pdf"
                     target="_blank"
                     rel="noopener noreferrer"
-                    download
                   >
-                    <small>OP:CODES Audit Report</small>
+                    <small>Nosana staking audit report</small>
                   </a>
                 </div>
               </div>
