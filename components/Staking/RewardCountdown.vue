@@ -37,7 +37,7 @@
         </h2>
         <div>
           <client-only>
-            <countdown :end-time="new Date('2022-08-30T14:00:00.000Z')">
+            <countdown :end-time="new Date('2022-08-30T15:00:00.000Z')">
               <span
                 slot="process"
                 slot-scope="{ timeObj }"
