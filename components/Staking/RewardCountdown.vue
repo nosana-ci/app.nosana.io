@@ -1,98 +1,116 @@
 <template>
   <div>
     <div
-      class="stake-block px-2 py-6 has-background-light is-flex is-justify-content-center is-align-items-flex-start"
+      class="stake-block p-5 has-background-light"
       style="height:100%"
     >
-      <div class="has-text-centered py-6">
-        <div v-if="expectedRewards !== null" class="box has-text-centered mb-6">
-          <p>Expected daily rewards</p>
-          <h2 class="title is-3 has-text-success mb-0">
-            <ICountUp
-              :end-val="parseFloat(expectedRewards)"
-              :options="{ decimalPlaces: 0, duration:0.1 }"
-              style="opacity:0"
-            />
-            <ICountUp
-              :end-val="parseFloat(expectedRewards)"
-              :options="{ decimalPlaces: 0 }"
-              style="position:absolute;width: 100%;text-align: center;left: 0;"
-            />
-          </h2>
-          <p>NOS</p>
-          <p
-            v-if="(stakeData && stakeData.amount) ||
-              ($parent.$refs.stakingForm && $parent.$refs.stakingForm.amount)"
-            class="has-text-centered is-italic is-size-7"
-          >
-            APY
-            {{ ((expectedRewards*365) /
-              ((stakeData && stakeData.amount ? (stakeData.amount / 1e6) : 0) +
-                (($parent.$refs.stakingForm && $parent.$refs.stakingForm.amount) ?
-                  parseInt($parent.$refs.stakingForm.amount) : 0)) * 100).toFixed(1) }}%
-          </p>
+      <div class="has-text-centered columns is-multiline">
+        <div v-if="expectedRewards !== null" class="column is-12 is-6-fullhd">
+          <div class="box has-text-centered mb-6">
+            <p>Expected daily rewards</p>
+            <h2 class="title is-3 has-text-success mb-0">
+              <ICountUp
+                :end-val="parseFloat(expectedRewards)"
+                :options="{ decimalPlaces: 0, duration:0.1 }"
+                style="opacity:0"
+              />
+              <ICountUp
+                :end-val="parseFloat(expectedRewards)"
+                :options="{ decimalPlaces: 0 }"
+                style="position:absolute;width: 100%;text-align: center;left: 0;"
+              />
+            </h2>
+            <p>NOS</p>
+            <p
+              v-if="(stakeData && stakeData.amount) ||
+                ($parent.$refs.stakingForm && $parent.$refs.stakingForm.amount)"
+              class="has-text-centered is-italic is-size-7"
+            >
+              APY
+              {{ ((expectedRewards*365) /
+                ((stakeData && stakeData.amount ? (stakeData.amount / 1e6) : 0) +
+                  (($parent.$refs.stakingForm && $parent.$refs.stakingForm.amount) ?
+                    parseInt($parent.$refs.stakingForm.amount) : 0)) * 100).toFixed(1) }}%
+            </p>
+          </div>
         </div>
-        <h2 v-if="!countdownFinished" class="subtitle">
-          <b>Reward program starting in</b>
-        </h2>
-        <div>
-          <client-only>
-            <countdown :end-time="date" @onFinish="countdownFinished = true">
-              <span
-                slot="process"
-                slot-scope="{ timeObj }"
-              >
-                <div class="columns is-mobile is-multiline">
-                  <div class="column is-3-desktop  is-6-touch">
-                    <div class="has-background-grey-light has-radius title mb-0 p-4" style="white-space: nowrap">
-                      {{ timeObj.d }}d
+        <div class="column">
+          <h2 v-if="!countdownFinished" class="subtitle">
+            <b>Reward program starting in</b>
+          </h2>
+          <div>
+            <client-only>
+              <countdown :end-time="date" @onFinish="countdownFinished = true">
+                <span
+                  slot="process"
+                  slot-scope="{ timeObj }"
+                >
+                  <div class="columns is-mobile is-multiline">
+                    <div class="column is-6-fullhd is-6-desktop  is-6-touch">
+                      <div class="has-background-grey-light has-radius title mb-0 p-4" style="white-space: nowrap">
+                        {{ timeObj.d }}d
+                      </div>
+                    </div>
+
+                    <div class="column is-6-fullhd is-6-desktop is-6-touch">
+                      <div class="has-background-grey-light has-radius title mb-0 p-4" style="white-space: nowrap">
+                        {{ timeObj.h }}h
+                      </div>
+                    </div>
+
+                    <div class="column is-6-fullhd is-6-desktop  is-6-touch">
+                      <div class="has-background-grey-light has-radius title mb-0 p-4" style="white-space: nowrap">
+                        {{ timeObj.m }}m
+                      </div>
+                    </div>
+
+                    <div class="column is-6-fullhd is-6-desktop  is-6-touch">
+                      <div class="has-background-grey-light has-radius title mb-0 p-4" style="white-space: nowrap">
+                        {{ timeObj.s }}s
+                      </div>
                     </div>
                   </div>
 
-                  <div class="column is-3-desktop  is-6-touch">
-                    <div class="has-background-grey-light has-radius title mb-0 p-4" style="white-space: nowrap">
-                      {{ timeObj.h }}h
+                </span>
+                <div slot="finish">
+                  <div v-if="reward !== null">
+                    <div class="box has-background-light">
+                      <p>pending NOS Rewards</p>
+                      <h2 class="title is-3 has-text-success mb-0">
+                        <ICountUp
+                          :end-val="parseFloat(reward)"
+                          :options="{ decimalPlaces: 2, duration:0.1 }"
+                          style="opacity:0"
+                        />
+                        <ICountUp
+                          :end-val="parseFloat(reward)"
+                          :options="{ decimalPlaces: 2 }"
+                          style="position:absolute;width: 100%;text-align: center;left: 0;"
+                        />
+                      </h2>
+                      <p>NOS</p>
                     </div>
-                  </div>
-
-                  <div class="column is-3-desktop  is-6-touch">
-                    <div class="has-background-grey-light has-radius title mb-0 p-4" style="white-space: nowrap">
-                      {{ timeObj.m }}m
-                    </div>
-                  </div>
-
-                  <div class="column is-3-desktop  is-6-touch">
-                    <div class="has-background-grey-light has-radius title mb-0 p-4" style="white-space: nowrap">
-                      {{ timeObj.s }}s
-                    </div>
+                    <button
+                      v-if="!loggedIn"
+                      class="button is-accent is-fullwidth mt-5 has-text-weight-semibold"
+                      @click.stop.prevent="$sol.loginModal = true"
+                    >
+                      Connect Wallet
+                    </button>
+                    <button
+                      v-else
+                      class="button is-accent is-fullwidth mt-5 has-text-weight-semibold"
+                      :class="{'is-loading': loading}"
+                      :disabled="reward == 0"
+                      @click="claimRewards"
+                    >
+                      Claim rewards
+                    </button>
                   </div>
                 </div>
-
-              </span>
-              <span slot="finish">
-                <h2 class="subtitle">
-                  <b>Claim your rewards</b>
-                </h2>
-                Rewards: {{ reward }}
-                <button
-                  v-if="!loggedIn"
-                  class="button is-accent is-fullwidth mt-5 has-text-weight-semibold"
-                  @click.stop.prevent="$sol.loginModal = true"
-                >
-                  Connect Wallet
-                </button>
-                <button
-                  v-else
-                  class="button is-accent is-fullwidth mt-5 has-text-weight-semibold"
-                  :class="{'is-loading': loading}"
-                  :disabled="reward == 0"
-                  @click="claimRewards"
-                >
-                  Claim rewards
-                </button>
-              </span>
-            </countdown>
-          </client-only>
+              </countdown>
+            </client-only>
+          </div>
         </div>
       </div>
     </div>
@@ -110,7 +128,7 @@ export default {
   data () {
     return {
       totals: null,
-      date: new Date('2022-08-30T13:00:00.000Z'),
+      date: new Date('2022-08-30T08:00:00.000Z'),
       loading: false,
       nosPerSecond: 8000000 / (365 * 3600 * 24),
       lastClaim: new Date('2022-08-29T13:00:00.000'),

@@ -8,7 +8,7 @@
     </h1>
     <p>Stake NOS and receive rewards</p>
     <div class="tile is-ancestor mt-6">
-      <div class="tile is-vertical is-parent" style="max-width: 650px">
+      <div class="tile is-vertical is-parent" style="max-width: 700px">
         <staking-form
           ref="stakingForm"
           class="tile is-child"
