@@ -213,7 +213,7 @@ export default {
       return Number(num).toLocaleString('en-US');
     }
   },
-  props: ['stakeData', 'xnos'],
+  props: ['xnos'],
   data () {
     return {
       activeTier: null,
@@ -228,6 +228,9 @@ export default {
   computed: {
     stakeEndDate () {
       return this.$stake ? this.$stake.stakeEndDate : null;
+    },
+    stakeData () {
+      return this.$stake ? this.$stake.stakeData : null;
     },
     nextTier () {
       let tier;
