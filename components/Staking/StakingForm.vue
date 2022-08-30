@@ -374,7 +374,7 @@
                 <br>
                 <div class="has-text-centered">
                   <a
-                    href="https://gitlab.com/nosana-ci/apps/platform/spl/-/blob/main/audits/NOSANA_STAKING_REPORT_2.pdf"
+                    href="https://github.com/nosana-ci/nosana-programs/blob/main/audits/NOSANA_STAKING_REPORT_2.pdf"
                     target="_blank"
                     rel="noopener noreferrer"
                   >

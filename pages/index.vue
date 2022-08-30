@@ -92,7 +92,7 @@
           </p>
           <p class="block mt-auto">
             <a
-              href="https://gitlab.com/nosana-ci/apps/platform/spl/-/blob/main/audits/NOSANA_STAKING_REPORT_2.pdf"
+              href="https://github.com/nosana-ci/nosana-programs/blob/main/audits/NOSANA_STAKING_REPORT_2.pdf"
               class="button is-accent is-wide is-small is-outlined"
               target="_blank"
               rel="noopener noreferrer"
