@@ -159,7 +159,6 @@ export default {
       totals: null,
       date: new Date('2022-08-30T08:00:00.000Z'),
       loading: false,
-      nosPerSecond: 8000000 / (365 * 3600 * 24),
       lastClaim: new Date('2022-08-29T13:00:00.000'),
       interval: null,
       rate: null
@@ -168,6 +167,9 @@ export default {
   computed: {
     rewardInfo () {
       return this.$stake ? this.$stake.rewardInfo : null;
+    },
+    poolInfo () {
+      return this.$stake ? this.$stake.poolInfo : null;
     },
     stakeData () {
       return this.$stake ? this.$stake.stakeData : null;
@@ -278,7 +280,7 @@ export default {
         const diff = this.lastClaim.getTime() - now;
         const secondsBetween = Math.abs(diff / 1000);
 
-        const fees = new BN(parseInt(secondsBetween) * parseInt(this.nosPerSecond * 1e6));
+        const fees = new BN(parseInt(secondsBetween) * parseInt(this.poolInfo.emission));
         const newTotalXnos = this.rewardInfo.global.totalXnos.add(fees);
 
         this.rate = new BN(this.rewardInfo.global.totalReflection / newTotalXnos);

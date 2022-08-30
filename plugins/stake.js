@@ -35,7 +35,8 @@ export default (context, inject) => {
         rewardVault: null,
         poolProgram: null,
         poolAccounts: null,
-        rewardInfo: null
+        rewardInfo: null,
+        poolInfo: null
       };
     },
     beforeDestroy () {
@@ -149,8 +150,7 @@ export default (context, inject) => {
           rewardAccount
         };
         this.rewardInfo = rewardInfo;
-        console.log('poolInfo', poolInfo);
-        console.log('poolInfo emission', poolInfo.emission.toString());
+        this.poolInfo = poolInfo;
       },
       async refreshStake () {
         const userAddress = context.$sol && context.$sol.publicKey ? `?userAddress=${context.$sol.publicKey}` : '';
