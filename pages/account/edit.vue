@@ -3,7 +3,15 @@
     <div class="level">
       <div class="level-item has-text-centered">
         <figure class="image is-128x128">
-          <img class="is-rounded" src="https://nosana.io/img/NOS_logo.png" alt="" srcset="">
+          <img v-if="image" class="is-rounded" :src="image" alt="" srcset="">
+          <img
+            v-else-if="userTier"
+            class="is-rounded"
+            :src="require(`@/assets/img/tiers/icons/tier${userTier.tier}.svg`)"
+            alt=""
+            srcset=""
+          >
+          <img v-else class="is-rounded" :src="require(`@/assets/img/default-profile.svg`)" alt="" srcset="">
         </figure>
       </div>
     </div>
@@ -18,12 +26,15 @@
     <form class="mx-auto" style="max-width: 522px;" @submit.prevent="updateUser">
       <div class="field has-background-grey-lighter py-2 px-5 has-radius has-text-centered">
         <label for="" class="is-small has-text-grey">Profile Completed</label>
-        <div class="level is-mobile">
-          <div v-for="(idx, index) in completionArray" :key="index" class="level-item has-text-centered">
-            <progress v-if="index < userCompletion" class="progress is-success is-small" value="100" />
-            <progress v-else class="progress is-success is-small" value="0" />
-          </div>
-        </div>
+        <progress class="progress is-success" :value="userCompletion" :max="100">
+          {{ userCompletion }}
+        </progress>
+        <!-- <div class="level is-mobile"> -->
+          <!-- <div v-for="(idx, index) in completionArray" :key="index" class="level-item has-text-centered"> -->
+            <!-- <progress v-if="index < userCompletion" class="progress is-success is-small mx-1" value="100" /> -->
+            <!-- <progress v-else class="progress is-success is-small" value="0" /> -->
+          <!-- </div> -->
+        <!-- </div> -->
       </div>
 
       <!-- <div class="field has-text-centered p-4 m-4"> -->
@@ -137,6 +148,11 @@
           <input v-model="wantToEarn" type="checkbox">
           Earn with Nosana Network
         </label>
+        <br>
+        <label class="checkbox">
+          <input v-model="wantToParticipateNft" type="checkbox">
+          Participate in the next free NFT raffle
+        </label>
       </div>
 
       <div v-if="wantToDevelop" class="field has-background-grey-light py-2 px-5 has-radius">
@@ -196,6 +212,7 @@ export default {
       country: null,
       wantToDevelop: null,
       wantToEarn: null,
+      wantToParticipateNft: null,
       image: null,
       completionIndex: 0,
       balance: null,
@@ -216,11 +233,14 @@ export default {
     },
     completionArray () {
       return [
-        this.name, this.email, this.wantToDevelop || this.wantToEarn, this.description, this.userTier, this.image
+        this.name, this.email,
+        this.wantToDevelop || this.wantToEarn || this.wantToParticipateNft,
+        this.description, this.userTier, this.image
       ];
     },
     userCompletion () {
-      return this.completionArray.filter(el => (el !== null && el !== undefined) && el !== '' && el !== false).length;
+      const finishedItems = this.completionArray.filter(el => (el !== null && el !== undefined) && el !== '' && el !== false).length;
+      return Math.round(finishedItems / this.completionArray.length * 100);
     }
   },
   created () {
@@ -238,17 +258,18 @@ export default {
         this.name = user.name;
         this.description = user.description;
         this.description = user.description;
-        this.firstName = user.firstName;
-        this.lastName = user.lastName;
+        this.firstName = user.first_name;
+        this.lastName = user.last_name;
         this.email = user.email;
         this.discord = user.discord;
         this.github = user.github;
         this.twitter = user.twitter;
         this.country = JSON.parse(user.country);
-        this.wantToDevelop = user.wantToDevelop;
-        this.wantToEarn = user.wantToEarn;
+        this.wantToDevelop = user.want_to_develop;
+        this.wantToEarn = user.want_to_earn;
+        this.wantToParticipateNft = user.want_to_participate_nft;
         this.image = user.image;
-        this.completionIndex = user.completionIndex ?? 0;
+        this.completionIndex = user.completion_index ?? 0;
       } catch (error) {
         this.$modal.show({
           color: 'danger',
@@ -272,6 +293,7 @@ export default {
         country: this.country,
         wantToDevelop: this.wantToDevelop,
         wantToEarn: this.wantToEarn,
+        wantToParticipateNft: this.wantToParticipateNft,
         image: this.image,
         completionIndex: this.completionIndex
       };

@@ -7,6 +7,7 @@
         @click="
           $sol.loginModal = false;
           error = null;
+          $sol.skipLogin = false;
         "
       />
       <div class="modal-card">
@@ -27,6 +28,7 @@
             aria-label="close"
             @click="
               $sol.loginModal = false;
+              $sol.skipLogin = false;
               error = null;
             "
           />
@@ -71,6 +73,7 @@
                 exact-active-class="is-active"
                 @click="
                   $sol.loginModal = false;
+                  $sol.skipLogin = false;
                   error = null;
                 "
               >
@@ -130,6 +133,15 @@ export default {
       return this.$sol && this.$sol.error;
     }
   },
+  watch: {
+    '$sol.publicKey': function (pubkey) {
+      if (pubkey && this.$sol.skipLogin) {
+        this.$sol.loginModal = false;
+        this.$sol.skipLogin = false;
+        this.error = null;
+      }
+    }
+  },
 
   methods: {
     async login () {
@@ -147,6 +159,7 @@ export default {
         });
         console.log('Logged in!', response);
         this.$sol.loginModal = false;
+        this.$sol.skipLogin = false;
         this.error = null;
         // Needed because there is a redirect bug when going to a protected route from the login page
         const path = this.$auth.$storage.getUniversal('redirect');

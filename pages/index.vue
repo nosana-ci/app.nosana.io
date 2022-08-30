@@ -19,7 +19,7 @@
             In this dashboard you can see the pipelines that are running on the Nosana Network.
             You can also create and run your own CI/CD pipelines for your open-source project in the
             <nuxt-link to="/pipelines">
-              Developer Hub
+              Pipelines
             </nuxt-link>
           </p>
         </div>
@@ -72,7 +72,7 @@
           </p>
           <p class="block mt-auto">
             <nuxt-link to="/pipelines" class="button is-accent is-wide is-small is-outlined">
-              <b>Developer Hub</b>
+              <b>Pipelines</b>
             </nuxt-link>
           </p>
         </div>
@@ -83,18 +83,22 @@
             <img src="~assets/img/icons/nos.svg" style="height: 70px;">
           </div>
           <h2 class="subtitle">
-            <b>Staking is live!</b>
+            <b>Staking contract is audited!</b>
           </h2>
           <p class="block is-size-7">
-            Stake your $NOS tokens to earn monthly $NOS rewards,
-            with daily distribution and instant claim functionality you want to be part of this!
-            Or just restake your rewards to earn even more rewards!
-            You also earn xNOS tokens, which gives you exclusive access to our NFT raffles.
+            Staking $NOS contract has been audited by our partners at <a href="https://opcodes.fr/" target="_blank" rel="noopener noreferrer">OPCODES</a>.
+            We are confident that the contract is safe to use.
+            Read it at the link below.
           </p>
           <p class="block mt-auto">
-            <nuxt-link to="/stake" class="button is-accent is-wide is-small is-outlined">
-              <b>Staking</b>
-            </nuxt-link>
+            <a
+              href="https://github.com/nosana-ci/nosana-programs/blob/main/audits/NOSANA_STAKING_REPORT_2.pdf"
+              class="button is-accent is-wide is-small is-outlined"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <strong>Audit Report</strong>
+            </a>
           </p>
         </div>
       </div>

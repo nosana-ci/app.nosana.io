@@ -15,8 +15,8 @@ export default {
   // },
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    titleTemplate: '%s - Nosana Platform',
-    title: 'Nosana Testnet',
+    titleTemplate: '%s - Nosana Network',
+    title: 'Nosana Network',
     htmlAttrs: {
       lang: 'en'
     },
@@ -27,12 +27,12 @@ export default {
       {
         hid: 'og:title',
         property: 'og:title',
-        content: 'Nosana Incentivized Testnet'
+        content: 'Nosana Network'
       },
       {
         hid: 'og:description',
         property: 'og:description',
-        content: 'The Testnet program is designed to put Nosana\'s CI features and tools to the test'
+        content: 'Run your CI/CD pipelines on The Network Network or stake your tokens to earn rewards'
       },
       {
         hid: 'og:image',

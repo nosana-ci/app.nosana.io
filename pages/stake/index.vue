@@ -8,20 +8,23 @@
     </h1>
     <p>Stake NOS and receive rewards</p>
     <div class="tile is-ancestor mt-6">
-      <div class="tile is-vertical is-parent" style="max-width: 650px">
+      <div class="tile is-vertical is-parent" style="max-width: 700px">
         <staking-form
           ref="stakingForm"
           class="tile is-child"
           style="flex-grow: 0"
-          :stake-data="stakeData"
-          :stake-end-date="stakeEndDate"
           @x-nos="updateXNOS"
+          @reward-info="updateRewardInfo"
         />
-        <reward-countdown :xnos="xNOS" :stake-data="stakeData" class="tile is-child" />
+        <reward-countdown
+          :xnos="xNOS"
+          class="tile is-child"
+          @claim-rewards="$refs.stakingForm.claimRewards()"
+        />
       </div>
 
       <div class="tile is-vertical is-parent">
-        <tier-view class="tile is-child" :stake-data="stakeData" :xnos="xNOS" @rxnos="fillStake" />
+        <tier-view class="tile is-child" :xnos="xNOS" @rxnos="fillStake" />
         <subscribe-view style="flex-grow: 0" class="tile is-child" />
       </div>
     </div>
@@ -40,7 +43,6 @@ export default {
     SubscribeView,
     TierView
   },
-  middleware: 'auth',
   data () {
     return {
       loading: false,
@@ -78,7 +80,6 @@ export default {
   },
   methods: {
     fillStake (xnos) {
-      console.log('TEST', this.$refs.stakingForm.xNOS);
       if (this.$refs.stakingForm.userHasStakedBefore) {
         this.$refs.stakingForm.topupPopup = true;
         this.$refs.stakingForm.amount = Math.ceil(
@@ -90,6 +91,9 @@ export default {
     },
     updateXNOS (xNOS) {
       this.xNOS = xNOS;
+    },
+    updateRewardInfo (info) {
+      this.rewardInfo = info;
     }
   }
 };

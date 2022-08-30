@@ -2,7 +2,7 @@
   <div class="stake-block">
     <!-- Extend popup -->
     <div class="modal stake-popup" :class="{ 'is-active': extendPopup }">
-      <div class="modal-background" @click="extendPopup = false" />
+      <div class="modal-background" @click="extendPopup = false, amount = 0, extraUnstakeDays = 0" />
       <div v-if="stakeData && stakeData.duration" class="modal-content has-background-white has-radius-medium p-5">
         <h3 class="has-text-centered subtitle is-4 has-text-weight-semibold">
           Extend unstake period
@@ -21,6 +21,7 @@
                   class="input mx-2 py-5 has-background-grey-light has-text-centered"
                   type="number"
                   :min="1"
+                  step="0.1"
                   :max="365 - parseInt($moment.duration(stakeData.duration, 'seconds').asDays())"
                   placeholder="0"
                   style="width: auto;"
@@ -250,10 +251,10 @@
             <!--- Form --->
             <form
               v-if="!userHasStakedBefore"
-              @submit.prevent="stake"
+              @submit.prevent="stakeConfirm"
             >
               <div class="mt-5 columns is-multiline">
-                <div class="column">
+                <div class="column" style="min-width:fit-content">
                   <div class="form-inputs has-background-grey-lighter has-radius-medium p-3 pt-5">
                     <div class="field has-background-grey-light has-radius-medium">
                       <div
@@ -303,6 +304,7 @@
                           class="input mx-2 py-5 has-background-grey-light has-text-centered"
                           type="number"
                           :min="14"
+                          step="0.1"
                           :max="365"
                           placeholder="0"
                           style="width: auto;"
@@ -314,11 +316,11 @@
                 </div>
 
                 <!-- (New) Scores -->
-                <div class="column is-one-third scores">
+                <div class="column scores first-stake">
                   <div
                     class="has-background-grey-lighter has-radius-medium p-3"
                   >
-                    <div class="box has-text-centered">
+                    <div class="box has-text-centered" style="min-width: 149px">
                       <h2 class="title is-3 has-text-success mb-0">
                         <ICountUp
                           :end-val="parseFloat(xNOS)"
@@ -333,7 +335,7 @@
                       </h2>
                       <p>xNOS score</p>
                     </div>
-                    <div class="box has-text-centered mb-3">
+                    <div class="box has-text-centered mb-3" style="min-width: 149px">
                       <h2 class="title is-4 has-text-success mb-0">
                         <ICountUp
                           :end-val="parseFloat(multiplier)"
@@ -361,13 +363,24 @@
                 <button
                   v-if="!loggedIn"
                   class="button is-accent is-outlined has-text-weight-semibold"
-                  @click.stop.prevent="$sol.loginModal = true"
+                  @click.stop.prevent="$sol.loginModal = true; $sol.skipLogin = true"
                 >
                   Connect Wallet
                 </button>
                 <button v-else type="submit" class="button is-accent" :class="{'is-loading': loading}">
                   Stake NOS
                 </button>
+                <br>
+                <br>
+                <div class="has-text-centered">
+                  <a
+                    href="https://github.com/nosana-ci/nosana-programs/blob/main/audits/NOSANA_STAKING_REPORT_2.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <small>Nosana staking audit report</small>
+                  </a>
+                </div>
               </div>
             </form>
             <div v-else class="your-stake">
@@ -435,20 +448,20 @@
               >
                 Extend unstake period
               </button>
-              <div v-if="accounts" class="mt-6 mb-3">
+              <div v-if="$stake.accounts" class="mt-6 mb-3">
                 <div class="is-flex is-align-items-center">
                   <span class="is-size-7">Stake Account</span>
-                  <a target="_blank" :href="`https://explorer.solana.com/address/${accounts.stake}/anchor-account`" class="ml-auto is-size-7">View on Solana explorer</a>
+                  <a target="_blank" :href="`https://explorer.solana.com/address/${$stake.accounts.stake}/anchor-account`" class="ml-auto is-size-7">View on Solana explorer</a>
                 </div>
                 <hr class="my-2">
                 <div class="is-flex is-align-items-center">
                   <span class="is-size-7">Stake Vault</span>
-                  <a target="_blank" :href="`https://explorer.solana.com/address/${accounts.vault}/tokens`" class="ml-auto is-size-7">View on Solana explorer</a>
+                  <a target="_blank" :href="`https://explorer.solana.com/address/${$stake.accounts.vault}/tokens`" class="ml-auto is-size-7">View on Solana explorer</a>
                 </div>
                 <hr class="my-2">
                 <div class="is-flex is-align-items-center">
                   <span class="is-size-7">Reward Account</span>
-                  <a target="_blank" :href="`https://explorer.solana.com/address/${accounts.reward}/anchor-account`" class="ml-auto is-size-7">View on Solana explorer</a>
+                  <a target="_blank" :href="`https://explorer.solana.com/address/${$stake.accounts.reward}/anchor-account`" class="ml-auto is-size-7">View on Solana explorer</a>
                 </div>
                 <hr class="my-2">
               </div>
@@ -475,7 +488,7 @@
               <p>
                 Be aware that after you unstake,
                 you will have to wait till your unstake period ends to claim your tokens<br><br>
-                If you would to unstake now, you can claim your tokens on:
+                If you were to unstake now, you can claim your tokens on:
               </p>
               <h1 class="subtitle is-5 mt-4">
                 {{ $moment().add(stakeData.duration, 'seconds').format('LL') }}
@@ -549,6 +562,7 @@
 
                     </span>
                     <span slot="finish">
+                      <!-- TODO: add claim button -->
                       <h1 class="title">Now LIVE</h1>
                     </span>
                   </countdown>
@@ -584,7 +598,6 @@
 <script>
 import ICountUp from 'vue-countup-v2';
 const anchor = require('@project-serum/anchor');
-const { TOKEN_PROGRAM_ID, getAssociatedTokenAddress } = require('@solana/spl-token');
 
 const ENV = process.env.NUXT_ENV_SOL_NETWORK;
 const SECONDS_PER_DAY = 24 * 60 * 60;
@@ -609,13 +622,9 @@ export default {
   components: {
     ICountUp
   },
-  props: ['stakeData', 'stakeEndDate'],
   data () {
     return {
       loading: false,
-      program: null,
-      provider: null,
-      accounts: null,
       balance: null,
       amount: null,
       unstakeDays: 14,
@@ -624,9 +633,7 @@ export default {
       unstakeForm: false,
       countdownFinished: false,
       topupPopup: false,
-      extendPopup: false,
-      rewardsProgram: null,
-      rewardVault: null
+      extendPopup: false
     };
   },
   computed: {
@@ -703,14 +710,23 @@ export default {
       const xNOS = !this.stakeEndDate ? (parseFloat(amount) + parseFloat(amount) * multiplier).toFixed(2) : 0;
       this.$emit('x-nos', xNOS);
       return xNOS;
+    },
+    stakeData () {
+      return this.$stake ? this.$stake.stakeData : null;
+    },
+    stakeEndDate () {
+      return this.$stake ? this.$stake.stakeEndDate : null;
     }
   },
   watch: {
+    '$stake.accounts': function () {
+      this.getBalance();
+    },
     '$sol.publicKey': function (pubkey) {
       if (pubkey) {
         const wallet = this.$sol.getWallet();
         if (wallet) {
-          this.initAnchor(wallet);
+          this.$stake.setupPrograms(wallet);
         } else {
           this.$sol.loginModal = true;
         }
@@ -723,75 +739,15 @@ export default {
     if (!wallet) {
       wallet = new FakeWallet(anchor.web3.Keypair.generate());
     }
-    this.initAnchor(wallet);
+    this.$stake.setupPrograms(wallet);
+    if (this.$stake.accounts) {
+      this.getBalance();
+    }
   },
   methods: {
-    async initAnchor (wallet) {
-      this.loading = true;
-      this.provider = new anchor.AnchorProvider(web3, wallet, {});
-      let userKey = wallet.publicKey;
-      if (this.$auth && this.$auth.user) {
-        userKey = new anchor.web3.PublicKey(this.$auth.user.address);
-      }
-
-      const programId = new anchor.web3.PublicKey(process.env.NUXT_ENV_STAKE_PROGRAM_ID);
-      const rewardsProgramId = new anchor.web3.PublicKey(process.env.NUXT_ENV_REWARD_PROGRAM_ID);
-
-      const mint = new anchor.web3.PublicKey(process.env.NUXT_ENV_NOS_TOKEN_STAKE);
-      const accounts = {
-        // solana native
-        systemProgram: anchor.web3.SystemProgram.programId,
-        rent: anchor.web3.SYSVAR_RENT_PUBKEY,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        feePayer: userKey,
-        clock: anchor.web3.SYSVAR_CLOCK_PUBKEY,
-
-        // custom
-        authority: userKey,
-        ataFrom: await getAssociatedTokenAddress(mint, userKey),
-        ataTo: await getAssociatedTokenAddress(mint, userKey),
-        stake: undefined,
-        stats: undefined,
-        user: await getAssociatedTokenAddress(mint, userKey),
-        vault: undefined,
-        reward: undefined,
-        mint
-      };
-
-      this.rewardVault = await anchor.web3.PublicKey.findProgramAddress([mint.toBuffer()], rewardsProgramId);
-
-      const idl = await anchor.Program.fetchIdl(process.env.NUXT_ENV_STAKE_PROGRAM_ID, this.provider);
-      this.program = new anchor.Program(idl, programId, this.provider);
-
-      const idlReward = await anchor.Program.fetchIdl(process.env.NUXT_ENV_REWARD_PROGRAM_ID, this.provider);
-      this.rewardsProgram = new anchor.Program(idlReward, rewardsProgramId, this.provider);
-
-      [accounts.vault] = await anchor.web3.PublicKey.findProgramAddress(
-        [anchor.utils.bytes.utf8.encode('vault'), mint.toBuffer(), userKey.toBuffer()],
-        programId
-      );
-
-      [accounts.stats] = await anchor.web3.PublicKey.findProgramAddress(
-        [anchor.utils.bytes.utf8.encode('stats')],
-        rewardsProgramId
-      );
-      [accounts.stake] = await anchor.web3.PublicKey.findProgramAddress(
-        [anchor.utils.bytes.utf8.encode('stake'), mint.toBuffer(), userKey.toBuffer()],
-        programId
-      );
-      [accounts.reward] = await anchor.web3.PublicKey.findProgramAddress(
-        [anchor.utils.bytes.utf8.encode('reward'), userKey.toBuffer()],
-        rewardsProgramId
-      );
-
-      await this.refreshStake();
-      this.loading = false;
-      this.accounts = accounts;
-      this.getBalance();
-    },
     async getBalance () {
-      const account = await web3.getTokenAccountsByOwner(this.accounts.authority,
-        { mint: this.accounts.mint });
+      const account = await web3.getTokenAccountsByOwner(this.$stake.accounts.authority,
+        { mint: this.$stake.accounts.mint });
       if (account && account.value && account.value.length > 0) {
         const tokenAddress = new anchor.web3.PublicKey(account.value[0].pubkey.toString());
 
@@ -808,9 +764,17 @@ export default {
         const decimals = 1e6;
         const stakeAmount = this.amount * decimals;
 
-        const response = await this.program.methods
+        const response = await this.$stake.program.methods
           .topup(new anchor.BN(stakeAmount))
-          .accounts(this.accounts)
+          .accounts(this.$stake.accounts)
+          .preInstructions([
+            await this.$stake.poolProgram.methods
+              .claimFee()
+              .accounts(this.$stake.poolAccounts).instruction()
+          ])
+          .postInstructions([
+            await this.$stake.rewardsProgram.methods
+              .sync().accounts({ ...this.$stake.accounts, vault: this.$stake.rewardVault }).instruction()])
           .rpc();
         console.log(response);
         setTimeout(async () => {
@@ -836,6 +800,18 @@ export default {
       }
       this.loading = false;
     },
+    stakeConfirm () {
+      this.$modal.show({
+        color: 'info',
+        text:
+          'Are you aware you will not have acces to your tokens untill you unstake AND the unstake duration has passed?\n\n' +
+          'For more information about Nosana Staking click <a class="has-text-accent" href="https://nosana.io/stake" target="_blank">here</a>.',
+        title: 'Are you sure you want to stake?',
+        onConfirm: () => {
+          this.stake();
+        }
+      });
+    },
     async stake () {
       if (this.userHasStakedBefore && this.amount) {
         return await this.topup();
@@ -848,10 +824,16 @@ export default {
         const decimals = 1e6;
         const stakeAmount = this.amount * decimals;
 
-        const response = await this.program.methods
+        const response = await this.$stake.program.methods
           .stake(new anchor.BN(stakeAmount), new anchor.BN(stakeDurationSeconds))
-          .accounts(this.accounts)
-          .postInstructions([await this.rewardsProgram.methods.enter().accounts(this.accounts).instruction()])
+          .accounts(this.$stake.accounts)
+          .preInstructions([
+            await this.$stake.poolProgram.methods
+              .claimFee()
+              .accounts(this.$stake.poolAccounts).instruction()
+          ])
+          .postInstructions(
+            [await this.$stake.rewardsProgram.methods.enter().accounts(this.$stake.accounts).instruction()])
           .rpc();
         console.log(response);
         setTimeout(async () => {
@@ -877,10 +859,19 @@ export default {
         this.loading = true;
         const stakeDurationSeconds = this.extraUnstakeDays * SECONDS_PER_DAY;
 
-        const response = await this.program.methods
+        const response = await this.$stake.program.methods
           .extend(new anchor.BN(stakeDurationSeconds))
-          .accounts(this.accounts)
+          .accounts(this.$stake.accounts)
+          .preInstructions([
+            await this.$stake.poolProgram.methods
+              .claimFee()
+              .accounts(this.$stake.poolAccounts).instruction()
+          ])
+          .postInstructions([
+            await this.$stake.rewardsProgram.methods
+              .sync().accounts({ ...this.$stake.accounts, vault: this.$stake.rewardVault }).instruction()])
           .rpc();
+
         console.log(response);
         setTimeout(async () => {
           await this.refreshStake();
@@ -910,12 +901,17 @@ export default {
       // check if user has has reward account
       const preInstructions = [];
       try {
-        const rewardAccount = (await this.rewardsProgram.account.rewardAccount.fetch(this.accounts.reward)).reflection;
+        const rewardAccount = (
+          await this.$stake.rewardsProgram.account.rewardAccount.fetch(this.$stake.accounts.reward)).reflection;
         console.log('User has reward account', rewardAccount);
         preInstructions.push(
-          // await this.rewardsProgram.methods.claim()
-          //   .accounts({ ...this.accounts, vault: this.rewardVault }).instruction(),
-          await this.rewardsProgram.methods.close().accounts(this.accounts).instruction()
+          await this.$stake.poolProgram.methods
+            .claimFee()
+            .accounts(this.$stake.poolAccounts).instruction(),
+          await this.$stake.rewardsProgram.methods
+            .claim()
+            .accounts({ ...this.$stake.accounts, vault: this.$stake.rewardVault }).instruction(),
+          await this.$stake.rewardsProgram.methods.close().accounts(this.$stake.accounts).instruction()
         );
       } catch (error) {
         if (!error.message.includes('Account does not exist')) {
@@ -928,9 +924,9 @@ export default {
       }
 
       try {
-        await this.program.methods
+        await this.$stake.program.methods
           .unstake()
-          .accounts(this.accounts)
+          .accounts(this.$stake.accounts)
           .preInstructions(preInstructions)
           .rpc();
 
@@ -956,10 +952,16 @@ export default {
     async restake () {
       try {
         this.loading = true;
-        const response = await this.program.methods
+        const response = await this.$stake.program.methods
           .restake()
-          .accounts(this.accounts)
-          .postInstructions([await this.rewardsProgram.methods.enter().accounts(this.accounts).instruction()])
+          .accounts(this.$stake.accounts)
+          .preInstructions([
+            await this.$stake.poolProgram.methods
+              .claimFee()
+              .accounts(this.$stake.poolAccounts).instruction()
+          ])
+          .postInstructions(
+            [await this.$stake.rewardsProgram.methods.enter().accounts(this.$stake.accounts).instruction()])
           .rpc();
         console.log(response);
         setTimeout(async () => {
@@ -984,9 +986,9 @@ export default {
     async claim () {
       try {
         this.loading = true;
-        const response = await this.program.methods
+        const response = await this.$stake.program.methods
           .claim()
-          .accounts(this.accounts)
+          .accounts(this.$stake.accounts)
           .rpc();
         console.log(response);
         setTimeout(async () => {
@@ -1056,6 +1058,19 @@ export default {
   }
   .box {
     border: none;
+  }
+}
+@media only screen and (max-width: 1618px) {
+  .first-stake {
+    > div {
+      display:flex;
+      justify-content: center;
+      flex-wrap:wrap;
+      align-items: center;
+      .box {
+        margin: 5px 10px !important;
+      }
+    }
   }
 }
 

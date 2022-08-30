@@ -93,9 +93,9 @@
               @click.native="mobileMenu = false;"
             >
               <span class="icon is-medium p-1 m-1 has-radius">
-                <i class="fa-solid fa-bars-staggered" />
+                <i class="fa-solid fa-rocket" />
               </span>
-              Developer Hub
+              Pipelines
             </nuxt-link>
           </li>
           <li>

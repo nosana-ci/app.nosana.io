@@ -328,7 +328,7 @@ export default {
     async getActiveRepositories () {
       try {
         const repositories = await this.$axios.$get('/repositories/active');
-        this.userRepositories = repositories;
+        this.repositories = repositories;
       } catch (error) {
         this.$modal.show({
           color: 'danger',
