@@ -240,7 +240,7 @@ export default {
         this.$modal.show({
           color: 'success',
           text: 'Successfully claimed rewards',
-          title: 'Unstaked'
+          title: 'Claimed'
         });
       } catch (error) {
         this.$modal.show({
