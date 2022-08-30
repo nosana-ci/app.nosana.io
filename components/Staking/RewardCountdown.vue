@@ -157,7 +157,7 @@ export default {
   data () {
     return {
       totals: null,
-      date: new Date('2022-08-30T15:00:00.000Z'),
+      date: new Date(process.env.NUXT_ENV_REWARD_COUNTDOWN),
       loading: false,
       interval: null,
       rate: null
