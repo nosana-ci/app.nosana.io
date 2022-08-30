@@ -33,7 +33,7 @@
                     parseInt($parent.$refs.stakingForm.amount) : 0)) * 100).toFixed(1) }}%
             </p>
           </div>
-          <div v-if="rewardInfo" class="is-size-6">
+          <div v-if="rewardInfo && rewardInfo.rewardAccount" class="is-size-6">
             <div class="is-flex is-align-items-center">
               <span class="">Current xNOS score</span>
               <b class="ml-auto">{{ parseInt(rewardInfo.rewardAccount.xnos/1e6) }}</b>
@@ -195,7 +195,7 @@ export default {
     reward () {
       let reward = 0;
       if (this.countdownFinished) {
-        if (this.rewardInfo && this.rate) {
+        if (this.rewardInfo && this.rewardInfo.rewardAccount && this.rate) {
           reward = (this.rewardInfo.rewardAccount.reflection / this.rate) -
           this.rewardInfo.rewardAccount.xnos;
         }
@@ -268,9 +268,6 @@ export default {
       } else {
         this.balance = 0;
       }
-    },
-    getRate (xnos, reflection) {
-      return xnos / reflection;
     },
     calculateRewards () {
       if (this.rewardInfo && this.poolInfo) {

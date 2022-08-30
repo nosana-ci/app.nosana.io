@@ -144,7 +144,10 @@ export default (context, inject) => {
 
         const poolInfo = await this.poolProgram.account.poolAccount.fetch(process.env.NUXT_ENV_POOL_ID);
         const globalStats = await this.rewardsProgram.account.statsAccount.fetch(accounts.stats);
-        const rewardAccount = await this.rewardsProgram.account.rewardAccount.fetch(this.accounts.reward);
+        let rewardAccount;
+        if (context.$auth.loggedIn) {
+          rewardAccount = await this.rewardsProgram.account.rewardAccount.fetch(this.accounts.reward);
+        }
         const rewardInfo = {
           global: globalStats,
           rewardAccount
