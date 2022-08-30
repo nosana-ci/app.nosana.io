@@ -173,14 +173,6 @@ export default {
     stakeData () {
       return this.$stake ? this.$stake.stakeData : null;
     },
-    lastClaim () {
-      let lastClaimDate;
-      if (this.$stake && this.$stake.poolInfo) {
-        const unix = parseInt(this.poolInfo.claimedTokens / this.poolInfo.emission) + parseInt(this.poolInfo.startTime);
-        lastClaimDate = new Date(unix * 1000);
-      }
-      return lastClaimDate;
-    },
     countdownFinished: {
       get () {
         return new Date() > this.date;
@@ -284,10 +276,10 @@ export default {
       if (this.rewardInfo && this.poolInfo) {
         this.rate = this.rewardInfo.global.rate;
         const now = new Date().getTime();
-        const diff = this.lastClaim.getTime() - now;
-        const secondsBetween = Math.abs(diff / 1000);
+        const secondsBetween = parseInt(now / 1000) - parseInt(this.poolInfo.startTime);
 
-        const fees = new BN(parseInt(secondsBetween) * parseInt(this.poolInfo.emission));
+        const fees =
+          new BN(parseInt(secondsBetween) * parseInt(this.poolInfo.emission) - parseInt(this.poolInfo.claimedTokens));
         const newTotalXnos = this.rewardInfo.global.totalXnos.add(fees);
 
         this.rate = new BN(this.rewardInfo.global.totalReflection / newTotalXnos);
