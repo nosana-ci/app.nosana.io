@@ -56,7 +56,6 @@ export default (context, inject) => {
           wallet = new FakeWallet(anchor.web3.Keypair.generate());
         }
 
-        this.refreshStake();
         if (!this.interval) {
           this.interval = setInterval(() => {
             console.log('refresh staking info..');
@@ -129,8 +128,6 @@ export default (context, inject) => {
           rewardsProgramId
         );
 
-        await this.refreshStake();
-
         this.loading = false;
         this.accounts = accounts;
         this.poolAccounts = {
@@ -142,22 +139,22 @@ export default (context, inject) => {
           rewardsProgram: rewardsProgramId
         };
 
-        const poolInfo = await this.poolProgram.account.poolAccount.fetch(process.env.NUXT_ENV_POOL_ID);
-        await this.refreshRewardsInfo();
-        this.poolInfo = poolInfo;
+        await this.refreshStake();
       },
-      async refreshRewardsInfo () {
+      async refreshRewardsAndPoolInfo () {
         if (!this.accounts) { return null; }
         const globalStats = await this.rewardsProgram.account.statsAccount.fetch(this.accounts.stats);
         let rewardAccount;
         if (context.$auth.loggedIn) {
           try {
+            const poolInfo = await this.poolProgram.account.poolAccount.fetch(process.env.NUXT_ENV_POOL_ID);
+            this.poolInfo = poolInfo;
             rewardAccount = await this.rewardsProgram.account.rewardAccount.fetch(this.accounts.reward);
           } catch (error) {
             if (!error.message.includes('Account does not exist')) {
               throw new Error(error.message);
             } else {
-              console.log('Account does not exists, skip');
+              console.log('Reward account does not exists, skip');
             }
           }
         }
@@ -176,7 +173,7 @@ export default (context, inject) => {
         } else {
           this.stakeEndDate = null;
         }
-        await this.refreshRewardsInfo();
+        await this.refreshRewardsAndPoolInfo();
         this.stakeData = stakeData;
       }
     }
