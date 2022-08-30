@@ -102,7 +102,7 @@
                         />
                         <ICountUp
                           :end-val="parseFloat(reward)"
-                          :options="{ decimalPlaces: 2 }"
+                          :options="{ decimalPlaces: 2, duration:1 }"
                           style="position:absolute;width: 100%;text-align: center;left: 0;"
                         />
                       </h2>
