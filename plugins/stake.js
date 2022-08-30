@@ -143,7 +143,12 @@ export default (context, inject) => {
         };
 
         const poolInfo = await this.poolProgram.account.poolAccount.fetch(process.env.NUXT_ENV_POOL_ID);
-        const globalStats = await this.rewardsProgram.account.statsAccount.fetch(accounts.stats);
+        await this.refreshRewardsInfo();
+        this.poolInfo = poolInfo;
+      },
+      async refreshRewardsInfo () {
+        if (!this.accounts) { return null; }
+        const globalStats = await this.rewardsProgram.account.statsAccount.fetch(this.accounts.stats);
         let rewardAccount;
         if (context.$auth.loggedIn) {
           try {
@@ -161,7 +166,6 @@ export default (context, inject) => {
           rewardAccount
         };
         this.rewardInfo = rewardInfo;
-        this.poolInfo = poolInfo;
       },
       async refreshStake () {
         const userAddress = context.$sol && context.$sol.publicKey ? `?userAddress=${context.$sol.publicKey}` : '';
@@ -172,6 +176,7 @@ export default (context, inject) => {
         } else {
           this.stakeEndDate = null;
         }
+        await this.refreshRewardsInfo();
         this.stakeData = stakeData;
       }
     }
