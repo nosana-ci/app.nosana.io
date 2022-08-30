@@ -6,7 +6,7 @@
     >
       <div class="has-text-centered columns is-multiline">
         <div v-if="expectedRewards !== null" class="column is-12 is-6-fullhd">
-          <div class="box has-text-centered mb-6">
+          <div class="box has-text-centered">
             <p>Expected daily rewards</p>
             <h2 class="title is-3 has-text-success mb-0">
               <ICountUp
@@ -32,6 +32,24 @@
                   (($parent.$refs.stakingForm && $parent.$refs.stakingForm.amount) ?
                     parseInt($parent.$refs.stakingForm.amount) : 0)) * 100).toFixed(1) }}%
             </p>
+          </div>
+          <div v-if="rewardInfo" class="is-size-6">
+            <div class="is-flex is-align-items-center">
+              <span class="">Current xNOS score</span>
+              <b class="ml-auto">{{ parseInt(rewardInfo.rewardAccount.xnos/1e6) }}</b>
+            </div>
+            <hr class="my-2">
+            <div class="is-flex is-align-items-center">
+              <span class="">Total xNOS score</span>
+              <b class="ml-auto ">{{ parseInt(rewardInfo.global.totalXnos/1e6) }}</b>
+            </div>
+            <hr class="my-2">
+            <div class="is-flex is-align-items-center">
+              <span class="">Your percentage</span>
+              <b class="ml-auto">
+                {{ (rewardInfo.rewardAccount.xnos/rewardInfo.global.totalXnos * 100).toFixed(2) }}%</b>
+            </div>
+            <hr class="my-2">
           </div>
         </div>
         <div class="column">
@@ -90,6 +108,10 @@
                       </h2>
                       <p>NOS</p>
                     </div>
+                    <p class="is-size-7">
+                      You can either restake your pending rewards to increase your xNOS score
+                      and earn even more rewards, or you can claim your pending rewards immediately to your wallet.
+                    </p>
                     <button
                       v-if="!loggedIn"
                       class="button is-accent is-fullwidth mt-5 has-text-weight-semibold"
