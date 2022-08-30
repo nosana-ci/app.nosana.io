@@ -101,6 +101,13 @@
 <script>
 import ICountUp from 'vue-countup-v2';
 import { BN } from '@project-serum/anchor';
+const anchor = require('@project-serum/anchor');
+
+let node = process.env.NUXT_ENV_SOL_NETWORK;
+if (!node.includes('http')) {
+  node = anchor.web3.clusterApiUrl(node);
+}
+const web3 = new anchor.web3.Connection(node, 'confirmed');
 
 export default {
   components: {
@@ -113,7 +120,7 @@ export default {
       date: new Date('2022-08-30T13:00:00.000Z'),
       loading: false,
       nosPerSecond: 8000000 / (365 * 3600 * 24),
-      lastClaim: new Date('2022-08-30T13:00:00.000'),
+      lastClaim: new Date('2022-08-29T13:00:00.000'),
       interval: null,
       rate: null
     };
@@ -171,10 +178,30 @@ export default {
     }
   },
   methods: {
-    claimRewards () {
+    async claimRewards () {
       this.loading = true;
-      // quick fix TODO: would be nice to have the programs in the stake plugin
-      this.$emit('claim-rewards');
+      try {
+        const response = await this.$stake.rewardsProgram.methods
+          .claim()
+          .accounts({ ...this.$stake.accounts, vault: this.$stake.rewardVault }).rpc();
+        console.log(response);
+        setTimeout(async () => {
+          await this.$stake.refreshStake();
+        }, 1000);
+        this.amount = null;
+        await this.getBalance();
+        this.$modal.show({
+          color: 'success',
+          text: 'Successfully claimed rewards',
+          title: 'Unstaked'
+        });
+      } catch (error) {
+        this.$modal.show({
+          color: 'danger',
+          text: error.message,
+          title: 'Error'
+        });
+      }
       this.loading = false;
     },
     async getStakeTotals () {
@@ -186,6 +213,19 @@ export default {
           text: error,
           title: 'Error'
         });
+      }
+    },
+    async getBalance () {
+      const account = await web3.getTokenAccountsByOwner(this.$stake.accounts.authority,
+        { mint: this.$stake.accounts.mint });
+      if (account && account.value && account.value.length > 0) {
+        const tokenAddress = new anchor.web3.PublicKey(account.value[0].pubkey.toString());
+
+        this.balance = (await web3.getTokenAccountBalance(
+          tokenAddress
+        )).value.uiAmount;
+      } else {
+        this.balance = 0;
       }
     },
     getRate (xnos, reflection) {

@@ -38,22 +38,6 @@ export default (context, inject) => {
         rewardInfo: null
       };
     },
-    mounted () {
-      let wallet = context.$sol.getWallet();
-      if (!wallet) {
-        wallet = new FakeWallet(anchor.web3.Keypair.generate());
-      }
-      console.log('lets go');
-      this.setupPrograms(wallet);
-
-      this.refreshStake();
-      if (!this.interval) {
-        this.interval = setInterval(() => {
-          console.log('refresh staking info..');
-          this.refreshStake();
-        }, 30000);
-      }
-    },
     beforeDestroy () {
       if (this.interval) {
         clearInterval(this.interval);
@@ -65,7 +49,20 @@ export default (context, inject) => {
         this.stakeData = null;
         this.stakeDataEnd = null;
       },
-      async setupPrograms (wallet) {
+      async setupPrograms () {
+        let wallet = context.$sol.getWallet();
+        if (!wallet) {
+          wallet = new FakeWallet(anchor.web3.Keypair.generate());
+        }
+
+        this.refreshStake();
+        if (!this.interval) {
+          this.interval = setInterval(() => {
+            console.log('refresh staking info..');
+            this.refreshStake();
+          }, 30000);
+        }
+
         this.provider = new anchor.AnchorProvider(web3, wallet, {});
         let userKey = wallet.publicKey;
         if (context.$auth && context.$auth.user) {
