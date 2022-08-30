@@ -13,22 +13,18 @@
           ref="stakingForm"
           class="tile is-child"
           style="flex-grow: 0"
-          :stake-data="stakeData"
-          :stake-end-date="stakeEndDate"
           @x-nos="updateXNOS"
           @reward-info="updateRewardInfo"
         />
         <reward-countdown
           :xnos="xNOS"
-          :stake-data="stakeData"
-          :reward-info="rewardInfo"
           class="tile is-child"
           @claim-rewards="$refs.stakingForm.claimRewards()"
         />
       </div>
 
       <div class="tile is-vertical is-parent">
-        <tier-view class="tile is-child" :stake-data="stakeData" :xnos="xNOS" @rxnos="fillStake" />
+        <tier-view class="tile is-child" :xnos="xNOS" @rxnos="fillStake" />
         <subscribe-view style="flex-grow: 0" class="tile is-child" />
       </div>
     </div>
@@ -60,8 +56,7 @@ export default {
       extendStake: false,
       unstakeForm: false,
       countdownFinished: false,
-      xNOS: null,
-      rewardInfo: null
+      xNOS: null
     };
   },
   computed: {

@@ -106,19 +106,25 @@ export default {
   components: {
     ICountUp
   },
-  props: ['xnos', 'stakeData', 'rewardInfo'],
+  props: ['xnos'],
   data () {
     return {
       totals: null,
       date: new Date('2022-08-30T13:00:00.000Z'),
       loading: false,
       nosPerSecond: 8000000 / (365 * 3600 * 24),
-      lastClaim: new Date('2022-08-29T13:00:00.000'),
+      lastClaim: new Date('2022-08-30T13:00:00.000'),
       interval: null,
-      rate: this.rewardInfo ? this.rewardInfo.global.rate : null
+      rate: null
     };
   },
   computed: {
+    rewardInfo () {
+      return this.$stake ? this.$stake.rewardInfo : null;
+    },
+    stakeData () {
+      return this.$stake ? this.$stake.stakeData : null;
+    },
     countdownFinished: {
       get () {
         return new Date() > this.date;
@@ -151,6 +157,7 @@ export default {
   },
   mounted () {
     this.getStakeTotals();
+    this.calculateRewards();
     if (!this.interval) {
       this.interval = setInterval(() => {
         this.calculateRewards();
@@ -185,14 +192,17 @@ export default {
       return xnos / reflection;
     },
     calculateRewards () {
-      const now = new Date().getTime();
-      const diff = this.lastClaim.getTime() - now;
-      const secondsBetween = Math.abs(diff / 1000);
+      this.rate = this.rewardInfo ? this.rewardInfo.global.rate : null;
+      if (this.rewardInfo) {
+        const now = new Date().getTime();
+        const diff = this.lastClaim.getTime() - now;
+        const secondsBetween = Math.abs(diff / 1000);
 
-      const fees = new BN(parseInt(secondsBetween) * parseInt(this.nosPerSecond * 1e6));
-      const newTotalXnos = this.rewardInfo.global.totalXnos.add(fees);
+        const fees = new BN(parseInt(secondsBetween) * parseInt(this.nosPerSecond * 1e6));
+        const newTotalXnos = this.rewardInfo.global.totalXnos.add(fees);
 
-      this.rate = new BN(this.rewardInfo.global.totalReflection / newTotalXnos);
+        this.rate = new BN(this.rewardInfo.global.totalReflection / newTotalXnos);
+      }
     }
   }
 };
