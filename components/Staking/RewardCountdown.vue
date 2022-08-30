@@ -53,9 +53,9 @@
           </div>
         </div>
         <div class="column">
-          <h2 v-if="!countdownFinished" class="subtitle">
+          <!-- <h2 v-if="!countdownFinished" class="subtitle">
             <b>Reward program starting in</b>
-          </h2>
+          </h2> -->
           <div>
             <client-only>
               <countdown :end-time="date" @onFinish="countdownFinished = true">
