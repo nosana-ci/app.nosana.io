@@ -10,11 +10,13 @@
             <p>Expected daily rewards</p>
             <h2 class="title is-3 has-text-success mb-0">
               <ICountUp
+                class="is-family-monospace"
                 :end-val="parseFloat(expectedRewards)"
                 :options="{ decimalPlaces: 0, duration:0.1 }"
                 style="opacity:0"
               />
               <ICountUp
+                class="is-family-monospace"
                 :end-val="parseFloat(expectedRewards)"
                 :options="{ decimalPlaces: 0 }"
                 style="position:absolute;width: 100%;text-align: center;left: 0;"
@@ -53,9 +55,9 @@
           </div>
         </div>
         <div class="column">
-          <h2 v-if="!countdownFinished" class="subtitle">
+          <!-- <h2 v-if="!countdownFinished" class="subtitle">
             <b>Reward program starting in</b>
-          </h2>
+          </h2> -->
           <div>
             <client-only>
               <countdown :end-time="date" @onFinish="countdownFinished = true">
@@ -96,13 +98,15 @@
                       <p>pending NOS Rewards</p>
                       <h2 class="title is-3 has-text-success mb-0">
                         <ICountUp
+                          class="is-family-monospace"
                           :end-val="parseFloat(reward)"
-                          :options="{ decimalPlaces: 2, duration:0.1 }"
+                          :options="{ decimalPlaces: 4, duration:0.1 }"
                           style="opacity:0"
                         />
                         <ICountUp
+                          class="is-family-monospace"
                           :end-val="parseFloat(reward)"
-                          :options="{ decimalPlaces: 2, duration:1 }"
+                          :options="{ decimalPlaces: 4, duration:1 }"
                           style="position:absolute;width: 100%;text-align: center;left: 0;"
                         />
                       </h2>

@@ -443,11 +443,15 @@
                 Unstake period of {{ $moment.duration(stakeData.duration, 'seconds').asDays() }} days
               </p>
               <button
+                v-if="stakeData.duration/(3600*24) < 365"
                 class="button is-accent is-light extend-btn mt-3 px-6"
                 @click="extendPopup = true, amount = 0, extraUnstakeDays = 0"
               >
                 Extend unstake period
               </button>
+              <p v-else class="has-text-centered is-size-7 has-text-accent has-font-weight-bold">
+                Maximum unstake duration!
+              </p>
               <div v-if="$stake.accounts" class="mt-6 mb-3">
                 <div class="is-flex is-align-items-center">
                   <span class="is-size-7">Stake Account</span>
