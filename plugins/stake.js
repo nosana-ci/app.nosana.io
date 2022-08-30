@@ -145,17 +145,15 @@ export default (context, inject) => {
         if (!this.accounts) { return null; }
         const globalStats = await this.rewardsProgram.account.statsAccount.fetch(this.accounts.stats);
         let rewardAccount;
-        if (context.$auth.loggedIn) {
-          try {
-            const poolInfo = await this.poolProgram.account.poolAccount.fetch(process.env.NUXT_ENV_POOL_ID);
-            this.poolInfo = poolInfo;
-            rewardAccount = await this.rewardsProgram.account.rewardAccount.fetch(this.accounts.reward);
-          } catch (error) {
-            if (!error.message.includes('Account does not exist')) {
-              throw new Error(error.message);
-            } else {
-              console.log('Reward account does not exists, skip');
-            }
+        try {
+          const poolInfo = await this.poolProgram.account.poolAccount.fetch(process.env.NUXT_ENV_POOL_ID);
+          this.poolInfo = poolInfo;
+          rewardAccount = await this.rewardsProgram.account.rewardAccount.fetch(this.accounts.reward);
+        } catch (error) {
+          if (!error.message.includes('Account does not exist')) {
+            throw new Error(error.message);
+          } else {
+            console.log('Reward account does not exists, skip');
           }
         }
         const rewardInfo = {
