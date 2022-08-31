@@ -9,7 +9,7 @@
           <span v-if="userCount !== null && !loadingUserCount">{{
             userCount
           }}</span><span v-else>...</span> users
-          <a @click="getUsers"><small class="is-size-7">refresh</small></a>
+          <a @click="getUsers"><small class="is-size-7">Refresh</small></a>
         </h2>
       </div>
       <form
