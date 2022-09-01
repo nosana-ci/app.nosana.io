@@ -1,4 +1,4 @@
-# Nosana Platform
+# Nosana Network
 
 ## Build Setup
 
