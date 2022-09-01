@@ -82,22 +82,28 @@
             v-for="(user, index) in leaderboard"
           >
             <tr
-              v-if="calculateTier(rankings[index] + 1).firstInTier || index === 0"
+              v-if="calculateTier(rankings[index] + 1, user.xnos).firstInTier || index === 0"
               :key="user.address + 1"
               class="has-background-dark"
             >
               <td colspan="4" style="text-align:center;position:relative">
-                <figure class="image is-32x32" style="position: absolute;top: 2px;">
-                  <img
-                    class="is-rounded"
-                    :src="
-                      require(
-                        `@/assets/img/tiers/icons/small/tier${calculateTierWithoutEdge(rankings[index] + 1).tier}.svg`)"
-                    style="height: 20px"
-                  >
-                </figure>
+                <template v-if="calculateTierWithoutEdge(rankings[index] + 1, user.xnos).tier <= 5">
+                  <figure class="image is-32x32" style="position: absolute;top: 2px;">
+                    <img
+                      class="is-rounded"
+                      :src="
+                        require(
+                          `@/assets/img/tiers/icons/small/tier${calculateTierWithoutEdge(rankings[index] + 1,
+                                                                                         user.xnos).tier}.svg`)"
+                      style="height: 20px"
+                    >
+                  </figure>
 
-                Tier {{ calculateTierWithoutEdge(rankings[index] + 1).tier }}
+                  Tier {{ calculateTierWithoutEdge(rankings[index] + 1, user.xnos).tier }}
+                </template>
+                <template v-else>
+                  No tier
+                </template>
               </td>
             </tr>
             <tr
@@ -205,13 +211,13 @@ export default {
         }
       }
     },
-    calculateTier (rank) {
-      const tier = this.calculateTierWithoutEdge(rank);
-      const previousTier = this.calculateTierWithoutEdge(rank - 1);
-      const firstInTier = previousTier !== tier;
+    calculateTier (rank, xnos) {
+      const tier = this.calculateTierWithoutEdge(rank, xnos);
+      const previousTier = this.calculateTierWithoutEdge(rank - 1, xnos);
+      const firstInTier = !previousTier || previousTier.tier !== tier.tier;
       return { tier, firstInTier };
     },
-    calculateTierWithoutEdge (rank) {
+    calculateTierWithoutEdge (rank, xnos) {
       if (!this.tiers || !rank) { return null; };
       let tier;
       const top = this.tiers.find(t => t.tier === 1).number;
@@ -228,6 +234,9 @@ export default {
         }
       } else {
         tier = this.tiers.find(t => t.tier === 1);
+      }
+      if (xnos < 2000 * 1e6) {
+        tier = { ...tier, tier: 6 };
       }
 
       return tier;

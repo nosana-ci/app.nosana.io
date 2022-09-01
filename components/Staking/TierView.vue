@@ -9,7 +9,7 @@
           :display="3"
           :loop="false"
           :width="350"
-          :start-index="stakeData.tierInfo.userTier ?
+          :start-index="stakeData.tierInfo.userTier && parseFloat(xnos) >= 1000 ?
             (activeTier = stakeData.tierInfo.userTier.tier)
             && (stakeData.tierInfo.tiers.length - stakeData.tierInfo.userTier.tier) : 0"
           :height="320"
@@ -102,6 +102,7 @@
                   - parseFloat(xnos)*1e6) / 1e6).toFixed()
               }}
             </span>
+            <span v-else>{{ ((1000*1e6 - parseFloat(xnos)*1e6) / 1e6).toFixed() }}</span>
             <small class="has-text-black-ter">xNOS needed</small>
           </span>
 
@@ -261,7 +262,7 @@ export default {
       } else if (this.stakeData && this.stakeData.tierInfo && this.stakeData.tierInfo.tiers && this.$refs.carousel) {
         const tiers = this.stakeData.tierInfo.tiers;
         for (let i = 0; i < tiers.length; i++) {
-          if (tiers[i].requiredXNOS / 1e6 <= parseFloat(xnos) || i + 1 === tiers.length) {
+          if (tiers[i].requiredXNOS / 1e6 <= parseFloat(xnos) || (i + 1 === tiers.length && parseFloat(xnos) >= 1000)) {
             this.expectedTier = tiers[i].tier;
             this.$refs.carousel.goSlide(tiers.length - tiers[i].tier);
             break;
@@ -271,9 +272,11 @@ export default {
     },
     stakeData (stakeData) {
       if (stakeData.tierInfo && stakeData.tierInfo.userTier) {
-        this.activeTier = stakeData.tierInfo.userTier.tier;
-        if (this.expectedTier === null) {
-          this.expectedTier = stakeData.tierInfo.userTier.tier;
+        if (parseFloat(this.xnos) >= 1000) {
+          this.activeTier = stakeData.tierInfo.userTier.tier;
+          if (this.expectedTier === null) {
+            this.expectedTier = stakeData.tierInfo.userTier.tier;
+          }
         }
         // if(this.$refs.carousel) {
         // this.$refs.carousel.goSlide(stakeData.tierInfo.tiers.length - stakeData.tierInfo.userTier.tier);
@@ -284,15 +287,20 @@ export default {
   },
   mounted () {
     if (this.stakeData && this.stakeData.tierInfo && this.stakeData.tierInfo.userTier) {
-      this.activeTier = this.stakeData.tierInfo.userTier.tier;
+      if (parseFloat(this.xnos) >= 1000) {
+        this.activeTier = this.stakeData.tierInfo.userTier.tier;
+      }
     }
     this.getLeaderboard(this.queryPage);
   },
   methods: {
     requiredXnos (tier) {
-      if (tier && tier.tier !== 5) {
-        console.log('emit', tier);
-        this.$emit('rxnos', tier.requiredXNOS);
+      if (tier) {
+        if (tier.tier !== 5) {
+          this.$emit('rxnos', tier.requiredXNOS);
+        } else {
+          this.$emit('rxnos', 1000 * 1e6);
+        }
       }
     },
     async getLeaderboard (page) {
