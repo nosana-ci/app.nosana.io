@@ -213,7 +213,9 @@ export default {
     },
     calculateTier (rank, xnos) {
       const tier = this.calculateTierWithoutEdge(rank, xnos);
-      const previousTier = this.calculateTierWithoutEdge(rank - 1, xnos);
+      const previousIndex = this.rankings.findIndex(r => r === rank - 2);
+      const previousTier =
+        this.calculateTierWithoutEdge(rank - 1, previousIndex >= 0 ? this.leaderboard[previousIndex].xnos : null);
       const firstInTier = !previousTier || previousTier.tier !== tier.tier;
       return { tier, firstInTier };
     },
@@ -235,7 +237,7 @@ export default {
       } else {
         tier = this.tiers.find(t => t.tier === 1);
       }
-      if (xnos < 2000 * 1e6) {
+      if (xnos < 1000 * 1e6) {
         tier = { ...tier, tier: 6 };
       }
 
