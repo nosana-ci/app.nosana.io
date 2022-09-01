@@ -95,7 +95,7 @@
                 <div slot="finish">
                   <div v-if="reward !== null">
                     <div class="box has-background-light">
-                      <p>pending NOS Rewards</p>
+                      <p>Pending NOS rewards</p>
                       <h2 class="title is-3 has-text-success mb-0">
                         <ICountUp
                           class="is-family-monospace"

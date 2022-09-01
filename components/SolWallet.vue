@@ -53,7 +53,7 @@
                     error = null;
                   "
                 >
-                  <small class="is-size-7">Switch Wallet</small>
+                  <small class="is-size-7">Switch wallet</small>
                 </a>
               </div>
               <p class="block">

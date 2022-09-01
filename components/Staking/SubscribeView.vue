@@ -14,17 +14,17 @@
             <strong>Get you hands on a Burner Phone</strong>
             <br>
             <small>
-              Next NFT mint; Get your hands on a Burner Phone. <br>
-              All stakers have a chance to win ana NFT mint token.
-              You need to subscribe here after staking to be part of the raffle.
+              Next NFT mint- Get your hands on a Burner Phone. <br>
+              All stakers have a chance to win an NFT mint token.
+              You need to subscribe here after staking to participate in the raffle.
             </small>
           </p>
           <p v-else class="block">
-            <strong>Get your hands on a burner Phone</strong>
+            <strong>Get your hands on a Burner Phone</strong>
             <small>
               Want to be one of the first to own a Burner Phone?
               <br>
-              Click Subscribe below to be part of the raffle!
+              Subscribe below participate in the raffle!
             </small>
           </p>
           <p class="block">

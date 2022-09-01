@@ -8,7 +8,7 @@
         Add new <b class="has-text-accent">Repository</b>
       </h1>
       <div v-if="!githubToken && !installations">
-        Loading..
+        Loading...
       </div>
       <div v-else-if="!githubToken">
         <p
@@ -28,14 +28,14 @@
         </p>
         <p class="block">
           <a :class="{'is-loading': loading}" class="button is-accent" :href="githubAppUrl">
-            <span>Connect another Github account</span>
+            <span>Connect another GitHub account</span>
           </a>
         </p>
       </div>
       <nav v-else class="panel">
         <p class="panel-heading">
           <a :class="{'is-loading': loading}" class="button is-accent is-pulled-right is-small" :href="githubAppUrl">
-            <span>Add more Github repositories</span>
+            <span>Add more GitHub repositories</span>
           </a>
           Repositories
         </p>
