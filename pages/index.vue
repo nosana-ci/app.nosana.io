@@ -19,18 +19,18 @@
             In this dashboard you can see the pipelines that are running on the Nosana Network.
             You can also create and run your own CI/CD pipelines for your open-source project in the
             <nuxt-link to="/pipelines">
-              Pipelines
+              pipelines.
             </nuxt-link>
           </p>
         </div>
         <div class="column is-half">
           <p class="block has-limited-width-small has-text-justified is-horizontal-centered">
-            You can also earn <b>$NOS</b> by becoming a Node to use your spare CPU power to run pipelines.
+            You can also earn <b>$NOS</b> by becoming a node to use your spare CPU power to run pipelines.
             Head over to the
             <nuxt-link to="/stake">
-              Staking Section
+              staking section
             </nuxt-link>
-            to start earning and for a chance to receive a NFT burner phone.
+            to start earning and for a chance to receive a Burner Phone NFT.
           </p>
         </div>
       </div>
@@ -42,12 +42,12 @@
             <img src="~assets/img/icons/account.svg" style="height: 70px;">
           </div>
           <h2 class="subtitle">
-            <b>Account completion</b>
+            <b>Account Completion</b>
           </h2>
           <p class="block is-size-7">
             Make sure to boost your account to 100%.
-            This means you’ll be among the first to hear about Network updates,
-            Node support, NFT drops, Rewarddrops & more.
+            This means you’ll be among the first to hear about network updates,
+            node support, NFT drops, reward drops & more.
           </p>
           <p class="block mt-auto">
             <nuxt-link to="/account/edit" class="button is-accent is-wide is-small is-outlined">
@@ -86,7 +86,7 @@
             <b>Staking contract is audited!</b>
           </h2>
           <p class="block is-size-7">
-            Staking $NOS contract has been audited by our partners at <a href="https://opcodes.fr/" target="_blank" rel="noopener noreferrer">OPCODES</a>.
+            The $NOS staking contract has been audited by our partners at <a href="https://opcodes.fr/" target="_blank" rel="noopener noreferrer">OPCODES</a>.
             We are confident that the contract is safe to use.
             Read it at the link below.
           </p>
@@ -111,7 +111,7 @@
             <b>Staking rewards protocol starts in {{ countdown }} days</b>
           </h2>
           <h2 v-else class="subtitle">
-            <b>Staking rewards is live!</b>
+            <b>Staking rewards are Live!</b>
           </h2>
           <p class="block is-size-7">
             Receiving token rewards is one of the major benefits of staking.
@@ -137,7 +137,7 @@
           </h2>
           <p class="block is-size-7">
             We don’t do minting fees – a Burner Phone costs exactly 0 SOL. Are you a Nosana Network user?
-            Stake $NOS for a chance to mint your very own and have exclusive rights to earn $NOS with our Network.
+            Stake $NOS for a chance to mint your very own and have exclusive rights to earn $NOS with our network.
           </p>
           <p class="block mt-auto">
             <a href="https://nosana.io/nft" target="_blank" class="button is-accent is-wide is-small is-outlined">
@@ -155,7 +155,7 @@
             <b>Network Statistics</b>
           </h2>
           <p class="block is-size-7">
-            Want to learn more about how the Network is doing? Check it out here!
+            Want to learn more about how the network is doing? Check it out here!
           </p>
           <p class="block mt-auto">
             <nuxt-link to="/stats" class="button is-accent is-wide is-small is-outlined">

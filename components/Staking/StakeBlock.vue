@@ -1,8 +1,8 @@
 <template>
   <div class="box has-background-dark has-text-centered">
     <p>
-      <b>Earn more rewards?</b>
-      <small><br>Check out our Staking!</small>
+      <b>Want to earn rewards?</b>
+      <small><br>Check out our staking program!</small>
     </p>
     <p class="my-3">
       <img src="~assets/img/icons/stake.svg">

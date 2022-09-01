@@ -5,7 +5,7 @@
         <div class="column is-4">
           <h1 class="title is-4">
             Projects on <b v-if="network === 'devnet'" class="has-text-accent">DevNet</b>
-            <b v-else class="has-text-accent">TestNet</b>
+            <b v-else class="has-text-accent">Testnet</b>
           </h1>
           <p class="has-limited-width-small">
             If it works in a container, it works on the Nosana Network.
@@ -99,7 +99,7 @@
         <template v-else>
           <div class="column is-2">
             <div class="box">
-              <small>TestNet Balance</small>
+              <small>Testnet Balance</small>
               <div class="has-text-weight-semibold">
                 <span
                   v-if="!balance && balance !== 0"
@@ -146,7 +146,7 @@
       </div>
       <div v-if="repositories" class="columns is-multiline mt-4 has-background-light">
         <div v-if="!filteredRepositories.length" class="has-text-centered subtitle">
-          No repositories found..
+          No repositories found...
         </div>
         <template v-for="repository in filteredRepositories">
           <div :key="repository.id" class="column is-6 is-3-fullhd is-3-widescreen is-4-desktop">

@@ -99,7 +99,7 @@
               class="has-text-centered has-text-weight-bold"
             >
               <td v-if="!commits" colspan="5">
-                Loading commits..
+                Loading commits...
               </td>
               <td v-else colspan="5">
                 No commits

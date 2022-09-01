@@ -146,7 +146,7 @@
         <br>
         <label class="checkbox">
           <input v-model="wantToEarn" type="checkbox">
-          Earn with Nosana Network
+          Earn with the Nosana Network
         </label>
         <br>
         <label class="checkbox">

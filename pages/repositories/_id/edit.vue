@@ -21,7 +21,7 @@
               <input v-model="repository.branches" required class="input" type="text" placeholder="main,master">
             </div>
           </div>
-          <label class="label">Lamport Price</label>
+          <label class="label">Lamport price</label>
           <div class="field has-addons">
             <div class="control">
               <input
