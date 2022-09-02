@@ -123,15 +123,24 @@
                     >
                       Connect Wallet
                     </button>
-                    <button
-                      v-else
-                      class="button is-accent is-fullwidth mt-5 has-text-weight-semibold"
-                      :class="{'is-loading': loading}"
-                      :disabled="reward == 0"
-                      @click="claimRewards"
-                    >
-                      Claim rewards
-                    </button>
+                    <div v-else>
+                      <button
+                        class="button is-accent is-fullwidth mt-5 has-text-weight-semibold"
+                        :class="{'is-loading': loading}"
+                        :disabled="reward == 0"
+                        @click="claimAndRestakeRewards"
+                      >
+                        Restake
+                      </button>
+                      <button
+                        class="button is-accent is-outlined is-fullwidth mt-2 has-text-weight-semibold"
+                        :class="{'is-loading': loading}"
+                        :disabled="reward == 0"
+                        @click="claimRewards"
+                      >
+                        Claim rewards
+                      </button>
+                    </div>
                   </div>
                 </div>
               </countdown>
@@ -245,6 +254,47 @@ export default {
           color: 'success',
           text: 'Successfully claimed rewards',
           title: 'Claimed'
+        });
+      } catch (error) {
+        this.$modal.show({
+          color: 'danger',
+          text: error.message,
+          title: 'Error'
+        });
+      }
+      this.loading = false;
+    },
+    async claimAndRestakeRewards () {
+      this.loading = true;
+      try {
+        const decimals = 1e6;
+        const stakeAmount = parseFloat(this.reward) * decimals;
+        const response = await this.$stake.rewardsProgram.methods
+          .claim()
+          .accounts({ ...this.$stake.accounts, vault: this.$stake.rewardVault })
+          .preInstructions([
+            await this.$stake.poolProgram.methods
+              .claimFee()
+              .accounts(this.$stake.poolAccounts).instruction()
+          ])
+          .postInstructions([
+            await this.$stake.program.methods
+              .topup(new anchor.BN(stakeAmount))
+              .accounts(this.$stake.accounts).instruction(),
+            await this.$stake.rewardsProgram.methods
+              .sync().accounts({ ...this.$stake.accounts, vault: this.$stake.rewardVault }).instruction()
+          ])
+          .rpc();
+        console.log(response);
+        setTimeout(async () => {
+          await this.$stake.refreshStake();
+        }, 1000);
+        this.amount = null;
+        await this.getBalance();
+        this.$modal.show({
+          color: 'success',
+          text: 'Successfully claimed & restaked rewards',
+          title: 'Claimed & restaked'
         });
       } catch (error) {
         this.$modal.show({
