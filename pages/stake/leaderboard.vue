@@ -188,7 +188,16 @@ export default {
       tiers: null
     };
   },
-
+  computed: {
+    publicKey () {
+      return this.$sol ? this.$sol.publicKey : null;
+    }
+  },
+  watch: {
+    '$sol.publicKey': function () {
+      this.getLeaderboard(this.queryPage);
+    }
+  },
   mounted () {
     this.getLeaderboard(this.queryPage);
   },
@@ -245,8 +254,9 @@ export default {
     },
     async getLeaderboard (page) {
       try {
+        const userAddress = this.publicKey ? `&userAddress=${this.publicKey}` : '';
         const leaderboard = await this.$axios.$get(
-          `/stake/leaderboards?page=${page}&limit=${this.perPage}`
+          `/stake/leaderboards?page=${page}&limit=${this.perPage}` + userAddress
         );
         this.leaderboard = leaderboard.stakes.data;
         this.userInfo = leaderboard.user;
