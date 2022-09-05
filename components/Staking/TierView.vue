@@ -227,6 +227,9 @@ export default {
     };
   },
   computed: {
+    publicKey () {
+      return this.$sol ? this.$sol.publicKey : null;
+    },
     stakeEndDate () {
       return this.$stake ? this.$stake.stakeEndDate : null;
     },
@@ -256,6 +259,9 @@ export default {
     }
   },
   watch: {
+    '$sol.publicKey': function () {
+      this.getLeaderboard(this.queryPage);
+    },
     xnos (xnos) {
       if (!xnos || !parseFloat(xnos)) {
         this.expectedTier = null;
@@ -305,8 +311,9 @@ export default {
     },
     async getLeaderboard (page) {
       try {
+        const userAddress = this.publicKey ? `&userAddress=${this.publicKey}` : '';
         const leaderboard = await this.$axios.$get(
-          `/stake/leaderboards?page=${page}&limit=5`
+          `/stake/leaderboards?page=${page}&limit=5` + userAddress
         );
         this.leaderboard = leaderboard.stakes.data;
         // this.userRanking = 7;
