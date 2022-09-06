@@ -208,11 +208,20 @@ export default {
         if (tier.tier === 1) {
           page = 1;
         } else {
-          const percentage = this.tiers.filter(s => s.tier !== tier.tier && s.tier < tier.tier)
-            .reduce((a, o) => a + (o.percentage ? o.percentage : 0), 0) / 100;
           const top = this.tiers.find(t => t.tier === 1).number;
-          const position = percentage * (this.pagination.total - top) + top + 1;
-          page = Math.ceil(position / parseInt(this.pagination.perPage));
+
+          const tierUsers = this.tiers.filter(t => t.tier !== 1)
+            .map(t => ({ ...t, users: Math.ceil(t.percentage / 100.0 * (this.pagination.total - top)) }));
+          let requiredRank = top + 1;
+          for (let i = 0; i + 2 < tier.tier; i++) {
+            requiredRank += tierUsers[i].users;
+          }
+          console.log(tier.tier, requiredRank);
+          // const percentage = this.tiers.filter(s => s.tier !== tier.tier && s.tier < tier.tier)
+          //   .reduce((a, o) => a + (o.percentage ? o.percentage : 0), 0) / 100;
+          // const top = this.tiers.find(t => t.tier === 1).number;
+          // const position = percentage * (this.pagination.total - top) + top + 1;
+          page = Math.ceil(requiredRank / parseInt(this.pagination.perPage));
         }
         if (page !== parseInt(this.pagination.currentPage)) {
           this.getLeaderboard(page);
