@@ -480,6 +480,15 @@
                   Increase stake
                 </button>
               </div>
+              <div class="has-text-centered">
+                <a
+                  href="https://github.com/nosana-ci/nosana-programs/blob/main/audits/NOSANA_STAKING_REPORT_2.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <small>Nosana staking audit report</small>
+                </a>
+              </div>
             </div>
           </div>
 
