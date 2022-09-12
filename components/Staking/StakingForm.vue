@@ -15,17 +15,27 @@
             <div class="column is-8 is-full-mobile">
               <div class="is-flex is-align-items-center is-justify-content-center">
                 <span>Extend unstake period with</span>
-                <input
-                  v-model="extraUnstakeDays"
-                  required
-                  class="input mx-2 py-5 has-background-grey-light has-text-centered"
-                  type="number"
-                  :min="1"
-                  step="0.1"
-                  :max="365 - parseInt($moment.duration(stakeData.duration, 'seconds').asDays())"
-                  placeholder="0"
-                  style="width: auto;"
-                >
+                <div class="is-flex is-align-items-center is-flex-direction-columns">
+                  <button
+                    class="px-2 button is-accent is-outlined has-text-weight-semibold is-uppercase is-size-7"
+                    style="width: 45px; height: 22px; margin-left: 10px;"
+                    @click.prevent="
+                      extraUnstakeDays = 365 - parseInt($moment.duration(stakeData.duration, 'seconds').asDays())"
+                  >
+                    Max
+                  </button>
+                  <input
+                    v-model="extraUnstakeDays"
+                    required
+                    class="input mx-2 py-5 has-background-grey-light has-text-centered"
+                    type="number"
+                    :min="1"
+                    step="0.1"
+                    :max="365 - parseInt($moment.duration(stakeData.duration, 'seconds').asDays())"
+                    placeholder="0"
+                    style="width: auto;"
+                  >
+                </div>
                 <span>days</span>
               </div>
             </div>
@@ -1139,6 +1149,11 @@ form {
     }
     p {
       font-size: 0.75rem;
+    }
+  }
+  @media screen and (min-width: $tablet) {
+    .modal-content, .modal-card {
+      width: 700px;
     }
   }
 }
