@@ -39,6 +39,20 @@
           </a>
         </li>
 
+        <li
+          v-if="currentPage > 2 && totalPages > 3"
+        >
+          <a
+            class="
+          pagination-link"
+            @click="changePage(1)"
+          >
+            1</a>
+        </li>
+        <li v-if="currentPage > 2 && totalPages > 3">
+          <span class="pagination-ellipsis">&hellip;</span>
+        </li>
+
         <li v-for="(page, index) in pages" :key="index">
           <a
             type="button"
@@ -50,6 +64,19 @@
           >
             {{ page.name }}
           </a>
+        </li>
+        <li v-if="totalPages > 3 && currentPage < totalPages-2">
+          <span class="pagination-ellipsis">&hellip;</span>
+        </li>
+        <li
+          v-if="totalPages > 3 && currentPage < totalPages-1"
+        >
+          <a
+            class="
+          pagination-link"
+            @click="changePage(totalPages)"
+          >
+            {{ totalPages }}</a>
         </li>
 
         <li>
@@ -144,5 +171,7 @@ export default {
 .is-disabled {
   pointer-events: none;
 }
+.pagination-ellipsis {
+  color: $text;
+}
 </style>
->
