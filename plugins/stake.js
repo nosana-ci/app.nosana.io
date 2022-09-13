@@ -158,7 +158,8 @@ export default (context, inject) => {
         }
         const rewardInfo = {
           global: globalStats,
-          rewardAccount
+          rewardAccount,
+          balance: await this.getBalance(this.rewardVault)
         };
         this.rewardInfo = rewardInfo;
       },
@@ -173,6 +174,23 @@ export default (context, inject) => {
         }
         await this.refreshRewardsAndPoolInfo();
         this.stakeData = stakeData;
+      },
+      async getBalance (address) {
+        try {
+          const account = await web3.getTokenAccountsByOwner(address,
+            { mint: this.accounts.mint });
+          if (account && account.value && account.value.length > 0) {
+            const tokenAddress = new anchor.web3.PublicKey(account.value[0].pubkey.toString());
+            return (await web3.getTokenAccountBalance(
+              tokenAddress
+            )).value.uiAmount;
+          } else {
+            return 0;
+          }
+        } catch (err) {
+          console.error('tryna get balance', err);
+          return 0;
+        }
       }
     }
   });

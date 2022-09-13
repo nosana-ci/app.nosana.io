@@ -160,7 +160,6 @@ let node = process.env.NUXT_ENV_SOL_NETWORK;
 if (!node.includes('http')) {
   node = anchor.web3.clusterApiUrl(node);
 }
-const web3 = new anchor.web3.Connection(node, 'confirmed');
 
 export default {
   components: {
@@ -249,7 +248,7 @@ export default {
           await this.$stake.refreshStake();
         }, 1000);
         this.amount = null;
-        await this.getBalance();
+        this.balance = await this.$stake.getBalance(this.$stake.accounts.authority);
         this.$modal.show({
           color: 'success',
           text: 'Successfully claimed rewards',
@@ -290,7 +289,7 @@ export default {
           await this.$stake.refreshStake();
         }, 1000);
         this.amount = null;
-        await this.getBalance();
+        this.balance = await this.$stake.getBalance(this.$stake.accounts.authority);
         this.$modal.show({
           color: 'success',
           text: 'Successfully claimed & restaked rewards',
@@ -316,19 +315,6 @@ export default {
         });
       }
     },
-    async getBalance () {
-      const account = await web3.getTokenAccountsByOwner(this.$stake.accounts.authority,
-        { mint: this.$stake.accounts.mint });
-      if (account && account.value && account.value.length > 0) {
-        const tokenAddress = new anchor.web3.PublicKey(account.value[0].pubkey.toString());
-
-        this.balance = (await web3.getTokenAccountBalance(
-          tokenAddress
-        )).value.uiAmount;
-      } else {
-        this.balance = 0;
-      }
-    },
     calculateRewards () {
       if (this.rewardInfo && this.poolInfo) {
         this.rate = this.rewardInfo.global.rate;
@@ -339,7 +325,9 @@ export default {
           new BN(parseInt(secondsBetween) * parseInt(this.poolInfo.emission) - parseInt(this.poolInfo.claimedTokens));
         const newTotalXnos = this.rewardInfo.global.totalXnos.add(fees);
 
-        this.rate = new BN(this.rewardInfo.global.totalReflection / newTotalXnos);
+        if (this.rewardInfo.balance > 0) {
+          this.rate = new BN(this.rewardInfo.global.totalReflection / newTotalXnos);
+        }
       }
     }
   }

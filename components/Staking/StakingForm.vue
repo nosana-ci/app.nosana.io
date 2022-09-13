@@ -622,7 +622,6 @@
 import ICountUp from 'vue-countup-v2';
 const anchor = require('@project-serum/anchor');
 
-const ENV = process.env.NUXT_ENV_SOL_NETWORK;
 const SECONDS_PER_DAY = 24 * 60 * 60;
 
 class FakeWallet {
@@ -634,12 +633,6 @@ class FakeWallet {
     return this.payer.publicKey;
   }
 }
-
-let node = ENV;
-if (!node.includes('http')) {
-  node = anchor.web3.clusterApiUrl(ENV);
-}
-const web3 = new anchor.web3.Connection(node, 'confirmed');
 
 export default {
   components: {
@@ -769,17 +762,7 @@ export default {
   },
   methods: {
     async getBalance () {
-      const account = await web3.getTokenAccountsByOwner(this.$stake.accounts.authority,
-        { mint: this.$stake.accounts.mint });
-      if (account && account.value && account.value.length > 0) {
-        const tokenAddress = new anchor.web3.PublicKey(account.value[0].pubkey.toString());
-
-        this.balance = (await web3.getTokenAccountBalance(
-          tokenAddress
-        )).value.uiAmount;
-      } else {
-        this.balance = 0;
-      }
+      this.balance = await this.$stake.getBalance(this.$stake.accounts.authority);
     },
     async topup () {
       try {
