@@ -30,10 +30,10 @@
           {{ userCompletion }}
         </progress>
         <!-- <div class="level is-mobile"> -->
-          <!-- <div v-for="(idx, index) in completionArray" :key="index" class="level-item has-text-centered"> -->
-            <!-- <progress v-if="index < userCompletion" class="progress is-success is-small mx-1" value="100" /> -->
-            <!-- <progress v-else class="progress is-success is-small" value="0" /> -->
-          <!-- </div> -->
+        <!-- <div v-for="(idx, index) in completionArray" :key="index" class="level-item has-text-centered"> -->
+        <!-- <progress v-if="index < userCompletion" class="progress is-success is-small mx-1" value="100" /> -->
+        <!-- <progress v-else class="progress is-success is-small" value="0" /> -->
+        <!-- </div> -->
         <!-- </div> -->
       </div>
 
@@ -174,15 +174,88 @@
 
       <br>
 
-      <footer class="is-centered buttons has-radius">
+      <div class="is-centered buttons has-radius mb-4">
         <button
           class="button is-fullwidth is-outlined is-accent"
           :class="{ 'is-loading': loading }"
         >
           Save
         </button>
-      </footer>
+      </div>
     </form>
+
+    <div class="mx-auto mt-5" style="max-width: 522px;">
+      <hr>
+      <div v-if="nfts && nfts.length > 0">
+        <h1 class="title is-4 mb-5 mt-5">
+          Your Nosana<b class="has-text-accent"> NFTs</b>
+        </h1>
+        <div class="columns px-1 is-multiline">
+          <div
+            v-for="nft in nfts"
+            :key="nft.name"
+            class="column is-one-third-desktop pb-1"
+          >
+            <div class="card">
+              <a href="#" @click.prevent="openNft(nft)">
+                <div class="card-image">
+                  <figure class="image is-1by1">
+                    <img v-if="nft.json" :src="nft.json.image" alt="">
+                    <div
+                      v-else
+                      class="loader-wrapper is-active is-flex is-justify-content-center is-align-items-center"
+                    >
+                      <div class="loader is-loading" />
+                    </div>
+                  </figure>
+                </div>
+                <div class="card-content p-2 has-text-centered">
+                  <div class="content">
+                    <span style="font-size: .9rem;">{{ nft.name }}</span>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div v-if="activeNft" class="modal" :class="{ 'is-active': openNftPopup }">
+        <div
+          class="modal-background"
+          @click="openNftPopup = false;"
+        />
+        <div class="modal-card has-radius">
+          <header class="modal-card-head">
+            <p class="modal-card-title">
+              {{ activeNft.name }}
+            </p>
+            <button class="delete" aria-label="close" @click="openNftPopup = false;" />
+          </header>
+          <section class="modal-card-body pb-5">
+            <img v-if="activeNft.json" style="width: 100%;" :src="activeNft.json.image" alt="">
+            <div v-else class="loader-wrapper is-active is-flex is-justify-content-center is-align-items-center">
+              <div class="loader is-loading" />
+            </div>
+            <div v-if="activeNft.json">
+              <p>{{ activeNft.json.description }}</p>
+              <h3 class="mb-2 mt-5 has-text-weight-semibold subtitle">
+                Attributes
+              </h3>
+              <ul v-for="trait in activeNft.json.attributes" :key="trait.trait_type">
+                <li><b>{{ trait.trait_type }}:</b> {{ trait.value }}</li>
+              </ul>
+            </div>
+            <button
+              v-if="image !== activeNft.json.image"
+              class="button is-accent mt-3"
+              @click="image = activeNft.json.image, updateUser()"
+            >
+              Set NFT as Profile Picture
+            </button>
+          </section>
+        </div>
+      </div>
+    </div>
   </section>
 </template>
 
@@ -221,7 +294,9 @@ export default {
       commits: null,
       usedBalance: null,
       completionRange: range(5),
-      loading: false
+      loading: false,
+      activeNft: null,
+      openNftPopup: false
     };
   },
   computed: {
@@ -241,6 +316,9 @@ export default {
     userCompletion () {
       const finishedItems = this.completionArray.filter(el => (el !== null && el !== undefined) && el !== '' && el !== false).length;
       return Math.round(finishedItems / this.completionArray.length * 100);
+    },
+    nfts () {
+      return this.$sol ? this.$sol.nfts : null;
     }
   },
   created () {
@@ -248,6 +326,11 @@ export default {
     this.refreshStake();
   },
   methods: {
+    async getNfts (address) {
+      if (this.loggedIn && address && this.$sol) {
+        await this.$sol.getNfts(address);
+      }
+    },
     async refreshStake () {
       await this.$stake.refreshStake();
     },
@@ -255,6 +338,7 @@ export default {
     async getUser () {
       try {
         const user = await this.$axios.$get('/user');
+        this.user = user;
         this.name = user.name;
         this.description = user.description;
         this.description = user.description;
@@ -270,6 +354,7 @@ export default {
         this.wantToParticipateNft = user.want_to_participate_nft;
         this.image = user.image;
         this.completionIndex = user.completion_index ?? 0;
+        this.getNfts(this.user.address);
       } catch (error) {
         this.$modal.show({
           color: 'danger',
@@ -313,12 +398,21 @@ export default {
         });
       }
       this.loading = false;
+    },
+    openNft (nft) {
+      this.openNftPopup = true;
+      this.activeNft = nft;
     }
 
   }
 };
 </script>
 
-<style>
-
+<style scoped lang="scss">
+.loader-wrapper {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0;
+}
 </style>

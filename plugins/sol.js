@@ -7,6 +7,7 @@ import {
   SlopeWalletAdapter
 } from '@solana/wallet-adapter-wallets';
 import { clusterApiUrl, Connection, PublicKey } from '@solana/web3.js';
+import { Metaplex } from '@metaplex-foundation/js';
 import { commitment, sendTransaction } from '@/utils/web3';
 
 const network = process.env.NUXT_ENV_SOL_NETWORK;
@@ -19,6 +20,7 @@ if (!endpoint.includes('http')) {
   endpoint = clusterApiUrl(network);
 }
 const web3 = new Connection(endpoint, 'confirmed');
+const metaplex = new Metaplex(web3);
 
 // @solana/wallet-adapter-wallets includes all the adapters but supports tree shaking --
 // Only the wallets you configure here will be compiled into your application
@@ -46,13 +48,28 @@ export default (context, inject) => {
         error: null,
         token: null,
         user: null,
-        skipLogin: false
+        skipLogin: false,
+        nfts: null
       };
     },
     created () {
 
     },
     methods: {
+      async getNfts (address) {
+        if (address) {
+          const nfts = await metaplex.nfts().findAllByOwner({ owner: new PublicKey(address) }).run();
+          this.nfts = nfts;
+          this.nfts = await this.processNfts();
+        }
+      },
+      async processNfts () {
+        const processedNfts = [];
+        for (let i = 0; i < this.nfts.length; i++) {
+          processedNfts.push(await metaplex.nfts().load({ metadata: this.nfts[i] }).run());
+        }
+        return processedNfts;
+      },
       getWallet () {
         return wallet;
       },
