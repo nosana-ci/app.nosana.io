@@ -148,6 +148,7 @@ export default (context, inject) => {
         try {
           const poolInfo = await this.poolProgram.account.poolAccount.fetch(process.env.NUXT_ENV_POOL_ID);
           this.poolInfo = poolInfo;
+          this.poolInfo.balance = await this.getBalance(this.poolVault);
           rewardAccount = await this.rewardsProgram.account.rewardAccount.fetch(this.accounts.reward);
         } catch (error) {
           if (!error.message.includes('Account does not exist')) {
@@ -158,8 +159,7 @@ export default (context, inject) => {
         }
         const rewardInfo = {
           global: globalStats,
-          rewardAccount,
-          balance: await this.getBalance(this.rewardVault)
+          rewardAccount
         };
         this.rewardInfo = rewardInfo;
       },
