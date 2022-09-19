@@ -59,7 +59,12 @@ export default (context, inject) => {
       async getNfts (address) {
         if (address) {
           const nfts = await metaplex.nfts().findAllByOwner({ owner: new PublicKey(address) }).run();
-          this.nfts = nfts;
+
+          this.nfts = nfts.filter(function (nft) {
+            return nft.collection
+              ? nft.collection.address.toString() === process.env.NUXT_ENV_NFT_COLLECTION_ID
+              : false;
+          }); ;
           this.nfts = await this.processNfts();
         }
       },
