@@ -88,7 +88,7 @@ export default (context, inject) => {
           ataFrom: await getAssociatedTokenAddress(mint, userKey),
           ataTo: await getAssociatedTokenAddress(mint, userKey),
           stake: undefined,
-          stats: undefined,
+          reflection: undefined,
           user: await getAssociatedTokenAddress(mint, userKey),
           vault: undefined,
           reward: undefined,
@@ -115,8 +115,8 @@ export default (context, inject) => {
           programId
         );
 
-        [accounts.stats] = await anchor.web3.PublicKey.findProgramAddress(
-          [anchor.utils.bytes.utf8.encode('stats')],
+        [accounts.reflection] = await anchor.web3.PublicKey.findProgramAddress(
+          [anchor.utils.bytes.utf8.encode('reflection')],
           rewardsProgramId
         );
         [accounts.stake] = await anchor.web3.PublicKey.findProgramAddress(
@@ -135,7 +135,7 @@ export default (context, inject) => {
           pool: poolId,
           vault: this.poolVault,
           rewardsVault: this.rewardVault,
-          rewardsStats: this.accounts.stats,
+          rewardsReflection: this.accounts.reflection,
           rewardsProgram: rewardsProgramId
         };
 
@@ -143,7 +143,7 @@ export default (context, inject) => {
       },
       async refreshRewardsAndPoolInfo () {
         if (!this.accounts) { return null; }
-        const globalStats = await this.rewardsProgram.account.statsAccount.fetch(this.accounts.stats);
+        const globalReflection = await this.rewardsProgram.account.reflectionAccount.fetch(this.accounts.reflection);
         let rewardAccount;
         try {
           const poolInfo = await this.poolProgram.account.poolAccount.fetch(process.env.NUXT_ENV_POOL_ID);
@@ -158,7 +158,7 @@ export default (context, inject) => {
           }
         }
         const rewardInfo = {
-          global: globalStats,
+          global: globalReflection,
           rewardAccount
         };
         this.rewardInfo = rewardInfo;
