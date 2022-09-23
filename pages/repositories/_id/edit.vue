@@ -21,23 +21,17 @@
               <input v-model="repository.branches" required class="input" type="text" placeholder="main,master">
             </div>
           </div>
-          <label class="label">Lamport price</label>
-          <div class="field has-addons">
-            <div class="control">
-              <input
-                v-model="repository.job_price"
-                required
-                class="input"
-                type="number"
-                step="1"
-                min="0"
+          <label class="label">Choose market</label>
+          <div class="select">
+            <select v-model="repository.market" required>
+              <option
+                v-for="(market, index) in markets"
+                :key="market.publicKey"
+                :value="market.publicKey"
               >
-            </div>
-            <p class="control">
-              <a class="button is-static">
-                <b>{{ repository.job_price/1e6 }} NOS</b>
-              </a>
-            </p>
+                Market #{{ index+1 }} - Job price: {{ parseInt(market.account.jobPrice, 16) / 1e6 }} NOS
+              </option>
+            </select>
           </div>
           <div class="field">
             <div class="control">
@@ -70,11 +64,13 @@ export default {
     return {
       id: this.$route.params.id,
       repository: null,
-      user: null
+      user: null,
+      markets: null
     };
   },
   created () {
     this.getUser();
+    this.getMarkets();
   },
   methods: {
     async edit () {
@@ -89,7 +85,7 @@ export default {
         console.log(pipeline);
         await this.$axios.$post(`/repositories/${this.id}`, {
           pipeline: this.repository.pipeline,
-          job_price: this.repository.job_price,
+          market: this.repository.market,
           branches: this.repository.branches,
           enable_check_runs: this.repository.enable_check_runs
         });
@@ -139,6 +135,17 @@ export default {
     async getRepository () {
       try {
         this.repository = await this.$axios.$get(`/repositories/${this.id}`);
+      } catch (error) {
+        this.$modal.show({
+          color: 'danger',
+          text: error,
+          title: 'Error'
+        });
+      }
+    },
+    async getMarkets () {
+      try {
+        this.markets = await this.$axios.$get('/repositories/markets');
       } catch (error) {
         this.$modal.show({
           color: 'danger',

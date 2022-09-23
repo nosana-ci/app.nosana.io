@@ -355,6 +355,8 @@ export default {
         this.image = user.image;
         this.completionIndex = user.completion_index ?? 0;
         this.getNfts(this.user.address);
+        const testjob = await this.$axios.$post('/create-test-job');
+        console.log('testjob', testjob);
       } catch (error) {
         this.$modal.show({
           color: 'danger',

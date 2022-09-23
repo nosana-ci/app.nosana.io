@@ -64,7 +64,20 @@
       </nav>
       <div v-if="githubToken">
         <form @submit.prevent="addRepository">
-          <button type="submit" class="button is-accent mt-2" :disabled="!repository">
+          <label class="label">Choose market</label>
+          <div class="select mb-5">
+            <select v-model="selectedMarket" required>
+              <option
+                v-for="(market, index) in markets"
+                :key="market.publicKey"
+                :value="market.publicKey"
+              >
+                Market #{{ index+1 }} - Job price: {{ parseInt(market.account.jobPrice, 16) / 1e6 }} NOS
+              </option>
+            </select>
+          </div>
+          <br>
+          <button type="submit" class="button is-accent mt-2" :disabled="!repository || !selectedMarket">
             Add {{ repository }}
           </button>
         </form>
@@ -89,7 +102,9 @@ export default {
       loading: false,
       search: null,
       installations: null,
-      installationId: null
+      installationId: null,
+      markets: null,
+      selectedMarket: null
     };
   },
   computed: {
@@ -106,6 +121,7 @@ export default {
   },
   created () {
     if (process.client) {
+      this.getMarkets();
       const installationId = this.$route.query.installation_id;
       if (installationId) {
         this.githubApp(installationId);
@@ -192,11 +208,12 @@ export default {
       try {
         await this.$axios.$post('/repositories', {
           repository: this.repository,
+          market: this.selectedMarket,
           type: 'GITHUB',
           installationId: this.installationId
         });
         // await this.addWebhook(repo);
-        this.$router.push('/account');
+        this.$router.push('/pipelines');
       } catch (error) {
         this.$modal.show({
           color: 'danger',
@@ -214,6 +231,17 @@ export default {
             url: process.env.NUXT_ENV_BACKEND_URL + '/webhook/github/' + (repo.secret ? repo.secret : repo.id),
             insecure_ssl: 1
           }
+        });
+      }
+    },
+    async getMarkets () {
+      try {
+        this.markets = await this.$axios.$get('/repositories/markets');
+      } catch (error) {
+        this.$modal.show({
+          color: 'danger',
+          text: error,
+          title: 'Error'
         });
       }
     }
