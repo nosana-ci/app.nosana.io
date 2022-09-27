@@ -42,7 +42,7 @@
             </div>
           </div>
           <div class="control">
-            <button type="submit" class="button is-accent" :disabled="!markets || markets.length === 0">
+            <button type="submit" class="button is-accent" :disabled="!markets || (markets && markets.length === 0)">
               Save
             </button>
           </div>
