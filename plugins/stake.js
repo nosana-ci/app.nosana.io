@@ -74,7 +74,7 @@ export default (context, inject) => {
         const poolProgramId = new anchor.web3.PublicKey(process.env.NUXT_ENV_POOL_PROGRAM_ID);
         const poolId = new anchor.web3.PublicKey(process.env.NUXT_ENV_POOL_ID);
 
-        const mint = new anchor.web3.PublicKey(process.env.NUXT_ENV_NOS_TOKEN_STAKE);
+        const mint = new anchor.web3.PublicKey(process.env.NUXT_ENV_NOS_TOKEN);
         const accounts = {
           // solana native
           systemProgram: anchor.web3.SystemProgram.programId,
