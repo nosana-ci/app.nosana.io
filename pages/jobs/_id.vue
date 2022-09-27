@@ -39,7 +39,7 @@
           <div v-if="commit.job && commit.cache_blockchain" class="mb-4">
             <i class="fas fa-coins mr-4 has-text-accent" />
             Pipeline total cost
-            <b class="has-text-accent">{{ parseInt(commit.cache_blockchain.tokens, 16)/1e6 }} NOS</b>
+            <b class="has-text-accent">{{ parseInt(commit.cache_blockchain.price, 16)/1e6 }} NOS</b>
           </div>
           <div v-if="commit.job && commit.cache_blockchain && commit.cache_blockchain.jobStatus > 0" class="mb-4">
             <i class="fas fa-server mr-4 has-text-accent" />
