@@ -64,17 +64,48 @@
       </nav>
       <div v-if="githubToken">
         <form @submit.prevent="addRepository">
-          <label class="label">Choose market</label>
-          <div class="select mb-5">
-            <select v-model="selectedMarket" required>
-              <option
-                v-for="(market, index) in markets"
-                :key="market.publicKey"
-                :value="market.publicKey"
-              >
-                Market #{{ index+1 }} - Job price: {{ parseInt(market.account.jobPrice, 16) / 1e6 }} NOS
-              </option>
-            </select>
+          <div class="market-selector py-3">
+            <label class="label">Select a market</label>
+            <table class="table is-hoverable is-striped is-fullwidth has-radius">
+              <thead>
+                <tr>
+                  <th class="is-size-7 py-2 px-3">
+                    Public Key
+                  </th>
+                  <th class="is-size-7 py-2 px-3">
+                    Job Price
+                  </th>
+                  <th class="is-size-7 py-2 px-3">
+                    Job Timeout
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="(market) in markets"
+                  :key="market.publicKey"
+                  :value="market.publicKey"
+                  class="p-5 market-row"
+                  :class="{'has-background-accent': selectedMarket && market.publicKey === selectedMarket.publicKey}"
+                  @click="selectedMarket = market"
+                >
+                  <td class="py-3">
+                    <a
+                      style="max-width: 185px;"
+                      class="blockchain-address"
+                      target="_blank"
+                      :href="$sol.explorer + '/address/' + market.publicKey"
+                    >{{ market.publicKey }}</a>
+                  </td>
+                  <td class="py-3">
+                    {{ parseInt(market.account.jobPrice, 16) / 1e6 }} NOS
+                  </td>
+                  <td class="py-3">
+                    {{ parseInt(market.account.jobTimeout, 16) / 60 }} min
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
           <br>
           <button type="submit" class="button is-accent mt-2" :disabled="!repository || !selectedMarket">
@@ -208,7 +239,7 @@ export default {
       try {
         await this.$axios.$post('/repositories', {
           repository: this.repository,
-          market: this.selectedMarket,
+          market: this.selectedMarket.publicKey,
           type: 'GITHUB',
           installationId: this.installationId
         });
@@ -236,7 +267,9 @@ export default {
     },
     async getMarkets () {
       try {
-        this.markets = await this.$axios.$get('/repositories/markets');
+        const markets = await this.$axios.$get('/repositories/markets');
+        // sort by job price
+        this.markets = markets.sort((a, b) => parseInt(a.account.jobPrice, 16) - parseInt(b.account.jobPrice, 16));
       } catch (error) {
         this.$modal.show({
           color: 'danger',
@@ -249,6 +282,27 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-
+<style scoped lang="scss">
+.market-selector {
+  table {
+    max-width: 800px;
+    width: 100%;
+    border: 1px solid #F2F5F1;
+  }
+  tr.has-background-accent {
+    color: $white;
+    a {
+      color: $white;
+    }
+  }
+  .market-row {
+    cursor: pointer;
+    &:hover {
+      background-color: $grey-light !important;
+    }
+    &.has-background-accent:hover {
+      background-color: $accent !important;
+    }
+  }
+}
 </style>
