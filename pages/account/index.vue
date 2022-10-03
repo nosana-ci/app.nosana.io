@@ -201,9 +201,6 @@ export default {
     }
   },
   created () {
-    this.getUser();
-    this.getUserRepositories();
-    this.getUserJobPrices();
   },
   methods: {
 
