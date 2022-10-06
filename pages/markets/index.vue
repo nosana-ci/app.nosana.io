@@ -1,42 +1,26 @@
 <template>
   <section class="section admin-page">
     <div class="container">
-      <h2 class="subtitle mt-6">
-        Markets
-      </h2>
+      <h1 class="title is-4">
+        Job <span class="has-text-accent">Markets</span>
+      </h1>
+      <p class="has-limited-width-small mb-6">
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae, ad!
+        Provident repellat dolores quaerat asperiores voluptatum odio excepturi,
+        eius harum distinctio? Animi libero assumenda neque in eveniet! Quae, totam sit.
+      </p>
+      <div v-if="user && (user.roles && user.roles.includes('admin'))">
+        <nuxt-link to="/markets/new" class="button is-accent is-outlined is-pulled-right">
+          Add new market
+        </nuxt-link>
+      </div>
       <div class="block">
         <h2 class="subtitle has-text-weight-bold">
           <span v-if="markets !== null">{{
             markets.length
           }}</span><span v-else>...</span> markets
-          <a @click="getMarkets"><small class="is-size-7">Refresh</small></a>
         </h2>
       </div>
-      <form
-        @submit.prevent="
-          page = 1;
-          getMarkets();
-        "
-      >
-        <div class="field has-addons">
-          <div class="control">
-            <input
-              v-model="search"
-              class="input"
-              type="text"
-              placeholder="Search.."
-            >
-          </div>
-          <div class="control">
-            <button class="button is-info" type="submit">
-              Search
-            </button>
-          </div>
-        </div>
-      </form>
-
-      <br>
-
       <div v-if="loading" class="has-text-centered subtitle">
         <progress class="progress is-small is-primary" max="100">
           Loading
@@ -67,7 +51,8 @@
             <tr
               v-for="market in paginatedMarkets"
               :key="market.publicKey"
-              class="is-size-7"
+              class="is-size-6"
+              @click="$router.push(`/markets/${market.publicKey}`)"
             >
               <td class="py-3">
                 <a
@@ -121,7 +106,8 @@ export default {
       pagination: {
         perPage: 10,
         currentPage: 1
-      }
+      },
+      user: null
     };
   },
   computed: {
@@ -135,14 +121,27 @@ export default {
   },
   mounted () {
     this.getMarkets();
+    this.getUser();
   },
   methods: {
     setPage (newPage) {
       this.pagination.currentPage = newPage;
     },
+    async getUser () {
+      try {
+        const user = await this.$axios.$get('/user');
+        this.user = user;
+      } catch (error) {
+        this.$modal.show({
+          color: 'danger',
+          text: error,
+          title: 'Error'
+        });
+      }
+    },
     async getMarkets () {
       try {
-        const markets = await this.$axios.$get('/repositories/markets');
+        const markets = await this.$axios.$get('/markets');
         // sort by job price
         this.markets = markets.sort((a, b) => parseInt(a.account.jobPrice, 16) - parseInt(b.account.jobPrice, 16));
       } catch (error) {
@@ -158,4 +157,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  tr {
+    cursor: pointer;
+  }
 </style>
