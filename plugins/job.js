@@ -43,7 +43,9 @@ export default (context, inject) => {
           userKey = new anchor.web3.PublicKey(context.$auth.user.address);
         }
 
-        const programId = new anchor.web3.PublicKey(process.env.NUXT_ENV_STAKE_PROGRAM_ID);
+        console.log('uk pk', userKey.toString());
+
+        const programId = new anchor.web3.PublicKey(process.env.NUXT_ENV_JOBS_PROGRAM_ID);
 
         const mint = new anchor.web3.PublicKey(process.env.NUXT_ENV_NOS_TOKEN);
         const accounts = {
@@ -55,11 +57,11 @@ export default (context, inject) => {
 
           // custom
           authority: userKey,
-          accessKey: null,
+          accessKey: new anchor.web3.PublicKey(process.env.NUXT_ENV_NFT_COLLECTION_ID),
           mint
         };
 
-        const idl = await anchor.Program.fetchIdl(process.env.NUXT_ENV_STAKE_PROGRAM_ID, this.provider);
+        const idl = await anchor.Program.fetchIdl(process.env.NUXT_ENV_JOBS_PROGRAM_ID, this.provider);
         this.jobsProgram = new anchor.Program(idl, programId, this.provider);
 
         this.loading = false;

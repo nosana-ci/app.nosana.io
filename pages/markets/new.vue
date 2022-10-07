@@ -4,44 +4,66 @@
       <h1 class="title is-4">
         Create a new  <span class="has-text-accent">Market</span>
       </h1>
-      <form class="has-background-light p-6 column is-6" @submit.prevent="createMarket()">
+      <form class="has-background-light p-6 column is-8" @submit.prevent="createMarket()">
         <div class="field is-horizontal">
-          <div class="field-body">
-            <div class="field">
-              <label class="label">Job Price</label>
+          <div class="is-flex" style="width: 100%;">
+            <div class="field is-flex-grow-1">
+              <label class="label mb-0">Job Price</label>
+              <p class="is-size-7 mb-2">
+                Price for a job in NOS
+              </p>
               <div class="control is-expanded">
-                <input v-model="newMarket.jobPrice" required class="input is-primary" type="number">
+                <input
+                  v-model="newMarket.jobPrice"
+                  required
+                  class="input is-primary"
+                  type="number"
+                  placeholder="Price in NOS "
+                >
               </div>
             </div>
-            <div class="field">
-              <label class="label">Job Timeout</label>
+            <div class="field is-flex-grow-1">
+              <label class="label mb-0">Job Timeout</label>
+              <p class="is-size-7 mb-2">
+                Job timeout in seconds
+              </p>
               <div class="control is-expanded">
                 <input
                   v-model="newMarket.jobTimeout"
                   required
                   class="input is-primary"
                   type="number"
+                  placeholder="Timeout in seconds"
                 >
               </div>
             </div>
           </div>
         </div>
         <div class="field is-horizontal">
-          <div class="field-body">
-            <div class="field">
-              <label class="label">Job Type</label>
+          <div class="is-flex" style="width: 100%;">
+            <div class="field is-flex-grow-1">
+              <label class="label mb-0">Job Type</label>
+              <p class="is-size-7 mb-2">
+                0 or 1
+              </p>
               <div class="control is-expanded">
                 <input v-model="newMarket.jobType" required class="input is-primary" type="number">
               </div>
             </div>
-            <div class="field">
-              <label class="label">Node Stake Minimum</label>
+            <div class="field is-flex-grow-1">
+              <label class="label mb-0">Stake Minimum</label>
+              <p class="is-size-7 mb-2">
+                The minimum amount a node needs to stake
+              </p>
               <div class="control is-expanded">
                 <input
                   v-model="newMarket.nodeStakeMinimum"
                   required
                   class="input is-primary"
                   type="number"
+                  placeholder="Minimum stake in NOS"
+                  min="0"
+                  max="1"
                 >
               </div>
             </div>
@@ -78,11 +100,12 @@ export default {
   middleware: 'auth',
   data () {
     return {
+      loading: false,
       newMarket: {
-        jobPrice: 0,
-        jobTimeout: 0,
-        jobType: 0,
-        nodeStakeMinimum: 0
+        jobPrice: null,
+        jobTimeout: null,
+        jobType: null,
+        nodeStakeMinimum: null
       }
     };
   },
@@ -110,27 +133,60 @@ export default {
   },
   methods: {
     async createMarket () {
-      const marketKeypair = anchor.web3.Keypair.generate();
-      // TODO: setup accounts
-      const vault = await anchor.web3.PublicKey.findProgramAddress(
-        [marketKeypair.toBuffer(), this.$job.accounts.mint.toBuffer()],
-        this.$job.program.programId
-      )[0];
-      console.log('vault', vault);
-      await this.jobsProgram.methods
-        .init(
-          new anchor.BN(this.constants.jobPrice),
-          new anchor.BN(this.constants.jobTimeout),
-          this.constants.jobType.default,
-          new anchor.BN(this.constants.stakeMinimum)
-        )
-        .accounts({
-          ...this.$job.accounts,
-          vault,
-          market: marketKeypair
-        })
-        .rpc();
+      this.loading = true;
+      try {
+        const marketKeypair = anchor.web3.Keypair.generate();
+        const vault = await anchor.web3.PublicKey.findProgramAddress(
+          [marketKeypair.publicKey.toBuffer(), this.$job.accounts.mint.toBuffer()],
+          this.$job.jobsProgram.programId
+        );
+        console.log('vault', vault[0].toString());
+
+        const tx = await this.$job.jobsProgram.methods
+          .init(
+            new anchor.BN(this.newMarket.jobPrice * 1e6),
+            new anchor.BN(this.newMarket.jobTimeout),
+            parseInt(this.newMarket.jobType),
+            new anchor.BN(this.newMarket.nodeStakeMinimum * 1e6))
+          .accounts({
+            ...this.$job.accounts,
+            vault: vault[0],
+            market: marketKeypair.publicKey
+          })
+          .signers([marketKeypair])
+          .rpc();
+        console.log('tx', tx);
+        this.$modal.show({
+          color: 'success',
+          text: 'Successfully created Market',
+          title: 'Claimed'
+        });
+        this.$router.push('/markets');
+      } catch (error) {
+        console.error(error);
+        this.$modal.show({
+          color: 'danger',
+          text: error.message,
+          title: 'Error'
+        });
+      }
+      this.loading = false;
     }
   }
 };
 </script>
+<style scoped lang="scss">
+  .is-horizontal {
+    .field {
+      &:first-child {
+        margin-right: 5px;
+      }
+      &:last-child {
+        margin-left: 5px;
+      }
+    }
+  }
+.field {
+  flex-basis: 0;
+}
+</style>
