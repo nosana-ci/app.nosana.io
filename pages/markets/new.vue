@@ -81,7 +81,7 @@
             <button
               v-else
               :disabled="loading"
-              :class="{ 'is-disabled': loading }"
+              :class="{'is-loading': loading}"
               class="button is-medium is-accent is-fullwidth mt-5"
               type="submit"
             >
@@ -158,8 +158,8 @@ export default {
         console.log('tx', tx);
         this.$modal.show({
           color: 'success',
-          text: 'Successfully created Market',
-          title: 'Claimed'
+          text: 'Transaction ID: ' + tx,
+          title: 'Successfully created market'
         });
         this.$router.push('/markets');
       } catch (error) {

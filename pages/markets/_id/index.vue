@@ -4,6 +4,23 @@
       <nuxt-link to="/markets">
         &lt; All markets
       </nuxt-link>
+      <div class="mt-2">
+        <div v-if="market">
+          <div class="is-flex is-align-items-center">
+            <h2 class="title">
+              {{ id }}
+            </h2>
+            <div v-if="user && (user.roles && user.roles.includes('admin'))">
+              <nuxt-link :to="`/markets/${id}/edit`" class="button is-accent is-outlined is-pulled-right">
+                Edit market
+              </nuxt-link>
+            </div>
+          </div>
+        </div>
+        <div v-else>
+          Loading..
+        </div>
+      </div>
       {{ market }}
     </div>
   </section>
@@ -28,6 +45,7 @@ export default {
   },
   created () {
     this.getMarket();
+    this.getUser();
   },
   methods: {
     async getUser () {
