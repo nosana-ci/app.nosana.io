@@ -585,8 +585,22 @@
 
                     </span>
                     <span slot="finish">
-                      <!-- TODO: add claim button -->
-                      <h1 class="title">Now LIVE</h1>
+                      <h1 class="title">Claim back your tokens:</h1>
+                      <button
+                        v-if="!loggedIn"
+                        class="button is-accent is-outlined has-text-weight-semibold mt-2"
+                        @click.stop.prevent="$sol.loginModal = true"
+                      >
+                        Connect Wallet
+                      </button>
+                      <button
+                        v-else-if="userHasStakedBefore"
+                        class="button is-accent mt-2"
+                        :class="{'is-loading': loading}"
+                        @click.stop="claim"
+                      >
+                        Claim {{ parseFloat(stakeData.amount)/1e6 }} NOS
+                      </button>
                     </span>
                   </countdown>
                 </client-only>
