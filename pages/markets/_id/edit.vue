@@ -7,69 +7,83 @@
       <p v-if="market">
         Editing market: {{ id }}
       </p>
-      <form v-if="market" class="has-background-light p-6 column is-8" @submit.prevent="saveMarket()">
-        <div class="field is-horizontal">
-          <div class="is-flex" style="width: 100%;">
-            <div class="field is-flex-grow-1">
-              <label class="label mb-0">Job Price</label>
-              <p class="is-size-7 mb-2">
-                Price for a job in NOS
-              </p>
-              <div class="control is-expanded">
-                <input
-                  v-model="market.jobPrice"
-                  required
-                  class="input is-primary"
-                  type="number"
-                  placeholder="Price in NOS "
-                >
-              </div>
-            </div>
-            <div class="field is-flex-grow-1">
-              <label class="label mb-0">Job Timeout</label>
-              <p class="is-size-7 mb-2">
-                Job timeout in seconds
-              </p>
-              <div class="control is-expanded">
-                <input
-                  v-model="market.jobTimeout"
-                  required
-                  class="input is-primary"
-                  type="number"
-                  placeholder="Timeout in seconds"
-                >
-              </div>
-            </div>
+      <form v-if="market" class="has-background-light p-6 column is-6" @submit.prevent="saveMarket()">
+        <div class="field">
+          <label class="label mb-0">Job Price</label>
+          <p class="is-size-7 mb-2">
+            Price for a job in NOS
+          </p>
+          <div class="control is-expanded">
+            <input
+              v-model="market.jobPrice"
+              required
+              class="input is-primary"
+              type="number"
+              placeholder="Price in NOS "
+            >
           </div>
         </div>
-        <div class="field is-horizontal">
-          <div class="is-flex" style="width: 100%;">
-            <div class="field is-flex-grow-1">
-              <label class="label mb-0">Job Type</label>
-              <p class="is-size-7 mb-2">
-                0 or 1
-              </p>
-              <div class="control is-expanded">
-                <input v-model="market.jobType" required class="input is-primary" type="number">
-              </div>
-            </div>
-            <div class="field is-flex-grow-1">
-              <label class="label mb-0">Stake Minimum</label>
-              <p class="is-size-7 mb-2">
-                The minimum amount a node needs to stake
-              </p>
-              <div class="control is-expanded">
-                <input
-                  v-model="market.nodeStakeMinimum"
-                  required
-                  class="input is-primary"
-                  type="number"
-                  placeholder="Minimum stake in NOS"
-                  min="0"
-                  max="1"
-                >
-              </div>
-            </div>
+        <div class="field">
+          <label class="label mb-0">Job Timeout</label>
+          <p class="is-size-7 mb-2">
+            Job timeout in seconds
+          </p>
+          <div class="control is-expanded">
+            <input
+              v-model="market.jobTimeout"
+              required
+              class="input is-primary"
+              type="number"
+              placeholder="Timeout in seconds"
+            >
+          </div>
+        </div>
+        <div class="field">
+          <label class="label mb-0">Job Expiration</label>
+          <p class="is-size-7 mb-2">
+            Job Expiration in days
+          </p>
+          <div class="control is-expanded">
+            <input
+              v-model="market.jobExpiration"
+              required
+              class="input is-primary"
+              type="number"
+              placeholder="Job expiration in days"
+            >
+          </div>
+        </div>
+        <div class="field">
+          <label class="label mb-0">Stake Minimum</label>
+          <p class="is-size-7 mb-2">
+            The minimum XNOS a node needs to stake
+          </p>
+          <div class="control is-expanded">
+            <input
+              v-model="market.nodeStakeMinimum"
+              required
+              class="input is-primary"
+              type="number"
+              placeholder="Minimum stake in XNOS"
+              min="0"
+              max="1"
+            >
+          </div>
+        </div>
+        <div class="field">
+          <label class="label mb-0">Job Type</label>
+          <p class="is-size-7 mb-2">
+            0 or 1
+          </p>
+          <div class="select">
+            <select v-model="market.jobType" required>
+              <option value="0">
+                0
+              </option>
+              <option value="1">
+                1
+              </option>
+            </select>
           </div>
         </div>
         <div class="field">
@@ -88,7 +102,7 @@
               class="button is-medium is-accent is-fullwidth mt-5"
               type="submit"
             >
-              <strong>Save Market</strong>
+              <strong>Create Market</strong>
             </button>
           </div>
         </div>
@@ -109,7 +123,8 @@ export default {
         jobPrice: null,
         jobTimeout: null,
         jobType: null,
-        nodeStakeMinimum: null
+        nodeStakeMinimum: null,
+        jobExpiration: null
       }
     };
   },
@@ -142,6 +157,8 @@ export default {
       try {
         const tx = await this.$job.jobsProgram.methods
           .update(
+            // job expiration days to seconds
+            new anchor.BN(this.market.jobExpiration * 24 * 60 * 60),
             new anchor.BN(this.market.jobPrice * 1e6),
             new anchor.BN(this.market.jobTimeout),
             parseInt(this.market.jobType),
@@ -175,7 +192,8 @@ export default {
           ...market,
           jobPrice: parseInt(market.jobPrice, 16) / 1e6,
           jobTimeout: parseInt(market.jobTimeout, 16),
-          nodeStakeMinimum: parseInt(market.nodeStakeMinimum, 16) / 1e6
+          nodeStakeMinimum: parseInt(market.nodeXnosMinimum, 16) / 1e6,
+          jobExpiration: parseInt(market.jobExpiration, 16) / 60 / 60 / 24
         };
       } catch (error) {
         this.$modal.show({
