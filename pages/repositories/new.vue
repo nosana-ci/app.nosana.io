@@ -64,7 +64,51 @@
       </nav>
       <div v-if="githubToken">
         <form @submit.prevent="addRepository">
-          <button type="submit" class="button is-accent mt-2" :disabled="!repository">
+          <div class="market-selector py-3">
+            <label class="label">Select a market</label>
+            <table class="table is-hoverable is-striped is-fullwidth has-radius">
+              <thead>
+                <tr>
+                  <th class="is-size-7 py-2 px-3">
+                    Public Key
+                  </th>
+                  <th class="is-size-7 py-2 px-3">
+                    Job Price
+                  </th>
+                  <th class="is-size-7 py-2 px-3">
+                    Job Timeout
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="(market) in markets"
+                  :key="market.publicKey"
+                  :value="market.publicKey"
+                  class="p-5 market-row"
+                  :class="{'has-background-accent': selectedMarket && market.publicKey === selectedMarket.publicKey}"
+                  @click="selectedMarket = market"
+                >
+                  <td class="py-3">
+                    <a
+                      style="max-width: 185px;"
+                      class="blockchain-address"
+                      target="_blank"
+                      :href="$sol.explorer + '/address/' + market.publicKey"
+                    >{{ market.publicKey }}</a>
+                  </td>
+                  <td class="py-3">
+                    {{ parseInt(market.account.jobPrice, 16) / 1e6 }} NOS
+                  </td>
+                  <td class="py-3">
+                    {{ parseInt(market.account.jobTimeout, 16) / 60 }} min
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <br>
+          <button type="submit" class="button is-accent mt-2" :disabled="!repository || !selectedMarket">
             Add {{ repository }}
           </button>
         </form>
@@ -89,7 +133,9 @@ export default {
       loading: false,
       search: null,
       installations: null,
-      installationId: null
+      installationId: null,
+      markets: null,
+      selectedMarket: null
     };
   },
   computed: {
@@ -106,6 +152,7 @@ export default {
   },
   created () {
     if (process.client) {
+      this.getMarkets();
       const installationId = this.$route.query.installation_id;
       if (installationId) {
         this.githubApp(installationId);
@@ -192,11 +239,12 @@ export default {
       try {
         await this.$axios.$post('/repositories', {
           repository: this.repository,
+          market: this.selectedMarket.publicKey,
           type: 'GITHUB',
           installationId: this.installationId
         });
         // await this.addWebhook(repo);
-        this.$router.push('/account');
+        this.$router.push('/pipelines');
       } catch (error) {
         this.$modal.show({
           color: 'danger',
@@ -216,11 +264,45 @@ export default {
           }
         });
       }
+    },
+    async getMarkets () {
+      try {
+        const markets = await this.$axios.$get('/repositories/markets');
+        // sort by job price
+        this.markets = markets.sort((a, b) => parseInt(a.account.jobPrice, 16) - parseInt(b.account.jobPrice, 16));
+      } catch (error) {
+        this.$modal.show({
+          color: 'danger',
+          text: error,
+          title: 'Error'
+        });
+      }
     }
   }
 };
 </script>
 
-<style lang="scss" scoped>
-
+<style scoped lang="scss">
+.market-selector {
+  table {
+    max-width: 800px;
+    width: 100%;
+    border: 1px solid #F2F5F1;
+  }
+  tr.has-background-accent {
+    color: $white;
+    a {
+      color: $white;
+    }
+  }
+  .market-row {
+    cursor: pointer;
+    &:hover {
+      background-color: $grey-light !important;
+    }
+    &.has-background-accent:hover {
+      background-color: $accent !important;
+    }
+  }
+}
 </style>
