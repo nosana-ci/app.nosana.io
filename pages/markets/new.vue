@@ -63,22 +63,33 @@
               type="number"
               placeholder="Minimum stake in XNOS"
               min="0"
-              max="1"
             >
           </div>
         </div>
         <div class="field">
           <label class="label mb-0">Job Type</label>
           <p class="is-size-7 mb-2">
-            0 or 1
+            Choose the type of jobs for this market
           </p>
           <div class="select">
             <select v-model="newMarket.jobType" required>
               <option value="0">
-                0
+                0 - Default
               </option>
               <option value="1">
-                1
+                1 - Small
+              </option>
+              <option value="2">
+                2 - Medium
+              </option>
+              <option value="3">
+                3 - Large
+              </option>
+              <option value="4">
+                4 - Gpu
+              </option>
+              <option value="255">
+                255 - Unknown
               </option>
             </select>
           </div>
@@ -116,11 +127,11 @@ export default {
     return {
       loading: false,
       newMarket: {
-        jobPrice: null,
-        jobTimeout: null,
-        jobType: null,
-        nodeStakeMinimum: null,
-        jobExpiration: null
+        jobPrice: 15,
+        jobTimeout: 3600,
+        jobType: 0,
+        nodeStakeMinimum: 1500,
+        jobExpiration: 5
       }
     };
   },
@@ -151,11 +162,13 @@ export default {
       this.loading = true;
       try {
         const marketKeypair = anchor.web3.Keypair.generate();
-        const jobKeypair = anchor.web3.Keypair.generate();
+        const runAccountKeypair = anchor.web3.Keypair.fromSecretKey(process.env.NUXT_ENV_DUMMY_PRIVATE_KEY);
         const vault = await anchor.web3.PublicKey.findProgramAddress(
           [marketKeypair.publicKey.toBuffer(), this.$job.accounts.mint.toBuffer()],
           this.$job.jobsProgram.programId
         );
+
+        console.log('run account', runAccountKeypair.publicKey.toString());
 
         const tx = await this.$job.jobsProgram.methods
           .open(
@@ -168,10 +181,10 @@ export default {
           .accounts({
             ...this.$job.accounts,
             vault: vault[0],
-            job: jobKeypair.publicKey,
-            market: marketKeypair.publicKey
+            market: marketKeypair.publicKey,
+            run: runAccountKeypair.publicKey
           })
-          .signers([marketKeypair, jobKeypair])
+          .signers([marketKeypair, runAccountKeypair])
           .rpc();
         console.log('tx', tx);
         this.$modal.show({

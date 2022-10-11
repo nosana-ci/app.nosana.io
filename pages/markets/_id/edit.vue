@@ -66,22 +66,33 @@
               type="number"
               placeholder="Minimum stake in XNOS"
               min="0"
-              max="1"
             >
           </div>
         </div>
         <div class="field">
           <label class="label mb-0">Job Type</label>
           <p class="is-size-7 mb-2">
-            0 or 1
+            Choose the type of jobs in this market
           </p>
           <div class="select">
             <select v-model="market.jobType" required>
               <option value="0">
-                0
+                0 - Default
               </option>
               <option value="1">
-                1
+                1 - Small
+              </option>
+              <option value="2">
+                2 - Medium
+              </option>
+              <option value="3">
+                3 - Large
+              </option>
+              <option value="4">
+                4 - Gpu
+              </option>
+              <option value="255">
+                255 - Unknown
               </option>
             </select>
           </div>

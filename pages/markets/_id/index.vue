@@ -7,8 +7,8 @@
       <div v-if="market">
         <div class="mt-2">
           <div v-if="market">
-            <div class="is-flex is-align-items-center">
-              <h2 class="title">
+            <div class="is-flex is-align-items-center is-justify-content-space-between mb-5">
+              <h2 class="title mb-0">
                 {{ id }}
               </h2>
               <div v-if="user && (user.roles && user.roles.includes('admin'))">
@@ -72,12 +72,49 @@
               XNOS</b>
           </div>
         </div>
-        <div class="">
-          <h2 class="subtitle">
-            Queue
-          </h2>
-          {{market}}
-          <div />
+        <div class="py-5 queues columns">
+          <div class="node-queue column is-half">
+            <h2 class="subtitle">
+              <span v-if="market.queueType === 0">
+                Job
+              </span>
+              <span v-else-if="market.queueType === 1">
+                Node
+              </span>
+              Queue
+            </h2>
+            <div v-if="market.queue.length > 0" class="table-container has-background-light p-5 mb-0 has-radius-medium">
+              <table class="table is-striped is-fullwidth is-hoverable mb-3">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Address</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    v-for="(item, index) in market.queue"
+                    :key="index"
+                  >
+                    <td class="is-size-7">
+                      {{ index +1 }}
+                    </td>
+                    <td>
+                      <a
+                        style="max-width: 100%;"
+                        class="blockchain-address"
+                        target="_blank"
+                        :href="$sol.explorer + '/address/' + item.publicKey"
+                      >{{ item }}</a>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p v-else>
+              There are no jobs or nodes in queue
+            </p>
+          </div>
         </div>
       </div>
       <div v-else-if="!loading">
@@ -97,7 +134,18 @@ export default {
       id: this.$route.params.id,
       user: null,
       market: null,
-      loading: false
+      loading: false,
+      queue: [
+        'H6Uzc3FJaCSobQADXghGss2GGdbgnGxFhc11uHEWaLbd',
+        'FgYAWACh9wT7ig9UZBifmwbkM7xdUnxwSdRJs88C3Rdr',
+        'CBLH5YsCPhaQ79zDyzqxEMNMVrE5N7J6h4hrtYNahPLU',
+        'H6Uzc3FJaCSobQADXghGss2GGdbgnGxFhc11uHEWaLbd',
+        'FgYAWACh9wT7ig9UZBifmwbkM7xdUnxwSdRJs88C3Rdr',
+        'CBLH5YsCPhaQ79zDyzqxEMNMVrE5N7J6h4hrtYNahPLU',
+        'H6Uzc3FJaCSobQADXghGss2GGdbgnGxFhc11uHEWaLbd',
+        'FgYAWACh9wT7ig9UZBifmwbkM7xdUnxwSdRJs88C3Rdr',
+        'CBLH5YsCPhaQ79zDyzqxEMNMVrE5N7J6h4hrtYNahPLU'
+      ]
     };
   },
   watch: {
@@ -142,4 +190,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.title {
+  max-width: 600px;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+table {
+  background-color: transparent;
+}
 </style>
