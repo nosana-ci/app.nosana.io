@@ -219,7 +219,7 @@
           </div>
         </div>
       </div>
-      <div v-if="activeNft" class="modal" :class="{ 'is-active': openNftPopup }">
+      <div v-if="activeNft" class="modal" :class="{ 'is-active': openNftPopup && activeNft }">
         <div
           class="modal-background"
           @click="openNftPopup = false;"
@@ -241,12 +241,31 @@
               <h3 class="mb-2 mt-5 has-text-weight-semibold subtitle">
                 Attributes
               </h3>
-              <ul v-for="trait in activeNft.json.attributes" :key="trait.trait_type">
-                <li><b>{{ trait.trait_type }}:</b> {{ trait.value }}</li>
-              </ul>
+              <div class="columns is-multiline is-mobile p-2 py-4">
+                <div
+                  v-for="trait in activeNft.json.attributes"
+                  :key="trait.trait_type"
+                  class="column is-one-fifth-widescreen is-3-tablet is-6-mobile p-1"
+                >
+                  <a
+                    class="opensea-link"
+                    target="_blank"
+                    :href="`https://opensea.io/collection/nosana-burner-phone-collection?search[stringTraits][0][name]=${trait.trait_type}&search[stringTraits][0][values][0]=${trait.value}`"
+                  >
+                    <div class="has-radius has-text-centered nft-attribute py-2 px-2">
+                      <div class="is-uppercase has-text-accent has-text-weight-semibold">
+                        {{ trait.trait_type }}
+                      </div>
+                      <div class="is-size-7">
+                        {{ trait.value }}
+                      </div>
+                    </div>
+                  </a>
+                </div>
+              </div>
             </div>
             <button
-              v-if="image !== activeNft.json.image"
+              v-if="activeNft.json && image !== activeNft.json.image"
               class="button is-accent mt-3"
               @click="image = activeNft.json.image, updateUser()"
             >
@@ -400,8 +419,10 @@ export default {
       this.loading = false;
     },
     openNft (nft) {
-      this.openNftPopup = true;
-      this.activeNft = nft;
+      if (nft.json) {
+        this.openNftPopup = true;
+        this.activeNft = nft;
+      }
     }
 
   }
@@ -414,5 +435,20 @@ export default {
   height: 100%;
   width: 100%;
   top: 0;
+}
+.opensea-link {
+  color: $text;
+}
+.nft-attribute {
+  background-color: rgba(102, 255, 99, 0.2);
+  border: solid 1px $accent;
+  .is-uppercase {
+    font-size: 10px;
+  }
+  div {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }
 </style>
