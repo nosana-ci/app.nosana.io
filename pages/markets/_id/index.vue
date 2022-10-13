@@ -40,6 +40,11 @@
             >{{ market.authority }}</a>
           </div>
           <div class="mb-4">
+            <i class="fas fa-suitcase mr-4 has-text-accent" />
+            Job Type
+            <b class="has-text-accent" style="text-transform: capitalize;">{{ jobTypes[market.jobType] }}</b>
+          </div>
+          <div class="mb-4">
             <i class="fas fa-coins mr-4 has-text-accent" />
             Job Price
             <b class="has-text-accent">
@@ -64,7 +69,7 @@
           </div>
           <div class="mb-4">
             <i class="fas fa-layer-group mr-4 has-text-accent" />
-            Node XNOS Minimum
+            Node Minimum Stake
             <b class="has-text-accent">
               {{ parseInt(
                 market.nodeXnosMinimum, 16)/1e6
@@ -83,6 +88,14 @@
               </span>
               Queue
             </h2>
+            <p v-if="market.queue.length > 0" class="mb-2">
+              Total of: {{ market.queue.length }} <span v-if="market.queueType === 0">
+                job(s)
+              </span>
+              <span v-else-if="market.queueType === 1">
+                node(s)
+              </span> in queue
+            </p>
             <div v-if="market.queue.length > 0" class="table-container has-background-light p-5 mb-0 has-radius-medium">
               <table class="table is-striped is-fullwidth is-hoverable mb-3">
                 <thead>
@@ -96,15 +109,15 @@
                     v-for="(item, index) in market.queue"
                     :key="index"
                   >
-                    <td class="is-size-7">
+                    <td class="is-size-6">
                       {{ index +1 }}
                     </td>
                     <td>
                       <a
-                        style="max-width: 100%;"
+                        style="max-width: 300px;"
                         class="blockchain-address"
                         target="_blank"
-                        :href="$sol.explorer + '/address/' + item.publicKey"
+                        :href="$sol.explorer + '/address/' + item"
                       >{{ item }}</a>
                     </td>
                   </tr>
@@ -135,17 +148,14 @@ export default {
       user: null,
       market: null,
       loading: false,
-      queue: [
-        'H6Uzc3FJaCSobQADXghGss2GGdbgnGxFhc11uHEWaLbd',
-        'FgYAWACh9wT7ig9UZBifmwbkM7xdUnxwSdRJs88C3Rdr',
-        'CBLH5YsCPhaQ79zDyzqxEMNMVrE5N7J6h4hrtYNahPLU',
-        'H6Uzc3FJaCSobQADXghGss2GGdbgnGxFhc11uHEWaLbd',
-        'FgYAWACh9wT7ig9UZBifmwbkM7xdUnxwSdRJs88C3Rdr',
-        'CBLH5YsCPhaQ79zDyzqxEMNMVrE5N7J6h4hrtYNahPLU',
-        'H6Uzc3FJaCSobQADXghGss2GGdbgnGxFhc11uHEWaLbd',
-        'FgYAWACh9wT7ig9UZBifmwbkM7xdUnxwSdRJs88C3Rdr',
-        'CBLH5YsCPhaQ79zDyzqxEMNMVrE5N7J6h4hrtYNahPLU'
-      ]
+      jobTypes: {
+        0: 'default',
+        1: 'small',
+        2: 'medium',
+        3: 'large',
+        4: 'gpu',
+        255: 'unknown'
+      }
     };
   },
   watch: {

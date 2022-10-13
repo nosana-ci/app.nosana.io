@@ -5,6 +5,7 @@
         Job <span class="has-text-accent">Markets</span>
       </h1>
       <p class="has-limited-width-small mb-6">
+        <!-- TODO -->
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae, ad!
         Provident repellat dolores quaerat asperiores voluptatum odio excepturi,
         eius harum distinctio? Animi libero assumenda neque in eveniet! Quae, totam sit.
@@ -69,10 +70,12 @@
                 {{ parseInt(market.account.jobTimeout, 16) / 60 }} min
               </td>
               <td class="py-3">
-                -
+                <span v-if="market.account.queueType === 1">{{ market.account.queue.length }}</span>
+                <span v-else>-</span>
               </td>
               <td class="py-3">
-                -
+                <span v-if="market.account.queueType === 0">{{ market.account.queue.length }}</span>
+                <span v-else>-</span>
               </td>
             </tr>
           </tbody>
