@@ -113,7 +113,7 @@
               class="button is-medium is-accent is-fullwidth mt-5"
               type="submit"
             >
-              <strong>Create Market</strong>
+              <strong>Update Market</strong>
             </button>
           </div>
         </div>
@@ -182,9 +182,9 @@ export default {
         console.log('tx', tx);
         this.$modal.show({
           color: 'success',
-          text: 'Transaction ID: ' + tx,
           title: 'Successfully updated market'
         });
+        this.$router.push(`/markets/${this.id}`);
       } catch (error) {
         console.error(error);
         this.$modal.show({

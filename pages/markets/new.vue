@@ -127,11 +127,11 @@ export default {
     return {
       loading: false,
       newMarket: {
-        jobPrice: 15,
-        jobTimeout: 3600,
+        jobPrice: null,
+        jobTimeout: null,
         jobType: 0,
-        nodeStakeMinimum: 1500,
-        jobExpiration: 5
+        nodeStakeMinimum: null,
+        jobExpiration: null
       }
     };
   },
@@ -161,8 +161,10 @@ export default {
     async createMarket () {
       this.loading = true;
       try {
+        console.log(Uint8Array.from(JSON.parse(process.env.NUXT_ENV_DUMMY_PRIVATE_KEY)));
+        const dummyKey = Uint8Array.from(JSON.parse(process.env.NUXT_ENV_DUMMY_PRIVATE_KEY));
         const marketKeypair = anchor.web3.Keypair.generate();
-        const runAccountKeypair = anchor.web3.Keypair.fromSecretKey(process.env.NUXT_ENV_DUMMY_PRIVATE_KEY);
+        const runAccountKeypair = anchor.web3.Keypair.fromSecretKey(dummyKey);
         const vault = await anchor.web3.PublicKey.findProgramAddress(
           [marketKeypair.publicKey.toBuffer(), this.$job.accounts.mint.toBuffer()],
           this.$job.jobsProgram.programId

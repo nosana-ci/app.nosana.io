@@ -11,7 +11,7 @@
               <h2 class="title mb-0">
                 {{ id }}
               </h2>
-              <div v-if="user && (user.roles && user.roles.includes('admin'))">
+              <div v-if="user && (user.roles && user.roles.includes('admin')) && market.authority === user.address">
                 <nuxt-link :to="`/markets/${id}/edit`" class="button is-accent is-outlined is-pulled-right">
                   Edit market
                 </nuxt-link>
