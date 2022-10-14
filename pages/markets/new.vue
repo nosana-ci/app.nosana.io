@@ -1,6 +1,6 @@
 <template>
   <section class="section admin-page">
-    <div class="container">
+    <div v-if="user && allowed" class="container">
       <h1 class="title is-4">
         Create a new  <span class="has-text-accent">Market</span>
       </h1>
@@ -126,6 +126,8 @@ export default {
   data () {
     return {
       loading: false,
+      user: null,
+      allowed: false,
       newMarket: {
         jobPrice: null,
         jobTimeout: null,
@@ -153,6 +155,7 @@ export default {
     }
   },
   mounted () {
+    this.getUser();
     if (this.loggedIn) {
       this.$job.setupPrograms(this.$sol.getWallet());
     }
@@ -198,6 +201,23 @@ export default {
         });
       }
       this.loading = false;
+    },
+    async getUser () {
+      try {
+        const user = await this.$axios.$get('/user');
+        this.user = user;
+        if ((this.user.roles && this.user.roles.includes('admin'))) {
+          this.allowed = true;
+        } else {
+          this.$router.push('/');
+        }
+      } catch (error) {
+        this.$modal.show({
+          color: 'danger',
+          text: error,
+          title: 'Error'
+        });
+      }
     }
   }
 };
