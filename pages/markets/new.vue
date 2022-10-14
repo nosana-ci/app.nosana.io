@@ -1,10 +1,6 @@
 <template>
   <section class="section admin-page">
-<<<<<<< HEAD
     <div v-if="user && allowed" class="container">
-=======
-    <div class="container">
->>>>>>> 9b415bd5521869d134b79e82cc1c54ee8896c67d
       <h1 class="title is-4">
         Create a new  <span class="has-text-accent">Market</span>
       </h1>
