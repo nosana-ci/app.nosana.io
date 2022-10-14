@@ -161,16 +161,11 @@ export default {
     async createMarket () {
       this.loading = true;
       try {
-        console.log(Uint8Array.from(JSON.parse(process.env.NUXT_ENV_DUMMY_PRIVATE_KEY)));
-        const dummyKey = Uint8Array.from(JSON.parse(process.env.NUXT_ENV_DUMMY_PRIVATE_KEY));
         const marketKeypair = anchor.web3.Keypair.generate();
-        const runAccountKeypair = anchor.web3.Keypair.fromSecretKey(dummyKey);
         const vault = await anchor.web3.PublicKey.findProgramAddress(
           [marketKeypair.publicKey.toBuffer(), this.$job.accounts.mint.toBuffer()],
           this.$job.jobsProgram.programId
         );
-
-        console.log('run account', runAccountKeypair.publicKey.toString());
 
         const tx = await this.$job.jobsProgram.methods
           .open(
@@ -183,10 +178,9 @@ export default {
           .accounts({
             ...this.$job.accounts,
             vault: vault[0],
-            market: marketKeypair.publicKey,
-            run: runAccountKeypair.publicKey
+            market: marketKeypair.publicKey
           })
-          .signers([marketKeypair, runAccountKeypair])
+          .signers([marketKeypair])
           .rpc();
         console.log('tx', tx);
         this.$modal.show({

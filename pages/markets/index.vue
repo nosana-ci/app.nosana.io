@@ -4,12 +4,7 @@
       <h1 class="title is-4">
         Job <span class="has-text-accent">Markets</span>
       </h1>
-      <p class="has-limited-width-small mb-6">
-        <!-- TODO -->
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae, ad!
-        Provident repellat dolores quaerat asperiores voluptatum odio excepturi,
-        eius harum distinctio? Animi libero assumenda neque in eveniet! Quae, totam sit.
-      </p>
+      <p class="has-limited-width-small mb-6" />
       <div v-if="user && (user.roles && user.roles.includes('admin'))">
         <nuxt-link to="/markets/new" class="button is-accent is-outlined is-pulled-right">
           Add new market

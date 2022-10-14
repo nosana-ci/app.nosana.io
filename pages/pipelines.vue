@@ -184,7 +184,7 @@
                           'is-accent': repository.commits[0].status === 'COMPLETED',
                           'is-info': repository.commits[0].status === 'RUNNING',
                           'is-warning': repository.commits[0].status === 'QUEUED',
-                          'is-danger': repository.commits[0].status === 'FAILED'
+                          'is-danger': repository.commits[0].status === 'FAILED' || 'STOPPED'
                         }"
                       >{{ repository.commits[0].status }}</div>
                       <div class="is-size-7">
