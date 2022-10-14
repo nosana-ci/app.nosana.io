@@ -110,7 +110,7 @@
               Staking & Rewards
             </nuxt-link>
           </li>
-          <li>
+          <!-- <li>
             <nuxt-link
               to="/markets"
               exact-active-class="is-active"
@@ -121,7 +121,7 @@
               </span>
               Markets
             </nuxt-link>
-          </li>
+          </li> -->
           <li>
             <nuxt-link
               to="/stats"
