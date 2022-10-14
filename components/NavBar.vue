@@ -110,6 +110,18 @@
               Staking & Rewards
             </nuxt-link>
           </li>
+          <!-- <li>
+            <nuxt-link
+              to="/markets"
+              exact-active-class="is-active"
+              @click.native="mobileMenu = false;"
+            >
+              <span class="icon is-medium p-1 m-1 has-radius">
+                <i class="fa-solid fa-store" />
+              </span>
+              Markets
+            </nuxt-link>
+          </li> -->
           <li>
             <nuxt-link
               to="/stats"

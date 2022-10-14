@@ -177,7 +177,7 @@ export default {
     },
     async getMarkets () {
       try {
-        const markets = await this.$axios.$get('/repositories/markets');
+        const markets = await this.$axios.$get('/markets');
         // sort by job price
         this.markets = markets.sort((a, b) => parseInt(a.account.jobPrice, 16) - parseInt(b.account.jobPrice, 16));
         this.selectedMarket = this.markets.find(e => e.publicKey === this.repository.market);
