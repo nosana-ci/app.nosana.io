@@ -1,7 +1,7 @@
 <template>
   <section class="section">
     <div class="container">
-      <nuxt-link to="/">
+      <nuxt-link to="/pipelines">
         &lt; All repositories
       </nuxt-link>
       <div class="mt-2">
