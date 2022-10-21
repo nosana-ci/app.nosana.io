@@ -66,13 +66,12 @@ export default {
     async edit () {
       try {
         const pipeline = parse(this.repository.pipeline);
-        if (!pipeline.commands || !Array.isArray(pipeline.commands)) {
-          throw new Error('Your yaml does not include a `commands` list');
+        if (!pipeline.global) {
+          throw new Error('Your yaml does not include a `global` config');
         }
-        if (!pipeline.image || typeof pipeline.image !== 'string') {
-          throw new Error('Your yaml does not include a `image` string');
+        if (!pipeline.global.trigger || !pipeline.global.trigger.branch) {
+          throw new Error('Your yaml does not include a `global.trigger.branch` config');
         }
-        console.log(pipeline);
         await this.$axios.$post(`/repositories/${this.id}`, {
           pipeline: this.repository.pipeline,
           market: this.selectedMarket.publicKey,
