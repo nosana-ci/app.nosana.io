@@ -43,8 +43,6 @@ export default (context, inject) => {
           userKey = new anchor.web3.PublicKey(context.$auth.user.address);
         }
 
-        console.log('uk pk', userKey.toString());
-
         const programId = new anchor.web3.PublicKey(process.env.NUXT_ENV_JOBS_PROGRAM_ID);
 
         const mint = new anchor.web3.PublicKey(process.env.NUXT_ENV_NOS_TOKEN);
