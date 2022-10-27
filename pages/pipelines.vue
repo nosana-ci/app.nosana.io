@@ -267,7 +267,7 @@
               </div>
             </div>
             <button
-              v-if="!walletLoggedIn || !wallet"
+              v-if="!walletLoggedIn"
               class="button is-accent is-fullwidth mt-5 has-text-weight-semibold"
               @click.stop.prevent="$sol.loginModal = true"
             >
@@ -359,6 +359,9 @@ export default {
       this.getUser();
       this.getUserRepositories();
       this.getUserJobPrices();
+      if (this.$sol) {
+        this.wallet = this.$sol.getWallet();
+      }
     }
     this.getActiveRepositories();
     if (!this.interval) {
@@ -452,7 +455,7 @@ export default {
         const signed = await this.wallet.signTransaction(tx);
         const signature = await connection.sendRawTransaction(signed.serialize());
         await connection.confirmTransaction(signature);
-        console.log('response', signature);
+        console.log('tx response', signature);
         this.$modal.show({
           color: 'success',
           text: `Successfully deposited ${this.depositAmount} NOS`,
