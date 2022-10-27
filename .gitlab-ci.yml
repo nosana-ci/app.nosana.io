@@ -1,3 +1,4 @@
 include:
   - project: nosana-ci/tools/cicd/gitlab-ci
     file: npm-generic.yml
+    ref: purge
