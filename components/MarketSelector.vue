@@ -21,7 +21,7 @@
           :key="market.publicKey"
           :value="market.publicKey"
           class="p-5 market-row"
-          :class="{'has-background-accent': market.publicKey === selectedMarket.publicKey}"
+          :class="{'has-background-accent': selectedMarket && market.publicKey === selectedMarket.publicKey}"
           @click="$emit('select-market', market), selectedMarket = market"
         >
           <td class="py-3">
