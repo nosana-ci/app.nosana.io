@@ -15,7 +15,7 @@
             Feel free to reach out to <a href="mailto:team@nosana.io">team@nosana.io</a> if you have any questions.
           </p>
         </div>
-        <div v-if="!user || !user.name" class="column is-8">
+        <div v-if="!user" class="column is-8">
           <div class="columns">
             <div class="column is-one-third">
               <a
@@ -228,10 +228,10 @@
           </h3>
           <div class="balances is-flex">
             <div class="balance pl-3">
-              <span v-if="balance === null" class="is-size-7">Loading..<br></span>
+              <span v-if="walletBalance === null" class="is-size-7">Loading..<br></span>
               <span v-else class="is-size-7">NOS Wallet Balance<br></span>
               <span @click="depositAmount = parseInt(walletBalance)">{{ walletBalance }} NOS</span>
-              <a v-if="balance === 0" href="https://nosana.io/token" target="_blank" class="is-size-7">Buy NOS tokens</a>
+              <a v-if="walletBalance === 0" href="https://nosana.io/token" target="_blank" class="is-size-7">Buy NOS tokens</a>
             </div>
           </div>
           <form class="is-fullwidth" @submit.prevent="deposit">
@@ -253,7 +253,7 @@
                         v-model="depositAmount"
                         required
                         class="input has-background-grey-light ml-3 my-3"
-                        :max="balance"
+                        :max="walletBalance"
                         min="1"
                         step="0.1"
                         type="number"
@@ -290,7 +290,7 @@
 
 <script>
 import { Transaction, PublicKey } from '@solana/web3.js';
-import { createTransferInstruction, getAssociatedTokenAddress } from '@solana/spl-token';
+import { getAssociatedTokenAddress, getAccount, TOKEN_PROGRAM_ID, createTransferInstruction, createAssociatedTokenAccountInstruction, ASSOCIATED_TOKEN_PROGRAM_ID } from '@solana/spl-token';
 const anchor = require('@project-serum/anchor');
 
 export default {
@@ -439,8 +439,27 @@ export default {
         const mint = new PublicKey(process.env.NUXT_ENV_NOS_TOKEN);
         const from = await getAssociatedTokenAddress(mint, this.wallet.publicKey);
         const to = await getAssociatedTokenAddress(mint, new PublicKey(this.user.generated_address));
-
         const tx = new Transaction();
+        try {
+          const account = await getAccount(connection, to, TOKEN_PROGRAM_ID);
+          console.log('get account!', account);
+        } catch (error) {
+          try {
+            tx.add(createAssociatedTokenAccountInstruction(
+              this.wallet.publicKey,
+              to,
+              new PublicKey(this.user.generated_address),
+              mint,
+              TOKEN_PROGRAM_ID,
+              ASSOCIATED_TOKEN_PROGRAM_ID
+            ));
+          } catch (e) {
+            console.log(e);
+            // Ignore all errors; for now there is no API-compatible way to selectively ignore the expected
+            // instruction error if the associated account exists already.
+          }
+        }
+
         tx.add(
           createTransferInstruction(
             from,
