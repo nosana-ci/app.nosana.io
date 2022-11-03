@@ -6,28 +6,29 @@
           <img width="175" src="~assets/img/burner-phone-logo.svg">
         </div>
         <div class="column is-6">
-          <p>Next mint</p>
+          <!-- <p>Next mint</p> -->
           <h1 class="title mb-4">
             Subscribe
           </h1>
-          <p v-if="userTier" class="block">
-            <strong>Get you hands on a Burner Phone</strong>
+          <p v-if="nfts && nfts.length > 0" class="block">
+            <strong>Participate in the first Burner Phone Festival!</strong>
             <br>
             <small>
-              Next NFT mint- Get your hands on a Burner Phone. <br>
-              All stakers have a chance to win an NFT mint token.
-              You need to subscribe here after staking to participate in the raffle.
+              Win an Xbox Series X, an iPad Air, a Ledger Nano X, or one of our other fantastic prizes!
+              <br>
+              Subscribe below to enter the raffle; it's free!
             </small>
+            <br><br>
+            <a class="button is-accent is-outlined" href="https://docs.google.com/forms/d/e/1FAIpQLSevTJ8uGcjY6MGQPlTuiJ_S1l7YpUYJbKmzxF52NHGo294H5g/viewform" target="_blank">Register</a>
           </p>
           <p v-else class="block">
-            <strong>Get your hands on a Burner Phone</strong>
+            <strong>Get yourself a Burner Phone NFT.</strong>
             <small>
-              Want to be one of the first to own a Burner Phone?
+              Do you want to be a part of the second mint and/or next big event?
               <br>
-              Subscribe below participate in the raffle!
+              Simply stake some NOS and click the Subscribe button below.
             </small>
-          </p>
-          <p class="block">
+            <br><br>
             <nuxt-link to="/account/edit" class="button is-accent is-outlined">
               <b>Subscribe</b>
             </nuxt-link>
@@ -53,11 +54,23 @@ export default {
     userTier () {
       return this.$stake?.stakeData?.tierInfo?.userTier !== undefined &&
         this.$stake?.stakeData?.tierInfo?.userTier !== null;
+    },
+    nfts () {
+      return this.$sol ? this.$sol.nfts : null;
+    },
+    loggedIn () {
+      return (this.$auth && this.$auth.loggedIn);
     }
   },
   mounted () {
+    this.getNfts();
   },
   methods: {
+    async getNfts () {
+      if (this.$sol && this.loggedIn) {
+        await this.$sol.getNfts(this.$auth.user.address);
+      }
+    },
     print () {
       console.log(this.$stake?.stakeData);
     }

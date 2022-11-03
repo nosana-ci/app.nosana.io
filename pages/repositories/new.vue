@@ -64,7 +64,9 @@
       </nav>
       <div v-if="githubToken">
         <form @submit.prevent="addRepository">
-          <button type="submit" class="button is-accent mt-2" :disabled="!repository">
+          <market-selector @select-market="selectMarket" />
+          <br>
+          <button type="submit" class="button is-accent mt-2" :disabled="!repository || !selectedMarket">
             Add {{ repository }}
           </button>
         </form>
@@ -89,7 +91,8 @@ export default {
       loading: false,
       search: null,
       installations: null,
-      installationId: null
+      installationId: null,
+      selectedMarket: null
     };
   },
   computed: {
@@ -192,11 +195,12 @@ export default {
       try {
         await this.$axios.$post('/repositories', {
           repository: this.repository,
+          market: this.selectedMarket.publicKey,
           type: 'GITHUB',
           installationId: this.installationId
         });
         // await this.addWebhook(repo);
-        this.$router.push('/account');
+        this.$router.push('/pipelines');
       } catch (error) {
         this.$modal.show({
           color: 'danger',
@@ -216,11 +220,10 @@ export default {
           }
         });
       }
+    },
+    selectMarket (market) {
+      this.selectedMarket = market;
     }
   }
 };
 </script>
-
-<style lang="scss" scoped>
-
-</style>

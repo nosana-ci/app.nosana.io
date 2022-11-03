@@ -37,8 +37,9 @@
                 copyToClipboard(backendUrl + '/webhook/github/' + repository.secret) : null"
             >Trigger on commit to {{ repository.branches }} branch(es)</span>
           </p>
-          <p>
-            Pipeline price: <b class="has-text-accent">{{ repository.job_price/1e6 }} NOS</b>
+          <p v-if="repository.marketAccount">
+            Pipeline price: <b class="has-text-accent">
+              {{ parseInt(repository.marketAccount.jobPrice, 16) / 1e6 }} NOS</b>
           </p>
           <p class="is-size-7">
             <a @click="showPipeline = !showPipeline">
@@ -87,7 +88,7 @@
                     'is-accent': commit.status === 'COMPLETED',
                     'is-info': commit.status === 'RUNNING',
                     'is-warning': commit.status === 'QUEUED',
-                    'is-danger': commit.status === 'FAILED',
+                    'is-danger': commit.status === ('FAILED' || 'STOPPED'),
                   }"
                 >
                   {{ commit.status }}

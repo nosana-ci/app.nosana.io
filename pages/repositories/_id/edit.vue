@@ -14,32 +14,15 @@
           <p>
             <a :href="'https://github.com/'+ repository.repository" target="_blank" @click.stop>https://github.com/{{ repository.repository }}</a>
           </p>
-          <code-editor v-model="repository.pipeline" />
-          <div class="field">
+          <code-editor v-model="repository.pipeline" class="py-3" />
+          <div class="field py-3">
             <label class="label">Trigger branches (comma seperated)</label>
             <div class="control">
               <input v-model="repository.branches" required class="input" type="text" placeholder="main,master">
             </div>
           </div>
-          <label class="label">Lamport price</label>
-          <div class="field has-addons">
-            <div class="control">
-              <input
-                v-model="repository.job_price"
-                required
-                class="input"
-                type="number"
-                step="1"
-                min="0"
-              >
-            </div>
-            <p class="control">
-              <a class="button is-static">
-                <b>{{ repository.job_price/1e6 }} NOS</b>
-              </a>
-            </p>
-          </div>
-          <div class="field">
+          <market-selector v-if="repository" :repository="repository" @select-market="selectMarket" />
+          <div class="field py-3">
             <div class="control">
               <label class="checkbox">
                 <input v-model="repository.enable_check_runs" type="checkbox">
@@ -48,7 +31,7 @@
             </div>
           </div>
           <div class="control">
-            <button type="submit" class="button is-accent">
+            <button type="submit" class="button is-accent" :disabled="!selectedMarket">
               Save
             </button>
           </div>
@@ -63,14 +46,17 @@
 
 <script>
 import { parse } from 'yaml';
+import MarketSelector from '../../../components/MarketSelector.vue';
 
 export default {
+  components: { MarketSelector },
   middleware: 'auth',
   data () {
     return {
       id: this.$route.params.id,
       repository: null,
-      user: null
+      user: null,
+      selectedMarket: null
     };
   },
   created () {
@@ -80,16 +66,37 @@ export default {
     async edit () {
       try {
         const pipeline = parse(this.repository.pipeline);
-        if (!pipeline.commands || !Array.isArray(pipeline.commands)) {
-          throw new Error('Your yaml does not include a `commands` list');
+        // TODO: change for nice yaml scheme checker
+        if (!pipeline.global) {
+          throw new Error('Your yaml does not include a `global` config');
         }
-        if (!pipeline.image || typeof pipeline.image !== 'string') {
-          throw new Error('Your yaml does not include a `image` string');
+        if (!pipeline.nosana) {
+          throw new Error('Your yaml does not include a `nosana` config');
         }
-        console.log(pipeline);
+        if (!pipeline.jobs || !Array.isArray(pipeline.jobs) || !pipeline.jobs.length) {
+          throw new Error('Your yaml does not include a array `jobs` config');
+        }
+        if (!pipeline.global.trigger || !pipeline.global.trigger.branch) {
+          throw new Error('Your yaml does not include a `global.trigger.branch` config');
+        }
+        if (!pipeline.global.image) {
+          throw new Error('Your yaml does not include a `global.image` config');
+        }
+        if (!pipeline.nosana.description) {
+          throw new Error('Your yaml does not include a `nosana.description` config');
+        }
+        pipeline.jobs.forEach((job, index) => {
+          if (!job.name) {
+            throw new Error(`Job ${index + 1} does not include a 'name'`);
+          }
+          if (!job.commands || !Array.isArray(job.commands) || !job.commands.length) {
+            throw new Error(`Job ${index + 1} does not include a 'commands' array`);
+          }
+        });
+
         await this.$axios.$post(`/repositories/${this.id}`, {
           pipeline: this.repository.pipeline,
-          job_price: this.repository.job_price,
+          market: this.selectedMarket.publicKey,
           branches: this.repository.branches,
           enable_check_runs: this.repository.enable_check_runs
         });
@@ -146,6 +153,9 @@ export default {
           title: 'Error'
         });
       }
+    },
+    selectMarket (market) {
+      this.selectedMarket = market;
     }
   }
 };

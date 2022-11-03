@@ -15,7 +15,7 @@
                 'is-accent': commit.status === 'COMPLETED',
                 'is-info': commit.status === 'RUNNING',
                 'is-warning': commit.status === 'QUEUED',
-                'is-danger': commit.status === 'FAILED'
+                'is-danger': commit.status === ('FAILED' || 'STOPPED')
               }"
             >
               {{ commit.status }}
@@ -39,9 +39,17 @@
           <div v-if="commit.job && commit.cache_blockchain" class="mb-4">
             <i class="fas fa-coins mr-4 has-text-accent" />
             Pipeline total cost
-            <b class="has-text-accent">{{ parseInt(commit.cache_blockchain.tokens, 16)/1e6 }} NOS</b>
+            <b class="has-text-accent">
+              {{ parseInt(
+                commit.cache_blockchain.price ? commit.cache_blockchain.price : commit.cache_blockchain.tokens, 16)/1e6
+              }}
+              NOS</b>
           </div>
-          <div v-if="commit.job && commit.cache_blockchain && commit.cache_blockchain.jobStatus > 0" class="mb-4">
+          <div
+            v-if="commit.job && commit.cache_blockchain
+              && (commit.cache_blockchain.state > 0 || commit.cache_blockchain.jobStatus > 0)"
+            class="mb-4"
+          >
             <i class="fas fa-server mr-4 has-text-accent" />
             Node: <a
               target="_blank"
@@ -390,7 +398,7 @@ export default {
         if (this.commit.cache_blockchain) {
           // posted to blockchain, retrieve job
           this.getJobInfo(this.commit.cache_blockchain.ipfsJob);
-          if (commit.cache_blockchain.jobStatus === 2) {
+          if (commit.cache_blockchain.state === 2 || commit.cache_blockchain.jobStatus === 2) {
             // completed, retrieve results
             this.getResult(this.commit.cache_blockchain.ipfsResult);
           }
