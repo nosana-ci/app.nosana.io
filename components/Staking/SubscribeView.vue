@@ -18,6 +18,8 @@
               <br>
               Subscribe below to enter the raffle; it's free!
             </small>
+            <br><br>
+            <a class="button is-accent is-outlined" href="https://docs.google.com/forms/d/e/1FAIpQLSevTJ8uGcjY6MGQPlTuiJ_S1l7YpUYJbKmzxF52NHGo294H5g/viewform" target="_blank">Register</a>
           </p>
           <p v-else class="block">
             <strong>Get yourself a Burner Phone NFT.</strong>
@@ -26,8 +28,7 @@
               <br>
               Simply stake some NOS and click the Subscribe button below.
             </small>
-          </p>
-          <p class="block">
+            <br><br>
             <nuxt-link to="/account/edit" class="button is-accent is-outlined">
               <b>Subscribe</b>
             </nuxt-link>
