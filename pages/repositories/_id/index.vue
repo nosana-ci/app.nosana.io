@@ -1,7 +1,7 @@
 <template>
   <section class="section">
     <div class="container">
-      <nuxt-link v-if="repository" to="/">
+      <nuxt-link v-if="repository" to="/pipelines">
         <i class="fas fa-chevron-left" /> All repositories
       </nuxt-link>
       <div class="mt-2">
