@@ -76,6 +76,15 @@
               }}
               XNOS</b>
           </div>
+          <div class="mb-4">
+            <i class="fas fa-key mr-4 has-text-accent" />
+            Node Access Key
+            <a
+              target="_blank"
+              :href="$sol.explorer + '/address/' + market.nodeAccessKey"
+              class="blockchain-address-inline"
+            >{{ market.nodeAccessKey }}</a>
+          </div>
         </div>
         <div class="py-5 queues columns">
           <div class="node-queue column is-half">
