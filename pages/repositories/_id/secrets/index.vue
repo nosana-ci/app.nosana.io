@@ -4,41 +4,61 @@
       <nuxt-link :to="`/repositories/${id}`">
         <i class="fas fa-chevron-left" /> Cancel
       </nuxt-link>
-      <div class="mt-2">
-        <form v-if="repository" @submit.prevent="edit">
-          <div class="is-flex is-align-items-center">
-            <h2 class="title">
-              Edit Secrets for {{ repository.repository }}
-            </h2>
-          </div>
+      <div v-if="repository" class="is-flex">
+        <div>
+          <h2 class="title mb-1">
+            Secrets for {{ repository.repository }}
+          </h2>
           <p>
             <a :href="'https://github.com/'+ repository.repository" target="_blank" @click.stop>https://github.com/{{ repository.repository }}</a>
           </p>
-          <div v-for="value, key in secrets" :key="key" class="field py-3">
-            <label class="label">{{ key }}</label>
-            <div class="control">
-              <input v-model="secrets[key]" required class="input" type="text">
-            </div>
-          </div>
-          <input v-model="newSecretKey" class="input" type="text" placeholder="Secret Name">
-          <input v-model="newSecretValue" class="input" type="text" placeholder="Secret Value">
-          <a @click.stop="addSecret(newSecret)">Add new secret +</a>
-          <div class="control">
-            <button
-              v-if="!loggedIn"
-              class="button is-accent is-fullwidth mt-5 has-text-weight-semibold"
-              @click.stop.prevent="$sol.loginModal = true"
-            >
-              Connect Wallet
-            </button>
-            <button v-else type="submit" class="button is-accent" :disabled="!secrets">
-              Update secrets
-            </button>
-          </div>
-        </form>
-        <div v-else>
-          Loading..
         </div>
+        <nuxt-link
+          v-if="repository && user && (repository.user_id === user.user_id)"
+          class="button is-accent is-small"
+          style="margin-left: auto"
+          :to="`/repositories/${id}/secrets/new`"
+        >
+          New secret
+        </nuxt-link>
+      </div>
+      <div v-if="!loggedInSecretManager" class="mt-3">
+        <p>Connect your wallet to see your secrets.</p>
+        <button
+          class="button is-accent is-fullwidth mt-5 has-text-weight-semibold"
+          @click.stop.prevent="$sol.loginModal = true"
+        >
+          Connect Wallet
+        </button>
+      </div>
+      <div v-else-if="repository" class="mt-5">
+        <table class="table is-striped has-radius">
+          <thead>
+            <tr>
+              <th class="py-3 px-4">
+                Repository secrets
+              </th>
+              <th class="is-size-7 py-2 px-3" />
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="value, key in secrets"
+              :key="key"
+              class="p-5 market-row"
+            >
+              <td class="px-4 py-3">
+                {{ key }}
+              </td>
+              <td class="py-3">
+                Todo actions
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div v-else>
+        Loading..
       </div>
     </div>
   </section>
@@ -59,9 +79,10 @@ export default {
       id: this.$route.params.id,
       repository: null,
       user: null,
-      secrets: null,
+      secrets: {},
       newSecretValue: null,
-      newSecretKey: null
+      newSecretKey: null,
+      loggedInSecretManager: false
     };
   },
   computed: {
@@ -102,6 +123,7 @@ export default {
         timestamp
       });
       secretApi.defaults.headers.Authorization = 'Bearer ' + response.data.token;
+      this.loggedInSecretManager = true;
       this.getSecrets();
     },
     async getSecrets () {
@@ -162,3 +184,11 @@ export default {
   }
 };
 </script>
+
+<style scoped lang="scss">
+table {
+  max-width: 800px;
+  width: 100%;
+  border: 1px solid #F2F5F1;
+}
+</style>
