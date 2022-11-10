@@ -551,11 +551,11 @@
               <span class="is-size-7">{{ $moment.unix(stakeData.time_unstake).local() }}</span><br>
 
               <div class="has-background-grey-lighter has-radius-medium p-3 pb-4 mt-5">
-                <h5 class="mb-3">
-                  They will be released in
+                <h5 v-if="!countdownFinished" class="mb-3">
+                  All token will be released in
                 </h5>
                 <client-only>
-                  <countdown :end-time="stakeEndDate">
+                  <countdown :end-time="stakeEndDate.toString()">
                     <span
                       slot="process"
                       slot-scope="{ timeObj }"
@@ -597,9 +597,9 @@
                         v-else-if="userHasStakedBefore"
                         class="button is-accent mt-2"
                         :class="{'is-loading': loading}"
-                        @click.stop="claim"
+                        @click.stop="close"
                       >
-                        Claim {{ parseFloat(stakeData.amount)/1e6 }} NOS
+                        Claim <span v-if="vaultBalance">&nbsp;{{ Math.floor(vaultBalance) }}&nbsp;</span> NOS
                       </button>
                     </span>
                   </countdown>
@@ -608,11 +608,28 @@
             </div>
           </div>
 
-          <form v-if="!countdownFinished" class="mt-5 has-text-centered" @submit.prevent="restake">
-            Or restake them here: <br>
+          <div v-if="!countdownFinished" class="mt-5 has-text-centered">
+            <div class="box has-background-light">
+              <p>Withdrawable Tokens</p>
+              <h2 class="title is-3 has-text-success mb-0">
+                <ICountUp
+                  class="is-family-monospace"
+                  :end-val="parseFloat(withdrawAvailable)"
+                  :options="{ decimalPlaces: 4, duration:0.1 }"
+                  style="opacity:0"
+                />
+                <ICountUp
+                  class="is-family-monospace"
+                  :end-val="parseFloat(withdrawAvailable)"
+                  :options="{ decimalPlaces: 4, duration:1 }"
+                  style="position:absolute;width: 100%;text-align: center;left: 0;"
+                />
+              </h2>
+              <p>NOS</p>
+            </div>
             <button
               v-if="!loggedIn"
-              class="button is-accent is-outlined has-text-weight-semibold mt-2"
+              class="button is-accent is-fullwidth has-text-weight-semibold"
               @click.stop.prevent="$sol.loginModal = true"
             >
               Connect Wallet
@@ -620,12 +637,22 @@
             <button
               v-else-if="userHasStakedBefore"
               type="submit"
-              class="button is-accent mt-2"
+              class="button is-fullwidth is-accent"
               :class="{'is-loading': loading}"
+              @click="restake"
             >
-              Restake {{ parseFloat(stakeData.amount)/1e6 }} NOS
+              Restake<span v-if="vaultBalance">&nbsp;{{ Math.floor(vaultBalance) }}&nbsp;</span> NOS
             </button>
-          </form>
+            <button
+              v-if="userHasStakedBefore && loggedIn"
+              type="submit"
+              class="button is-fullwidth is-accent is-outlined mt-2"
+              :class="{'is-loading': loading}"
+              @click="withdraw"
+            >
+              Withdraw Released Tokens
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -663,7 +690,10 @@ export default {
       unstakeForm: false,
       countdownFinished: false,
       topupPopup: false,
-      extendPopup: false
+      extendPopup: false,
+      interval: null,
+      withdrawAvailable: 0,
+      vaultBalance: null
     };
   },
   computed: {
@@ -773,10 +803,22 @@ export default {
     if (this.$stake.accounts) {
       this.getBalance();
     }
+    if (!this.interval) {
+      this.interval = setInterval(() => {
+        this.calculateWithdrawable();
+      }, 1000);
+    }
+  },
+  beforeDestroy () {
+    if (this.interval) {
+      clearInterval(this.interval);
+      this.interval = null;
+    }
   },
   methods: {
     async getBalance () {
       this.balance = await this.$stake.getBalance(this.$stake.accounts.authority);
+      this.vaultBalance = await this.$stake.getBalance(this.$stake.accounts.vault);
     },
     async topup () {
       try {
@@ -1003,11 +1045,11 @@ export default {
       }
       this.loading = false;
     },
-    async claim () {
+    async close () {
       try {
         this.loading = true;
         const response = await this.$stake.program.methods
-          .claim()
+          .close()
           .accounts(this.$stake.accounts)
           .rpc();
         console.log(response);
@@ -1027,6 +1069,46 @@ export default {
     },
     async refreshStake () {
       await this.$stake.refreshStake();
+    },
+    async withdraw () {
+      try {
+        this.loading = true;
+        const response = await this.$stake.program.methods
+          .withdraw()
+          .accounts(this.$stake.accounts)
+          .rpc();
+        console.log(response);
+        setTimeout(async () => {
+          await this.refreshStake();
+        }, 1000);
+        this.amount = null;
+        this.$modal.show({
+          color: 'success',
+          text: 'Successfully withdrawn NOS',
+          title: 'Withdrawn!'
+        });
+        await this.getBalance();
+      } catch (error) {
+        this.$modal.show({
+          color: 'danger',
+          text: error.message,
+          title: 'Error'
+        });
+      }
+      this.loading = false;
+    },
+    calculateWithdrawable () {
+      if (this.stakeData && this.stakeData.time_unstake && this.vaultBalance) {
+        const now = new Date().getTime();
+        const emission = parseFloat(parseInt(this.stakeData.amount) / parseInt(this.stakeData.duration));
+        const secondsBetween = parseInt(now / 1000) - parseInt(this.stakeData.time_unstake);
+
+        const tokensReleased = emission * secondsBetween;
+        const withdrawn = (parseInt(this.stakeData.amount) - (this.vaultBalance * 1e6));
+        const available = Math.min(tokensReleased - withdrawn, this.vaultBalance * 1e6);
+
+        this.withdrawAvailable = +(available / 1e6);
+      }
     }
   }
 };
