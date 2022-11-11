@@ -2,7 +2,7 @@
   <section class="section">
     <div class="container">
       <nuxt-link :to="`/repositories/${id}`">
-        <i class="fas fa-chevron-left" /> Cancel
+        <i class="fas fa-chevron-left" /> Back
       </nuxt-link>
       <div v-if="repository" class="is-flex">
         <div>
@@ -53,6 +53,11 @@
               <td class="py-3 px-5" style="text-align: right;">
                 <i class="fas fa-edit px-2" @click="openEditPopup(key, value)" />
                 <i class="fas fa-trash" @click="removeSecretConfirm(key)" />
+              </td>
+            </tr>
+            <tr v-if="Object.keys(secrets).length === 0">
+              <td class="px-4 py-3 has-text-grey">
+                No secrets found
               </td>
             </tr>
           </tbody>
