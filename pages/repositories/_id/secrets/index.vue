@@ -50,8 +50,9 @@
               <td class="px-4 py-3">
                 {{ key }}
               </td>
-              <td class="py-3">
-                Todo actions
+              <td class="py-3 px-5" style="text-align: right;">
+                <i class="fas fa-edit px-2" @click="openEditPopup(key, value)" />
+                <i class="fas fa-trash" @click="removeSecretConfirm(key)" />
               </td>
             </tr>
           </tbody>
@@ -60,6 +61,71 @@
       <div v-else>
         Loading..
       </div>
+    </div>
+    <!-- Edit popup -->
+    <div class="modal" :class="{ 'is-active': editPopup }">
+      <div
+        class="modal-background"
+        @click="editPopup = false, selectedSecret = {}"
+      />
+      <div class="modal-content has-background-white has-radius-medium p-5">
+        <h3 class="has-text-centered subtitle is-4 has-text-weight-semibold">
+          Edit secret
+        </h3>
+        <form v-if="selectedSecret" @submit.prevent="editSecret">
+          <div
+            class="mt-5 has-radius-medium has-background-grey-lighter m-0 p-5"
+          >
+            <div class="field">
+              <label class="label">Name</label>
+              <div class="control">
+                <input
+                  v-model="Object.keys(selectedSecret)[0]"
+                  readonly
+                  disabled
+                  class="input"
+                  type="text"
+                  placeholder="Secret name"
+                  required
+                >
+              </div>
+            </div>
+            <div class="field">
+              <label class="label">Secret</label>
+              <div class="control">
+                <textarea
+                  v-model="selectedSecret[Object.keys(selectedSecret)[0]]"
+                  class="textarea"
+                  placeholder="Secret value"
+                  required
+                />
+              </div>
+            </div>
+          </div>
+          <button
+            v-if="!loggedIn"
+            class="button is-accent is-fullwidth mt-5 has-text-weight-semibold"
+            @click.stop.prevent="$sol.loginModal = true"
+          >
+            Connect Wallet
+          </button>
+          <button
+            v-else
+            type="submit"
+            class="button is-accent is-fullwidth mt-5 has-text-weight-semibold"
+          >
+            Save
+          </button>
+        </form>
+        <div v-else>
+          Could not find secret
+        </div>
+      </div>
+      <button
+        class="modal-close is-large"
+        aria-label="close"
+        @click="editPopup = false, selectedSecret = {}"
+      />
     </div>
   </section>
 </template>
@@ -82,7 +148,9 @@ export default {
       secrets: {},
       newSecretValue: null,
       newSecretKey: null,
-      loggedInSecretManager: false
+      loggedInSecretManager: false,
+      editPopup: false,
+      selectedSecret: {}
     };
   },
   computed: {
@@ -107,11 +175,43 @@ export default {
     }
   },
   methods: {
-    addSecret () {
-      if (this.newSecretKey) {
-        this.$set(this.secrets, this.newSecretKey, this.newSecretValue);
-        this.newSecretKey = null;
-        this.newSecretValue = null;
+    openEditPopup (key, value) {
+      this.editPopup = true;
+      this.$set(this.selectedSecret, key, value);
+    },
+    removeSecretConfirm (key) {
+      this.$modal.show({
+        color: 'warning',
+        title: 'Are you sure you want to remove this secret?',
+        onConfirm: () => {
+          this.removeSecret(key);
+        }
+      });
+    },
+    async removeSecret (key) {
+      try {
+        await secretApi.delete('/secrets', {
+          data: {
+            key
+          }
+        });
+        this.$modal.show({
+          color: 'success',
+          text: 'Successfully removed secret',
+          title: 'Removed!',
+          persistent: true,
+          cancel: false,
+          onConfirm: () => {
+            this.getSecrets();
+          }
+        });
+      } catch (error) {
+        console.error(error);
+        this.$modal.show({
+          color: 'danger',
+          text: error,
+          title: 'Error'
+        });
       }
     },
     async login () {
@@ -130,22 +230,26 @@ export default {
       const response = await secretApi.get('/secrets');
       this.secrets = response.data;
     },
-    async edit () {
+    async editSecret () {
       try {
         await secretApi.post('/secrets', {
-          secrets: this.secrets
+          secrets: this.selectedSecret
         });
+        this.selectedSecret = {};
+        this.editPopup = false;
         this.$modal.show({
           color: 'success',
-          text: 'Successfully saved secrets',
+          text: 'Successfully saved secret',
           title: 'Saved!',
           persistent: true,
           cancel: false,
           onConfirm: () => {
-            this.$router.push(`/repositories/${this.id}`);
+            this.getSecrets();
           }
         });
       } catch (error) {
+        this.selectedSecret = {};
+        this.editPopup = false;
         console.error(error);
         this.$modal.show({
           color: 'danger',
@@ -187,8 +291,16 @@ export default {
 
 <style scoped lang="scss">
 table {
-  max-width: 800px;
+  max-width: 600px;
   width: 100%;
   border: 1px solid #F2F5F1;
+  td {
+    i {
+      cursor: pointer;
+      &:hover {
+        color: $grey-darker;
+      }
+    }
+  }
 }
 </style>
