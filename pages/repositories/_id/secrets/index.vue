@@ -136,7 +136,8 @@
 </template>
 
 <script>
-import { PublicKey } from '@solana/web3.js';
+// import { PublicKey } from '@solana/web3.js';
+import bs58 from 'bs58';
 import axios from 'axios';
 console.log(process.env.NUXT_ENV_SECRET_MANAGER_URL);
 const secretApi = axios.create({
@@ -223,8 +224,8 @@ export default {
       const timestamp = Math.floor(+new Date() / 1000);
       const signature = await this.$sol.sign(timestamp, 'nosana_secret');
       const response = await secretApi.post('/login', {
-        address: new PublicKey(this.publicKey).toBuffer(),
-        signature,
+        address: this.publicKey,
+        signature: bs58.encode(signature.data),
         timestamp
       });
       secretApi.defaults.headers.Authorization = 'Bearer ' + response.data.token;
