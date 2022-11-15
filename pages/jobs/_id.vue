@@ -377,7 +377,9 @@ export default {
       // Convert the ipfs bytes from a solana job to a CID
       // It prepends the 0x1220 (18,32) to make it 34 bytes and Base58 encodes it.
       // This result is IPFS addressable.
-      hashArray.unshift(18, 32);
+      if (hashArray[0] !== 18 || hashArray[1] !== 32) {
+        hashArray.unshift(18, 32);
+      }
       return bs58.encode(Buffer.from(hashArray));
     },
     async retrieveIpfsContent (hash) {
