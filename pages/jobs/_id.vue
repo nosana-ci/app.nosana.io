@@ -127,7 +127,23 @@
                       class="has-text-link has-text-weight-bold row-count"
                       :class="{'has-text-danger': res.exit}"
                     >
-                      {{ commit.job_content.pipeline.commands[parseInt(index.split('-')[1])] }}
+                      <span
+                        v-if="commit.job_content.pipeline.jobs[parseInt(index.split('-')[1])]
+                          && commit.job_content.pipeline.jobs[parseInt(index.split('-')[1])].commands
+                          && Array.isArray(commit.job_content.pipeline.jobs[parseInt(index.split('-')[1])].commands)"
+                      >
+                        <span>
+                          <span
+                            v-for="cmd in commit.job_content.pipeline.jobs[parseInt(index.split('-')[1])].commands"
+                            :key="cmd"
+                          >
+                            {{ cmd }}
+                          </span>
+                        </span>
+                      </span>
+                      <span v-else>
+                        {{ commit.job_content.pipeline.jobs[parseInt(index.split('-')[1])] }}
+                      </span>
                     </p>
                     <i class="fas fa-chevron-down ml-2 has-text-link" :class="{'fa-chevron-up': !hideResults[index]}" />
                   </div>
@@ -136,24 +152,10 @@
                     <span class="pre has-text-danger">{{ res.err }}</span>
                   </p>
                 </div>
-                <div v-else-if="index !== 'docker-cmds'">
-                  <div
-                    class="is-flex is-justify-content-space-between is-align-items-center command is-clickable"
-                    @click="toggleResult(index)"
-                  >
-                    <p class="has-text-link has-text-weight-bold row-count">
-                      {{ 'git ' + index }}
-                    </p>
-                    <i class="fas fa-chevron-down ml-2 has-text-link" :class="{'fa-chevron-up': !hideResults[index]}" />
-                  </div>
-                  <p class="has-text-white row-count log" :class="{'hidden-log': hideResults[index]}">
-                    {{ res }}
-                  </p>
-                </div>
                 <div v-else>
                   <div
                     v-for="(item, i) of res[1]"
-                    :key="item.cmd"
+                    :key="i"
                   >
                     <div
                       v-if="item.cmd"
@@ -161,10 +163,18 @@
                       @click="toggleResult(i)"
                     >
                       <p
+                        v-if="!item.cmd.cmd"
                         class="row-count has-text-weight-bold has-text-link"
                         :class="{'has-text-danger': item.error}"
                       >
                         {{ item.cmd }}
+                      </p>
+                      <p
+                        v-else
+                        class="row-count has-text-weight-bold has-text-link"
+                        :class="{'has-text-danger': item.error}"
+                      >
+                        {{ item.cmd.cmd }}
                       </p>
                       <div>
                         <p v-if="item.time && i > 0" class="tag">
@@ -200,11 +210,24 @@
             </div>
             <div v-else>
               <div
-                v-for="(command, index) in ['git clone', 'git checkout'].concat(commit.job_content.pipeline.commands)"
+                v-for="(job, index) in ['git clone', 'git checkout'].concat(commit.job_content.pipeline.jobs)"
                 :key="index"
               >
-                <div class="has-text-link row-count">
-                  {{ command }}
+                <div
+                  v-if="job && job.commands && Array.isArray(job.commands)"
+                  class="has-text-link"
+                >
+                  <span class="row-count">Job: {{ job.name }}</span><br>
+                  <div
+                    v-for="cmd in job.commands"
+                    :key="cmd"
+                    class="row-count log has-text-white"
+                  >
+                    {{ cmd }}
+                  </div>
+                </div>
+                <div v-else class="has-text-link row-count">
+                  {{ job }}
                 </div>
                 <div class="log row-count has-text-white">
                   pending...
@@ -371,7 +394,7 @@ export default {
       if (this.commit.job_content.pipeline) {
         this.$set(this.commit.job_content, 'pipeline', parse(this.commit.job_content.pipeline));
       } else {
-        this.$set(this.commit.job_content, 'pipeline', { commands: this.commit.job_content.commands });
+        this.$set(this.commit.job_content, 'pipeline', { jobs: this.commit.job_content.jobs });
       }
     },
     getResult (ipfsResult) {

@@ -67,6 +67,21 @@
           </div>
         </div>
         <div class="field">
+          <label class="label mb-0">Node Access Key</label>
+          <p class="is-size-7 mb-2">
+            The NFT collection address of an NFT that the node holds, in order to access this market.
+          </p>
+          <div class="control is-expanded">
+            <input
+              v-model="newMarket.nodeAccessKey"
+              required
+              class="input is-primary"
+              type="text"
+              placeholder="Address of Acces Key"
+            >
+          </div>
+        </div>
+        <div class="field">
           <label class="label mb-0">Job Type</label>
           <p class="is-size-7 mb-2">
             Choose the type of jobs for this market
@@ -133,7 +148,8 @@ export default {
         jobTimeout: null,
         jobType: 0,
         nodeStakeMinimum: null,
-        jobExpiration: null
+        jobExpiration: null,
+        nodeAccessKey: process.env.NUXT_ENV_NFT_COLLECTION_ID
       }
     };
   },
@@ -181,7 +197,8 @@ export default {
           .accounts({
             ...this.$job.accounts,
             vault: vault[0],
-            market: marketKeypair.publicKey
+            market: marketKeypair.publicKey,
+            accessKey: new anchor.web3.PublicKey(this.nodeAccessKey)
           })
           .signers([marketKeypair])
           .rpc();
