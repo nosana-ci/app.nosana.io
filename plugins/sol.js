@@ -209,8 +209,8 @@ export default (context, inject) => {
         await connection.confirmTransaction(signature, 'processed'); */
       },
 
-      async sign (message) {
-        const data = new TextEncoder().encode('nosana_' + message);
+      async sign (message, prefix = 'nosana') {
+        const data = new TextEncoder().encode(`${prefix}_${message}`);
         let signature;
         try {
           const response = await connectingAdapter.signMessage(data);
