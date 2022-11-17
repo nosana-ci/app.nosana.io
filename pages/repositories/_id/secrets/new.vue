@@ -11,7 +11,11 @@
           </h2>
         </div>
         <p>
-          <a :href="'https://github.com/'+ repository.repository" target="_blank" @click.stop>https://github.com/{{ repository.repository }}</a>
+          <a
+            :href="'https://github.com/' + repository.repository"
+            target="_blank"
+            @click.stop
+          >https://github.com/{{ repository.repository }}</a>
         </p>
       </div>
       <div v-if="!loggedInSecretManager" class="mt-3">
@@ -28,13 +32,24 @@
           <div class="field">
             <label class="label">Name</label>
             <div class="control">
-              <input v-model="newSecretKey" class="input" type="text" placeholder="Secret name" required>
+              <input
+                v-model="newSecretKey"
+                class="input"
+                type="text"
+                placeholder="Secret name"
+                required
+              >
             </div>
           </div>
           <div class="field">
             <label class="label">Secret</label>
             <div class="control">
-              <textarea v-model="newSecretValue" class="textarea" placeholder="Secret value" required />
+              <textarea
+                v-model="newSecretValue"
+                class="textarea"
+                placeholder="Secret value"
+                required
+              />
             </div>
           </div>
           <div class="control">
@@ -52,7 +67,7 @@
 </template>
 
 <script>
-import { PublicKey } from '@solana/web3.js';
+import bs58 from 'bs58';
 import axios from 'axios';
 console.log(process.env.NUXT_ENV_SECRET_MANAGER_URL);
 const secretApi = axios.create({
@@ -98,13 +113,13 @@ export default {
       const timestamp = Math.floor(+new Date() / 1000);
       const signature = await this.$sol.sign(timestamp, 'nosana_secret');
       const response = await secretApi.post('/login', {
-        address: new PublicKey(this.publicKey).toBuffer(),
-        signature,
+        address: this.publicKey,
+        signature: bs58.encode(signature.data),
         timestamp
       });
-      secretApi.defaults.headers.Authorization = 'Bearer ' + response.data.token;
+      secretApi.defaults.headers.Authorization =
+        'Bearer ' + response.data.token;
       this.loggedInSecretManager = true;
-      this.getSecrets();
     },
     async addSecret () {
       try {
@@ -142,7 +157,12 @@ export default {
           title: 'Error'
         });
       }
-      if (!this.user || !this.repository || ((!this.user.roles || !this.user.roles.includes('admin')) && !this.user.user_id === this.repository.user_id)) {
+      if (
+        !this.user ||
+        !this.repository ||
+        ((!this.user.roles || !this.user.roles.includes('admin')) &&
+          !this.user.user_id === this.repository.user_id)
+      ) {
         this.$router.push(`/repositories/${this.id}`);
       }
     },
