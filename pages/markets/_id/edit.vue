@@ -230,7 +230,7 @@ export default {
     },
     closeConfirm () {
       this.$modal.show({
-        color: 'warning',
+        color: 'danger',
         title: 'Are you sure you want to close this market?',
         onConfirm: () => {
           this.closeMarket();

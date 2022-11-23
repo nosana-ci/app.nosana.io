@@ -187,7 +187,7 @@ export default {
     },
     removeSecretConfirm (key) {
       this.$modal.show({
-        color: 'warning',
+        color: 'danger',
         title: 'Are you sure you want to remove this secret?',
         onConfirm: () => {
           this.removeSecret(key);

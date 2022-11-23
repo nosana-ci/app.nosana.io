@@ -10,15 +10,24 @@
             <h2 class="title mb-0 mr-2">
               {{ repository.repository }}
             </h2>
-            <nuxt-link
-              v-if="repository && user &&
-                (repository.user_id === user.user_id || (user.roles && user.roles.includes('admin')))"
-              class="button is-outlined is-accent is-small"
-              style="margin-left: auto"
-              :to="`/repositories/${id}/edit`"
-            >
-              edit
-            </nuxt-link>
+            <div class="ml-auto">
+              <nuxt-link
+                v-if="repository && user &&
+                  (repository.user_id === user.user_id)"
+                class="button is-outlined is-accent is-small"
+                :to="`/repositories/${id}/secrets`"
+              >
+                secrets
+              </nuxt-link>
+              <nuxt-link
+                v-if="repository && user &&
+                  (repository.user_id === user.user_id || (user.roles && user.roles.includes('admin')))"
+                class="button is-outlined is-accent is-small"
+                :to="`/repositories/${id}/edit`"
+              >
+                edit
+              </nuxt-link>
+            </div>
           </div>
           <p>
             <a
