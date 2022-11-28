@@ -552,7 +552,7 @@
 
               <div class="has-background-grey-lighter has-radius-medium p-3 pb-4 mt-5">
                 <h5 v-if="!countdownFinished" class="mb-3">
-                  All token will be released in
+                  All tokens will be released in
                 </h5>
                 <client-only>
                   <countdown :end-time="stakeEndDate.toString()">
@@ -688,7 +688,6 @@ export default {
       extraUnstakeDays: null,
       extendStake: false,
       unstakeForm: false,
-      countdownFinished: false,
       topupPopup: false,
       extendPopup: false,
       interval: null,
@@ -776,6 +775,14 @@ export default {
     },
     stakeEndDate () {
       return this.$stake ? this.$stake.stakeEndDate : null;
+    },
+    countdownFinished: {
+      get () {
+        return new Date() > this.date;
+      },
+      set (val) {
+        this.countdownFinished = val;
+      }
     }
   },
   watch: {
@@ -1078,16 +1085,12 @@ export default {
           .accounts(this.$stake.accounts)
           .rpc();
         console.log(response);
-        setTimeout(async () => {
-          await this.refreshStake();
-        }, 1000);
         this.amount = null;
         this.$modal.show({
           color: 'success',
           text: 'Successfully withdrawn NOS',
           title: 'Withdrawn!'
         });
-        await this.getBalance();
       } catch (error) {
         this.$modal.show({
           color: 'danger',
@@ -1095,6 +1098,10 @@ export default {
           title: 'Error'
         });
       }
+      setTimeout(async () => {
+        await this.refreshStake();
+      }, 1000);
+      await this.getBalance();
       this.loading = false;
     },
     calculateWithdrawable () {
