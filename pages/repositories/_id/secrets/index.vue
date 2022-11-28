@@ -170,14 +170,14 @@ export default {
   watch: {
     '$sol.publicKey': function (pubkey) {
       if (pubkey) {
-        this.login();
+        this.checkToken();
       }
     }
   },
   created () {
     this.getUser();
     if (this.loggedIn) {
-      this.login();
+      this.checkToken();
     }
   },
   methods: {
@@ -228,9 +228,7 @@ export default {
         signature: bs58.encode(signature.data),
         timestamp
       });
-      secretApi.defaults.headers.Authorization = 'Bearer ' + response.data.token;
-      this.loggedInSecretManager = true;
-      this.getSecrets();
+      this.$store.dispatch('secretsToken/addToken', response.data.token);
     },
     async getSecrets () {
       const response = await secretApi.get('/secrets');
@@ -290,6 +288,28 @@ export default {
           title: 'Error'
         });
       }
+    },
+    async checkToken () {
+      const token = this.$store.state.secretsToken.token;
+      if (!token) {
+        console.log('Theres no token, need to sign');
+        await this.login();
+      } else {
+        const currentTime = Date.now() / 1000;
+        const tokenParts = token.split('.');
+        const payload = JSON.parse(atob(tokenParts[1]));
+
+        if (payload.exp < currentTime || !this.$store.state.secretsToken.token) {
+          console.log('Token expired, need to sign');
+          await this.login();
+        } else {
+          console.log('Token still valid');
+        }
+      }
+
+      secretApi.defaults.headers.Authorization = 'Bearer ' + this.$store.state.secretsToken.token;
+      this.loggedInSecretManager = true;
+      this.getSecrets();
     }
   }
 };
