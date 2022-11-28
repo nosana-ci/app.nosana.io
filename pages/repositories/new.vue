@@ -1,7 +1,7 @@
 <template>
   <section class="section">
     <div class="container">
-      <nuxt-link to="/">
+      <nuxt-link to="/pipelines">
         <i class="fas fa-chevron-left" /> All repositories
       </nuxt-link>
       <h1 class="title is-4">
