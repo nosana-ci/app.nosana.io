@@ -189,8 +189,8 @@
                         v-show=" log[1] !== ''"
                         :key="ik"
                         class="row-count  log"
-                        :class="{'has-text-white': log[0] === 1,
-                                 'has-text-danger': log[0] === 2,
+                        :class="{'has-text-white': log[0] === 1 || res[0] === 'success',
+                                 'has-text-danger': log[0] === 2 && res[0] === 'pipeline-failed',
                                  'hidden-log': hideResults[i] }"
                       >
                         {{ log[1] }}
