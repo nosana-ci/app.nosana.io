@@ -210,7 +210,7 @@ export default {
       //   timestamp
       // });
       const response = await this.$axios.$get('/user/secrets');
-      this.$store.dispatch('secretsToken/addToken', response.data.token);
+      this.$store.dispatch('secretsToken/addToken', response.token);
     },
     async getSecrets () {
       const response = await secretApi.get('/secrets');
