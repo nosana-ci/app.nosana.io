@@ -93,6 +93,9 @@
             <li :class="{'is-active': tab === 'ipfs'}">
               <a @click.prevent="tab='ipfs'">IPFS</a>
             </li>
+            <li :class="{'is-active': tab === 'pipeline'}">
+              <a @click.prevent="tab='pipeline'">Pipeline</a>
+            </li>
           </ul>
         </div>
         <div v-if="tab === 'result'">
@@ -220,7 +223,7 @@
                   v-if="job && job.commands && Array.isArray(job.commands)"
                   class="has-text-link"
                 >
-                  <span class="row-count">Job: {{ job.name }}</span><br>
+                  <span class="row-count log">Job: {{ job.name }}</span><br>
                   <div
                     v-for="cmd in job.commands"
                     :key="cmd"
@@ -229,10 +232,10 @@
                     {{ cmd }}
                   </div>
                 </div>
-                <div v-else class="has-text-link row-count">
+                <div v-else class="has-text-link row-count log">
                   {{ job }}
                 </div>
-                <div class="log row-count has-text-white">
+                <div class="log row-count has-text-white log">
                   pending...
                 </div>
               </div>
@@ -240,7 +243,7 @@
           </div>
         </div>
         <div v-else-if="tab === 'logs'">
-          <pre>{{ commit.cache_blockchain }}</pre>
+          <pre>{{ displayInfo }}</pre>
         </div>
         <div v-else-if="tab === 'payload'">
           <pre>{{ commit.payload }}</pre>
@@ -252,6 +255,9 @@
           <div v-if="commit.resultIpfsHash">
             Result IPFS: <a :href="'https://nosana.mypinata.cloud/ipfs/' + commit.resultIpfsHash" target="_blank">{{ commit.resultIpfsHash }}</a>
           </div>
+        </div>
+        <div v-else-if="tab === 'pipeline'">
+          <pre>{{ commit.job_content.pipeline }}</pre>
         </div>
       </div>
       <div v-else>
@@ -285,7 +291,8 @@ export default {
       refreshInterval: null,
       clockInterval: null,
       nowSeconds: null,
-      hideResults: {}
+      hideResults: {},
+      displayInfo: null
     };
   },
   watch: {
@@ -429,6 +436,9 @@ export default {
             // completed, retrieve results
             this.getResult(this.commit.cache_blockchain.ipfsResult);
           }
+          this.displayInfo = Object.assign({}, this.commit.cache_blockchain);
+          delete this.displayInfo.ipfsJob;
+          delete this.displayInfo.ipfsResult;
         }
         this.commit = commit;
       } catch (error) {
