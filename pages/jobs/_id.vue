@@ -109,7 +109,7 @@
           </div>
           <div
             v-if="commit.job_content"
-            class="box mt-2 px-4 content-block has-background-black"
+            class="box mt-2 px-5 content-block has-background-black"
           >
             <div v-if="commit.cache_result && commit.cache_result.results">
               <div class="has-text-centered block">
@@ -117,7 +117,7 @@
                   <b>Node:</b>&nbsp;{{ commit.cache_result['nos-id'] }}
                 </div>
               </div>
-              <div v-for="(res, index) in commit.cache_result.results" :key="index">
+              <div v-for="(res, index, count) in commit.cache_result.results" :key="index">
                 <div v-if="index !== 'docker-cmds' && index.startsWith('cmd-')">
                   <div
                     class="is-flex is-justify-content-space-between is-align-items-center command is-clickable"
@@ -160,46 +160,49 @@
                     <div
                       v-if="item.cmd"
                       class="is-flex is-justify-content-space-between is-align-items-center command is-clickable"
-                      @click="toggleResult(i)"
+                      @click="toggleResult(count + '.' + (i - 1))"
                     >
                       <p
                         v-if="!item.cmd.cmd"
-                        class="row-count has-text-weight-bold has-text-link"
+                        class="row-count has-text-weight-bold has-text-link log"
                         :class="{'has-text-danger': item.error}"
                       >
                         {{ item.cmd }}
                       </p>
                       <p
                         v-else
-                        class="row-count has-text-weight-bold has-text-link"
+                        class="row-count has-text-weight-bold has-text-link log"
                         :class="{'has-text-danger': item.error}"
                       >
                         {{ item.cmd.cmd }}
                       </p>
                       <div>
-                        <p v-if="item.time && i > 0" class="tag">
+                        <p v-if="item.time && i > 0" class="tag" style="font-family: monospace;">
                           {{ timeStamp(res[1][i - 1]['time'], item.time) }}
                         </p>
-                        <i class="fas fa-chevron-down ml-2 has-text-link" :class="{'fa-chevron-up': !hideResults[i]}" />
+                        <i
+                          class="fas fa-chevron-down ml-2 has-text-link"
+                          :class="{'fa-chevron-up': !hideResults[count + '.' + (i - 1)]}"
+                        />
                       </div>
                     </div>
                     <div v-if="item.log && Array.isArray(item.log)">
-                      <p
+                      <div
                         v-for="(log, ik) in item.log"
                         v-show=" log[1] !== ''"
                         :key="ik"
-                        class="row-count  log"
+                        class="row-count log"
                         :class="{'has-text-white': log[0] === 1 || res[0] === 'success',
                                  'has-text-danger': log[0] === 2 && res[0] === 'pipeline-failed',
-                                 'hidden-log': hideResults[i] }"
+                                 'hidden-log': hideResults[count + '.' + (i - 1)] }"
                       >
                         {{ log[1] }}
-                      </p>
+                      </div>
                     </div>
                     <p
                       v-else-if="item.log"
                       class="row-count has-text-white log"
-                      :class="{'hidden-log': hideResults[i]}"
+                      :class="{'hidden-log': hideResults[count + '.' + (i - 1)]}"
                     >
                       <span class="pre">{{ item.log | truncate(10000, '...\n') }}</span>
                       <span class="pre has-text-danger">{{ item.error }}</span>
@@ -335,7 +338,6 @@ export default {
     },
     timeStamp (start, end) {
       const totalTime = end - start;
-      console.log(totalTime);
       const h = Math.floor(totalTime / 3600);
       const m = Math.floor(totalTime % 3600 / 60);
       const s = Math.floor(totalTime % 3600 % 60);
@@ -447,9 +449,8 @@ export default {
 }
 .log {
   word-break: break-word;
-  padding-left: 2.5em;
-  text-indent:-1.25em;
-  max-width: 80%;
+  max-width: 85%;
+  padding-left: 40px;
 }
 .content-block{
   counter-reset: line;
@@ -474,6 +475,9 @@ export default {
     padding: 0 .5em;
     margin-right: .5em;
     color: $accent !important;
+    min-width: 50px;
+    text-align: right;
+    margin-left: -62px;
   }
   &.has-text-danger:before {
     color: $red;
