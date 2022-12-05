@@ -14,20 +14,46 @@
           <p>
             <a :href="'https://github.com/'+ repository.repository" target="_blank" @click.stop>https://github.com/{{ repository.repository }}</a>
           </p>
-          <code-editor v-model="repository.pipeline" class="py-3" />
-          <div class="field py-3">
-            <label class="label">Trigger branches (comma seperated)</label>
-            <div class="control">
-              <input v-model="repository.branches" required class="input" type="text" placeholder="main,master">
+
+          <div class="tabs mt-3">
+            <ul>
+              <li
+                class="px-3"
+                :class="{'is-active': activeTab === 'general'}"
+                @click="activeTab = 'general'"
+              >
+                <a class="p-3">General</a>
+              </li>
+              <li
+                class="px-3"
+                :class="{'is-active': activeTab === 'pipeline'}"
+                @click="activeTab = 'pipeline'"
+              >
+                <a class="p-3">Pipeline</a>
+              </li>
+            </ul>
+          </div>
+          <div v-if="activeTab === 'general'">
+            <market-selector v-if="repository" :repository="repository" @select-market="selectMarket" />
+            <div class="field py-3">
+              <div class="control">
+                <label class="checkbox">
+                  <input v-model="repository.enable_check_runs" type="checkbox">
+                  Enable Github Check-Runs
+                </label>
+              </div>
             </div>
           </div>
-          <market-selector v-if="repository" :repository="repository" @select-market="selectMarket" />
-          <div class="field py-3">
-            <div class="control">
-              <label class="checkbox">
-                <input v-model="repository.enable_check_runs" type="checkbox">
-                Enable Github Check-Runs
-              </label>
+          <div v-if="activeTab === 'pipeline'">
+            <p>
+              Changes made to your pipeline will be pushed to the <code>nosana-ci.yml</code> in your Github repository.
+            </p>
+            <code-editor v-model="repository.pipeline" class="py-3 pt-4" />
+            <div class="field py-3">
+              <label class="label">Trigger branches (comma seperated)</label>
+              <div class="control">
+                <input v-model="repository.branches" required class="input" type="text" placeholder="main,master">
+              </div>
             </div>
           </div>
           <div class="control">
@@ -56,7 +82,8 @@ export default {
       id: this.$route.params.id,
       repository: null,
       user: null,
-      selectedMarket: null
+      selectedMarket: null,
+      activeTab: 'general'
     };
   },
   created () {
