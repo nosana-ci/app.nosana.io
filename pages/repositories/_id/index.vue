@@ -35,6 +35,28 @@
               @click.stop
             >https://github.com/{{ repository.repository }}</a>
           </p>
+          <div
+            v-if="canEdit && (permissionFound === false
+              || (permissionFound === null && loading === false))"
+            class="notification is-danger mt-3"
+          >
+            <span v-if="!repository.github_installation_id">
+              No Github installation found
+            </span>
+            <span v-else>
+              No permission for this repository in the Github App Installation.
+            </span>
+            <br>
+            <span
+              :class="{'is-loading': loading}"
+              class="button is-danger is-outlined is-small mt-2"
+              style="border-color: #fff;"
+              @click="goToGithub"
+            >
+              <span v-if="!repository.github_installation_id" class="has-text-white">Setup Github Installation</span>
+              <span v-else class="has-text-white">Reconnect this repository</span>
+            </span>
+          </div>
           <p>
             <span
               class="has-tooltip-arrow"
@@ -132,7 +154,10 @@
 </template>
 
 <script>
+import axios from 'axios';
 import PaginationHelper from '@/components/Pagination/PaginationHelper.vue';
+
+let githubApi;
 export default {
   components: { PaginationHelper },
   filters: {
@@ -147,6 +172,7 @@ export default {
   },
   data () {
     return {
+      githubAppUrl: process.env.NUXT_ENV_GITHUB_APP_URL,
       queryPage: this.$route.query.page || 1,
       showPipeline: true,
       pagination: null,
@@ -155,7 +181,10 @@ export default {
       project: null,
       id: this.$route.params.id,
       user: null,
-      backendUrl: process.env.NUXT_ENV_BACKEND_URL
+      backendUrl: process.env.NUXT_ENV_BACKEND_URL,
+      permissionFound: null,
+      loading: false,
+      newInstallationId: null
     };
   },
   computed: {
@@ -172,17 +201,24 @@ export default {
     }
   },
   created () {
+    this.newInstallationId = this.$route.query.installation_id;
     this.getCommits(this.queryPage);
-    this.getRepository();
-    if (this.$auth && this.$auth.loggedIn) {
-      this.getUser();
-    }
-    // setInterval(() => {
-    //   console.log('refreshing commits..')
-    //   this.getCommits()
-    // }, 20000)
+    this.setup();
+    setInterval(() => {
+      console.log('refreshing commits..');
+      this.getCommits(this.queryPage);
+    }, 20000);
   },
   methods: {
+    async setup () {
+      await this.getRepository();
+      if (this.$auth && this.$auth.loggedIn) {
+        await this.getUser();
+      }
+      if (this.canEdit) {
+        await this.githubInstallationCheck();
+      }
+    },
     copyToClipboard (content) {
       navigator.clipboard.writeText(content).then(() => {
         alert('Webhook URL copied!');
@@ -215,8 +251,29 @@ export default {
         });
       }
     },
+    async githubInstallationCheck () {
+      try {
+        // GH installation check
+        if (this.repository.github_installation_id) {
+          await this.githubApp(parseInt(this.repository.github_installation_id));
+        } else if (this.newInstallationId) {
+          await this.githubApp(parseInt(this.newInstallationId));
+        } else {
+          console.log('no github installation id found');
+          this.loading = false;
+          this.permissionFound = false;
+        }
+      } catch (error) {
+        this.$modal.show({
+          color: 'danger',
+          text: error,
+          title: 'Error'
+        });
+      }
+    },
     async getRepository () {
       try {
+        localStorage.removeItem('repo-id');
         this.repository = await this.$axios.$get(`/repositories/${this.id}`);
       } catch (error) {
         this.$modal.show({
@@ -225,6 +282,69 @@ export default {
           title: 'Error'
         });
       }
+    },
+    goToGithub () {
+      localStorage.setItem('repo-id', this.repository.id);
+      window.location.href = this.githubAppUrl;
+    },
+    async githubApp (installationId) {
+      try {
+        this.loading = true;
+        const response = await this.$axios.$get('/github/auth/' + installationId);
+        this.githubToken = response.token;
+        githubApi = axios.create({
+          baseURL: 'https://api.github.com',
+          headers: { Authorization: 'token ' + this.githubToken }
+        });
+        this.getUserRepos();
+      } catch (error) {
+        this.$modal.show({
+          color: 'danger',
+          text: error,
+          title: 'Error'
+        });
+        this.permissionFound = false;
+        this.loading = false;
+      }
+    },
+    async getUserRepos () {
+      try {
+        if (githubApi) {
+          let page = 1;
+          let response;
+          this.repositories = [];
+          do {
+            response = await githubApi
+              .get(`/installation/repositories?type=public&per_page=100&page=${page}&t=${(new Date()).getTime()}`);
+            console.log('response', response);
+            if (response && response.data) {
+              this.repositories = this.repositories.concat(response.data.repositories);
+            }
+            page++;
+          } while (response && response.data && response.data.repositories.length >= 100);
+
+          // check if current repo is amongst the selected repositories && != private
+          for (const repo of this.repositories) {
+            if (repo.full_name === this.repository.repository && !repo.private) {
+              this.permissionFound = true;
+
+              if (!this.repository.github_installation_id && this.newInstallationId) {
+                // update installation id for repo, if we there's no id in db
+                await this.$axios.$post(`/repositories/${this.id}`, {
+                  github_installation_id: this.newInstallationId
+                });
+              }
+            }
+          }
+        }
+      } catch (error) {
+        this.$modal.show({
+          color: 'danger',
+          text: error,
+          title: 'Error'
+        });
+      }
+      this.loading = false;
     }
   }
 };
