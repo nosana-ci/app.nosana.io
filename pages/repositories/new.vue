@@ -158,6 +158,14 @@ export default {
           headers: { Authorization: 'token ' + this.githubToken }
         });
         this.installationId = installationId;
+
+        // when there's a repo id in localstorage, redirect to that repo
+        if (localStorage.getItem('repo-id')) {
+          const id = localStorage.getItem('repo-id');
+          console.log('Found localstorage, try redirect', id);
+          localStorage.removeItem('repo-id');
+          this.$router.push(`/repositories/${id}?installation_id=${this.installationId}`);
+        }
         this.getUserRepos();
       } catch (error) {
         this.$modal.show({
