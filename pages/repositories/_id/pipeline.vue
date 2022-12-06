@@ -85,9 +85,6 @@ export default {
         if (!pipeline.jobs || !Array.isArray(pipeline.jobs) || !pipeline.jobs.length) {
           throw new Error('Your yaml does not include a array `jobs` config');
         }
-        if (!pipeline.global.trigger || !pipeline.global.trigger.branch) {
-          throw new Error('Your yaml does not include a `global.trigger.branch` config');
-        }
         if (!pipeline.global.image) {
           throw new Error('Your yaml does not include a `global.image` config');
         }
