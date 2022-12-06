@@ -20,8 +20,7 @@
                 secrets
               </nuxt-link>
               <nuxt-link
-                v-if="repository && user &&
-                  (repository.user_id === user.user_id || (user.roles && user.roles.includes('admin')))"
+                v-if="canEdit"
                 class="button is-outlined is-accent is-small"
                 :to="`/repositories/${id}/edit`"
               >
@@ -50,14 +49,17 @@
             Pipeline price: <b class="has-text-accent">
               {{ parseInt(repository.marketAccount.jobPrice, 16) / 1e6 }} NOS</b>
           </p>
-          <p class="is-size-7">
-            <a @click="showPipeline = !showPipeline">
-              <span v-if="showPipeline">Hide</span><span v-else>Show</span> pipeline
-            </a>
+          <p class="my-4">
+            <nuxt-link
+              v-if="repository"
+              class="button is-accent"
+              :to="`/repositories/${id}/pipeline`"
+            >
+              <span
+                v-if="canEdit"
+              >Manage</span><span v-else>Show</span>&nbsp;<span>Pipeline</span>
+            </nuxt-link>
           </p>
-          <div v-if="repository && showPipeline">
-            <code-editor v-model="repository.pipeline" :readonly="true" />
-          </div>
         </div>
         <div v-else>
           Loading..
@@ -155,6 +157,12 @@ export default {
       user: null,
       backendUrl: process.env.NUXT_ENV_BACKEND_URL
     };
+  },
+  computed: {
+    canEdit () {
+      return this.repository && this.user &&
+                  (this.repository.user_id === this.user.user_id || (this.user.roles && this.user.roles.includes('admin')));
+    }
   },
   watch: {
     '$auth.loggedIn' (loggedIn) {
