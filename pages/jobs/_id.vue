@@ -195,7 +195,8 @@
                         v-show=" log[1] !== ''"
                         :key="ik"
                         class="row-count log"
-                        :class="{'has-text-white': log[0] === 1 || res[0] === 'success',
+                        :class="{'has-text-white': log[0] === 1 ||
+                                   res[0] === 'success' || (log[0] === 2 && !item.error),
                                  'has-text-danger': log[0] === 2 && item.error,
                                  'hidden-log': hideResults[count + '.' + (i - 1)] }"
                       >
