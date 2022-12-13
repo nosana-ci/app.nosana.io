@@ -196,7 +196,7 @@
                         :key="ik"
                         class="row-count log"
                         :class="{'has-text-white': log[0] === 1 || res[0] === 'success',
-                                 'has-text-danger': log[0] === 2 && res[0] === 'pipeline-failed',
+                                 'has-text-danger': log[0] === 2 && item.error,
                                  'hidden-log': hideResults[count + '.' + (i - 1)] }"
                       >
                         {{ log[1] }}
