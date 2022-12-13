@@ -32,14 +32,13 @@
               :href="'https://github.com/' + repository.repository"
               target="_blank"
               @click.stop
-              >https://github.com/{{ repository.repository }}</a
-            >
+            >https://github.com/{{ repository.repository }}</a>
           </p>
           <div
             v-if="
               canEdit &&
-              (permissionFound === false ||
-                (permissionFound === null && loading === false))
+                (permissionFound === false ||
+                  (permissionFound === null && loading === false))
             "
             class="notification is-danger mt-3"
           >
@@ -49,7 +48,7 @@
             <span v-else>
               No permission for this repository in the Github App Installation.
             </span>
-            <br />
+            <br>
             <span
               :class="{ 'is-loading': loading }"
               class="button is-danger is-outlined is-small mt-2"
@@ -59,11 +58,11 @@
               <span
                 v-if="!repository.github_installation_id"
                 class="has-text-white"
-                >Setup Github Installation</span
-              >
-              <span v-else class="has-text-white"
-                >Reconnect this repository</span
-              >
+              >Setup Github Installation</span>
+              <span
+                v-else
+                class="has-text-white"
+              >Reconnect this repository</span>
             </span>
           </div>
           <p>
@@ -81,18 +80,16 @@
               @click.stop="
                 repository.secret
                   ? copyToClipboard(
-                      backendUrl + '/webhook/github/' + repository.secret
-                    )
+                    backendUrl + '/webhook/github/' + repository.secret
+                  )
                   : null
               "
-              >Trigger on commit to {{ repository.branches }} branch(es)</span
-            >
+            >Trigger on commit to {{ repository.branches }} branch(es)</span>
           </p>
           <p v-if="repository.marketAccount">
             Pipeline price:
             <b class="has-text-accent">
-              {{ parseInt(repository.marketAccount.jobPrice, 16) / 1e6 }} NOS</b
-            >
+              {{ parseInt(repository.marketAccount.jobPrice, 16) / 1e6 }} NOS</b>
           </p>
           <p class="my-4">
             <nuxt-link
@@ -100,12 +97,13 @@
               class="button is-accent"
               :to="`/repositories/${id}/pipeline`"
             >
-              <span v-if="canEdit">Manage</span
-              ><span v-else>Show</span>&nbsp;<span>Pipeline</span>
+              <span v-if="canEdit">Manage</span><span v-else>Show</span>&nbsp;<span>Pipeline</span>
             </nuxt-link>
           </p>
         </div>
-        <div v-else>Loading..</div>
+        <div v-else>
+          Loading..
+        </div>
       </div>
 
       <div class="table-container">
@@ -152,8 +150,12 @@
               v-if="!commits || !commits.length"
               class="has-text-centered has-text-weight-bold"
             >
-              <td v-if="!commits" colspan="5">Loading commits...</td>
-              <td v-else colspan="5">No commits</td>
+              <td v-if="!commits" colspan="5">
+                Loading commits...
+              </td>
+              <td v-else colspan="5">
+                No commits
+              </td>
             </tr>
           </tbody>
         </table>
@@ -170,23 +172,23 @@
 </template>
 
 <script>
-import axios from "axios";
-import PaginationHelper from "@/components/Pagination/PaginationHelper.vue";
+import axios from 'axios';
+import PaginationHelper from '@/components/Pagination/PaginationHelper.vue';
 
 let githubApi;
 export default {
   components: { PaginationHelper },
   filters: {
-    shortenHashes(value) {
+    shortenHashes (value) {
       if (!value) {
         return;
       }
       const firstCharacters = value.slice(0, 8);
       // const lastCharacters = value.slice(value.length - 4, value.length);
       return firstCharacters; // + '... ' + lastCharacters;
-    },
+    }
   },
-  data() {
+  data () {
     return {
       githubAppUrl: process.env.NUXT_ENV_GITHUB_APP_URL,
       queryPage: this.$route.query.page || 1,
@@ -201,45 +203,45 @@ export default {
       backendUrl: process.env.NUXT_ENV_BACKEND_URL,
       permissionFound: null,
       loading: false,
-      newInstallationId: null,
+      newInstallationId: null
     };
   },
   computed: {
-    canEdit() {
+    canEdit () {
       return (
         this.repository &&
         this.user &&
         (this.repository.user_id === this.user.user_id ||
-          (this.user.roles && this.user.roles.includes("admin")))
+          (this.user.roles && this.user.roles.includes('admin')))
       );
-    },
+    }
   },
   watch: {
-    "$auth.loggedIn"(loggedIn) {
+    '$auth.loggedIn' (loggedIn) {
       if (loggedIn) {
         this.getUser();
       }
-    },
+    }
   },
-  created() {
+  created () {
     this.newInstallationId = this.$route.query.installation_id;
     this.getCommits(this.queryPage);
     this.setup();
     if (!this.refreshInterval) {
       this.refreshInterval = setInterval(() => {
-        console.log("refreshing commits..");
+        console.log('refreshing commits..');
         this.getCommits(this.queryPage);
       }, 20000);
     }
   },
-  beforeDestroy() {
+  beforeDestroy () {
     if (this.refreshInterval) {
       clearInterval(this.refreshInterval);
       this.refreshInterval = null;
     }
   },
   methods: {
-    async setup() {
+    async setup () {
       await this.getRepository();
       if (this.$auth && this.$auth.loggedIn) {
         await this.getUser();
@@ -248,24 +250,24 @@ export default {
         await this.githubInstallationCheck();
       }
     },
-    copyToClipboard(content) {
+    copyToClipboard (content) {
       navigator.clipboard.writeText(content).then(() => {
-        alert("Webhook URL copied!");
+        alert('Webhook URL copied!');
       });
     },
-    async getUser() {
+    async getUser () {
       try {
-        const user = await this.$axios.$get("/user");
+        const user = await this.$axios.$get('/user');
         this.user = user;
       } catch (error) {
         this.$modal.show({
-          color: "danger",
+          color: 'danger',
           text: error,
-          title: "Error",
+          title: 'Error'
         });
       }
     },
-    async getCommits(page) {
+    async getCommits (page) {
       try {
         const commits = await this.$axios.$get(
           `/repositories/${this.$route.params.id}/commits?page=${page}`
@@ -274,13 +276,13 @@ export default {
         this.pagination = commits.pagination;
       } catch (error) {
         this.$modal.show({
-          color: "danger",
+          color: 'danger',
           text: error,
-          title: "Error",
+          title: 'Error'
         });
       }
     },
-    async githubInstallationCheck() {
+    async githubInstallationCheck () {
       try {
         // GH installation check
         if (this.repository.github_installation_id) {
@@ -290,57 +292,57 @@ export default {
         } else if (this.newInstallationId) {
           await this.githubApp(parseInt(this.newInstallationId));
         } else {
-          console.log("no github installation id found");
+          console.log('no github installation id found');
           this.loading = false;
           this.permissionFound = false;
         }
       } catch (error) {
         this.$modal.show({
-          color: "danger",
+          color: 'danger',
           text: error,
-          title: "Error",
+          title: 'Error'
         });
       }
     },
-    async getRepository() {
+    async getRepository () {
       try {
-        localStorage.removeItem("repo-id");
+        localStorage.removeItem('repo-id');
         this.repository = await this.$axios.$get(`/repositories/${this.id}`);
       } catch (error) {
         this.$modal.show({
-          color: "danger",
+          color: 'danger',
           text: error,
-          title: "Error",
+          title: 'Error'
         });
       }
     },
-    goToGithub() {
-      localStorage.setItem("repo-id", this.repository.id);
+    goToGithub () {
+      localStorage.setItem('repo-id', this.repository.id);
       window.location.href = this.githubAppUrl;
     },
-    async githubApp(installationId) {
+    async githubApp (installationId) {
       try {
         this.loading = true;
         const response = await this.$axios.$get(
-          "/github/auth/" + installationId
+          '/github/auth/' + installationId
         );
         this.githubToken = response.token;
         githubApi = axios.create({
-          baseURL: "https://api.github.com",
-          headers: { Authorization: "token " + this.githubToken },
+          baseURL: 'https://api.github.com',
+          headers: { Authorization: 'token ' + this.githubToken }
         });
         this.getUserRepos();
       } catch (error) {
         this.$modal.show({
-          color: "danger",
+          color: 'danger',
           text: error,
-          title: "Error",
+          title: 'Error'
         });
         this.permissionFound = false;
         this.loading = false;
       }
     },
-    async getUserRepos() {
+    async getUserRepos () {
       try {
         if (githubApi) {
           let page = 1;
@@ -350,7 +352,7 @@ export default {
             response = await githubApi.get(
               `/installation/repositories?type=public&per_page=100&page=${page}&t=${new Date().getTime()}`
             );
-            console.log("response", response);
+            console.log('response', response);
             if (response && response.data) {
               this.repositories = this.repositories.concat(
                 response.data.repositories
@@ -377,7 +379,7 @@ export default {
               ) {
                 // update installation id for repo, if we there's no id in db
                 await this.$axios.$post(`/repositories/${this.id}`, {
-                  github_installation_id: this.newInstallationId,
+                  github_installation_id: this.newInstallationId
                 });
               }
             }
@@ -385,14 +387,14 @@ export default {
         }
       } catch (error) {
         this.$modal.show({
-          color: "danger",
+          color: 'danger',
           text: error,
-          title: "Error",
+          title: 'Error'
         });
       }
       this.loading = false;
-    },
-  },
+    }
+  }
 };
 </script>
 
