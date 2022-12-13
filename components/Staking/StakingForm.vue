@@ -544,7 +544,7 @@
             <span v-if="countdownFinished">
               Claim your tokens!<br>
             </span>
-            <div v-else class="has-text-centered is-block mb-1">
+            <div class="has-text-centered is-block mb-1">
               <h5 class="mb-0" style="line-height: 1rem;">
                 Unstaked at:
               </h5>
@@ -692,7 +692,8 @@ export default {
       extendPopup: false,
       interval: null,
       withdrawAvailable: 0,
-      vaultBalance: null
+      vaultBalance: null,
+      date: new Date(process.env.NUXT_ENV_REWARD_COUNTDOWN)
     };
   },
   computed: {
@@ -778,7 +779,7 @@ export default {
     },
     countdownFinished: {
       get () {
-        return new Date() > this.date;
+        return this.stakeEndDate ? (new Date() > this.stakeEndDate) : false;
       },
       set (val) {
         this.countdownFinished = val;
@@ -1057,6 +1058,12 @@ export default {
         this.loading = true;
         const response = await this.$stake.program.methods
           .close()
+          .preInstructions([
+            await this.$stake.program.methods
+              .withdraw()
+              .accounts(this.$stake.accounts)
+              .instruction()
+          ])
           .accounts(this.$stake.accounts)
           .rpc();
         console.log(response);
