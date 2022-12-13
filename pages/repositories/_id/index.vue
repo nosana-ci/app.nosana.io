@@ -225,10 +225,12 @@ export default {
     this.newInstallationId = this.$route.query.installation_id;
     this.getCommits(this.queryPage);
     this.setup();
-    this.refreshInterval = setInterval(() => {
-      console.log("refreshing commits..");
-      this.getCommits(this.queryPage);
-    }, 20000);
+    if (!this.refreshInterval) {
+      this.refreshInterval = setInterval(() => {
+        console.log("refreshing commits..");
+        this.getCommits(this.queryPage);
+      }, 20000);
+    }
   },
   beforeDestroy() {
     if (this.refreshInterval) {
