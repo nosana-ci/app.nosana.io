@@ -201,14 +201,14 @@ export default {
     },
     async addRepository () {
       try {
-        await this.$axios.$post('/repositories', {
+        const createdRepo = await this.$axios.$post('/repositories', {
           repository: this.repository,
           market: this.selectedMarket.publicKey,
           type: 'GITHUB',
           installationId: this.installationId
         });
         // await this.addWebhook(repo);
-        this.$router.push('/pipelines');
+        this.$router.push(`/repositories/${createdRepo.id}/pipeline`);
       } catch (error) {
         this.$modal.show({
           color: 'danger',
