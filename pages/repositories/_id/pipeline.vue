@@ -229,18 +229,17 @@ export default {
         this.pipeline = await this.$axios.$get(`/repositories/${this.id}/pipeline`);
         // this.pipeline = await null;
         this.loading = false;
-
-        if (!this.pipeline) {
-          this.templates = await this.$axios.$get('/pipeline-templates');
-        }
       } catch (error) {
-        if (error.code !== 404) {
+        if (error.response?.data?.type !== 'NotFoundError') {
           this.$modal.show({
             color: 'danger',
             text: error,
             title: 'Error'
           });
         }
+      }
+      if (!this.pipeline) {
+        this.templates = await this.$axios.$get('/pipeline-templates');
       }
     },
     async getBranches () {
