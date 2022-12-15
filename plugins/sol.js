@@ -38,7 +38,7 @@ export default (context, inject) => {
   const sol = new Vue({
     data () {
       return {
-        explorer: 'https://solscan.io',
+        explorer: 'https://explorer.solana.com',
         balance: null,
         publicKey: null,
         loginModal: false,
