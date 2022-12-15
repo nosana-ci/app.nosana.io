@@ -234,11 +234,13 @@ export default {
           this.templates = await this.$axios.$get('/pipeline-templates');
         }
       } catch (error) {
-        this.$modal.show({
-          color: 'danger',
-          text: error,
-          title: 'Error'
-        });
+        if (error.code !== 404) {
+          this.$modal.show({
+            color: 'danger',
+            text: error,
+            title: 'Error'
+          });
+        }
       }
     },
     async getBranches () {
