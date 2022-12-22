@@ -24,7 +24,12 @@
                   </nuxt-link>
                 </h2>
                 <h2 class="subtitle is-6 mb-1">
-                  <a target="_blank" :href="`https://explorer.solana.com/address/${$auth.user.address}`" class="blockchain-address" style="max-width: 140px;">
+                  <a
+                    target="_blank"
+                    :href="`${$sol.explorer}/address/${$auth.user.address}`"
+                    class="blockchain-address"
+                    style="max-width: 140px;"
+                  >
                     {{ $auth.user.address }}
                   </a>
                 </h2>
