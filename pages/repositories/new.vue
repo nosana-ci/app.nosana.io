@@ -83,8 +83,12 @@ let githubApi;
 export default {
   middleware: 'auth',
   data () {
+    let githubUrl = process.env.NUXT_ENV_GITHUB_APP_URL;
+    if (process.client) {
+      githubUrl += `?redirect_uri=${window.location.origin}/repositories/new`;
+    }
     return {
-      githubAppUrl: process.env.NUXT_ENV_GITHUB_APP_URL,
+      githubAppUrl: githubUrl,
       repository: null,
       githubToken: null,
       repositories: null,
@@ -141,7 +145,7 @@ export default {
     },
     goToGithub () {
       this.loading = true;
-      window.location.href = this.githubAppUrl;
+      window.location.href = `${this.githubAppUrl}?redirect_uri=${window.location.origin}/repositories/new`;
     },
     async githubApp (installationId) {
       try {

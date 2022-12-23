@@ -32,8 +32,8 @@
             to="/account/edit"
             :class="{'is-outlined': loggedIn}"
           >
-            <div class="blockchain-address" style="max-width: 185px;" @click="$sol.loginModal = true">
-              Connect Wallet
+            <div class="blockchain-address" style="max-width: 185px;">
+              Login
             </div>
           </nuxt-link>
         </div>
@@ -61,7 +61,7 @@
               </nuxt-link>
             </h2>
 
-            <h2 class="subtitle is-7 mb-1">
+            <h2 v-if="$auth.user.address" class="subtitle is-7 mb-1">
               <a
                 target="_blank"
                 :href="`${$sol.explorer}/address/${$auth.user.address}`"
@@ -70,6 +70,9 @@
               >
                 {{ $auth.user.address }}
               </a>
+            </h2>
+            <h2 v-else class="subtitle is-7 mb-1">
+              GitHub Account: {{ $auth.user.github_name }}
             </h2>
             <div class="">
               <a class="has-text-danger is-size-7" @click.prevent="$sol.logout">Logout</a>

@@ -67,7 +67,7 @@ export default {
   },
   methods: {
     async getNfts () {
-      if (this.$sol && this.loggedIn) {
+      if (this.$sol && this.loggedIn && this.$auth.user.address) {
         await this.$sol.getNfts(this.$auth.user.address);
       }
     },

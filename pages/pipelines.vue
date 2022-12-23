@@ -18,10 +18,10 @@
         <div v-if="!user" class="column is-8">
           <div class="columns">
             <div class="column is-one-third">
-              <a
+              <nuxt-link
                 class="box is-secondary step"
                 :class="{'has-background-white': loggedIn}"
-                @click="$sol.loginModal = true"
+                to="/login"
               >
                 <div class="is-flex is-justify-content-space-between">
                   <div>1</div>
@@ -34,9 +34,9 @@
                 </div>
                 <div class="has-text-centered my-2">
                   <img src="~assets/img/icons/wallet.svg">
-                  <p>Connect Wallet</p>
+                  <p>Login</p>
                 </div>
-              </a>
+              </nuxt-link>
             </div>
             <div class="column is-one-third">
               <nuxt-link
@@ -407,7 +407,9 @@ export default {
         const user = await this.$axios.$get('/user');
         this.user = user;
         this.balance = (await this.$sol.getNosBalance(this.user.generated_address)).uiAmount;
-        this.walletBalance = (await this.$sol.getNosBalance(this.user.address)).uiAmount;
+        if (this.user.address) {
+          this.walletBalance = (await this.$sol.getNosBalance(this.user.address)).uiAmount;
+        }
       } catch (error) {
         this.$modal.show({
           color: 'danger',

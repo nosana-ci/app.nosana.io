@@ -113,7 +113,8 @@
             >
               <td><img v-if="u.image" style="height: 20px; max-width: fit-content;" :src="u.image"></td>
               <td>
-                <span class="blockchain-address">{{ u.address }}</span>
+                <span v-if="u.address" class="blockchain-address">{{ u.address }}</span>
+                <span v-else>Connected to GitHub</span>
               </td>
               <td>{{ u.repositories }}</td>
               <td>{{ u.commits }}</td>
