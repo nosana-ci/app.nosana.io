@@ -39,7 +39,7 @@ export default (context, inject) => {
 
         this.provider = new anchor.AnchorProvider(web3, wallet, {});
         let userKey = wallet.publicKey;
-        if (context.$auth && context.$auth.user) {
+        if (context.$auth && context.$auth.user && context.$auth.user.address) {
           userKey = new anchor.web3.PublicKey(context.$auth.user.address);
         }
 

@@ -93,6 +93,17 @@ export default {
         user: {
           property: ''
         }
+      },
+      githubLogin: {
+        scheme: 'local',
+        endpoints: {
+          login: { url: `${process.env.NUXT_ENV_BACKEND_URL}/login/github`, method: 'post', propertyName: 'token' },
+          user: { url: `${process.env.NUXT_ENV_BACKEND_URL}/user`, method: 'get', propertyName: '' },
+          logout: false
+        },
+        user: {
+          property: ''
+        }
       }
     },
     watchLoggedIn: true,
