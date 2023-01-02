@@ -11,6 +11,9 @@
         Loading...
       </div>
       <div v-else-if="!githubToken">
+        <p v-if="!installationError" class="mb-2">
+          Having trouble with your Github Installation? <a :href="githubAppUrl">Try reconnecting it.</a>
+        </p>
         <p
           v-for="installation in installations"
           :key="installation.id"
@@ -25,9 +28,6 @@
             </span>
             <span>{{ installation.meta.account.login }}</span>
           </a>
-        </p>
-        <p v-if="installationError" class="mb-5">
-          Having trouble with your Github Installation? <a :href="githubAppUrl">Try reconnecting it.</a>
         </p>
         <p class="block">
           <a :class="{'is-loading': loading}" class="button is-accent" :href="githubAppUrl">
