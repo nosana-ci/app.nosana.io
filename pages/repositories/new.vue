@@ -26,6 +26,9 @@
             <span>{{ installation.meta.account.login }}</span>
           </a>
         </p>
+        <p v-if="installationError" class="mb-5">
+          Having trouble with your Github Installation? <a :href="githubAppUrl">Try reconnecting it.</a>
+        </p>
         <p class="block">
           <a :class="{'is-loading': loading}" class="button is-accent" :href="githubAppUrl">
             <span>Connect another GitHub account</span>
@@ -96,7 +99,8 @@ export default {
       search: null,
       installations: null,
       installationId: null,
-      selectedMarket: null
+      selectedMarket: null,
+      installationError: false
     };
   },
   computed: {
@@ -170,13 +174,16 @@ export default {
           localStorage.removeItem('repo-id');
           this.$router.push(`/repositories/${id}?installation_id=${this.installationId}`);
         }
+        this.installationError = false;
         this.getUserRepos();
       } catch (error) {
+        this.loading = false;
         this.$modal.show({
           color: 'danger',
           text: error,
           title: 'Error'
         });
+        this.installationError = true;
       }
     },
     async getUserRepos () {
