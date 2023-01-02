@@ -11,7 +11,7 @@
         Loading...
       </div>
       <div v-else-if="!githubToken">
-        <p v-if="!installationError" class="mb-2">
+        <p v-if="installationError" class="mb-2">
           Having trouble with your Github Installation? <a :href="githubAppUrl">Try reconnecting it.</a>
         </p>
         <p
