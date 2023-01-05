@@ -5,7 +5,7 @@
         <i class="fas fa-chevron-left" /> Cancel
       </nuxt-link>
       <div class="mt-2">
-        <form v-if="(repository && !loading && pipeline)" @submit.prevent="edit">
+        <form v-if="(repository && !loading && (pipeline || pipelineEditor))" @submit.prevent="edit">
           <div class="is-flex is-align-items-center">
             <h2 class="title">
               {{ repository.repository }} Pipeline
@@ -70,16 +70,15 @@
         <div v-else-if="(loading || !repository)">
           Loading..
         </div>
-        <div v-else-if="(repository && !pipeline && canEdit)">
+        <div v-else-if="(repository && !pipeline && !pipelineEditor && canEdit)">
           <h2 class="title is-2 mb-2">
             Setup your <span class="has-text-accent">Nosana pipeline</span>
           </h2>
           <p>
             Select a template to get started or start with
-            <!-- TODO: better solution for pipeline = ''-->
             <a
               href="#"
-              @click.prevent="(pipeline = ' ')"
+              @click.prevent="(pipelineEditor = true)"
             >a blank template</a>
           </p>
           <div class="columns is-multiline mt-4">
@@ -94,7 +93,7 @@
                     {{ template.name }}
                   </h2>
                   <div v-if="template.icon" class="template-icon is-flex has-text-centered has-background-white">
-                    <img :src="require(`@/assets/img/icons/${template.icon}`)">
+                    <img :src="template.icon">
                   </div>
                 </div>
                 <p>{{ template.description }}</p>
@@ -129,13 +128,22 @@ export default {
       branches: null,
       defaultBranch: null,
       selectedBranch: null,
-      templates: null
+      templates: null,
+      pipelineEditor: null
     };
   },
   computed: {
     canEdit () {
       return this.repository && this.user &&
                   (this.repository.user_id === this.user.user_id || (this.user.roles && this.user.roles.includes('admin')));
+    }
+  },
+  watch: {
+    pipeline (pipeline) {
+      console.log('hey', pipeline);
+      if (pipeline) {
+        this.pipelineEditor = true;
+      }
     }
   },
   created () {
