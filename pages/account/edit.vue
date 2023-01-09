@@ -22,6 +22,55 @@
         </div>
       </div>
     </div>
+    <div
+      v-if="user"
+      class="level is-flex-direction-row is-flex is-justify-content-center is-align-items-center connected-icons"
+    >
+      <div
+        :class="{'disabled has-tooltip': !user.address}"
+        class="mx-2"
+        :data-tooltip="
+          !user.address
+            ? 'Connect your Solana wallet'
+            : `Connected: ${user.address}`"
+      >
+        <img
+          class="is-rounded has-border"
+          :src="require(`@/assets/img/icons/solana.png`)"
+          @click="addWallet"
+        >
+      </div>
+
+      <div
+        :class="{'disabled has-tooltip': !user.github_account_id, 'has-tooltip-accent': user.github_account_id}"
+        class="mx-2"
+        :data-tooltip="
+          !user.github_account_id
+            ? 'Connect your Github account'
+            : `Connected: ${user.github_name}`"
+        @click="goToGithub"
+      >
+        <img class="is-rounded has-border" :src="require(`@/assets/img/icons/github.svg`)">
+      </div>
+    </div>
+    <!-- <div class="level-item has-text-centered">
+        <button
+          v-if="!user.address"
+          class="button is-outlined is-accent has-"
+          :class="{ 'is-loading': loading }"
+          @click="$sol.loginModal = true, $sol.addWalletToExistingAccount = true"
+        >
+          Connect wallet to account
+        </button>
+        <button
+          v-if="!user.github_account_id"
+          class="button is-outlined is-accent has-"
+          :class="{ 'is-loading': loading }"
+          @click="goToGithub"
+        >
+          Connect Github to account
+        </button>
+      </div> -->
 
     <form class="mx-auto" style="max-width: 522px;" @submit.prevent="updateUser">
       <div class="field has-background-grey-lighter py-2 px-5 has-radius has-text-centered">
@@ -340,11 +389,27 @@ export default {
       return this.$sol ? this.$sol.nfts : null;
     }
   },
+  watch: {
+    '$sol.addWalletToExistingAccount': function (pubkey) {
+      this.getUser();
+    }
+  },
   created () {
     this.getUser();
     this.refreshStake();
   },
   methods: {
+    goToGithub () {
+      if (!this.user.github_account_id) {
+        window.location.href = `https://github.com/login/oauth/authorize?client_id=${process.env.NUXT_ENV_GITHUB_APP_CLIENT_ID}&redirect_uri=${window.location.origin}/account/edit`;
+      }
+    },
+    addWallet () {
+      if (!this.user.address) {
+        this.$sol.loginModal = true;
+        this.$sol.addWalletToExistingAccount = true;
+      }
+    },
     async getNfts (address) {
       if (this.loggedIn && address && this.$sol) {
         await this.$sol.getNfts(address);
@@ -353,7 +418,25 @@ export default {
     async refreshStake () {
       await this.$stake.refreshStake();
     },
-
+    async authenticateGithub (code) {
+      try {
+        await this.$axios.$post('/user/add-github', {
+          code
+        });
+        this.$modal.show({
+          color: 'success',
+          title: 'Synced Github Account'
+        });
+        // remove query params
+        window.history.replaceState(null, null, window.location.pathname);
+      } catch (error) {
+        this.$modal.show({
+          color: 'danger',
+          text: error,
+          title: 'Error'
+        });
+      }
+    },
     async getUser () {
       try {
         const user = await this.$axios.$get('/user');
@@ -374,6 +457,9 @@ export default {
         this.image = user.image;
         this.completionIndex = user.completion_index ?? 0;
         this.getNfts(this.user.address);
+        if (this.$route.query.code) {
+          this.authenticateGithub(this.$route.query.code);
+        }
       } catch (error) {
         this.$modal.show({
           color: 'danger',
@@ -449,6 +535,30 @@ export default {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+}
+
+.connected-icons {
+  img {
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    object-fit: contain;
+    border-width: 3px;
+    padding: 7px;
+  }
+  div.disabled {
+    img {
+      cursor: pointer;
+      background-color: #fff;
+      filter: grayscale(.8);
+      &:hover {
+        opacity: .5;
+      }
+    }
+  }
+  div:not(.disabled) img {
+    border-color: $accent;
   }
 }
 </style>

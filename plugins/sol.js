@@ -9,6 +9,7 @@ import {
 import { clusterApiUrl, Connection, PublicKey } from '@solana/web3.js';
 import { Metaplex } from '@metaplex-foundation/js';
 import { commitment, sendTransaction } from '@/utils/web3';
+const nacl = require('tweetnacl');
 
 const network = process.env.NUXT_ENV_SOL_NETWORK;
 
@@ -49,7 +50,8 @@ export default (context, inject) => {
         token: null,
         user: null,
         skipLogin: false,
-        nfts: null
+        nfts: null,
+        addWalletToExistingAccount: false
       };
     },
     created () {
@@ -120,7 +122,7 @@ export default (context, inject) => {
         }
       },
 
-      onConnect () {
+      async onConnect () {
         const adapter = connectingAdapter;
 
         if (adapter && adapter.publicKey) {
@@ -133,6 +135,40 @@ export default (context, inject) => {
           if (context.$auth && context.$auth.loggedIn) {
             if (context.$auth.user.address === this.publicKey) {
               this.loginModal = false;
+            } else if (this.addWalletToExistingAccount) {
+              // add wallet to account
+              try {
+                // sign message & check
+                const timestamp = Math.floor(+new Date() / 1000);
+                const signature = await this.sign(timestamp);
+                console.log('signature', signature);
+
+                const message = new TextEncoder().encode('nosana_' + timestamp);
+                if (!nacl.sign.detached.verify(
+                  message, new Uint8Array(signature.data), new Uint8Array(new PublicKey(this.publicKey).toBuffer()))) {
+                  console.log('Invalid signature');
+                }
+
+                // add to account
+                await context.$axios.$post('/user/add-wallet', {
+                  address: this.publicKey
+                });
+                this.$modal.show({
+                  color: 'success',
+                  title: 'Synced Wallet'
+                });
+              } catch (e) {
+                if (e.response && e.response.data.message) {
+                  this.$modal.show({
+                    color: 'danger',
+                    text: 'Something went wrong while connecting the wallet to your account: \n' + e.response.data.message,
+                    title: 'Error'
+                  });
+                } else {
+                  console.error(e);
+                }
+              }
+              this.addWalletToExistingAccount = false;
             } else {
               context.$auth.logout(true);
             }
