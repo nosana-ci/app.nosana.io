@@ -146,7 +146,7 @@ export default (context, inject) => {
                 const message = new TextEncoder().encode('nosana_' + timestamp);
                 if (!nacl.sign.detached.verify(
                   message, new Uint8Array(signature.data), new Uint8Array(new PublicKey(this.publicKey).toBuffer()))) {
-                  console.log('Invalid signature');
+                  throw new Error('Invalid signature');
                 }
 
                 // add to account
@@ -158,15 +158,12 @@ export default (context, inject) => {
                   title: 'Synced Wallet'
                 });
               } catch (e) {
-                if (e.response && e.response.data.message) {
-                  this.$modal.show({
-                    color: 'danger',
-                    text: 'Something went wrong while connecting the wallet to your account: \n' + e.response.data.message,
-                    title: 'Error'
-                  });
-                } else {
-                  console.error(e);
-                }
+                console.error(e);
+                this.$modal.show({
+                  color: 'danger',
+                  text: (e.response && e.response.data.message) ? 'Something went wrong while connecting the wallet to your account: \n' + e.response.data.message : e,
+                  title: 'Error'
+                });
               }
               this.addWalletToExistingAccount = false;
             } else {
