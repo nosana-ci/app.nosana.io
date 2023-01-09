@@ -140,7 +140,6 @@ export default {
   },
   watch: {
     pipeline (pipeline) {
-      console.log('hey', pipeline);
       if (pipeline) {
         this.pipelineEditor = true;
       }
