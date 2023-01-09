@@ -1,7 +1,14 @@
 <template>
   <div>
     <client-only>
-      <prism-editor v-model="code" :readonly="readonly" class="my-editor" :highlight="highlighter" line-numbers />
+      <prism-editor
+        ref="editor"
+        v-model="code"
+        :readonly="readonly"
+        class="my-editor"
+        :highlight="highlighter"
+        line-numbers
+      />
     </client-only>
   </div>
 </template>
@@ -20,7 +27,7 @@ export default {
   components: {
     PrismEditor
   },
-  props: ['value', 'readonly'],
+  props: ['value', 'readonly', 'highlight-lines'],
   data () {
     return {
     };
@@ -35,9 +42,36 @@ export default {
       }
     }
   },
+  watch: {
+    highlightLines: function () {
+      this.highlight();
+    }
+  },
+  mounted () {
+    this.$nextTick(() => {
+      this.highlight();
+    });
+  },
   methods: {
     highlighter (code) {
-      return highlight(code, languages.yaml);
+      if (code && languages.yaml) {
+        return highlight(code, languages.yaml);
+      }
+      return '';
+    },
+    highlight () {
+      const lines = this.$el.querySelectorAll('.prism-editor__line-number');
+      lines.forEach((element) => {
+        element.classList.remove('highlight-line');
+      });
+      for (const highlightLine of this.highlightLines) {
+        this.highlightLineNumber(highlightLine);
+      }
+    },
+    highlightLineNumber (number) {
+      const line = this.$el.querySelector(`.prism-editor__line-number:nth-child(${number + 1})`);
+      if (!line) { return; }
+      line.classList.add('highlight-line');
     }
   }
 };
@@ -62,9 +96,25 @@ export default {
     // line-height: 1.5;
     font-size: 14px;
     padding: 5px;
+    position: relative;
 }
 
 .prism-editor__textarea:focus {
   outline: none;
 }
+.prism-editor__line-number.highlight-line {
+    border-left: 5px solid #f14668;
+    background: rgba(241, 70, 104, 0.3);
+  }
+
+  .prism-editor__line-number.highlight-line:after {
+    content: "";
+    height: 24px;
+    background: rgba(241, 70, 104, 0.3);
+    pointer-events: none;
+    position: absolute;
+    z-index: 1;
+    max-width: 100%;
+    width: 100% !important;
+  }
 </style>

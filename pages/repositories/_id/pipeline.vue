@@ -18,21 +18,24 @@
           <div class="tabs mt-3">
             <ul>
               <li
-                class="px-3"
-                :class="{'is-active': activeTab === 'pipeline'}"
-                @click="activeTab = 'pipeline'"
+                class="px-3 is-active"
               >
                 <a class="p-3">Pipeline</a>
               </li>
             </ul>
           </div>
           <div class="columns">
-            <div v-if="activeTab === 'pipeline'" class="column is-9">
+            <div class="column is-9">
               <p v-if="canEdit">
                 Changes made to your pipeline will be pushed to the <code>.nosana-ci.yml</code>
                 in your Github repository.
               </p>
-              <code-editor v-model="pipeline" :readonly="!canEdit" class="py-3 pt-4 code-editor" />
+              <code-editor
+                v-model="pipeline"
+                :highlight-lines="validation.errorLines"
+                :readonly="!canEdit"
+                class="py-3 pt-4 code-editor"
+              />
             </div>
             <div v-if="canEdit" class="control column is-3 px-5">
               <h3 class="subtitle has-text-weight-semibold is-size-4">
@@ -64,6 +67,16 @@
               <nuxt-link :to="`/repositories/${id}`" class="button is-outlined is-fullwidth">
                 Cancel changes
               </nuxt-link>
+              <div
+                v-if="validation.valid === false
+                  && validation.errors.length > 0"
+                class="notification is-danger is-light is-size-7 p-3 px-4 mt-4"
+              >
+                <p class="is-size-6 has-text-weight-semibold">
+                  Pipeline syntax error
+                </p>
+                <span v-if="validation.errors">{{ validation.errors[0].message }}</span>
+              </div>
             </div>
           </div>
         </form>
@@ -114,6 +127,7 @@
 
 <script>
 import { parse } from 'yaml';
+import { validateJson } from '@nosana-ci/schema-validator';
 
 export default {
   data () {
@@ -129,6 +143,11 @@ export default {
       defaultBranch: null,
       selectedBranch: null,
       templates: null,
+      validation: {
+        valid: null,
+        errors: null,
+        errorLines: []
+      },
       pipelineEditor: null
     };
   },
@@ -142,6 +161,32 @@ export default {
     pipeline (pipeline) {
       if (pipeline) {
         this.pipelineEditor = true;
+        try {
+          const validated = validateJson(JSON.stringify(parse(pipeline)));
+          this.validation.valid = validated.valid;
+          this.validation.errors = validated.errors;
+          this.validation.errorLines = [];
+          if (validated.errors) {
+            for (const err of validated.errors) {
+              if (err.linePos) {
+                for (const line of err.linePos) {
+                  this.validation.errorLines.push(line.line);
+                }
+              }
+            }
+          }
+        } catch (error) {
+          console.error('error', error);
+          this.validation.errorLines = [];
+          this.validation.valid = false;
+          this.validation.errors = [error];
+          try {
+          // line number is in the error message, so extract it from there
+            this.validation.errorLines.push(parseInt((error.message).match(/[0-9]+/)[0]));
+          } catch (err) {
+            console.log(err);
+          }
+        }
       }
     }
   },
@@ -269,11 +314,6 @@ export default {
 };
 </script>
 <style scoped lang="scss">
-  .code-editor {
-    max-height: 80vh;
-    overflow-y: scroll;
-  }
-
   .template-icon {
     box-shadow: 1px 1px rgba(140,149,159,0.15);
     width: 42px;
@@ -284,5 +324,10 @@ export default {
     img {
       object-fit:scale-down;
     }
+  }
+  .notification {
+
+    word-wrap: break-word;
+
   }
 </style>
