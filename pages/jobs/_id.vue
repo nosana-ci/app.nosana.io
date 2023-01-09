@@ -2,83 +2,144 @@
   <section class="section">
     <div class="container">
       <div v-if="commit">
-        <div class="is-flex is-align-items-center">
-          <div class="mr-4">
-            <nuxt-link :to="`/repositories/${commit.repository_id}`" class="is-size-5">
-              <i class="fas fa-chevron-left" />
-            </nuxt-link>
+        <div v-if="commit.id">
+          <div class="is-flex is-align-items-center">
+            <div class="mr-4">
+              <nuxt-link :to="`/repositories/${commit.repository_id}`" class="is-size-5">
+                <i class="fas fa-chevron-left" />
+              </nuxt-link>
+            </div>
+            <div class="mr-4">
+              <div
+                class="tag is-small"
+                :class="{
+                  'is-accent': commit.status === 'COMPLETED',
+                  'is-info': commit.status === 'RUNNING',
+                  'is-warning': commit.status === 'QUEUED',
+                  'is-danger': commit.status === ('FAILED' || 'STOPPED')
+                }"
+              >
+                {{ commit.status }}
+              </div>
+            </div>
+            <div>Job <b>#{{ commit.id }}</b> triggered by <a target="_blank" :href="'https://github.com/'+commit.payload.author.username">{{ commit.payload.author.username }}</a> {{ $moment(commit.created_at).fromNow() }}</div>
           </div>
-          <div class="mr-4">
+          <hr class="my-4">
+          <h1 class="title">
+            {{ commit.payload.message.split('\n')[0] }}
+          </h1>
+          <div class="box">
+            <div v-if="commit.job" class="mb-4">
+              <i class="fas fa-list mr-4 has-text-accent" />
+              Smart Contract Job <a
+                target="_blank"
+                :href="$sol.explorer + '/address/' + commit.job"
+                class="blockchain-address-inline"
+              >{{ commit.job }}</a>
+            </div>
+            <div v-if="commit.job && commit.cache_blockchain" class="mb-4">
+              <i class="fas fa-coins mr-4 has-text-accent" />
+              Pipeline total cost
+              <b class="has-text-accent">
+                {{ parseInt(
+                  commit.cache_blockchain.price ?
+                    commit.cache_blockchain.price : commit.cache_blockchain.tokens, 16)/1e6
+                }}
+                NOS</b>
+            </div>
             <div
-              class="tag is-small"
-              :class="{
-                'is-accent': commit.status === 'COMPLETED',
-                'is-info': commit.status === 'RUNNING',
-                'is-warning': commit.status === 'QUEUED',
-                'is-danger': commit.status === ('FAILED' || 'STOPPED')
-              }"
+              v-if="commit.job && commit.cache_blockchain
+                && (commit.cache_blockchain.state > 0 || commit.cache_blockchain.jobStatus > 0)"
+              class="mb-4"
             >
-              {{ commit.status }}
+              <i class="fas fa-server mr-4 has-text-accent" />
+              Node: <a
+                target="_blank"
+                :href="$sol.explorer + '/address/' + commit.cache_blockchain.node"
+                class="blockchain-address-inline"
+              >{{ commit.cache_blockchain.node }}</a>
+            </div>
+            <div v-if="commit.commit" class="has-overresult-ellipses">
+              <i class="fab fa-git mr-4 has-text-accent" />
+              Commit <a
+                :href="commit.payload.url"
+                class="blockchain-address-inline"
+                target="_blank"
+                @click.stop
+              >{{ commit.commit }}</a>
+            </div>
+            <span v-if="commit.payload" style="white-space: pre-wrap">{{ commit.payload.message }}</span>
+          </div>
+          <div v-if="!commit.job" class="level notification is-warning">
+            <div class="level-left">
+              <div class="level-item">
+                <span>Not posted to blockchain..</span>
+              </div>
+            </div>
+            <div v-if="user && (user.roles && user.roles.includes('admin'))" class="level-right">
+              <div class="level-item">
+                <button class="button is-small is-danger" style="display: none" @click="postJob(commit.id)">
+                  Retry transaction
+                </button>
+              </div>
             </div>
           </div>
-          <div>Job <b>#{{ commit.id }}</b> triggered by <a target="_blank" :href="'https://github.com/'+commit.payload.author.username">{{ commit.payload.author.username }}</a> {{ $moment(commit.created_at).fromNow() }}</div>
         </div>
-        <hr class="my-4">
-        <h1 class="title">
-          {{ commit.payload.message.split('\n')[0] }}
-        </h1>
-        <div class="box">
-          <div v-if="commit.job" class="mb-4">
-            <i class="fas fa-list mr-4 has-text-accent" />
-            Smart Contract Job <a
-              target="_blank"
-              :href="$sol.explorer + '/address/' + commit.job"
-              class="blockchain-address-inline"
-            >{{ commit.job }}</a>
-          </div>
-          <div v-if="commit.job && commit.cache_blockchain" class="mb-4">
-            <i class="fas fa-coins mr-4 has-text-accent" />
-            Pipeline total cost
-            <b class="has-text-accent">
-              {{ parseInt(
-                commit.cache_blockchain.price ? commit.cache_blockchain.price : commit.cache_blockchain.tokens, 16)/1e6
-              }}
-              NOS</b>
-          </div>
-          <div
-            v-if="commit.job && commit.cache_blockchain
-              && (commit.cache_blockchain.state > 0 || commit.cache_blockchain.jobStatus > 0)"
-            class="mb-4"
-          >
-            <i class="fas fa-server mr-4 has-text-accent" />
-            Node: <a
-              target="_blank"
-              :href="$sol.explorer + '/address/' + commit.cache_blockchain.node"
-              class="blockchain-address-inline"
-            >{{ commit.cache_blockchain.node }}</a>
-          </div>
-          <div class="has-overresult-ellipses">
-            <i class="fab fa-git mr-4 has-text-accent" />
-            Commit <a
-              :href="commit.payload.url"
-              class="blockchain-address-inline"
-              target="_blank"
-              @click.stop
-            >{{ commit.commit }}</a>
-          </div>
-          <span style="white-space: pre-wrap">{{ commit.payload.message }}</span>
-        </div>
-        <div v-if="!commit.job" class="level notification is-warning">
-          <div class="level-left">
-            <div class="level-item">
-              <span>Not posted to blockchain..</span>
+
+        <!-- Info from blockchain if it doesn't exists in database -->
+        <div v-else-if="commit.ipfsJob">
+          <div class="is-flex is-align-items-center">
+            <div class="mr-4">
+              <div
+                class="tag is-small"
+                :class="{
+                  'is-accent': commit.state === 2,
+                  'is-info': commit.state === 1,
+                  'is-warning': commit.state === 0,
+                  'is-danger': commit.state === 3
+                }"
+              >
+                {{ stateMap[commit.state] }}
+              </div>
             </div>
           </div>
-          <div v-if="user && (user.roles && user.roles.includes('admin'))" class="level-right">
-            <div class="level-item">
-              <button class="button is-small is-danger" style="display: none" @click="postJob(commit.id)">
-                Retry transaction
-              </button>
+          <hr class="my-4">
+          <div class="box">
+            <div v-if="$route.params.id" class="mb-4">
+              <i class="fas fa-list mr-4 has-text-accent" />
+              Smart Contract Job <a
+                target="_blank"
+                :href="$sol.explorer + '/address/' + $route.params.id"
+                class="blockchain-address-inline"
+              >{{ $route.params.id }}</a>
+            </div>
+            <div v-if="commit.price" class="mb-4">
+              <i class="fas fa-coins mr-4 has-text-accent" />
+              Pipeline total cost
+              <b class="has-text-accent">
+                {{ parseInt(commit.price, 16)/1e6
+                }}
+                NOS</b>
+            </div>
+            <div
+              class="mb-4"
+            >
+              <i class="fas fa-server mr-4 has-text-accent" />
+              Node: <a
+                target="_blank"
+                :href="$sol.explorer + '/address/' + commit.node"
+                class="blockchain-address-inline"
+              >{{ commit.node }}</a>
+            </div>
+            <div
+              class="mb-4"
+            >
+              <i class="fas fa-shop mr-4 has-text-accent" />
+              Market: <a
+                target="_blank"
+                :href="$sol.explorer + '/address/' + commit.market"
+                class="blockchain-address-inline"
+              >{{ commit.market }}</a>
             </div>
           </div>
         </div>
@@ -100,15 +161,28 @@
         </div>
         <div v-if="tab === 'result'">
           <div v-if="commit.job_content">
-            <small v-if="commit.cache_blockchain && parseInt(commit.cache_blockchain['timeEnd'],16)">
-              Finished {{ $moment(parseInt(commit.cache_blockchain['timeEnd'],16)*1e3).fromNow() }}<br>
-              Duration: {{ secondsToHms(commit.cache_blockchain['timeStart'], commit.cache_blockchain['timeEnd']) }}
-            </small>
-            <small
-              v-else-if="nowSeconds && commit.cache_blockchain && parseInt(commit.cache_blockchain['timeStart'],16)"
-            >
-              Running for {{ nowSeconds - (parseInt(commit.cache_blockchain['timeStart'],16)) }} seconds
-            </small>
+            <div v-if="commit.ipfsJob">
+              <small v-if="parseInt(commit.timeEnd,16)">
+                Finished {{ $moment(parseInt(commit.timeEnd,16)*1e3).fromNow() }}<br>
+                Duration: {{ secondsToHms(commit.timeStart, commit.timeEnd) }}
+              </small>
+              <small
+                v-else-if="nowSeconds && parseInt(commit.timeStart,16)"
+              >
+                Running for {{ nowSeconds - (parseInt(commit.timeStart,16)) }} seconds
+              </small>
+            </div>
+            <div v-else>
+              <small v-if="commit.cache_blockchain && parseInt(commit.cache_blockchain['timeEnd'],16)">
+                Finished {{ $moment(parseInt(commit.cache_blockchain['timeEnd'],16)*1e3).fromNow() }}<br>
+                Duration: {{ secondsToHms(commit.cache_blockchain['timeStart'], commit.cache_blockchain['timeEnd']) }}
+              </small>
+              <small
+                v-else-if="nowSeconds && commit.cache_blockchain && parseInt(commit.cache_blockchain['timeStart'],16)"
+              >
+                Running for {{ nowSeconds - (parseInt(commit.cache_blockchain['timeStart'],16)) }} seconds
+              </small>
+            </div>
           </div>
           <div
             v-if="commit.job_content"
@@ -293,7 +367,13 @@ export default {
       clockInterval: null,
       nowSeconds: null,
       hideResults: {},
-      displayInfo: null
+      displayInfo: null,
+      stateMap: [
+        'Queued',
+        'Running',
+        'Done',
+        'Stopped'
+      ]
     };
   },
   watch: {
@@ -401,7 +481,7 @@ export default {
       const hash = this.solHashToIpfsHash(ipfsJob);
       this.$set(this.commit, 'jobIpfsHash', hash);
       if (!this.commit.job_content) {
-        this.commit.job_content = await this.retrieveIpfsContent(hash);
+        this.$set(this.commit, 'job_content', await this.retrieveIpfsContent(hash));
       }
       if (this.commit.job_content.pipeline) {
         this.$set(this.commit.job_content, 'pipeline', parse(this.commit.job_content.pipeline));
@@ -440,6 +520,15 @@ export default {
           this.displayInfo = Object.assign({}, this.commit.cache_blockchain);
           delete this.displayInfo.ipfsJob;
           delete this.displayInfo.ipfsResult;
+        }
+
+        if (this.commit.ipfsJob) {
+          await this.getJobInfo(this.commit.ipfsJob);
+          if (this.commit.ipfsResult && this.commit.state === 2) {
+            // completed, retrieve results
+            this.getResult(this.commit.ipfsResult);
+          }
+          this.displayInfo = Object.assign({}, this.commit);
         }
         this.commit = commit;
       } catch (error) {
