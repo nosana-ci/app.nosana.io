@@ -81,13 +81,18 @@ export default (context, inject) => {
         return wallet;
       },
       connect (adapter) {
-        if (adapter) {
+        if (adapter || connectingAdapter) {
           adapter.on('connect', this.onConnect);
           adapter.on('disconnect', this.onDisconnect);
           adapter.on('error', this.onWalletError);
 
-          connectingAdapter = adapter;
-          adapter.connect();
+          if (!connectingAdapter) {
+            connectingAdapter = adapter;
+          }
+          if (this.addWalletToExistingAccount) {
+            connectingAdapter.disconnect();
+          }
+          connectingAdapter.connect();
 
           return () => {
             adapter.off('connect', this.onConnect);
@@ -155,27 +160,25 @@ export default (context, inject) => {
                 });
                 this.$modal.show({
                   color: 'success',
-                  title: 'Synced Wallet'
+                  title: 'Successfully Synced Wallet!'
                 });
+                this.loginModal = false;
               } catch (e) {
                 console.error(e);
-                this.$modal.show({
-                  color: 'danger',
-                  text: (e.response && e.response.data.message) ? 'Something went wrong while connecting the wallet to your account: \n' + e.response.data.message : e,
-                  title: 'Error'
-                });
+                if (!e.message.includes('User rejected the request')) {
+                  this.$modal.show({
+                    color: 'danger',
+                    text: (e.response && e.response.data.message) ? 'Something went wrong while connecting the wallet to your account: \n' + e.response.data.message : e,
+                    title: 'Error'
+                  });
+                  this.loginModal = false;
+                }
               }
               this.addWalletToExistingAccount = false;
             } else {
               context.$auth.logout(true);
             }
           }
-          // this.loginModal = false
-          // if (context.query.redirect) {
-          //   context.app.router.push(context.query.redirect)
-          // } else {
-          //   context.app.router.push('/account')
-          // }
         }
       },
       onDisconnect () {
@@ -275,7 +278,8 @@ export default (context, inject) => {
       },
 
       clear () {
-        Object.assign(this.$data, this.$options.data.call(this));
+        const clone = (({ loginModal, ...o }) => o)(this.$data);
+        Object.assign(clone, this.$options.data.call(this));
       }
     }
   });
