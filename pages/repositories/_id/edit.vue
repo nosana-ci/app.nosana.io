@@ -25,6 +25,7 @@
                 <a class="p-3">General</a>
               </li>
               <li
+                v-if="repository.pipeline && repository.pipeline.length"
                 class="px-3"
                 :class="{'is-active': activeTab === 'pipeline'}"
                 @click="activeTab = 'pipeline'"
@@ -45,10 +46,10 @@
             </div>
           </div>
           <div v-if="activeTab === 'pipeline'">
-            <p>
-              Changes made to your pipeline will be pushed to the <code>nosana-ci.yml</code> in your Github repository.
-            </p>
-            <code-editor v-model="repository.pipeline" class="py-3 pt-4" />
+            <code-editor
+              v-model="repository.pipeline"
+              class="py-3 pt-4"
+            />
             <div class="field py-3">
               <label class="label">Trigger branches (comma seperated)</label>
               <div class="control">
@@ -71,8 +72,7 @@
 </template>
 
 <script>
-import { parse } from 'yaml';
-import MarketSelector from '../../../components/MarketSelector.vue';
+import MarketSelector from '@/components/MarketSelector.vue';
 
 export default {
   components: { MarketSelector },
@@ -92,41 +92,17 @@ export default {
   methods: {
     async edit () {
       try {
-        const pipeline = parse(this.repository.pipeline);
-        // TODO: change for nice yaml scheme checker
-        if (!pipeline.global) {
-          throw new Error('Your yaml does not include a `global` config');
-        }
-        if (!pipeline.nosana) {
-          throw new Error('Your yaml does not include a `nosana` config');
-        }
-        if (!pipeline.jobs || !Array.isArray(pipeline.jobs) || !pipeline.jobs.length) {
-          throw new Error('Your yaml does not include a array `jobs` config');
-        }
-        if (!pipeline.global.trigger || !pipeline.global.trigger.branch) {
-          throw new Error('Your yaml does not include a `global.trigger.branch` config');
-        }
-        if (!pipeline.global.image) {
-          throw new Error('Your yaml does not include a `global.image` config');
-        }
-        if (!pipeline.nosana.description) {
-          throw new Error('Your yaml does not include a `nosana.description` config');
-        }
-        pipeline.jobs.forEach((job, index) => {
-          if (!job.name) {
-            throw new Error(`Job ${index + 1} does not include a 'name'`);
-          }
-          if (!job.commands || !Array.isArray(job.commands) || !job.commands.length) {
-            throw new Error(`Job ${index + 1} does not include a 'commands' array`);
-          }
-        });
-
-        await this.$axios.$post(`/repositories/${this.id}`, {
+        const updateData = {
           pipeline: this.repository.pipeline,
           market: this.selectedMarket.publicKey,
           branches: this.repository.branches,
           enable_check_runs: this.repository.enable_check_runs
-        });
+        };
+        if (this.repository.pipeline && this.repository.pipeline.length) {
+          updateData.pipeline = this.repository.pipeline;
+        }
+
+        await this.$axios.$post(`/repositories/${this.id}`, updateData);
         this.$modal.show({
           color: 'success',
           text: 'Successfully updated repository',

@@ -198,7 +198,7 @@ export default {
             ...this.$job.accounts,
             vault: vault[0],
             market: marketKeypair.publicKey,
-            accessKey: new anchor.web3.PublicKey(this.nodeAccessKey)
+            accessKey: new anchor.web3.PublicKey(this.newMarket.nodeAccessKey)
           })
           .signers([marketKeypair])
           .rpc();

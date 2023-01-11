@@ -11,6 +11,9 @@
         Loading...
       </div>
       <div v-else-if="!githubToken">
+        <p v-if="installationError" class="mb-2">
+          Having trouble with your Github Installation? <a :href="githubAppUrl">Try reconnecting it.</a>
+        </p>
         <p
           v-for="installation in installations"
           :key="installation.id"
@@ -83,8 +86,12 @@ let githubApi;
 export default {
   middleware: 'auth',
   data () {
+    let githubUrl = process.env.NUXT_ENV_GITHUB_APP_URL;
+    if (process.client) {
+      githubUrl += `?redirect_uri=${window.location.origin}/repositories/new`;
+    }
     return {
-      githubAppUrl: process.env.NUXT_ENV_GITHUB_APP_URL,
+      githubAppUrl: githubUrl,
       repository: null,
       githubToken: null,
       repositories: null,
@@ -92,7 +99,8 @@ export default {
       search: null,
       installations: null,
       installationId: null,
-      selectedMarket: null
+      selectedMarket: null,
+      installationError: false
     };
   },
   computed: {
@@ -141,7 +149,7 @@ export default {
     },
     goToGithub () {
       this.loading = true;
-      window.location.href = this.githubAppUrl;
+      window.location.href = `${this.githubAppUrl}?redirect_uri=${window.location.origin}/repositories/new`;
     },
     async githubApp (installationId) {
       try {
@@ -158,13 +166,24 @@ export default {
           headers: { Authorization: 'token ' + this.githubToken }
         });
         this.installationId = installationId;
+
+        // when there's a repo id in localstorage, redirect to that repo
+        if (localStorage.getItem('repo-id')) {
+          const id = localStorage.getItem('repo-id');
+          console.log('Found localstorage, try redirect', id);
+          localStorage.removeItem('repo-id');
+          this.$router.push(`/repositories/${id}?installation_id=${this.installationId}`);
+        }
+        this.installationError = false;
         this.getUserRepos();
       } catch (error) {
+        this.loading = false;
         this.$modal.show({
           color: 'danger',
           text: error,
           title: 'Error'
         });
+        this.installationError = true;
       }
     },
     async getUserRepos () {
@@ -193,14 +212,14 @@ export default {
     },
     async addRepository () {
       try {
-        await this.$axios.$post('/repositories', {
+        const createdRepo = await this.$axios.$post('/repositories', {
           repository: this.repository,
           market: this.selectedMarket.publicKey,
           type: 'GITHUB',
           installationId: this.installationId
         });
         // await this.addWebhook(repo);
-        this.$router.push('/pipelines');
+        this.$router.push(`/repositories/${createdRepo.id}/pipeline`);
       } catch (error) {
         this.$modal.show({
           color: 'danger',

@@ -23,10 +23,18 @@
                     <i class="fas fa-edit" />
                   </nuxt-link>
                 </h2>
-                <h2 class="subtitle is-6 mb-1">
-                  <a target="_blank" :href="`https://solscan.io/address/${$auth.user.address}`" class="blockchain-address" style="max-width: 140px;">
+                <h2 v-if="$auth.user.address" class="subtitle is-6 mb-1">
+                  <a
+                    target="_blank"
+                    :href="`${$sol.explorer}/address/${$auth.user.address}`"
+                    class="blockchain-address"
+                    style="max-width: 140px;"
+                  >
                     {{ $auth.user.address }}
                   </a>
+                </h2>
+                <h2 v-else class="subtitle is-6 mb-1">
+                  Connected to GitHub
                 </h2>
                 <nuxt-link v-if="!user.name" to="/account/edit">
                   <i class="fas fa-edit" /> Edit User info
@@ -40,10 +48,10 @@
           <div v-if="!user || !user.name" class="column is-8">
             <div class="columns">
               <div class="column is-one-third">
-                <a
+                <nuxt-link
                   class="box is-secondary step"
                   :class="{'has-background-white': loggedIn}"
-                  @click="$sol.loginModal = true"
+                  to="/login"
                 >
                   <div class="is-flex is-justify-content-space-between">
                     <div>1</div>
@@ -56,9 +64,9 @@
                   </div>
                   <div class="has-text-centered my-2">
                     <img src="~assets/img/icons/wallet.svg">
-                    <p>Connect Wallet</p>
+                    <p>Login</p>
                   </div>
-                </a>
+                </nuxt-link>
               </div>
               <div class="column is-one-third">
                 <nuxt-link

@@ -180,7 +180,8 @@
                 <span>{{ userInfo.rank }}</span>
               </td>
               <td class="blockchain-address">
-                {{ userInfo.address }}
+                <span v-if="userInfo.address">{{ userInfo.address }}</span>
+                <span v-else>Connected to Github</span>
               </td>
               <td class="is-family-monospace">
                 {{ parseInt(userInfo.duration/(3600*24)) }}

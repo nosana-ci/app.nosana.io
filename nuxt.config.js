@@ -93,6 +93,17 @@ export default {
         user: {
           property: ''
         }
+      },
+      githubLogin: {
+        scheme: 'local',
+        endpoints: {
+          login: { url: `${process.env.NUXT_ENV_BACKEND_URL}/login/github`, method: 'post', propertyName: 'token' },
+          user: { url: `${process.env.NUXT_ENV_BACKEND_URL}/user`, method: 'get', propertyName: '' },
+          logout: false
+        },
+        user: {
+          property: ''
+        }
       }
     },
     watchLoggedIn: true,
@@ -121,6 +132,7 @@ export default {
     transpile: [
       'countup.js',
       'vue-countup-v2',
+      '@nosana-ci/schema-validator',
       '@solana/spl-token',
       '@solana/wallet-adapter-base',
       '@solana/wallet-adapter-sollet',

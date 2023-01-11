@@ -65,7 +65,7 @@ export default (context, inject) => {
 
         this.provider = new anchor.AnchorProvider(web3, wallet, {});
         let userKey = wallet.publicKey;
-        if (context.$auth && context.$auth.user) {
+        if (context.$auth && context.$auth.user && context.$auth.user.address) {
           userKey = new anchor.web3.PublicKey(context.$auth.user.address);
         }
 
@@ -165,15 +165,17 @@ export default (context, inject) => {
       },
       async refreshStake () {
         const userAddress = context.$sol && context.$sol.publicKey ? `?userAddress=${context.$sol.publicKey}` : '';
-        const stakeData = await context.$axios.$get('/user/stake' + userAddress);
-        if (stakeData && stakeData.user_id && parseInt(stakeData.time_unstake) !== 0 && parseInt(stakeData.time_unstake) !== '00') {
-          this.stakeEndDate = context.$moment.unix(stakeData.time_unstake).add(stakeData.duration, 's');
+        if (userAddress) {
+          const stakeData = await context.$axios.$get('/user/stake' + userAddress);
+          if (stakeData && stakeData.user_id && parseInt(stakeData.time_unstake) !== 0 && parseInt(stakeData.time_unstake) !== '00') {
+            this.stakeEndDate = context.$moment.unix(stakeData.time_unstake).add(stakeData.duration, 's');
           // this.stakeEndDate = this.$moment.unix(1659698174);
-        } else {
-          this.stakeEndDate = null;
+          } else {
+            this.stakeEndDate = null;
+          }
+          this.stakeData = stakeData;
         }
         await this.refreshRewardsAndPoolInfo();
-        this.stakeData = stakeData;
       },
       async getBalance (address) {
         try {

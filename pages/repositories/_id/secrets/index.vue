@@ -23,12 +23,11 @@
         </nuxt-link>
       </div>
       <div v-if="!loggedInSecretManager" class="mt-3">
-        <p>Connect your wallet to see your secrets.</p>
         <button
           class="button is-accent is-fullwidth mt-5 has-text-weight-semibold"
-          @click.stop.prevent="$sol.loginModal = true"
+          @click.stop.prevent="login"
         >
-          Connect Wallet
+          Login to Secret Manager
         </button>
       </div>
       <div v-else-if="repository" class="mt-5">
@@ -48,7 +47,7 @@
               class="p-5 market-row"
             >
               <td class="px-4 py-3">
-                {{ key }}
+                {{ key.replace(id+"_","") }}
               </td>
               <td class="py-3 px-5" style="text-align: right;">
                 <i class="fas fa-edit px-2" @click="openEditPopup(key, value)" />
@@ -108,14 +107,6 @@
             </div>
           </div>
           <button
-            v-if="!loggedIn"
-            class="button is-accent is-fullwidth mt-5 has-text-weight-semibold"
-            @click.stop.prevent="$sol.loginModal = true"
-          >
-            Connect Wallet
-          </button>
-          <button
-            v-else
             type="submit"
             class="button is-accent is-fullwidth mt-5 has-text-weight-semibold"
           >
@@ -137,7 +128,6 @@
 
 <script>
 // import { PublicKey } from '@solana/web3.js';
-import bs58 from 'bs58';
 import axios from 'axios';
 console.log(process.env.NUXT_ENV_SECRET_MANAGER_URL);
 const secretApi = axios.create({
@@ -159,26 +149,9 @@ export default {
       selectedSecret: {}
     };
   },
-  computed: {
-    publicKey () {
-      return this.$sol ? this.$sol.publicKey : null;
-    },
-    loggedIn () {
-      return this.$sol && this.$sol.publicKey;
-    }
-  },
-  watch: {
-    '$sol.publicKey': function (pubkey) {
-      if (pubkey) {
-        this.checkToken();
-      }
-    }
-  },
   created () {
     this.getUser();
-    if (this.loggedIn) {
-      this.checkToken();
-    }
+    this.checkToken();
   },
   methods: {
     openEditPopup (key, value) {
@@ -221,17 +194,19 @@ export default {
       }
     },
     async login () {
-      const timestamp = Math.floor(+new Date() / 1000);
-      const signature = await this.$sol.sign(timestamp, 'nosana_secret');
-      const response = await secretApi.post('/login', {
-        address: this.publicKey,
-        signature: bs58.encode(signature.data),
-        timestamp
-      });
-      this.$store.dispatch('secretsToken/addToken', response.data.token);
+      // const timestamp = Math.floor(+new Date() / 1000);
+      // const signature = await this.$sol.sign(timestamp, 'nosana_secret');
+      // const response = await secretApi.post('/login', {
+      //   address: this.publicKey,
+      //   signature: bs58.encode(signature.data),
+      //   timestamp
+      // });
+      const response = await this.$axios.$get('/user/secrets');
+      this.$store.dispatch('secretsToken/addToken', response.token);
     },
     async getSecrets () {
-      const response = await secretApi.get('/secrets');
+      const prefix = this.id + '_';
+      const response = await secretApi.get('/secrets?prefix=' + prefix);
       this.secrets = response.data;
     },
     async editSecret () {

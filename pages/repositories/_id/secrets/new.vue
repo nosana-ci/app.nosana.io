@@ -19,12 +19,11 @@
         </p>
       </div>
       <div v-if="!loggedInSecretManager" class="mt-3">
-        <p>Connect your wallet to add a secret for this repository.</p>
         <button
           class="button is-accent is-fullwidth mt-5 has-text-weight-semibold"
-          @click.stop.prevent="$sol.loginModal = true"
+          @click.stop.prevent="login"
         >
-          Connect Wallet
+          Login to secret manager
         </button>
       </div>
       <div v-else class="mt-2">
@@ -67,7 +66,6 @@
 </template>
 
 <script>
-import bs58 from 'bs58';
 import axios from 'axios';
 console.log(process.env.NUXT_ENV_SECRET_MANAGER_URL);
 const secretApi = axios.create({
@@ -87,42 +85,27 @@ export default {
       newSecretValue: null
     };
   },
-  computed: {
-    publicKey () {
-      return this.$sol ? this.$sol.publicKey : null;
-    },
-    loggedIn () {
-      return this.$sol && this.$sol.publicKey;
-    }
-  },
-  watch: {
-    '$sol.publicKey': function (pubkey) {
-      if (pubkey) {
-        this.checkToken();
-      }
-    }
-  },
   created () {
     this.getUser();
-    if (this.loggedIn) {
-      this.checkToken();
-    }
+    this.checkToken();
   },
   methods: {
     async login () {
-      const timestamp = Math.floor(+new Date() / 1000);
-      const signature = await this.$sol.sign(timestamp, 'nosana_secret');
-      const response = await secretApi.post('/login', {
-        address: this.publicKey,
-        signature: bs58.encode(signature.data),
-        timestamp
-      });
-      this.$store.dispatch('secretsToken/addToken', response.data.token);
+      // const timestamp = Math.floor(+new Date() / 1000);
+      // const signature = await this.$sol.sign(timestamp, 'nosana_secret');
+      // const response = await secretApi.post('/login', {
+      //   address: this.publicKey,
+      //   signature: bs58.encode(signature.data),
+      //   timestamp
+      // });
+      const response = await this.$axios.$get('/user/secrets');
+      this.$store.dispatch('secretsToken/addToken', response.token);
     },
     async addSecret () {
       try {
         await secretApi.post('/secrets', {
-          secrets: { [this.newSecretKey]: this.newSecretValue }
+          secrets: { [this.newSecretKey]: this.newSecretValue },
+          prefix: this.id + '_'
         });
         this.$modal.show({
           color: 'success',

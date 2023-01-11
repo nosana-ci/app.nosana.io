@@ -9,6 +9,7 @@ import {
 import { clusterApiUrl, Connection, PublicKey } from '@solana/web3.js';
 import { Metaplex } from '@metaplex-foundation/js';
 import { commitment, sendTransaction } from '@/utils/web3';
+const nacl = require('tweetnacl');
 
 const network = process.env.NUXT_ENV_SOL_NETWORK;
 
@@ -38,7 +39,7 @@ export default (context, inject) => {
   const sol = new Vue({
     data () {
       return {
-        explorer: 'https://solscan.io',
+        explorer: 'https://explorer.solana.com',
         balance: null,
         publicKey: null,
         loginModal: false,
@@ -49,7 +50,8 @@ export default (context, inject) => {
         token: null,
         user: null,
         skipLogin: false,
-        nfts: null
+        nfts: null,
+        addWalletToExistingAccount: false
       };
     },
     created () {
@@ -79,13 +81,18 @@ export default (context, inject) => {
         return wallet;
       },
       connect (adapter) {
-        if (adapter) {
+        if (adapter || connectingAdapter) {
           adapter.on('connect', this.onConnect);
           adapter.on('disconnect', this.onDisconnect);
           adapter.on('error', this.onWalletError);
 
-          connectingAdapter = adapter;
-          adapter.connect();
+          if (!connectingAdapter) {
+            connectingAdapter = adapter;
+          }
+          if (this.addWalletToExistingAccount) {
+            connectingAdapter.disconnect();
+          }
+          connectingAdapter.connect();
 
           return () => {
             adapter.off('connect', this.onConnect);
@@ -120,7 +127,7 @@ export default (context, inject) => {
         }
       },
 
-      onConnect () {
+      async onConnect () {
         const adapter = connectingAdapter;
 
         if (adapter && adapter.publicKey) {
@@ -133,16 +140,45 @@ export default (context, inject) => {
           if (context.$auth && context.$auth.loggedIn) {
             if (context.$auth.user.address === this.publicKey) {
               this.loginModal = false;
+            } else if (this.addWalletToExistingAccount) {
+              // add wallet to account
+              try {
+                // sign message & check
+                const timestamp = Math.floor(+new Date() / 1000);
+                const signature = await this.sign(timestamp);
+                console.log('signature', signature);
+
+                const message = new TextEncoder().encode('nosana_' + timestamp);
+                if (!nacl.sign.detached.verify(
+                  message, new Uint8Array(signature.data), new Uint8Array(new PublicKey(this.publicKey).toBuffer()))) {
+                  throw new Error('Invalid signature');
+                }
+
+                // add to account
+                await context.$axios.$post('/user/add-wallet', {
+                  address: this.publicKey
+                });
+                this.$modal.show({
+                  color: 'success',
+                  title: 'Successfully Synced Wallet!'
+                });
+                this.loginModal = false;
+              } catch (e) {
+                console.error(e);
+                if (!e.message.includes('User rejected the request')) {
+                  this.$modal.show({
+                    color: 'danger',
+                    text: (e.response && e.response.data.message) ? 'Something went wrong while connecting the wallet to your account: \n' + e.response.data.message : e,
+                    title: 'Error'
+                  });
+                  this.loginModal = false;
+                }
+              }
+              this.addWalletToExistingAccount = false;
             } else {
               context.$auth.logout(true);
             }
           }
-          // this.loginModal = false
-          // if (context.query.redirect) {
-          //   context.app.router.push(context.query.redirect)
-          // } else {
-          //   context.app.router.push('/account')
-          // }
         }
       },
       onDisconnect () {
@@ -242,7 +278,8 @@ export default (context, inject) => {
       },
 
       clear () {
-        Object.assign(this.$data, this.$options.data.call(this));
+        const clone = (({ loginModal, ...o }) => o)(this.$data);
+        Object.assign(clone, this.$options.data.call(this));
       }
     }
   });
