@@ -61,7 +61,7 @@
               </nuxt-link>
             </h2>
 
-            <h2 v-if="$auth.user.address" class="subtitle is-7 mb-1">
+            <h2 v-if="$auth.user.address && $sol" class="subtitle is-7 mb-1">
               <a
                 target="_blank"
                 :href="`${$sol.explorer}/address/${$auth.user.address}`"

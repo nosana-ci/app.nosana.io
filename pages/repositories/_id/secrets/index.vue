@@ -47,7 +47,7 @@
               class="p-5 market-row"
             >
               <td class="px-4 py-3">
-                {{ key }}
+                {{ key.replace(id+"_","") }}
               </td>
               <td class="py-3 px-5" style="text-align: right;">
                 <i class="fas fa-edit px-2" @click="openEditPopup(key, value)" />
@@ -107,14 +107,6 @@
             </div>
           </div>
           <button
-            v-if="!loggedIn"
-            class="button is-accent is-fullwidth mt-5 has-text-weight-semibold"
-            @click.stop.prevent="$sol.loginModal = true"
-          >
-            Connect Wallet
-          </button>
-          <button
-            v-else
             type="submit"
             class="button is-accent is-fullwidth mt-5 has-text-weight-semibold"
           >
@@ -213,7 +205,8 @@ export default {
       this.$store.dispatch('secretsToken/addToken', response.token);
     },
     async getSecrets () {
-      const response = await secretApi.get('/secrets');
+      const prefix = this.id + '_';
+      const response = await secretApi.get('/secrets?prefix=' + prefix);
       this.secrets = response.data;
     },
     async editSecret () {
