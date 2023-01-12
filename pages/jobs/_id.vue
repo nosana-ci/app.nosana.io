@@ -291,27 +291,35 @@
             </div>
             <div v-else>
               <div
-                v-for="(job, index) in ['git clone', 'git checkout'].concat(commit.job_content.pipeline.jobs)"
-                :key="index"
+                v-if="commit.state == 2 &&
+                  (!commit.job_content.pipeline.jobs || commit.job_content.pipeline.jobs.length === 0)"
               >
+                Results are hidden
+              </div>
+              <div v-else>
                 <div
-                  v-if="job && job.commands && Array.isArray(job.commands)"
-                  class="has-text-link"
+                  v-for="(job, index) in ['git clone', 'git checkout'].concat(commit.job_content.pipeline.jobs)"
+                  :key="index"
                 >
-                  <span class="row-count log">Job: {{ job.name }}</span><br>
                   <div
-                    v-for="cmd in job.commands"
-                    :key="cmd"
-                    class="row-count log has-text-white"
+                    v-if="job && job.commands && Array.isArray(job.commands)"
+                    class="has-text-link"
                   >
-                    {{ cmd }}
+                    <span class="row-count log">Job: {{ job.name }}</span><br>
+                    <div
+                      v-for="cmd in job.commands"
+                      :key="cmd"
+                      class="row-count log has-text-white"
+                    >
+                      {{ cmd }}
+                    </div>
                   </div>
-                </div>
-                <div v-else class="has-text-link row-count log">
-                  {{ job }}
-                </div>
-                <div class="log row-count has-text-white log">
-                  pending...
+                  <div class="has-text-link row-count log">
+                    {{ job }}
+                  </div>
+                  <div class="log row-count has-text-white log">
+                    pending...
+                  </div>
                 </div>
               </div>
             </div>
