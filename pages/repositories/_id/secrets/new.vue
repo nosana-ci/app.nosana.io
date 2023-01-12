@@ -104,7 +104,8 @@ export default {
     async addSecret () {
       try {
         await secretApi.post('/secrets', {
-          secrets: { [this.newSecretKey]: this.newSecretValue }
+          secrets: { [this.newSecretKey]: this.newSecretValue },
+          prefix: this.id + '_'
         });
         this.$modal.show({
           color: 'success',
