@@ -27,7 +27,7 @@
       class="level is-flex-direction-row is-flex is-justify-content-center is-align-items-center connected-icons"
     >
       <div
-        :class="{'disabled has-tooltip': !user.address}"
+        :class="{'disabled has-tooltip': !user.address, 'has-tooltip-accent': user.address}"
         class="mx-2"
         :data-tooltip="
           !user.address
