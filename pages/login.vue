@@ -46,24 +46,32 @@ export default {
       window.location.href = `https://github.com/login/oauth/authorize?client_id=${process.env.NUXT_ENV_GITHUB_APP_CLIENT_ID}&redirect_uri=${window.location.origin}/login`;
     },
     async authenticateGithub () {
-      const response = await this.$auth.loginWith('githubLogin', {
-        data: {
-          code: this.$route.query.code
+      try {
+        const response = await this.$auth.loginWith('githubLogin', {
+          data: {
+            code: this.$route.query.code
+          }
+        });
+        const installationId = this.$route.query.installation_id;
+        if (installationId) {
+          await this.$axios.$post('/user/github/installations/', { installationId });
         }
-      });
-      const installationId = this.$route.query.installation_id;
-      if (installationId) {
-        await this.$axios.$post('/user/github/installations/', { installationId });
+        // Needed because there is a redirect bug when going to a protected route from the login page
+        const path = this.$auth.$storage.getUniversal('redirect');
+        this.$auth.$storage.setUniversal('redirect', null);
+        if (path) {
+          this.$router.push(path);
+        } else if (this.$route && this.$route.name === 'login') {
+          this.$router.push('/');
+        }
+        console.log('user', response);
+      } catch (error) {
+        this.$modal.show({
+          color: 'danger',
+          text: `Something went wrong while logging in with Github. \n${error}`,
+          title: 'Error'
+        });
       }
-      // Needed because there is a redirect bug when going to a protected route from the login page
-      const path = this.$auth.$storage.getUniversal('redirect');
-      this.$auth.$storage.setUniversal('redirect', null);
-      if (path) {
-        this.$router.push(path);
-      } else if (this.$route && this.$route.name === 'login') {
-        this.$router.push('/');
-      }
-      console.log('user', response);
     }
   }
 };
