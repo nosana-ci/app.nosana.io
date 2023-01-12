@@ -91,7 +91,10 @@
             <b class="has-text-accent">
               {{ parseInt(repository.marketAccount.jobPrice, 16) / 1e6 }} NOS</b>
           </p>
-          <p class="my-4">
+          <p
+            v-if="permissionFound !== false && permissionFound !== null"
+            class="my-4"
+          >
             <nuxt-link
               v-if="repository"
               class="button is-accent"
