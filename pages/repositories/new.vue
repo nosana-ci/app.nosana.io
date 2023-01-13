@@ -107,9 +107,11 @@ export default {
     filteredRepositories () {
       let filteredRepositories = this.repositories;
       // Search repos
-      if (filteredRepositories && this.search !== null) {
+      if (filteredRepositories && this.search !== null && this.userRepositories) {
         filteredRepositories =
-        filteredRepositories.filter(r => r.full_name.toLowerCase().includes(this.search.toLowerCase()));
+        filteredRepositories
+          .filter(r => r.full_name.toLowerCase().includes(this.search.toLowerCase()))
+          .filter(r => !this.userRepositories.find(ur => ur.repository === r.full_name));
       }
 
       return filteredRepositories;
@@ -124,6 +126,7 @@ export default {
         this.getInstallations();
       }
     }
+    this.userRepos = this.getUserRepositories();
   },
   methods: {
     notPublic () {
@@ -132,6 +135,19 @@ export default {
         text: 'This repo is not public, make this repository public first',
         title: 'Cannot select repo'
       });
+    },
+    async getUserRepositories () {
+      try {
+        const repositories = await this.$axios.$get('/user/repositories');
+        console.log('repositories', repositories);
+        this.userRepositories = repositories;
+      } catch (error) {
+        this.$modal.show({
+          color: 'danger',
+          text: error,
+          title: 'Error'
+        });
+      }
     },
     async getInstallations () {
       try {
