@@ -2,19 +2,6 @@
   <div>
     <section class="section">
       <div class="columns">
-        <div class="column is-4">
-          <h1 class="title is-4">
-            Projects on <b v-if="network === 'devnet'" class="has-text-accent">DevNet</b>
-            <b v-else class="has-text-accent">Testnet</b>
-          </h1>
-          <p class="has-limited-width-small">
-            If it works in a container, it works on the Nosana Network.
-            We can run any container command, letting you ship faster than ever before.
-            All you have to do right now is connect your GitHub account and request your funds.
-            If you have a valid account, we try to release the free testnet credits within 5 days.
-            Feel free to reach out to <a href="mailto:team@nosana.io">team@nosana.io</a> if you have any questions.
-          </p>
-        </div>
         <div v-if="!user" class="column is-8">
           <div class="columns">
             <div class="column is-one-third">
@@ -90,7 +77,7 @@
                     src="~assets/img/icons/project.svg"
                   >
                   <img v-else src="~assets/img/icons/project_grey.svg">
-                  <p>Request Funds</p>
+                  <p>Manage Pipeline</p>
                 </div>
               </nuxt-link>
             </div>
@@ -106,11 +93,6 @@
                 >...</span>
                 <span v-else>{{ Math.trunc(balance*10000)/10000 }}</span> <span class="has-text-accent">NOS</span>
               </div>
-            </div>
-            <div v-if="user && (user.roles && user.roles.includes('admin'))">
-              <button class="button is-accent is-outlined" @click.prevent="depositPopup = true;">
-                Deposit NOS
-              </button>
             </div>
           </div>
           <div class="column is-2">
@@ -129,7 +111,21 @@
               </div>
             </div>
           </div>
+          <div class="column is-2">
+            <div v-if="user && (user.roles && user.roles.includes('admin'))">
+              <button class="button is-accent is-outlined" @click.prevent="depositPopup = true;">
+                Deposit NOS
+              </button>
+            </div>
+          </div>
         </template>
+      </div>
+      <div class="columns mt-3">
+        <div class="column is-4">
+          <h1 class="title is-4">
+            Projects
+          </h1>
+        </div>
       </div>
       <div v-if="user && userRepositories && userRepositories.length" class="mb-6">
         <nuxt-link to="/repositories/new" class="button is-accent is-outlined is-pulled-right">
@@ -140,83 +136,6 @@
         </h2>
 
         <repository-list :repositories="userRepositories" />
-      </div>
-      <div class="is-flex is-justify-content-space-between has-background-light columns p-2">
-        <div style="max-width: 100%; width: 400px">
-          <input v-model="search" class="input" placeholder="search repositories">
-        </div>
-        <nuxt-link to="/repositories/new" class="button is-accent is-small has-text-white">
-          + Add new repository
-        </nuxt-link>
-      </div>
-      <div v-if="repositories" class="columns is-multiline mt-4 has-background-light">
-        <div v-if="!filteredRepositories.length" class="has-text-centered subtitle">
-          No repositories found...
-        </div>
-        <template v-for="repository in filteredRepositories">
-          <div :key="repository.id" class="column is-6 is-3-fullhd is-3-widescreen is-4-desktop">
-            <a class="box has-background-white is-clickable" @click="$router.push('/repositories/'+repository.id)">
-              <div class="is-flex is-align-items-flex-start is-justify-content-flex-start">
-                <div class="project-icon mr-4">
-                  <img style="height: 32px" :src="repository.image">
-                </div>
-                <div>
-                  <h2 class="title is-6 has-text-weight-semibold" style="min-height: 36px">
-                    <span v-html="repository.repository.split('/').join('/<br>')" />
-                  </h2>
-                  <h2 class="subtitle is-6 mb-1">
-                    <span>{{ repository.name }}</span>
-                  </h2>
-                  <p class="is-size-7 has-overflow-ellipses" style="height: 40px;">
-                    <span>{{ repository.description }}</span>
-                  </p>
-                </div>
-              </div>
-
-              <div class="mt-2">
-                <span v-if="repositories">
-                  <div v-if="!repository.commits.length">
-                    no pipelines
-                  </div>
-                  <div
-                    v-else
-                    class="is-flex is-align-items-flex-end"
-                  >
-                    <div class="mr-2">
-                      <div
-                        class="tag is-small"
-                        :class="{
-                          'is-accent': repository.commits[0].status === 'COMPLETED',
-                          'is-info': repository.commits[0].status === 'RUNNING',
-                          'is-warning': repository.commits[0].status === 'QUEUED',
-                          'is-danger': repository.commits[0].status === ('FAILED' || 'STOPPED')
-                        }"
-                      >{{ repository.commits[0].status }}</div>
-                      <div class="is-size-7">
-                        {{ $moment(repository.commits[0].updated_at ).fromNow() }}
-                      </div>
-                    </div>
-                    <div
-                      v-for="commit in repository.commits.slice().reverse()"
-                      :key="commit.id"
-                      class="mx-1"
-                      @click.stop=""
-                    >
-                      <nuxt-link :to="`/jobs/${commit.id}`">
-                        <commit-status
-                          :status="commit.status"
-                          class="has-tooltip-arrow"
-                          :data-tooltip="commit.commit.substring(0,7)"
-                        />
-                      </nuxt-link>
-                    </div>
-                  </div>
-                </span>
-                <span v-else>Loading..</span>
-              </div>
-            </a>
-          </div>
-        </template>
       </div>
     </section>
     <div class="modal deposit-popup" :class="{ 'is-active': depositPopup }">

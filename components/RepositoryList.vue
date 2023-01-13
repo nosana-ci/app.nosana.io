@@ -22,7 +22,7 @@
               :class="{'is-success': repository.status === 'ACTIVE', 'is-info': repository.status === 'PENDING'}"
             >{{ repository.status }}</span>
           </td>
-          <td><a :href="'https://github.com/'+ repository.repository" target="_blank" @click.stop>{{ repository.repository }}</a></td>
+          <td>{{ repository.repository }}</td>
           <td>
             <span
               class="has-tooltip-arrow"

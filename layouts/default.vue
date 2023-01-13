@@ -9,7 +9,7 @@
         class="column is-narrow has-background-light is-flex is-flex-direction-column sidebar"
       >
         <nav-bar />
-        <stake-block class="mt-auto is-hidden-mobile" />
+        <node-block class="mt-auto is-hidden-mobile" />
       </div>
       <div class="column">
         <Nuxt />
@@ -22,13 +22,13 @@
 <script>
 import NavBar from '@/components/NavBar';
 import SolWallet from '@/components/SolWallet';
-import StakeBlock from '@/components/Staking/StakeBlock';
+import NodeBlock from '@/components/Staking/NodeBlock';
 
 export default {
   components: {
     NavBar,
     SolWallet,
-    StakeBlock
+    NodeBlock
   }
 };
 </script>
