@@ -133,14 +133,13 @@
             <img src="~assets/img/icons/phone.svg" style="height: 70px;">
           </div>
           <h2 class="subtitle">
-            <b>The Burner Phone countdown starts soon!</b>
+            <b>Documentation</b>
           </h2>
           <p class="block is-size-7">
-            We don’t do minting fees – a Burner Phone costs exactly 0 SOL. Are you a Nosana Network user?
-            Stake $NOS for a chance to mint your very own and have exclusive rights to earn $NOS with our network.
+            Learn more about the Nosana Network and how to use it at our documentation site.
           </p>
           <p class="block mt-auto">
-            <a href="https://nosana.io/nft" target="_blank" class="button is-accent is-wide is-small is-outlined">
+            <a href="https://docs.nosana.io" target="_blank" class="button is-accent is-wide is-small is-outlined">
               <b>Learn more</b>
             </a>
           </p>
