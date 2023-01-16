@@ -132,8 +132,11 @@
         </template>
       </div>
       <div v-if="user && userRepositories && userRepositories.length" class="mb-6">
-        <nuxt-link to="/repositories/new" class="button is-accent is-outlined is-pulled-right">
+        <nuxt-link to="/repositories/new" class="button is-accent is-pulled-right">
           Add new repository
+        </nuxt-link>
+        <nuxt-link to="/secrets" class="button is-accent is-outlined is-pulled-right mr-2">
+          Global secrets
         </nuxt-link>
         <h2 class="subtitle has-text-weight-semibold">
           Your Repositories
