@@ -130,7 +130,7 @@
               Markets
             </nuxt-link>
           </li> -->
-          <li>
+          <!-- <li>
             <nuxt-link
               to="/stats"
               exact-active-class="is-active"
@@ -141,7 +141,7 @@
               </span>
               Network Statistics
             </nuxt-link>
-          </li>
+          </li> -->
         </ul>
       </aside>
     </div>
