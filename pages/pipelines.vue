@@ -1,8 +1,8 @@
 <template>
   <div>
     <section class="section">
-      <div class="columns">
-        <div v-if="!user" class="column is-8">
+      <div v-if="showTutorial" class="columns">
+        <div class="column is-10">
           <div class="columns">
             <div class="column is-one-third">
               <nuxt-link
@@ -28,14 +28,15 @@
             <div class="column is-one-third">
               <nuxt-link
                 class="box is-secondary step"
-                :class="{'has-background-white': user && repositories
-                           && repositories.filter(r => r.user_id === user.user_id).length,
+                :class="{'has-background-white': user && userRepositories && userRepositories.length > 0,
                          'disabled': !loggedIn}"
                 to="/repositories/new"
               >
                 <div class="is-flex is-justify-content-space-between">
                   <div>2</div>
-                  <div v-if="user && repositories && repositories.filter(r => r.user_id === user.user_id).length">
+                  <div
+                    v-if="user && userRepositories && userRepositories.length > 0"
+                  >
                     <img :src="require('@/assets/img/icons/done.svg')">
                   </div>
                   <div v-else>
@@ -51,12 +52,11 @@
             </div>
             <div class="column is-one-third">
               <nuxt-link
-                to="/account/edit"
+                :to="`${userRepositories && userRepositories.length > 0
+                  ? '/repositories/' + userRepositories[0].id : 'pipelines/'}`"
                 class="box is-secondary step"
-                :class="{'has-background-white': user && repositories
-                           && repositories.filter(r => r.user_id === user.user_id).length,
-                         'disabled': !(loggedIn && user && repositories
-                           && repositories.filter(r => r.user_id === user.user_id).length)}"
+                :class="{'has-background-white': user && userRepositories && userRepositories.length > 0,
+                         'disabled': !(loggedIn && user && userRepositories && userRepositories.length > 0)}"
               >
                 <div class="is-flex is-justify-content-space-between">
                   <div>3</div>
@@ -72,8 +72,7 @@
                 </div>
                 <div class="has-text-centered my-2">
                   <img
-                    v-if="loggedIn && user && repositories &&
-                      repositories.filter(r => r.user_id === user.user_id).length"
+                    v-if="loggedIn && user && userRepositories && userRepositories.length > 0"
                     src="~assets/img/icons/project.svg"
                   >
                   <img v-else src="~assets/img/icons/project_grey.svg">
@@ -83,43 +82,45 @@
             </div>
           </div>
         </div>
-        <template v-else>
-          <div class="column is-2">
-            <div class="box">
-              <small>Testnet Balance</small>
-              <div class="has-text-weight-semibold">
-                <span
-                  v-if="!balance && balance !== 0"
-                >...</span>
-                <span v-else>{{ Math.trunc(balance*10000)/10000 }}</span> <span class="has-text-accent">NOS</span>
-              </div>
-            </div>
-          </div>
-          <div class="column is-2">
-            <div class="box">
-              <small>Used for Jobs</small>
-              <div class="has-text-weight-semibold">
-                {{ usedBalance }} <span class="has-text-accent">NOS</span>
-              </div>
-            </div>
-          </div>
-          <div class="column is-2">
-            <div class="box">
-              <small>NOS Rewards</small>
-              <div class="has-text-weight-semibold">
-                {{ reward }} <span class="has-text-accent">NOS</span>
-              </div>
-            </div>
-          </div>
-          <div class="column is-2">
-            <div v-if="user && (user.roles && user.roles.includes('admin'))">
-              <button class="button is-accent is-outlined" @click.prevent="depositPopup = true;">
-                Deposit NOS
-              </button>
-            </div>
-          </div>
-        </template>
       </div>
+      <div v-else class="columns">
+        <div class="column is-2">
+          <div class="box">
+            <small>Balance</small>
+            <div class="has-text-weight-semibold">
+              <span
+                v-if="!balance && balance !== 0"
+              >...</span>
+              <span v-else>{{ Math.trunc(balance*10000)/10000 }}</span> <span class="has-text-accent">NOS</span>
+            </div>
+          </div>
+        </div>
+        <div class="column is-2">
+          <div class="box">
+            <small>Used for Jobs</small>
+            <div class="has-text-weight-semibold">
+              {{ usedBalance }} <span class="has-text-accent">NOS</span>
+            </div>
+          </div>
+        </div>
+        <div class="column is-2">
+          <div class="box">
+            <small>NOS Rewards</small>
+            <div class="has-text-weight-semibold">
+              {{ reward }} <span class="has-text-accent">NOS</span>
+            </div>
+          </div>
+        </div>
+        <div class="column is-2">
+          <div v-if="user && (user.roles && user.roles.includes('admin'))">
+            <button class="button is-accent is-outlined" @click.prevent="depositPopup = true;">
+              Deposit NOS
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Projects -->
       <div class="columns mt-3">
         <div class="column is-4">
           <h1 class="title is-4">
@@ -129,7 +130,7 @@
       </div>
       <div v-if="user && userRepositories && userRepositories.length" class="mb-6">
         <nuxt-link to="/repositories/new" class="button is-accent is-outlined is-pulled-right">
-          Add new repository
+          Add Repository
         </nuxt-link>
         <h2 class="subtitle has-text-weight-semibold">
           Your Repositories
@@ -138,6 +139,8 @@
         <repository-list :repositories="userRepositories" />
       </div>
     </section>
+
+    <!-- Deposit popup -->
     <div class="modal deposit-popup" :class="{ 'is-active': depositPopup }">
       <div class="modal-background" @click="depositPopup = false,depositAmount = 0" />
       <div class="modal-content">
@@ -215,7 +218,6 @@ const anchor = require('@project-serum/anchor');
 export default {
   data () {
     return {
-      repositories: null,
       projects: null,
       user: null,
       userRepositories: null,
@@ -245,6 +247,9 @@ export default {
     },
     walletLoggedIn () {
       return this.$sol && this.$sol.publicKey;
+    },
+    showTutorial () {
+      return !(this.user && this.userRepositories && this.userRepositories.length > 0);
     },
     filteredRepositories () {
       let filteredRepositories = this.repositories;
@@ -282,11 +287,9 @@ export default {
         this.wallet = this.$sol.getWallet();
       }
     }
-    this.getActiveRepositories();
     if (!this.interval) {
       this.interval = setInterval(() => {
-        console.log('refreshing repositories..');
-        this.getActiveRepositories();
+        this.getUserRepositories();
       }, 20000);
     }
   },
@@ -329,18 +332,6 @@ export default {
         if (this.user.address) {
           this.walletBalance = (await this.$sol.getNosBalance(this.user.address)).uiAmount;
         }
-      } catch (error) {
-        this.$modal.show({
-          color: 'danger',
-          text: error,
-          title: 'Error'
-        });
-      }
-    },
-    async getActiveRepositories () {
-      try {
-        const repositories = await this.$axios.$get('/repositories/active');
-        this.repositories = repositories;
       } catch (error) {
         this.$modal.show({
           color: 'danger',
