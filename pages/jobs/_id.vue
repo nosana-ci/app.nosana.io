@@ -222,7 +222,10 @@
                         {{ commit.job_content.pipeline.jobs[parseInt(index.split('-')[1])] }}
                       </span>
                     </p>
-                    <i class="fas fa-chevron-down ml-2 has-text-link" :class="{'fa-chevron-up': !hideResults[index]}" />
+                    <i
+                      class="fas fa-chevron-down ml-2 has-text-accent"
+                      :class="{'fa-chevron-up': !hideResults[index]}"
+                    />
                   </div>
                   <p class="has-text-white row-count log" :class="{'hidden-log': hideResults[index]}">
                     <span class="pre">{{ res.out }}</span>
@@ -241,14 +244,14 @@
                     >
                       <p
                         v-if="!item.cmd.cmd"
-                        class="row-count has-text-weight-bold has-text-link log"
+                        class="row-count has-text-weight-bold has-text-accent log"
                         :class="{'has-text-danger': item.error}"
                       >
                         {{ item.cmd }}
                       </p>
                       <p
                         v-else
-                        class="row-count has-text-weight-bold has-text-link log"
+                        class="row-count has-text-weight-bold has-text-accent log"
                         :class="{'has-text-danger': item.error}"
                       >
                         {{ item.cmd.cmd }}
@@ -258,7 +261,7 @@
                           {{ timeStamp(res[1][i - 1]['time'], item.time) }}
                         </p>
                         <i
-                          class="fas fa-chevron-down ml-2 has-text-link"
+                          class="fas fa-chevron-down ml-2 has-text-accent"
                           :class="{'fa-chevron-up': !hideResults[count + '.' + (i - 1)]}"
                         />
                       </div>
@@ -582,7 +585,7 @@ export default {
     display: inline-block;
     padding: 0 .5em;
     margin-right: .5em;
-    color: $accent !important;
+    color: $grey !important;
     min-width: 50px;
     text-align: right;
     margin-left: -62px;
