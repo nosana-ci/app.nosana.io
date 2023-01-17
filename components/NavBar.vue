@@ -106,7 +106,7 @@
               Pipelines
             </nuxt-link>
           </li>
-          <li>
+          <!-- <li>
             <nuxt-link
               to="/stake"
               exact-active-class="is-active"
@@ -117,7 +117,7 @@
               </span>
               Staking & Rewards
             </nuxt-link>
-          </li>
+          </li> -->
           <!-- <li>
             <nuxt-link
               to="/markets"

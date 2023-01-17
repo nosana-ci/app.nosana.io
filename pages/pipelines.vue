@@ -1,6 +1,13 @@
 <template>
   <div>
     <section class="section">
+      <div v-if="showTutorial" class="columns mt-3">
+        <div class="column is-4">
+          <h1 class="title is-4">
+            Get Started
+          </h1>
+        </div>
+      </div>
       <div v-if="showTutorial" class="columns">
         <div class="column is-10">
           <div class="columns">
@@ -112,7 +119,7 @@
           </div>
         </div>
         <div class="column is-2">
-          <div v-if="user && (user.roles && user.roles.includes('admin'))">
+          <div v-if="user">
             <button class="button is-accent is-outlined" @click.prevent="depositPopup = true;">
               Deposit NOS
             </button>
@@ -121,14 +128,14 @@
       </div>
 
       <!-- Projects -->
-      <div class="columns mt-3">
+      <div v-if="!showTutorial" class="columns mt-3">
         <div class="column is-4">
           <h1 class="title is-4">
             Projects
           </h1>
         </div>
       </div>
-      <div v-if="user && userRepositories && userRepositories.length" class="mb-6">
+      <div v-if="!showTutorial" class="mb-6">
         <nuxt-link to="/repositories/new" class="button is-accent is-outlined is-pulled-right">
           Add Repository
         </nuxt-link>

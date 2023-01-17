@@ -3,12 +3,9 @@
     <div>
       <div v-if="!loggedIn">
         <h1 class="title has-text-centered">
-          Registration page
+          Register
         </h1>
         <img class="image mx-auto" src="https://nosana.io/img/Nosana_Logomark_black.svg" alt="" srcset="" style="max-height: 400px;">
-        <p class="title has-text-centered">
-          Lorem ipsum
-        </p>
         <br>
         <div class="buttons is-centered p-6 mx-6">
           <div
@@ -43,9 +40,16 @@ export default {
       return (this.$auth && this.$auth.loggedIn);
     }
   },
+  watch: {
+    '$auth.loggedIn' (loggedIn) {
+      if (loggedIn) {
+        this.$router.push('/pipelines');
+      }
+    }
+  },
   mounted () {
     if (this.loggedIn) {
-      this.$router.push('/welcome');
+      this.$router.push('/pipelines');
     }
   },
   methods: {

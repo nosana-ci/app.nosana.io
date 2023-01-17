@@ -2,22 +2,27 @@
   <section class="section">
     <div class="container">
       <div class="has-text-centered">
+        <h1 class="title has-text-centered">
+          Login
+        </h1>
         <img class="image mx-auto" src="https://nosana.io/img/Nosana_Logomark_black.svg" alt="" srcset="" style="max-height: 400px;">
-        <p>Connect your Solana wallet or login with your Github account to get started.</p>
-        <br>
-        <div
-          class="button is-accent is-large has-text-weight-semibold"
-          exact-active-class="is-active"
-          @click="$sol.loginModal = true"
-        >
-          Connect Wallet
-        </div>
-        <div
-          class="button is-accent is-large has-text-weight-semibold"
-          exact-active-class="is-active"
-          @click="goToGithub"
-        >
-          Login with Github
+        <div v-if="!loading">
+          <p>Connect your Solana wallet or login with your Github account to get started.</p>
+          <br>
+          <div
+            class="button is-accent is-large has-text-weight-semibold"
+            exact-active-class="is-active"
+            @click="$sol.loginModal = true"
+          >
+            Connect Wallet
+          </div>
+          <div
+            class="button is-accent is-large has-text-weight-semibold"
+            exact-active-class="is-active"
+            @click="goToGithub"
+          >
+            Login with Github
+          </div>
         </div>
       </div>
     </div>
@@ -30,7 +35,8 @@ export default {
   auth: 'guest',
   data () {
     return {
-      githubAppUrl: process.env.NUXT_ENV_GITHUB_APP_URL
+      githubAppUrl: process.env.NUXT_ENV_GITHUB_APP_URL,
+      loading: false
     };
   },
   mounted () {
@@ -43,6 +49,7 @@ export default {
       window.location.href = `https://github.com/login/oauth/authorize?client_id=${process.env.NUXT_ENV_GITHUB_APP_CLIENT_ID}&redirect_uri=${window.location.origin}/login`;
     },
     async authenticateGithub () {
+      this.loading = true;
       try {
         const response = await this.$auth.loginWith('githubLogin', {
           data: {
@@ -69,6 +76,7 @@ export default {
           title: 'Error'
         });
       }
+      this.loading = false;
     }
   }
 };
