@@ -2,27 +2,42 @@
   <section class="section">
     <div class="container">
       <div class="has-text-centered">
-        <h1 class="title has-text-centered">
-          Login
+        <img class="image mx-auto" src="~/assets/img/Nosana_Logo_horizontal_color_black.svg" style="width:200px">
+
+        <h1 class="title has-text-centered mt-6">
+          Welcome to the<br>Nosana Network
         </h1>
-        <img class="image mx-auto" src="https://nosana.io/img/Nosana_Logomark_black.svg" alt="" srcset="" style="max-height: 400px;">
         <div v-if="!loading">
-          <p>Connect your Solana wallet or login with your Github account to get started.</p>
+          <p>Login with your Github account<br> or connect your Solana wallet to get started.</p>
           <br>
-          <div
-            class="button is-accent is-large has-text-weight-semibold"
-            exact-active-class="is-active"
-            @click="$sol.loginModal = true"
-          >
-            Connect Wallet
+          <div>
+            <div>
+              <i class="fab fa-github is-size-2 mb-4" />
+            </div>
+            <div
+              class="button is-accent is-wider has-text-weight-semibold"
+              exact-active-class="is-active"
+              @click="goToGithub"
+            >
+              Login with Github
+            </div>
           </div>
-          <div
-            class="button is-accent is-large has-text-weight-semibold"
-            exact-active-class="is-active"
-            @click="goToGithub"
-          >
-            Login with Github
-          </div>
+          <small>
+            or
+            <a
+              class="has-text-weight-semibold"
+              exact-active-class="is-active"
+              @click.prevent="$sol.loginModal = true"
+            >
+              Connect Solana Wallet
+            </a>
+          </small>
+        </div>
+        <div v-else>
+          Authenticating to github..
+        </div>
+        <div class="mt-6 pt-6">
+          <img src="~/assets/img/floor.svg">
         </div>
       </div>
     </div>
@@ -35,7 +50,6 @@ export default {
   auth: 'guest',
   data () {
     return {
-      githubAppUrl: process.env.NUXT_ENV_GITHUB_APP_URL,
       loading: false
     };
   },

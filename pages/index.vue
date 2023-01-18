@@ -50,6 +50,8 @@ export default {
   mounted () {
     if (this.loggedIn) {
       this.$router.push('/pipelines');
+    } else {
+      this.$router.push('/login');
     }
   },
   methods: {

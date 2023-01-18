@@ -125,6 +125,12 @@ a.card {
   &.is-wide {
     min-width: 140px;
   }
+  &.is-wider {
+    min-width: 240px;
+  }
+  &.is-widest {
+    min-width: 360px;
+  }
   &.is-accent {
     color: $white;
     &:hover {
