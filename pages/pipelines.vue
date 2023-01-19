@@ -58,6 +58,9 @@
         <repository-list :repositories="userRepositories" />
       </div>
     </section>
+    <div v-if="showTutorial" class="mt-6 pt-6 floor-image">
+      <img src="~/assets/img/floor.svg">
+    </div>
   </div>
 </template>
 
@@ -163,6 +166,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.section {
+  min-height: calc(100vh - 100px);
+}
 .project-icon {
 border-radius: 100%;
 background: $secondary;
@@ -180,6 +186,18 @@ border: 1px solid grey;
   margin: 0 auto;
   &.box {
     max-width: 550px;
+    width: 100%;
+  }
+ }
+
+ .floor-image {
+  position: absolute;
+  width: 100%;
+  z-index: 0;
+  bottom: 0;
+  overflow: hidden;
+  img {
+    mask-image: linear-gradient(to top, rgba(0,0,0,1), rgba(0,0,0,0));
     width: 100%;
   }
  }

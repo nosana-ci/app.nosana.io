@@ -11,7 +11,7 @@
         <nav-bar />
         <node-block class="mt-auto is-hidden-mobile" />
       </div>
-      <div class="column">
+      <div class="column" style="position: relative;">
         <Nuxt />
         <nos-footer />
       </div>
