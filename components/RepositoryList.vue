@@ -3,9 +3,7 @@
     <table class="table is-striped is-fullwidth is-hoverable">
       <thead>
         <tr>
-          <th>Status</th>
           <th>Repository</th>
-          <th>Trigger</th>
           <th>Commit</th>
         </tr>
       </thead>
@@ -16,28 +14,15 @@
           class="is-clickable"
           @click="$router.push(`/repositories/${repository.id}`)"
         >
-          <td class="py-4">
-            <span
-              class="tag"
-              :class="{'is-success': repository.status === 'ACTIVE', 'is-info': repository.status === 'PENDING'}"
-            >{{ repository.status }}</span>
-          </td>
-          <td>{{ repository.repository }}</td>
           <td>
-            <span
-              class="has-tooltip-arrow"
-              :class="{'has-tooltip': repository.secret}"
-              :data-tooltip="repository.secret ?
-                ('Github Webhook:\n' + backendUrl + '/webhook/github/' + repository.secret) : null"
-              @click.stop="repository.secret ?
-                copyToClipboard(backendUrl + '/webhook/github/' + repository.secret)
-                : $router.push(`/repositories/${repository.id}`)"
-            >on commit to {{ repository.branches }} branch(es)</span>
+            <div class="py-2">
+              {{ repository.repository }}
+            </div>
           </td>
           <td>
             <div
               v-if="repository.commits"
-              class="is-flex"
+              class="is-flex py-2"
             >
               <div
                 v-for="commit in repository.commits.slice().reverse()"
@@ -53,6 +38,9 @@
                   />
                 </nuxt-link>
               </div>
+            </div>
+            <div v-else class="py-2">
+              No jobs yet..
             </div>
           </td>
         </tr>

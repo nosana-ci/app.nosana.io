@@ -1,91 +1,55 @@
 <template>
   <div>
     <section class="section">
-      <div v-if="showTutorial" class="columns mt-3">
-        <div class="column is-4">
-          <h1 class="title is-4">
-            Get Started
-          </h1>
-        </div>
+      <div v-if="userRepositories === null">
+        <h1 class="title">
+          Loading..
+        </h1>
       </div>
-      <div v-if="showTutorial" class="columns">
-        <div class="column is-10">
-          <div class="columns">
-            <div class="column is-one-third">
-              <nuxt-link
-                class="box is-secondary step"
-                :class="{'has-background-white': loggedIn}"
-                to="/login"
-              >
-                <div class="is-flex is-justify-content-space-between">
-                  <div>1</div>
-                  <div v-if="loggedIn">
-                    <img :src="require('@/assets/img/icons/done.svg')">
+      <div v-else-if="showTutorial">
+        <div class="columns mt-3">
+          <div class="column is-4">
+            <h1 class="title is-4">
+              Get Started
+            </h1>
+          </div>
+        </div>
+        <p class="has-limited-width">
+          Install the Nosana Github App, which will have read-only permission to your selected repositories.
+          After you have installed the app, you can add your repositories and manage their pipelines.
+          You can specify on which triggers (e.g. commits on the main branch) pipelines are automatically being
+          posted to the blockchain
+        </p>
+        <div class="columns mt-4">
+          <div class="column is-10">
+            <div class="columns">
+              <div class="column is-one-third">
+                <nuxt-link
+                  class="box is-secondary step"
+                  :class="{'has-background-white': user && userRepositories && userRepositories.length > 0,
+                           'disabled': !loggedIn}"
+                  to="/repositories/new"
+                >
+                  <!-- <div class="is-flex is-justify-content-space-between">
+                    <div>1</div>
+                    <div
+                      v-if="user && userRepositories && userRepositories.length > 0"
+                    >
+                      <img :src="require('@/assets/img/icons/done.svg')">
+                    </div>
+                    <div v-else>
+                      <img :src="require('@/assets/img/icons/pending.svg')">
+                    </div>
+                  </div> -->
+                  <div class="has-text-centered my-2">
+                    <img v-if="loggedIn" src="~assets/img/icons/repository.svg">
+                    <img v-else src="~assets/img/icons/repository_grey.svg">
+                    <h2 class="subtitle has-text-weight-bold mt-4">
+                      Add first Repository
+                    </h2>
                   </div>
-                  <div v-else>
-                    <img :src="require('@/assets/img/icons/pending.svg')">
-                  </div>
-                </div>
-                <div class="has-text-centered my-2">
-                  <img src="~assets/img/icons/wallet.svg">
-                  <p>Login</p>
-                </div>
-              </nuxt-link>
-            </div>
-            <div class="column is-one-third">
-              <nuxt-link
-                class="box is-secondary step"
-                :class="{'has-background-white': user && userRepositories && userRepositories.length > 0,
-                         'disabled': !loggedIn}"
-                to="/repositories/new"
-              >
-                <div class="is-flex is-justify-content-space-between">
-                  <div>2</div>
-                  <div
-                    v-if="user && userRepositories && userRepositories.length > 0"
-                  >
-                    <img :src="require('@/assets/img/icons/done.svg')">
-                  </div>
-                  <div v-else>
-                    <img :src="require('@/assets/img/icons/pending.svg')">
-                  </div>
-                </div>
-                <div class="has-text-centered my-2">
-                  <img v-if="loggedIn" src="~assets/img/icons/repository.svg">
-                  <img v-else src="~assets/img/icons/repository_grey.svg">
-                  <p>Add Repository</p>
-                </div>
-              </nuxt-link>
-            </div>
-            <div class="column is-one-third">
-              <nuxt-link
-                :to="`${userRepositories && userRepositories.length > 0
-                  ? '/repositories/' + userRepositories[0].id : 'pipelines/'}`"
-                class="box is-secondary step"
-                :class="{'has-background-white': user && userRepositories && userRepositories.length > 0,
-                         'disabled': !(loggedIn && user && userRepositories && userRepositories.length > 0)}"
-              >
-                <div class="is-flex is-justify-content-space-between">
-                  <div>3</div>
-                  <div v-if="user && user.isApproved">
-                    <img :src="require('@/assets/img/icons/done.svg')">
-                  </div>
-                  <div v-else-if="user && user.name">
-                    <img :src="require('@/assets/img/icons/running.svg')">
-                  </div>
-                  <div v-else>
-                    <img :src="require('@/assets/img/icons/pending.svg')">
-                  </div>
-                </div>
-                <div class="has-text-centered my-2">
-                  <img
-                    v-if="loggedIn && user && userRepositories && userRepositories.length > 0"
-                    src="~assets/img/icons/project.svg"
-                  >
-                  <img v-else src="~assets/img/icons/project_grey.svg">
-                  <p>Manage Pipeline</p>
-                </div>
-              </nuxt-link>
+                </nuxt-link>
+              </div>
             </div>
           </div>
         </div>
@@ -323,6 +287,9 @@ export default {
       try {
         const repositories = await this.$axios.$get('/user/repositories');
         this.userRepositories = repositories;
+        if (!repositories.length && this.$route.query.login) {
+          this.$router.push('/repositories/new');
+        }
       } catch (error) {
         this.$modal.show({
           color: 'danger',
