@@ -54,42 +54,6 @@
           </div>
         </div>
       </div>
-      <div v-else class="columns">
-        <div class="column is-2">
-          <div class="box">
-            <small>Balance</small>
-            <div class="has-text-weight-semibold">
-              <span
-                v-if="!balance && balance !== 0"
-              >...</span>
-              <span v-else>{{ Math.trunc(balance*10000)/10000 }}</span> <span class="has-text-accent">NOS</span>
-            </div>
-          </div>
-        </div>
-        <div class="column is-2">
-          <div class="box">
-            <small>Used for Jobs</small>
-            <div class="has-text-weight-semibold">
-              {{ usedBalance }} <span class="has-text-accent">NOS</span>
-            </div>
-          </div>
-        </div>
-        <div class="column is-2">
-          <div class="box">
-            <small>NOS Rewards</small>
-            <div class="has-text-weight-semibold">
-              {{ reward }} <span class="has-text-accent">NOS</span>
-            </div>
-          </div>
-        </div>
-        <div class="column is-2">
-          <div v-if="user">
-            <button class="button is-accent is-outlined" @click.prevent="depositPopup = true;">
-              Deposit NOS
-            </button>
-          </div>
-        </div>
-      </div>
 
       <!-- Projects -->
       <div v-if="!showTutorial" class="columns mt-3">
@@ -110,81 +74,10 @@
         <repository-list :repositories="userRepositories" />
       </div>
     </section>
-
-    <!-- Deposit popup -->
-    <div class="modal deposit-popup" :class="{ 'is-active': depositPopup }">
-      <div class="modal-background" @click="depositPopup = false,depositAmount = 0" />
-      <div class="modal-content">
-        <div class="modal-content has-background-white has-radius-medium p-5">
-          <h3 class="has-text-centered subtitle is-4 has-text-weight-semibold">
-            Deposit
-          </h3>
-          <div class="balances is-flex">
-            <div class="balance pl-3">
-              <span v-if="walletBalance === null" class="is-size-7">Loading..<br></span>
-              <span v-else class="is-size-7">NOS Wallet Balance<br></span>
-              <span @click="depositAmount = parseInt(walletBalance)">{{ walletBalance }} NOS</span>
-              <a v-if="walletBalance === 0" href="https://nosana.io/token" target="_blank" class="is-size-7">Buy NOS tokens</a>
-            </div>
-          </div>
-          <form class="is-fullwidth" @submit.prevent="deposit">
-            <div
-              class="mt-5 has-radius-medium has-text-centered columns
-              is-flex is-align-items-center is-multiline has-background-grey-lighter m-0 py-5"
-            >
-              <div class="column is-full">
-                <div class="field has-background-grey-light has-radius-medium">
-                  <div
-                    class="control px-1 pr-3 py-2
-                    is-flex is-flex-direction-row is-align-items-center is-justify-content-space-between"
-                  >
-                    <div class="amount-logo px-3">
-                      <img width="30" src="~assets/img/icons/token.svg">
-                    </div>
-                    <div class="is-flex is-align-items-center is-flex-grow-1">
-                      <input
-                        v-model="depositAmount"
-                        required
-                        class="input has-background-grey-light ml-3 my-3"
-                        :max="walletBalance"
-                        min="1"
-                        step="0.1"
-                        type="number"
-                        placeholder="0"
-                        style="width: 250px; height: 35px; border: none;"
-                      >
-                      <span class="is-size-7 pt-3 pl-2">NOS</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <button
-              v-if="!walletLoggedIn"
-              class="button is-accent is-fullwidth mt-5 has-text-weight-semibold"
-              @click.stop.prevent="$sol.loginModal = true"
-            >
-              Connect Wallet
-            </button>
-            <button
-              v-else
-              type="submit"
-              class="button is-accent is-fullwidth mt-5 has-text-weight-semibold"
-              :class="{'is-loading': loading}"
-            >
-              Deposit
-            </button>
-          </form>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
 <script>
-import { Transaction, PublicKey } from '@solana/web3.js';
-import { getAssociatedTokenAddress, getAccount, TOKEN_PROGRAM_ID, createTransferInstruction, createAssociatedTokenAccountInstruction, ASSOCIATED_TOKEN_PROGRAM_ID } from '@solana/spl-token';
-const anchor = require('@project-serum/anchor');
 
 export default {
   data () {
@@ -192,32 +85,15 @@ export default {
       projects: null,
       user: null,
       userRepositories: null,
-      balance: null,
-      usedBalance: null,
       search: null,
       interval: null,
       network: process.env.NUXT_ENV_SOL_NETWORK,
-      loading: false,
-      depositAmount: 0,
-      depositPopup: false,
-      walletBalance: null,
-      wallet: null
+      loading: false
     };
   },
   computed: {
-    reward () {
-      let reward = 0;
-      if (this.balance > 0) {
-        reward += 500;
-      }
-
-      return Math.min(reward + this.usedBalance, 10000);
-    },
     loggedIn () {
       return this.$auth && this.$auth.loggedIn;
-    },
-    walletLoggedIn () {
-      return this.$sol && this.$sol.publicKey;
     },
     showTutorial () {
       return !(this.user && this.userRepositories && this.userRepositories.length > 0);
@@ -240,7 +116,6 @@ export default {
       if (loggedIn) {
         this.getUser();
         this.getUserRepositories();
-        this.getUserJobPrices();
       }
     },
     '$sol.publicKey': function (pubkey) {
@@ -253,7 +128,6 @@ export default {
     if (this.loggedIn) {
       this.getUser();
       this.getUserRepositories();
-      this.getUserJobPrices();
       if (this.$sol) {
         this.wallet = this.$sol.getWallet();
       }
@@ -271,18 +145,6 @@ export default {
     }
   },
   methods: {
-    async getUserJobPrices () {
-      try {
-        const totalCosts = await this.$axios.$get('/user/jobs/price');
-        this.usedBalance = totalCosts / 1e6;
-      } catch (error) {
-        this.$modal.show({
-          color: 'danger',
-          text: error,
-          title: 'Error'
-        });
-      }
-    },
     async getUserRepositories () {
       try {
         const repositories = await this.$axios.$get('/user/repositories');
@@ -302,10 +164,6 @@ export default {
       try {
         const user = await this.$axios.$get('/user');
         this.user = user;
-        this.balance = (await this.$sol.getNosBalance(this.user.generated_address)).uiAmount;
-        if (this.user.address) {
-          this.walletBalance = (await this.$sol.getNosBalance(this.user.address)).uiAmount;
-        }
       } catch (error) {
         this.$modal.show({
           color: 'danger',
@@ -313,70 +171,6 @@ export default {
           title: 'Error'
         });
       }
-    },
-    async deposit () {
-      this.loading = true;
-      try {
-        let node = this.network;
-        if (!this.network.includes('http')) {
-          node = anchor.web3.clusterApiUrl(node);
-        }
-        const connection = new anchor.web3.Connection(node, 'confirmed');
-        const mint = new PublicKey(process.env.NUXT_ENV_NOS_TOKEN);
-        const from = await getAssociatedTokenAddress(mint, this.wallet.publicKey);
-        const to = await getAssociatedTokenAddress(mint, new PublicKey(this.user.generated_address));
-        const tx = new Transaction();
-        try {
-          const account = await getAccount(connection, to, TOKEN_PROGRAM_ID);
-          console.log('get account!', account);
-        } catch (error) {
-          try {
-            tx.add(createAssociatedTokenAccountInstruction(
-              this.wallet.publicKey,
-              to,
-              new PublicKey(this.user.generated_address),
-              mint,
-              TOKEN_PROGRAM_ID,
-              ASSOCIATED_TOKEN_PROGRAM_ID
-            ));
-          } catch (e) {
-            console.log(e);
-            // Ignore all errors; for now there is no API-compatible way to selectively ignore the expected
-            // instruction error if the associated account exists already.
-          }
-        }
-
-        tx.add(
-          createTransferInstruction(
-            from,
-            to,
-            this.wallet.publicKey,
-            this.depositAmount * 1e6
-          )
-        );
-
-        tx.feePayer = this.wallet.publicKey;
-        tx.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
-        const signed = await this.wallet.signTransaction(tx);
-        const signature = await connection.sendRawTransaction(signed.serialize());
-        await connection.confirmTransaction(signature);
-        console.log('tx response', signature);
-        this.$modal.show({
-          color: 'success',
-          text: `Successfully deposited ${this.depositAmount} NOS`,
-          title: 'Deposit'
-        });
-        this.depositAmount = 0;
-        this.depositPopup = 0;
-      } catch (error) {
-        console.error(error);
-        this.$modal.show({
-          color: 'danger',
-          text: error,
-          title: 'Error'
-        });
-      }
-      this.loading = false;
     }
   }
 };
@@ -396,7 +190,4 @@ border: 1px solid grey;
 .step {
    min-height: 160px;
  }
-.deposit-popup {
-  z-index: 39;
-}
 </style>
