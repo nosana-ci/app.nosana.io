@@ -1,57 +1,41 @@
 <template>
   <div>
     <section class="section">
-      <div v-if="userRepositories === null">
-        <h1 class="title">
-          Loading..
-        </h1>
-      </div>
-      <div v-else-if="showTutorial">
-        <div class="columns mt-3">
-          <div class="column is-4">
+      <div v-if="showTutorial">
+        <div class="columns mt-3 is-centered has-text-centered">
+          <div class="column is-12">
             <h1 class="title is-4">
               Get Started
             </h1>
+            <p v-if="loggedIn" class="has-text-centered has-limited-width">
+              Install the Nosana Github App, which will have read-only permission to your selected repositories.
+              After you have installed the app, you can add your repositories and manage their pipelines.
+              You can specify on which triggers (e.g. commits on the main branch) pipelines are automatically being
+              posted to the blockchain
+            </p>
+            <p v-else class="has-text-centered has-limited-width">
+              To get started with running pipelines on Nosana, create an account or login.
+            </p>
           </div>
         </div>
-        <p class="has-limited-width">
-          Install the Nosana Github App, which will have read-only permission to your selected repositories.
-          After you have installed the app, you can add your repositories and manage their pipelines.
-          You can specify on which triggers (e.g. commits on the main branch) pipelines are automatically being
-          posted to the blockchain
-        </p>
-        <div class="columns mt-4">
-          <div class="column is-10">
-            <div class="columns">
-              <div class="column is-one-third">
-                <nuxt-link
-                  class="box is-secondary step"
-                  :class="{'has-background-white': user && userRepositories && userRepositories.length > 0,
-                           'disabled': !loggedIn}"
-                  to="/repositories/new"
-                >
-                  <!-- <div class="is-flex is-justify-content-space-between">
-                    <div>1</div>
-                    <div
-                      v-if="user && userRepositories && userRepositories.length > 0"
-                    >
-                      <img :src="require('@/assets/img/icons/done.svg')">
-                    </div>
-                    <div v-else>
-                      <img :src="require('@/assets/img/icons/pending.svg')">
-                    </div>
-                  </div> -->
-                  <div class="has-text-centered my-2">
-                    <img v-if="loggedIn" src="~assets/img/icons/repository.svg">
-                    <img v-else src="~assets/img/icons/repository_grey.svg">
-                    <h2 class="subtitle has-text-weight-bold mt-4">
-                      Add first Repository
-                    </h2>
-                  </div>
-                </nuxt-link>
-              </div>
+        <div class="mt-4 has-text-centered">
+          <div
+            v-if="loggedIn"
+            class="box has-background-light has-limited-width"
+          >
+            <div class="has-text-centered my-2">
+              <h2 class="subtitle has-text-weight-bold mt-4">
+                Add your first Repository
+              </h2>
+              <img class="my-4" src="~assets/img/icons/repository_grey.svg" style="width: 70px;"><br>
+              <nuxt-link to="/repositories/new" class="button is-accent my-3 px-6">
+                + Add Repository
+              </nuxt-link>
             </div>
           </div>
+          <nuxt-link v-else to="/repositories/new" class="button is-accent px-6">
+            Login
+          </nuxt-link>
         </div>
       </div>
 
@@ -134,7 +118,9 @@ export default {
     }
     if (!this.interval) {
       this.interval = setInterval(() => {
-        this.getUserRepositories();
+        if (this.loggedIn) {
+          this.getUserRepositories();
+        }
       }, 20000);
     }
   },
@@ -189,5 +175,12 @@ border: 1px solid grey;
 }
 .step {
    min-height: 160px;
+ }
+ .has-limited-width {
+  margin: 0 auto;
+  &.box {
+    max-width: 550px;
+    width: 100%;
+  }
  }
 </style>
