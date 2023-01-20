@@ -1,16 +1,22 @@
 <template>
   <div class="table-container">
-    <table class="table is-striped is-fullwidth is-hoverable">
+    <table class="table is-striped is-bordered  is-fullwidth is-hoverable">
       <thead>
         <tr class="has-background-light">
           <th class="py-2 px-5">
-            Status
+            <div class="px-3">
+              Status
+            </div>
           </th>
           <th class="py-2 px-5">
-            Repository
+            <div class="px-3">
+              Repository
+            </div>
           </th>
           <th class="py-2 px-5">
-            Commit
+            <div class="px-3">
+              Commit
+            </div>
           </th>
         </tr>
       </thead>
@@ -22,23 +28,23 @@
           @click="$router.push(`/repositories/${repository.id}`)"
         >
           <td>
-            <div class="p-3">
+            <div>
               <span
-                class="tag"
+                class="tag is-outlined is-light"
                 :class="{'is-success': repository.status === 'ACTIVE', 'is-info': repository.status === 'PENDING'}"
               >{{ repository.status }}</span>
             </div>
           </td>
 
           <td>
-            <div class="p-3">
+            <div>
               {{ repository.repository }}
             </div>
           </td>
           <td>
             <div
               v-if="repository.commits"
-              class="is-flex p-3"
+              class="is-flex"
             >
               <div
                 v-for="commit in repository.commits.slice().reverse()"
@@ -55,7 +61,7 @@
                 </nuxt-link>
               </div>
             </div>
-            <div v-else class="p-3">
+            <div v-else>
               No jobs yet..
             </div>
           </td>
@@ -94,3 +100,11 @@ export default {
   }
 };
 </script>
+<style lang="scss" scoped>
+.table.is-striped tbody tr:not(.is-selected):nth-child(odd) {
+  background-color: $grey-lighter;
+}
+.table td, .table th {
+  border-color: $grey-darker;
+}
+</style>

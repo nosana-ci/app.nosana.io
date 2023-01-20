@@ -11,13 +11,13 @@ $family-monospace: 'Space Mono', monospace;
 // Colors
 $primary: white;
 $secondary: #EAEEE9;
-$accent:  #03BC00;
-$green: #03BC00;
+$accent:  #03A600;
+$green: #03A600;
 $grey-darker: #CBD1C9;
 $grey-dark: #E0E6DE;
 $grey-light: #EAEEE9;
 $grey-lighter: #F2F5F1;
-$white-ter: #F7FAF6;
+$white-ter: #F7F9F6;
 
 $light: $white-ter;
 $dark: $grey-dark;
@@ -82,6 +82,11 @@ $tablet: 1024px;
 
 $modal-background-background-color: rgba(0,0,0, 0.5);
 
-$table-cell-padding: 0.25em 0.75em;
-
 $fullhd: 1680px;
+
+$table-cell-padding: 1.2em 2.25em;
+$table-striped-row-even-background-color: $light;
+$table-striped-row-even-hover-background-color: $light;
+$table-row-hover-background-color: $light;
+
+$input-border-color: $grey-dark;

@@ -54,14 +54,21 @@
 
         <div class="has-background-light">
           <div class="px-5 pt-5">
-            <nuxt-link to="/repositories/new" class="button is-accent is-pulled-right is-small">
-              + Add more repositories
-            </nuxt-link>
-            <nuxt-link to="/secrets" class="button is-accent is-outlined mr-3 is-pulled-right is-small">
-              Global Secrets
-            </nuxt-link>
+            <div class="is-flex is-justify-content-space-between">
+              <div class="is-flex-grow-1 pr-4">
+                <input v-model="search" class="input" placeholder="Search">
+              </div>
+              <div class="">
+                <nuxt-link to="/repositories/new" class="button is-accent is-pulled-right">
+                  + Add more repositories
+                </nuxt-link>
+                <nuxt-link to="/secrets" class="button is-accent is-outlined mr-3 is-pulled-right">
+                  Global Secrets
+                </nuxt-link>
+              </div>
+            </div>
           </div>
-          <repository-list class="mt-6" :repositories="userRepositories" />
+          <repository-list class="mt-5" :repositories="filteredRepositories" />
         </div>
       </div>
     </section>
@@ -93,7 +100,7 @@ export default {
       return !(this.user && this.userRepositories && this.userRepositories.length > 0);
     },
     filteredRepositories () {
-      let filteredRepositories = this.repositories;
+      let filteredRepositories = this.userRepositories;
       // Search campaigns
       if (filteredRepositories && this.search !== null) {
         filteredRepositories =

@@ -212,3 +212,19 @@ a.card {
 th {
   font-weight: 600;
 }
+
+.tag.is-outlined {
+  @extend .button.is-outlined;
+  border: 1px solid;
+  pointer-events: none !important;
+  cursor: default;
+}
+
+input {
+  border-width: 1px !important;
+}
+
+.table.is-bordered td, .table.is-bordered th {
+  border-left: none;
+  border-right: none;
+}
