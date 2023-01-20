@@ -6,7 +6,7 @@
     </client-only>
     <div class="columns m-0 is-fullheight">
       <div
-        class="column is-narrow has-background-light is-flex is-flex-direction-column sidebar"
+        class="column is-narrow has-background-secondary is-flex is-flex-direction-column sidebar"
       >
         <nav-bar />
         <node-block class="mt-auto is-hidden-mobile" />

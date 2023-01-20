@@ -4,7 +4,7 @@
       <div v-if="showTutorial">
         <div class="columns mt-3 is-centered has-text-centered">
           <div class="column is-12">
-            <h1 class="title is-4">
+            <h1 class="title is-3">
               Get Started
             </h1>
             <p v-if="loggedIn" class="has-text-centered has-limited-width">
@@ -40,22 +40,22 @@
       </div>
 
       <!-- Projects -->
-      <div v-if="!showTutorial" class="columns mt-3">
+      <div v-if="!showTutorial" class="columns">
         <div class="column is-4">
-          <h1 class="title is-4">
-            Projects
+          <h1 class="title is-3">
+            Pipelines
           </h1>
         </div>
       </div>
-      <div v-if="!showTutorial" class="mb-6">
-        <nuxt-link to="/repositories/new" class="button is-accent is-outlined is-pulled-right">
-          Add Repository
+      <div v-if="!showTutorial" class="mb-6 mt-6">
+        <nuxt-link to="/repositories/new" class="button is-accent is-pulled-right">
+          + Add Repository
         </nuxt-link>
         <h2 class="subtitle has-text-weight-semibold">
           Your Repositories
         </h2>
 
-        <repository-list :repositories="userRepositories" />
+        <repository-list class="mt-6" :repositories="userRepositories" />
       </div>
     </section>
     <div v-if="showTutorial" class="mt-6 pt-6 floor-image">

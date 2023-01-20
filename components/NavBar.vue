@@ -179,9 +179,8 @@ font-size: 14px;
   }
   a{
     &.is-active {
-      i {
-        color: $accent;
-      }
+      background-color: $grey-dark;
+      color: $accent;
     }
   }
 }

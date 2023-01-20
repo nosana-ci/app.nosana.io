@@ -2,9 +2,16 @@
   <div class="table-container">
     <table class="table is-striped is-fullwidth is-hoverable">
       <thead>
-        <tr>
-          <th>Repository</th>
-          <th>Commit</th>
+        <tr class="has-background-light">
+          <th class="py-2 px-5">
+            Status
+          </th>
+          <th class="py-2 px-5">
+            Repository
+          </th>
+          <th class="py-2 px-5">
+            Commit
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -15,14 +22,23 @@
           @click="$router.push(`/repositories/${repository.id}`)"
         >
           <td>
-            <div class="py-2">
+            <div class="p-3">
+              <span
+                class="tag"
+                :class="{'is-success': repository.status === 'ACTIVE', 'is-info': repository.status === 'PENDING'}"
+              >{{ repository.status }}</span>
+            </div>
+          </td>
+
+          <td>
+            <div class="p-3">
               {{ repository.repository }}
             </div>
           </td>
           <td>
             <div
               v-if="repository.commits"
-              class="is-flex py-2"
+              class="is-flex p-3"
             >
               <div
                 v-for="commit in repository.commits.slice().reverse()"
@@ -39,7 +55,7 @@
                 </nuxt-link>
               </div>
             </div>
-            <div v-else class="py-2">
+            <div v-else class="p-3">
               No jobs yet..
             </div>
           </td>

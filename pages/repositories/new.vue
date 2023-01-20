@@ -1,79 +1,87 @@
 <template>
   <section class="section">
     <div class="container">
-      <nuxt-link to="/pipelines">
-        <i class="fas fa-chevron-left" /> All repositories
+      <nuxt-link to="/pipelines" class="has-text-accent has-text-weight-semibold">
+        <i class="fas fa-chevron-left" /> All Repositories
       </nuxt-link>
-      <h1 class="title is-4">
-        Add new <b class="has-text-accent">Repository</b>
+      <h1 class="title is-3 mt-4 has-text-centered">
+        Add new Repository
       </h1>
-      <div v-if="!githubToken && !installations">
-        Loading...
-      </div>
-      <div v-else-if="!githubToken">
-        <p v-if="installationError" class="mb-2">
-          Having trouble with your Github Installation? <a :href="githubAppUrl">Try reconnecting it.</a>
-        </p>
-        <p
-          v-for="installation in installations"
-          :key="installation.id"
-          class="block"
-        >
-          <a
-            class="button is-outlined"
-            @click="githubApp(installation.installation_id)"
-          >
-            <span class="icon is-small">
-              <img :src="installation.meta.account.avatar_url">
-            </span>
-            <span>{{ installation.meta.account.login }}</span>
-          </a>
-        </p>
-        <p class="block">
-          <a :class="{'is-loading': loading}" class="button is-accent" :href="githubAppUrl">
-            <span>Connect another GitHub account</span>
-          </a>
-        </p>
-      </div>
-      <nav v-else class="panel">
-        <p class="panel-heading">
-          <a :class="{'is-loading': loading}" class="button is-accent is-pulled-right is-small" :href="githubAppUrl">
-            <span>Add more GitHub repositories</span>
-          </a>
-          Repositories
-        </p>
-        <div class="panel-block">
-          <p class="control has-icons-left">
-            <input v-model="search" class="input" type="text" placeholder="Search">
-            <span class="icon is-left">
-              <i class="fas fa-search" aria-hidden="true" />
-            </span>
-          </p>
+      <div class="columns mt-3 is-centered">
+        <div class="column is-12">
+          <div v-if="!githubToken && !installations">
+            Loading...
+          </div>
+          <div v-else-if="!githubToken" class="has-text-centered">
+            <p v-if="installationError" class="mb-2">
+              Having trouble with your Github Installation? <a :href="githubAppUrl">Try reconnecting it.</a>
+            </p>
+            <p
+              v-for="installation in installations"
+              :key="installation.id"
+              class="block"
+            >
+              <a
+                class="button is-outlined"
+                @click="githubApp(installation.installation_id)"
+              >
+                <span class="icon is-small">
+                  <img :src="installation.meta.account.avatar_url">
+                </span>
+                <span>{{ installation.meta.account.login }}</span>
+              </a>
+            </p>
+            <p class="block">
+              <a :class="{'is-loading': loading}" class="button is-accent" :href="githubAppUrl">
+                <span>Connect another GitHub account</span>
+              </a>
+            </p>
+          </div>
+          <nav v-else class="panel">
+            <p class="panel-heading">
+              <a
+                :class="{'is-loading': loading}"
+                class="button is-accent is-pulled-right is-small"
+                :href="githubAppUrl"
+              >
+                <span>Add more GitHub repositories</span>
+              </a>
+              Repositories
+            </p>
+            <div class="panel-block">
+              <p class="control has-icons-left">
+                <input v-model="search" class="input" type="text" placeholder="Search">
+                <span class="icon is-left">
+                  <i class="fas fa-search" aria-hidden="true" />
+                </span>
+              </p>
+            </div>
+            <div style="max-height: 50vh; overflow-y: scroll">
+              <a
+                v-for="repo in filteredRepositories"
+                :key="repo.id"
+                class="panel-block"
+                :class="{'is-active': repository === repo.full_name, 'is-disabled': repo.private}"
+                @click.stop="!repo.private ? repository=repo.full_name : notPublic()"
+              >
+                <span class="panel-icon">
+                  <i class="fas fa-code-branch" aria-hidden="true" />
+                </span>
+                {{ repo.full_name }}
+              </a>
+            </div>
+          </nav>
+          <div v-if="githubToken">
+            <form @submit.prevent="addRepository">
+              <market-selector @select-market="selectMarket" />
+              <br>
+              <button type="submit" class="button is-accent mt-2" :disabled="!repository || !selectedMarket">
+                Add {{ repository }}
+              </button>
+            </form>
+            Repository selected: {{ repository }}
+          </div>
         </div>
-        <div style="max-height: 50vh; overflow-y: scroll">
-          <a
-            v-for="repo in filteredRepositories"
-            :key="repo.id"
-            class="panel-block"
-            :class="{'is-active': repository === repo.full_name, 'is-disabled': repo.private}"
-            @click.stop="!repo.private ? repository=repo.full_name : notPublic()"
-          >
-            <span class="panel-icon">
-              <i class="fas fa-code-branch" aria-hidden="true" />
-            </span>
-            {{ repo.full_name }}
-          </a>
-        </div>
-      </nav>
-      <div v-if="githubToken">
-        <form @submit.prevent="addRepository">
-          <market-selector @select-market="selectMarket" />
-          <br>
-          <button type="submit" class="button is-accent mt-2" :disabled="!repository || !selectedMarket">
-            Add {{ repository }}
-          </button>
-        </form>
-        Repository selected: {{ repository }}
       </div>
     </div>
   </section>
@@ -246,3 +254,6 @@ export default {
   }
 };
 </script>
+<style scoped lang="scss">
+
+</style>
