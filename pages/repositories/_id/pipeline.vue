@@ -29,6 +29,7 @@
               <p v-if="canEdit">
                 Changes made to your pipeline will be pushed to the <code>.nosana-ci.yml</code>
                 in your Github repository.
+                Learn more about the <a href="https://docs.nosana.io/pipelines/intro.html" target="_blank">Nosana pipeline syntax</a>.
               </p>
               <code-editor
                 v-model="pipeline"
