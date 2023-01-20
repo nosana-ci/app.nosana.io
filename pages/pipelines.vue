@@ -48,17 +48,21 @@
         </div>
       </div>
       <div v-if="!showTutorial" class="mb-6 mt-6">
-        <nuxt-link to="/repositories/new" class="button is-accent is-pulled-right">
-          + Add Repository
-        </nuxt-link>
-        <nuxt-link to="/secrets" class="button is-accent is-outlined is-pulled-right mr-2">
-          Global secrets
-        </nuxt-link>
         <h2 class="subtitle has-text-weight-semibold">
           Your Repositories
         </h2>
 
-        <repository-list class="mt-6" :repositories="userRepositories" />
+        <div class="has-background-light">
+          <div class="px-5 pt-5">
+            <nuxt-link to="/repositories/new" class="button is-accent is-pulled-right is-small">
+              + Add more repositories
+            </nuxt-link>
+            <nuxt-link to="/secrets" class="button is-accent is-outlined mr-3 is-pulled-right is-small">
+              Global Secrets
+            </nuxt-link>
+          </div>
+          <repository-list class="mt-6" :repositories="userRepositories" />
+        </div>
       </div>
     </section>
     <div v-if="showTutorial" class="mt-6 pt-6 floor-image">
