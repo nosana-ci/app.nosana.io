@@ -47,7 +47,7 @@
           </h1>
         </div>
       </div>
-      <div v-if="!showTutorial" class="mb-6 mt-6">
+      <div v-if="!showTutorial" class="mb-6 mt-5">
         <h2 class="subtitle has-text-weight-semibold">
           Your Repositories
         </h2>

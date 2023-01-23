@@ -25,7 +25,7 @@ $dark: $grey-dark;
 $secondary-invert: findColorInvert($secondary) !default;
 $accent-invert: findColorInvert($accent) !default;
 
-$accent-transparent: rgba(3, 150, 0, 0.05);
+$accent-transparent: rgba(3, 150, 0, 0.06);
 
 $custom-colors: (
   "secondary":($secondary, $secondary-invert),

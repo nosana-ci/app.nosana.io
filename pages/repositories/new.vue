@@ -16,7 +16,10 @@
             <p v-if="installationError" class="mb-2">
               Having trouble with your Github Installation? <a :href="githubAppUrl">Try reconnecting it.</a>
             </p>
-            <div class="has-background-light is-flex is-align-content-center mb-5 p-5 columns is-multiline">
+            <div
+              class="has-background-light is-flex is-align-content-center m-0 mb-5 p-5 columns is-multiline"
+              style="border-radius: 4px;"
+            >
               <div
                 v-for="installation in installations"
                 :key="installation.id"
@@ -27,24 +30,6 @@
                   class="installation is-flex
                 is-align-items-center is-justify-content-flex-start px-4"
                   :class="{'active': installation.installation_id === installationId}"
-                >
-                  <span class="icon is-medium mr-3">
-                    <img :src="installation.meta.account.avatar_url">
-                  </span>
-                  <p class="has-text-weight-semibold">
-                    {{ installation.meta.account.login }}
-                  </p>
-                </div>
-              </div>
-              <div
-                v-for="installation in installations"
-                :key="installation.id"
-                class="column is-one-fifth is-half-mobile"
-                @click="githubApp(installation.installation_id)"
-              >
-                <div
-                  class="installation is-flex
-                is-align-items-center is-justify-content-flex-start px-4"
                 >
                   <span class="icon is-medium mr-3">
                     <img :src="installation.meta.account.avatar_url">
@@ -104,15 +89,24 @@
               </div>
             </nav>
           </div>
-          <div v-if="githubToken">
+          <div v-if="githubToken && repository">
             <form @submit.prevent="addRepository">
               <market-selector @select-market="selectMarket" />
               <br>
-              <button type="submit" class="button is-accent mt-2" :disabled="!repository || !selectedMarket">
-                Add {{ repository }}
+              <h2 class="title is-4 mt-2 mb-4">
+                Repository selected:
+              </h2>
+              <h3 class="subtitle is-5 has-text-weight-semibold mb-5 mt-1">
+                {{ repository }}
+              </h3>
+              <button
+                type="submit"
+                class="button is-accent is-wider"
+                :disabled="!repository || !selectedMarket"
+              >
+                Add Selected
               </button>
             </form>
-            Repository selected: {{ repository }}
           </div>
         </div>
       </div>
