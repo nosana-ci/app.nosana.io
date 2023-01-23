@@ -25,6 +25,8 @@ $dark: $grey-dark;
 $secondary-invert: findColorInvert($secondary) !default;
 $accent-invert: findColorInvert($accent) !default;
 
+$accent-transparent: rgba(3, 150, 0, 0.06);
+
 $custom-colors: (
   "secondary":($secondary, $secondary-invert),
   "accent":($accent, $accent-invert),
@@ -90,3 +92,8 @@ $table-striped-row-even-hover-background-color: $light;
 $table-row-hover-background-color: $light;
 
 $input-border-color: $grey-dark;
+
+$panel-shadow: none;
+$panel-radius: 4px;
+$panel-block-active-icon-color: $accent;
+$panel-block-active-color: $accent;
