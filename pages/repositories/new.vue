@@ -66,7 +66,7 @@
                 </div>
                 <a
                   :class="{'is-loading': loading}"
-                  class="button is-accent is-outlined is-small"
+                  class="button is-accent is-outlined is-small py-4"
                   :href="githubAppUrl"
                 >
                   <span class="is-size-5 mr-1">+</span> Add more repositories

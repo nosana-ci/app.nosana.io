@@ -10,6 +10,9 @@
       >
         <nav-bar />
         <!-- <node-block class="mt-auto is-hidden-mobile" /> -->
+        <div class="mt-auto is-hidden-mobile has-text-centered">
+          <a class="has-text-danger is-size-7" @click.prevent="$sol.logout">Logout</a>
+        </div>
       </div>
       <div class="column" style="position: relative;">
         <Nuxt />
