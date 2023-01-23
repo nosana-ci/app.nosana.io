@@ -229,6 +229,59 @@ input {
   border-right: none;
 }
 
+@keyframes dots {
+  0%, 20% {
+    color: rgba(0,0,0,0);
+    text-shadow:
+      .25em 0 0 rgba(0,0,0,0),
+      .5em 0 0 rgba(0,0,0,0);}
+  40% {
+    color: $text;
+    text-shadow:
+      .25em 0 0 rgba(0,0,0,0),
+      .5em 0 0 rgba(0,0,0,0);}
+  60% {
+    text-shadow:
+      .25em 0 0 $text,
+      .5em 0 0 rgba(0,0,0,0);}
+  80%, 100% {
+    text-shadow:
+      .25em 0 0 $text,
+      .5em 0 0 $text;}}
+
+.loading-text {
+  padding-right: 0.5em;
+  &:after {
+    content: '.';
+    animation: dots 1.2s steps(5, end) infinite;
+  }
+}
+@keyframes dots-white {
+  0%, 20% {
+    color: rgba(255,255,255,0);
+    text-shadow:
+      .25em 0 0 rgba(255,255,255,0),
+      .5em 0 0 rgba(255,255,255,0);}
+  40% {
+    color: white;
+    text-shadow:
+      .25em 0 0 rgba(255,255,255,0),
+      .5em 0 0 rgba(255,255,255,0);}
+  60% {
+    text-shadow:
+      .25em 0 0 white,
+      .5em 0 0 rgba(255,255,255,0);}
+  80%, 100% {
+    text-shadow:
+      .25em 0 0 white,
+      .5em 0 0 white;}}
+.loading-text-white {
+  padding-right: 0.5em;
+  &:after {
+    content: '.';
+    animation: dots-white 1.2s steps(5, end) infinite;
+  }
+}
 .panel-block {
   background-color: $light;
   &.is-active {
