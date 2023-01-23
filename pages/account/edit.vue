@@ -1,6 +1,6 @@
 <template>
   <section class="section">
-    <div v-if="user && user.address" class="columns is-centered">
+    <!-- <div v-if="user && user.address" class="columns is-centered">
       <div class="column is-2">
         <div class="box mb-0">
           <small>Balance</small>
@@ -31,7 +31,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
     <div class="level">
       <div class="level-item has-text-centered">
         <figure class="image is-128x128">
