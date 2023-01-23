@@ -228,3 +228,20 @@ input {
   border-left: none;
   border-right: none;
 }
+
+.panel-block {
+  background-color: $light;
+  &.is-active {
+    border-bottom-color: $accent;
+    border-top: 1px solid $accent;
+    background-color: $accent-transparent;
+    margin-top: -1px;
+    position: relative;
+    .panel-icon i {
+      display: none;
+      &.fa-circle-check {
+        display: block !important;
+      }
+    }
+  }
+}

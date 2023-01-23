@@ -1,10 +1,10 @@
 <template>
-  <section class="section">
+  <section class="section py-4">
     <div class="container">
       <nuxt-link to="/pipelines" class="has-text-accent has-text-weight-semibold">
         <i class="fas fa-chevron-left" /> All Repositories
       </nuxt-link>
-      <h1 class="title is-3 mt-4 has-text-centered">
+      <h1 class="title is-3 mt-4">
         Add new Repository
       </h1>
       <div class="columns mt-3 is-centered">
@@ -12,65 +12,98 @@
           <div v-if="!githubToken && !installations">
             Loading...
           </div>
-          <div v-else-if="!githubToken" class="has-text-centered">
+          <div v-else>
             <p v-if="installationError" class="mb-2">
               Having trouble with your Github Installation? <a :href="githubAppUrl">Try reconnecting it.</a>
             </p>
-            <p
-              v-for="installation in installations"
-              :key="installation.id"
-              class="block"
-            >
-              <a
-                class="button is-outlined"
+            <div class="has-background-light is-flex is-align-content-center mb-5 p-5 columns is-multiline">
+              <div
+                v-for="installation in installations"
+                :key="installation.id"
+                class="column is-one-fifth is-half-mobile"
                 @click="githubApp(installation.installation_id)"
               >
-                <span class="icon is-small">
-                  <img :src="installation.meta.account.avatar_url">
-                </span>
-                <span>{{ installation.meta.account.login }}</span>
-              </a>
-            </p>
-            <p class="block">
-              <a :class="{'is-loading': loading}" class="button is-accent" :href="githubAppUrl">
-                <span>Connect another GitHub account</span>
-              </a>
-            </p>
+                <div
+                  class="installation is-flex
+                is-align-items-center is-justify-content-flex-start px-4"
+                  :class="{'active': installation.installation_id === installationId}"
+                >
+                  <span class="icon is-medium mr-3">
+                    <img :src="installation.meta.account.avatar_url">
+                  </span>
+                  <p class="has-text-weight-semibold">
+                    {{ installation.meta.account.login }}
+                  </p>
+                </div>
+              </div>
+              <div
+                v-for="installation in installations"
+                :key="installation.id"
+                class="column is-one-fifth is-half-mobile"
+                @click="githubApp(installation.installation_id)"
+              >
+                <div
+                  class="installation is-flex
+                is-align-items-center is-justify-content-flex-start px-4"
+                >
+                  <span class="icon is-medium mr-3">
+                    <img :src="installation.meta.account.avatar_url">
+                  </span>
+                  <p class="has-text-weight-semibold">
+                    {{ installation.meta.account.login }}
+                  </p>
+                </div>
+              </div>
+              <div class="column is-one-fifth is-half-mobile">
+                <a
+                  :href="githubAppUrl"
+                  class="is-flex is-align-items-center is-justify-content-flex-start installation px-3"
+                >
+                  <span class="icon is-medium mr-3">
+                    <img src="~assets/img/icons/add-gh-account.svg" style="height: 70px;">
+                  </span>
+                  <p class="is-size-7 has-text-accent has-text-weight-semibold">
+                    Connect another account
+                  </p>
+                  <span />
+                </a>
+              </div>
+            </div>
+
+            <!-- Select repo -->
+            <nav class="panel">
+              <div class="panel-heading is-flex is-align-items-center">
+                <div class="control has-icons-left is-flex-grow-1 mr-5">
+                  <input v-model="search" class="input" type="text" placeholder="Search">
+                  <span class="icon is-left">
+                    <i class="fas fa-search" aria-hidden="true" />
+                  </span>
+                </div>
+                <a
+                  :class="{'is-loading': loading}"
+                  class="button is-accent is-outlined is-small"
+                  :href="githubAppUrl"
+                >
+                  <span class="is-size-5 mr-1">+</span> Add more repositories
+                </a>
+              </div>
+              <div style="max-height: 50vh; overflow-y: scroll">
+                <a
+                  v-for="repo in filteredRepositories"
+                  :key="repo.id"
+                  class="panel-block px-4 py-3"
+                  :class="{'is-active': repository === repo.full_name, 'is-disabled': repo.private}"
+                  @click.stop="!repo.private ? repository=repo.full_name : notPublic()"
+                >
+                  <span class="panel-icon mr-3">
+                    <i class="fas fa-code-branch" aria-hidden="true" />
+                    <i class="fas fa-circle-check is-size-6" aria-hidden="true" style="display: none;" />
+                  </span>
+                  {{ repo.full_name }}
+                </a>
+              </div>
+            </nav>
           </div>
-          <nav v-else class="panel">
-            <p class="panel-heading">
-              <a
-                :class="{'is-loading': loading}"
-                class="button is-accent is-pulled-right is-small"
-                :href="githubAppUrl"
-              >
-                <span>Add more GitHub repositories</span>
-              </a>
-              Repositories
-            </p>
-            <div class="panel-block">
-              <p class="control has-icons-left">
-                <input v-model="search" class="input" type="text" placeholder="Search">
-                <span class="icon is-left">
-                  <i class="fas fa-search" aria-hidden="true" />
-                </span>
-              </p>
-            </div>
-            <div style="max-height: 50vh; overflow-y: scroll">
-              <a
-                v-for="repo in filteredRepositories"
-                :key="repo.id"
-                class="panel-block"
-                :class="{'is-active': repository === repo.full_name, 'is-disabled': repo.private}"
-                @click.stop="!repo.private ? repository=repo.full_name : notPublic()"
-              >
-                <span class="panel-icon">
-                  <i class="fas fa-code-branch" aria-hidden="true" />
-                </span>
-                {{ repo.full_name }}
-              </a>
-            </div>
-          </nav>
           <div v-if="githubToken">
             <form @submit.prevent="addRepository">
               <market-selector @select-market="selectMarket" />
@@ -162,6 +195,8 @@ export default {
         this.installations = await this.$axios.$get('/user/github/installations/');
         if (!this.installations.length) {
           this.goToGithub();
+        } else {
+          this.githubApp(this.installations[0].installation_id);
         }
       } catch (error) {
         this.$modal.show({
@@ -271,5 +306,21 @@ export default {
 };
 </script>
 <style scoped lang="scss">
-
+.installation {
+  height: 60px;
+  border: 1px solid $grey-dark;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 100%;
+  &:hover {
+    background-color: $grey-lighter;
+  }
+  &.active {
+    border: 1px solid $accent;
+    background: $accent-transparent;
+  }
+  .icon img {
+    border-radius: 50%;
+  }
+}
 </style>
