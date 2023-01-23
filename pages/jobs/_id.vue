@@ -553,7 +553,7 @@ export default {
 
 <style lang="scss" scoped>
 .pre {
-  white-space: pre;
+  white-space: pre-wrap;
 }
 .content-block{
   color: white;
