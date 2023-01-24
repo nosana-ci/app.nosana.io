@@ -229,6 +229,13 @@ input {
   border-right: none;
 }
 
+.table.is-striped tbody tr:not(.is-selected):nth-child(odd) {
+  background-color: $grey-lighter;
+}
+.table td, .table th {
+  border-color: $grey-darker;
+}
+
 @keyframes dots {
   0%, 20% {
     color: rgba(0,0,0,0);

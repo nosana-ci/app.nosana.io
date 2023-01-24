@@ -100,11 +100,3 @@ export default {
   }
 };
 </script>
-<style lang="scss" scoped>
-.table.is-striped tbody tr:not(.is-selected):nth-child(odd) {
-  background-color: $grey-lighter;
-}
-.table td, .table th {
-  border-color: $grey-darker;
-}
-</style>
