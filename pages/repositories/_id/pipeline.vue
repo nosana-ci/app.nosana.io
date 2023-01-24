@@ -1,7 +1,7 @@
 <template>
-  <section class="section">
+  <section class="section py-4">
     <div class="container">
-      <nuxt-link :to="`/repositories/${id}`">
+      <nuxt-link :to="`/repositories/${id}`" class="has-text-accent has-text-weight-semibold">
         <i class="fas fa-chevron-left" /> Cancel
       </nuxt-link>
       <div class="mt-2">
@@ -86,7 +86,7 @@
         </div>
         <div v-else-if="(repository && !pipeline && !pipelineEditor && canEdit)">
           <h2 class="title is-2 mb-2">
-            Setup your <span class="has-text-accent">Nosana pipeline</span>
+            Setup your pipeline
           </h2>
           <p>
             Select a template to get started or start with
@@ -101,7 +101,7 @@
               :key="template.name"
               class="column is-4"
             >
-              <div class="box has-background-light">
+              <div class="box has-background-light" style="height: 100%;">
                 <div class="is-flex is-justify-content-space-between">
                   <h2 class="is-size-4 has-text-weight-semibold mb-0 has-text-black">
                     {{ template.name }}
