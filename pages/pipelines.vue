@@ -152,9 +152,6 @@ export default {
       try {
         const repositories = await this.$axios.$get('/user/repositories');
         this.userRepositories = repositories;
-        if (!repositories.length && this.$route.query.login) {
-          this.$router.push('/repositories/new');
-        }
       } catch (error) {
         this.$modal.show({
           color: 'danger',
