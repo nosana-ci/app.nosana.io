@@ -288,12 +288,16 @@
                   >{{ commit.commit }}</a>
                 </div>
                 <span v-if="commit.payload" style="white-space: pre-wrap">{{ commit.payload.message }}</span>
-                <button
-                  v-if="user && user.user_id === commit.user_id &&
-                    (commit.status === 'COMPLETED' || commit.status === 'FAILED')"
-                  class="button is-accent is-outlined is-small mt-2"
-                  @click="postJob(commit.id)"
-                >Rerun job</button>
+                <div>
+                  <button
+                    v-if="user && ((user.roles && user.roles.includes('admin') || user.id === commit.user_id)) &&
+                      (commit.status !== 'PENDING' && commit.status !== 'QUEUED')"
+                    class="button is-accent is-outlined is-small mt-2"
+                    @click="postJob(commit.id)"
+                  >
+                    Rerun job
+                  </button>
+                </div>
               </div>
             </div>
 
