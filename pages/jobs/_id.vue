@@ -151,8 +151,14 @@
                               v-for="(step, index) in commit.cache_result.results[jobName][1]"
                               :key="index"
                             >
-                              <div v-if="step.cmd" class="row-count has-text-accent">
-                                <span class="has-text-weight-bold">$ {{ step.cmd.cmd }}</span>
+                              <div
+                                v-if="step.cmd"
+                                class="row-count"
+                                :class="{'has-text-accent': commit.cache_result.results[jobName][0] === 'success',
+                                         'has-text-danger': commit.cache_result.results[jobName][0] !== 'success'}"
+                              >
+                                <span v-if="step.cmd.cmd" class="has-text-weight-bold">$ {{ step.cmd.cmd }}</span>
+                                <span v-else class="has-text-weight-bold">$ {{ step.cmd }}</span>
                               </div>
                               <div v-if="step.log && Array.isArray(step.log)">
                                 <div
