@@ -36,10 +36,10 @@
         <div v-else>
           Authenticating to github..
         </div>
-        <div class="mt-6 pt-6">
-          <img src="~/assets/img/floor.svg">
-        </div>
       </div>
+    </div>
+    <div class="mt-6 pt-6 floor-image">
+      <img src="~/assets/img/floor.svg">
     </div>
   </section>
 </template>
@@ -95,3 +95,22 @@ export default {
   }
 };
 </script>
+<style scoped lang="scss">
+.section {
+  min-height: 90vh;
+}
+.floor-image {
+  position: absolute;
+  width: 95%;
+  z-index: 0;
+  bottom: 0;
+  left: 2.5%;
+  right: 0;
+  overflow: hidden;
+  img {
+    margin-bottom: -15px;
+    mask-image: linear-gradient(to top, rgba(0,0,0,1), rgba(0,0,0,0));
+    width: 100%;
+  }
+ }
+</style>
