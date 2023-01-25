@@ -75,11 +75,11 @@
                             :href="$sol.explorer + '/address/' + commit.job"
                             class="blockchain-address-inline"
                           >{{ commit.job }}</a>
-                          <!-- <a
-                        v-if="user && ((user.roles && user.roles.includes('admin') || user.id === commit.user_id))"
-                        class="has-text-warning"
-                        @click="postJob(commit.id)"
-                      >Retry job</a> -->
+                          <a
+                            v-if="user && ((user.roles && user.roles.includes('admin') || user.id === commit.user_id))"
+                            class="has-text-warning"
+                            @click="postJob(commit.id)"
+                          >Re-run job</a>
                         </span>
                       </div>
                     </template>
