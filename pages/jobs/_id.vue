@@ -170,7 +170,7 @@
                                     log[0] === 2
                                     && commit.cache_result.results[jobName][0] !== 'success' && step.error}"
                                 >
-                                  <span class="pre" v-html="ansi.ansi_to_html(log[1]).replace(/\n/gm, '<br>')" />
+                                  <span class="pre" v-html="convert.toHtml(log[1])" />
                                 </div>
                                 <div v-if="step.error" class="row-count has-text-danger">
                                   <span class="has-text-weight-bold">{{ step.error }}</span>
@@ -358,7 +358,7 @@
 <script>
 import bs58 from 'bs58';
 import { parse } from 'yaml';
-import AnsiUp from 'ansi_up';
+const Convert = require('ansi-to-html');
 
 export default {
   filters: {
@@ -374,8 +374,8 @@ export default {
     return {
       commit: null,
       result: null,
+      convert: undefined,
       step: null,
-      ansi: undefined,
       loading: false,
       tab: 'result',
       user: null,
@@ -400,7 +400,7 @@ export default {
     }
   },
   beforeMount () {
-    this.ansi = new AnsiUp();
+    this.convert = new Convert();
   },
   beforeDestroy () {
     if (this.refreshInterval) {
