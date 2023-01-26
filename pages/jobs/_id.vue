@@ -249,7 +249,12 @@
               </div>
             </div>
             <div v-else-if="tab === 'pipeline'">
-              <pre>{{ commit.job_content.pipeline }}</pre>
+              <code-editor
+                v-model="pipelineYml"
+                :highlight-lines="[0]"
+                :readonly="true"
+                class="py-3 pt-4 code-editor"
+              />
             </div>
             <div v-else>
               Loading..
@@ -361,7 +366,7 @@
 
 <script>
 import bs58 from 'bs58';
-import { parse } from 'yaml';
+import { parse, stringify } from 'yaml';
 const Convert = require('ansi-to-html');
 const convert = new Convert();
 
@@ -395,6 +400,15 @@ export default {
         'Stopped'
       ]
     };
+  },
+  computed: {
+    pipelineYml () {
+      // commit.job_content.pipeline
+      if (this.commit && this.commit.job_content && this.commit.job_content.pipeline) {
+        return stringify(this.commit.job_content.pipeline);
+      }
+      return '';
+    }
   },
   watch: {
     '$auth.loggedIn' (loggedIn) {
@@ -583,6 +597,9 @@ export default {
 </style>
 
 <style lang="scss" scoped>
+.code-editor {
+  font-family: monospace;
+}
 .pre {
   white-space: pre-wrap;
 }
