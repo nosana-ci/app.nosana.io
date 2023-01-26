@@ -6,25 +6,29 @@
       </nuxt-link>
       <div class="mt-2">
         <form v-if="(repository && !loading && (pipeline || pipelineEditor))" @submit.prevent="edit">
-          <div class="is-flex is-align-items-center">
-            <h2 class="title">
-              {{ repository.repository }} Pipeline
-            </h2>
+          <div class="is-flex is-align-items-flex-start is-justify-content-space-between mb-4">
+            <div>
+              <h2 class="title mb-2">
+                Pipeline
+              </h2>
+              <p>
+                <a :href="'https://github.com/'+ repository.repository" target="_blank" @click.stop>https://github.com/{{ repository.repository }}</a>
+              </p>
+            </div>
+            <div class="buttons">
+              <nuxt-link :to="`/repositories/${id}/pipeline`" class="button is-accent px-5">
+                Pipeline
+              </nuxt-link>
+              <nuxt-link :to="`/repositories/${id}/secrets`" class="button is-accent px-5 is-outlined">
+                Secrets
+              </nuxt-link>
+              <nuxt-link :to="`/repositories/${id}/edit`" class="button is-accent px-5 is-outlined">
+                Settings
+              </nuxt-link>
+            </div>
           </div>
-          <p>
-            <a :href="'https://github.com/'+ repository.repository" target="_blank" @click.stop>https://github.com/{{ repository.repository }}</a>
-          </p>
 
-          <div class="tabs mt-3">
-            <ul>
-              <li
-                class="px-3 is-active"
-              >
-                <a class="p-3">Pipeline</a>
-              </li>
-            </ul>
-          </div>
-          <div class="columns">
+          <div class="columns mt-4">
             <div class="column is-9">
               <p v-if="canEdit">
                 Changes made to your pipeline will be pushed to the <code>.nosana-ci.yml</code>

@@ -1,10 +1,10 @@
 <template>
-  <section class="section">
+  <section class="section py-4">
     <div class="container">
-      <nuxt-link :to="`/repositories/${id}/secrets`">
+      <nuxt-link :to="`/repositories/${id}/secrets`" class="has-text-accent has-text-weight-semibold">
         <i class="fas fa-chevron-left" /> Cancel
       </nuxt-link>
-      <div v-if="repository">
+      <div v-if="repository" class="mt-2">
         <div class="is-flex is-align-items-center">
           <h2 class="title">
             Add new secret for {{ repository.repository }}
@@ -27,7 +27,7 @@
         </button>
       </div>
       <div v-else class="mt-2">
-        <form v-if="repository" @submit.prevent="addSecret">
+        <form v-if="repository" class="has-limited-width" @submit.prevent="addSecret">
           <div class="field">
             <label class="label">Name</label>
             <div class="control">
@@ -53,7 +53,7 @@
           </div>
           <div class="control">
             <button type="submit" class="button is-accent">
-              Add secret
+              Add Secret
             </button>
           </div>
         </form>

@@ -1,20 +1,33 @@
 <template>
-  <section class="section">
+  <section class="section py-4">
     <div class="container">
-      <nuxt-link :to="`/repositories/${id}`">
+      <nuxt-link :to="`/repositories/${id}`" class="has-text-accent has-text-weight-semibold">
         <i class="fas fa-chevron-left" /> Back
       </nuxt-link>
-      <div v-if="repository" class="is-flex">
-        <div>
-          <h2 class="title mb-1">
-            Secrets for {{ repository.repository }}
-          </h2>
-          <p>
-            <a :href="'https://github.com/'+ repository.repository" target="_blank" @click.stop>https://github.com/{{ repository.repository }}</a>
-          </p>
+      <div v-if="repository" class="mt-2">
+        <div class="is-flex is-align-items-flex-start is-justify-content-space-between mb-4">
+          <div>
+            <h2 class="title mb-1">
+              Secrets
+            </h2>
+            <p>
+              <a :href="'https://github.com/'+ repository.repository" target="_blank" @click.stop>https://github.com/{{ repository.repository }}</a>
+            </p>
+          </div>
+          <div class="buttons">
+            <nuxt-link :to="`/repositories/${id}/pipeline`" class="button is-accent px-5 is-outlined">
+              Pipeline
+            </nuxt-link>
+            <nuxt-link :to="`/repositories/${id}/secrets`" class="button is-accent px-5">
+              Secrets
+            </nuxt-link>
+            <nuxt-link :to="`/repositories/${id}/edit`" class="button is-accent px-5 is-outlined">
+              Settings
+            </nuxt-link>
+          </div>
         </div>
         <nuxt-link
-          v-if="repository && user && (repository.user_id === user.user_id)"
+          v-if="repository && user && (repository.user_id === user.user_id) && loggedInSecretManager"
           class="button is-accent is-small"
           style="margin-left: auto"
           :to="`/repositories/${id}/secrets/new`"
@@ -22,9 +35,12 @@
           New secret
         </nuxt-link>
       </div>
-      <div v-if="!loggedInSecretManager" class="mt-3">
+      <p v-if="!loggedInSecretManager" class="mt-3">
+        Login to the Secret Manager to manage your repository secrets.
+      </p>
+      <div v-if="!loggedInSecretManager">
         <button
-          class="button is-accent is-fullwidth mt-5 has-text-weight-semibold"
+          class="button is-accent is-widest mt-5 has-text-weight-semibold"
           @click.stop.prevent="login"
         >
           Login to Secret Manager
