@@ -122,6 +122,9 @@ a.card {
 }
 
 .button {
+  &.is-less-wide {
+    min-width: 110px;
+  }
   &.is-wide {
     min-width: 140px;
   }
