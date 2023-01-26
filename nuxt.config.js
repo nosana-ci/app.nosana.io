@@ -130,10 +130,15 @@ export default {
         type: 'javascript/auto'
       });
     },
+    babel: {
+      plugins: [
+        ['@babel/plugin-proposal-nullish-coalescing-operator']
+      ]
+    },
     transpile: [
       'countup.js',
       'vue-countup-v2',
-      '@nosana-ci/schema-validator',
+      '@nosana/schema-validator',
       '@solana/spl-token',
       '@solana/wallet-adapter-base',
       '@solana/wallet-adapter-sollet',
