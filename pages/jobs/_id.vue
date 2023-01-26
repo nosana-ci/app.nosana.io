@@ -154,8 +154,8 @@
                               <div
                                 v-if="step.cmd"
                                 class="row-count"
-                                :class="{'has-text-accent': commit.cache_result.results[jobName][0] === 'success',
-                                         'has-text-danger': commit.cache_result.results[jobName][0] !== 'success'}"
+                                :class="{'has-text-accent': !step.status,
+                                         'has-text-danger': step.status}"
                               >
                                 <span v-if="step.cmd.cmd" class="has-text-weight-bold">$ {{ step.cmd.cmd }}</span>
                                 <span v-else class="has-text-weight-bold">$ {{ step.cmd }}</span>
@@ -168,13 +168,16 @@
                                   class="row-count"
                                   :class="{'has-text-danger':
                                     log[0] === 2
-                                    && commit.cache_result.results[jobName][0] !== 'success' && step.error}"
+                                    && step.status}"
                                 >
                                   <span class="pre" v-html="log[1].slice(0, 10000)" />
                                   <!-- {{ convert.toHtml(log[1].slice(0, 10000)) }} -->
                                 </div>
                                 <div v-if="step.error" class="row-count has-text-danger">
                                   <span class="has-text-weight-bold">{{ step.error }}</span>
+                                </div>
+                                <div v-if="step.status" class="row-count has-text-danger">
+                                  <span class="has-text-weight-bold">Exited with code {{ step.status }}</span>
                                 </div>
                               </div>
                             </div>
@@ -621,7 +624,7 @@ export default {
     margin-left: -62px;
   }
   &.has-text-danger:before {
-    color: $red;
+    color: $red !important;
   }
 }
 </style>
