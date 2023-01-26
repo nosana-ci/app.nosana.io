@@ -170,7 +170,7 @@
                                     log[0] === 2
                                     && commit.cache_result.results[jobName][0] !== 'success' && step.error}"
                                 >
-                                  <span class="pre" v-html="convert.toHtml(log[1])" />
+                                  <span class="pre" v-html="convert.toHtml(log[1].slice(0, 10000))" />
                                 </div>
                                 <div v-if="step.error" class="row-count has-text-danger">
                                   <span class="has-text-weight-bold">{{ step.error }}</span>
