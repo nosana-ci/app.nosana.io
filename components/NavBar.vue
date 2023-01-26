@@ -32,7 +32,7 @@
             to="/account/edit"
             :class="{'is-outlined': loggedIn}"
           >
-            <div class="blockchain-address" style="max-width: 185px;">
+            <div style="max-width: 185px;">
               Login
             </div>
           </nuxt-link>
