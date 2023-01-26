@@ -170,7 +170,8 @@
                                     log[0] === 2
                                     && commit.cache_result.results[jobName][0] !== 'success' && step.error}"
                                 >
-                                  <span class="pre" v-html="convert.toHtml(log[1].slice(0, 10000))" />
+                                  <span class="pre" v-html="log[1].slice(0, 10000)" />
+                                  <!-- {{ convert.toHtml(log[1].slice(0, 10000)) }} -->
                                 </div>
                                 <div v-if="step.error" class="row-count has-text-danger">
                                   <span class="has-text-weight-bold">{{ step.error }}</span>
@@ -359,6 +360,7 @@
 import bs58 from 'bs58';
 import { parse } from 'yaml';
 const Convert = require('ansi-to-html');
+const convert = new Convert();
 
 export default {
   filters: {
@@ -374,7 +376,6 @@ export default {
     return {
       commit: null,
       result: null,
-      convert: undefined,
       step: null,
       loading: false,
       tab: 'result',
@@ -398,9 +399,6 @@ export default {
         this.getUser();
       }
     }
-  },
-  beforeMount () {
-    this.convert = new Convert();
   },
   beforeDestroy () {
     if (this.refreshInterval) {
@@ -521,6 +519,20 @@ export default {
       const id = this.$route.params.id;
       try {
         const commit = await this.$axios.$get(`/commits/${id}`);
+        if (commit.cache_result) {
+          console.log(commit.cache_result.results);
+          for (const key in commit.cache_result.results) {
+            const results = commit.cache_result.results[key];
+            for (let i = 0; i < results[1].length; i++) {
+              const step = results[1][i];
+              if (step.log && Array.isArray(step.log)) {
+                for (let j = 0; j < step.log.length; j++) {
+                  step.log[j][1] = convert.toHtml(step.log[j][1]);
+                }
+              }
+            }
+          }
+        }
         this.commit = commit;
         if (this.commit.status === 'RUNNING' || this.commit.status === 'QUEUED' || this.commit.status === 'PENDING') {
           if (!this.refreshInterval) {
