@@ -1,74 +1,76 @@
 <template>
   <div>
     <section class="section">
-      <div v-if="showTutorial">
-        <div class="columns mt-3 is-centered has-text-centered">
-          <div class="column is-12">
+      <div class="container">
+        <div v-if="showTutorial">
+          <div class="columns mt-3 is-centered has-text-centered">
+            <div class="column is-12">
+              <h1 class="title is-3">
+                Get Started
+              </h1>
+              <p v-if="loggedIn" class="has-text-centered has-limited-width">
+                Install the Nosana Github App, which will have read-only permission to your selected repositories.
+                After you have installed the app, you can add your repositories and manage their pipelines.
+                You can specify on which triggers (e.g. commits on the main branch) pipelines are automatically being
+                posted to the blockchain
+              </p>
+              <p v-else class="has-text-centered has-limited-width">
+                To get started with running pipelines on Nosana, create an account or login.
+              </p>
+            </div>
+          </div>
+          <div class="mt-4 has-text-centered">
+            <div
+              v-if="loggedIn"
+              class="box has-background-light has-limited-width"
+            >
+              <div class="has-text-centered my-2">
+                <h2 class="subtitle has-text-weight-bold mt-4">
+                  Add your first Repository
+                </h2>
+                <img class="my-4" src="~assets/img/icons/repository_grey.svg" style="width: 70px;"><br>
+                <nuxt-link to="/repositories/new" class="button is-accent my-3 px-6">
+                  + Add Repository
+                </nuxt-link>
+              </div>
+            </div>
+            <nuxt-link v-else to="/repositories/new" class="button is-accent px-6">
+              Login
+            </nuxt-link>
+          </div>
+        </div>
+
+        <!-- Projects -->
+        <div v-if="!showTutorial" class="columns">
+          <div class="column is-4">
             <h1 class="title is-3">
-              Get Started
+              Pipelines
             </h1>
-            <p v-if="loggedIn" class="has-text-centered has-limited-width">
-              Install the Nosana Github App, which will have read-only permission to your selected repositories.
-              After you have installed the app, you can add your repositories and manage their pipelines.
-              You can specify on which triggers (e.g. commits on the main branch) pipelines are automatically being
-              posted to the blockchain
-            </p>
-            <p v-else class="has-text-centered has-limited-width">
-              To get started with running pipelines on Nosana, create an account or login.
-            </p>
           </div>
         </div>
-        <div class="mt-4 has-text-centered">
-          <div
-            v-if="loggedIn"
-            class="box has-background-light has-limited-width"
-          >
-            <div class="has-text-centered my-2">
-              <h2 class="subtitle has-text-weight-bold mt-4">
-                Add your first Repository
-              </h2>
-              <img class="my-4" src="~assets/img/icons/repository_grey.svg" style="width: 70px;"><br>
-              <nuxt-link to="/repositories/new" class="button is-accent my-3 px-6">
-                + Add Repository
-              </nuxt-link>
-            </div>
-          </div>
-          <nuxt-link v-else to="/repositories/new" class="button is-accent px-6">
-            Login
-          </nuxt-link>
-        </div>
-      </div>
+        <div v-if="!showTutorial" class="mb-6 mt-5">
+          <h2 class="subtitle has-text-weight-semibold">
+            Your Repositories
+          </h2>
 
-      <!-- Projects -->
-      <div v-if="!showTutorial" class="columns">
-        <div class="column is-4">
-          <h1 class="title is-3">
-            Pipelines
-          </h1>
-        </div>
-      </div>
-      <div v-if="!showTutorial" class="mb-6 mt-5">
-        <h2 class="subtitle has-text-weight-semibold">
-          Your Repositories
-        </h2>
-
-        <div class="has-background-light">
-          <div class="px-5 pt-5">
-            <div class="is-flex is-justify-content-space-between">
-              <div class="is-flex-grow-1 pr-4">
-                <input v-model="search" class="input" placeholder="Search">
-              </div>
-              <div class="">
-                <nuxt-link to="/repositories/new" class="button is-accent is-pulled-right">
-                  + Add more repositories
-                </nuxt-link>
-                <nuxt-link to="/secrets" class="button is-accent is-outlined mr-3 is-pulled-right">
-                  Global Secrets
-                </nuxt-link>
+          <div class="has-background-light">
+            <div class="px-5 pt-5">
+              <div class="is-flex is-justify-content-space-between">
+                <div class="is-flex-grow-1 pr-4">
+                  <input v-model="search" class="input" placeholder="Search">
+                </div>
+                <div class="">
+                  <nuxt-link to="/repositories/new" class="button is-accent is-pulled-right">
+                    + Add more repositories
+                  </nuxt-link>
+                  <nuxt-link to="/secrets" class="button is-accent is-outlined mr-3 is-pulled-right">
+                    Global Secrets
+                  </nuxt-link>
+                </div>
               </div>
             </div>
+            <repository-list class="mt-5" :repositories="filteredRepositories" />
           </div>
-          <repository-list class="mt-5" :repositories="filteredRepositories" />
         </div>
       </div>
     </section>
