@@ -1,14 +1,14 @@
 <template>
-  <section class="section">
+  <section class="section py-4">
     <div class="container">
-      <nuxt-link to="/secrets">
+      <nuxt-link to="/secrets" class="has-text-accent has-text-weight-semibold">
         <i class="fas fa-chevron-left" /> Cancel
       </nuxt-link>
       <div>
         <div class="is-flex is-align-items-center">
-          <h2 class="title">
+          <h1 class="title is-3 mt-4">
             Add new global secret
-          </h2>
+          </h1>
         </div>
       </div>
       <div v-if="!loggedInSecretManager" class="mt-3">
@@ -20,7 +20,7 @@
         </button>
       </div>
       <div v-else class="mt-2">
-        <form @submit.prevent="addSecret">
+        <form class="has-limited-width" @submit.prevent="addSecret">
           <div class="field">
             <label class="label">Name</label>
             <div class="control">

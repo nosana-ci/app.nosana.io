@@ -1,53 +1,60 @@
 <template>
-  <section class="section">
+  <section class="section py-4">
     <div class="container">
-      <nuxt-link :to="`/pipelines`">
+      <nuxt-link to="/pipelines" class="has-text-accent has-text-weight-semibold">
         <i class="fas fa-chevron-left" /> Back
       </nuxt-link>
       <div class="is-flex">
         <div>
-          <h2 class="title mb-1">
+          <h1 class="title is-3 mt-4 mb-2">
             Your Global Secrets
-          </h2>
+          </h1>
+          <p>Manage here your global secrets.</p>
         </div>
         <nuxt-link
+          v-if="loggedInSecretManager"
           class="button is-accent is-small"
           style="margin-left: auto"
           :to="`/secrets/new`"
         >
-          New secret
+          + New secret
         </nuxt-link>
       </div>
       <div v-if="!loggedInSecretManager" class="mt-3">
         <button
-          class="button is-accent is-fullwidth mt-5 has-text-weight-semibold"
+          class="button is-accent is-widest mt-5 has-text-weight-semibold"
           @click.stop.prevent="login"
         >
           Login to Secret Manager
         </button>
       </div>
       <div v-else class="mt-5">
-        <table class="table is-striped has-radius">
+        <table class="table is-striped is-bordered is-fullwidth is-hoverable">
           <thead>
-            <tr>
-              <th class="py-3 px-4">
-                Repository secrets
+            <tr class="has-background-light">
+              <th class="py-2 px-5">
+                <div class="px-3">
+                  Repository secrets
+                </div>
               </th>
-              <th class="is-size-7 py-2 px-3" />
+              <th class="py-2 px-5" />
             </tr>
           </thead>
           <tbody>
             <tr
               v-for="value, key in secrets"
               :key="key"
-              class="p-5 market-row"
             >
-              <td class="px-4 py-3">
-                {{ key }}
+              <td>
+                <div>
+                  {{ key }}
+                </div>
               </td>
-              <td class="py-3 px-5" style="text-align: right;">
-                <i class="fas fa-edit px-2" @click="openEditPopup(key, value)" />
-                <i class="fas fa-trash" @click="removeSecretConfirm(key)" />
+              <td style="text-align: right;">
+                <div>
+                  <i class="fas fa-edit px-2" @click="openEditPopup(key, value)" />
+                  <i class="fas fa-trash" @click="removeSecretConfirm(key)" />
+                </div>
               </td>
             </tr>
             <tr v-if="Object.keys(secrets).length === 0">

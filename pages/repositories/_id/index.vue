@@ -1,123 +1,116 @@
 <template>
-  <section class="section">
+  <section class="section py-4">
     <div class="container">
-      <nuxt-link v-if="repository" to="/pipelines">
-        <i class="fas fa-chevron-left" /> All repositories
+      <nuxt-link to="/pipelines" class="has-text-accent has-text-weight-semibold">
+        <i class="fas fa-chevron-left" /> All Repositories
       </nuxt-link>
-      <div class="mt-2">
-        <div v-if="repository">
-          <div class="is-flex is-align-items-center mb-2">
-            <h2 class="title mb-0 mr-2">
+      <div v-if="repository">
+        <div class="is-flex mb-2 mt-3">
+          <div>
+            <h2 class="title mb-3 mr-2">
               {{ repository.repository }}
             </h2>
-            <div class="ml-auto">
-              <nuxt-link
-                v-if="repository && user && repository.user_id === user.user_id"
-                class="button is-outlined is-accent is-small"
-                :to="`/repositories/${id}/secrets`"
-              >
-                secrets
-              </nuxt-link>
-              <nuxt-link
-                v-if="canEdit"
-                class="button is-outlined is-accent is-small"
-                :to="`/repositories/${id}/edit`"
-              >
-                edit
-              </nuxt-link>
-            </div>
-          </div>
-          <p>
             <a
               :href="'https://github.com/' + repository.repository"
               target="_blank"
               @click.stop
             >https://github.com/{{ repository.repository }}</a>
-          </p>
-          <div
-            v-if="
-              canEdit &&
-                (permissionFound === false ||
-                  (permissionFound === null && loading === false))
-            "
-            class="notification is-danger mt-3"
-          >
-            <span v-if="!repository.github_installation_id">
-              No Github installation found
-            </span>
-            <span v-else>
-              No permission for this repository in the Github App Installation.
-            </span>
-            <br>
-            <span
-              :class="{ 'is-loading': loading }"
-              class="button is-danger is-outlined is-small mt-2"
-              style="border-color: #fff"
-              @click="goToGithub"
-            >
-              <span
-                v-if="!repository.github_installation_id"
-                class="has-text-white"
-              >Setup Github Installation</span>
-              <span
-                v-else
-                class="has-text-white"
-              >Reconnect this repository</span>
-            </span>
+            <div v-if="repository.market === communityMarketId" class="mt-3">
+              <p>
+                <b>Nosana Community Tier</b><br>
+                Your CI/CD jobs will run on the Nosana Community Tier.<br>
+                This is a free Tier that will run on a best-effort basis.
+              </p>
+            </div>
           </div>
-          <p>
-            <span
-              class="has-tooltip-arrow"
-              :class="{ 'has-tooltip': repository.secret }"
-              :data-tooltip="
-                repository.secret
-                  ? 'Github Webhook:\n' +
-                    backendUrl +
-                    '/webhook/github/' +
-                    repository.secret
-                  : null
-              "
-              @click.stop="
-                repository.secret
-                  ? copyToClipboard(
-                    backendUrl + '/webhook/github/' + repository.secret
-                  )
-                  : null
-              "
-            >Trigger on commit to {{ repository.branches }} branch(es)</span>
-          </p>
-          <p v-if="repository.marketAccount">
-            Pipeline price:
-            <b class="has-text-accent">
-              {{ parseInt(repository.marketAccount.jobPrice, 16) / 1e6 }} NOS</b>
-          </p>
-          <p
-            v-if="permissionFound !== false && permissionFound !== null"
-            class="my-4"
-          >
-            <nuxt-link
-              v-if="repository"
-              class="button is-accent"
-              :to="`/repositories/${id}/pipeline`"
+          <div class="ml-auto">
+            <div
+              v-if="repository.marketAccount"
+              class="has-background-light has-text-centered px-6 py-4
+              has-radius-medium"
             >
-              <span v-if="canEdit">Manage</span><span v-else>Show</span>&nbsp;<span>Pipeline</span>
-            </nuxt-link>
-          </p>
+              Pipeline price<br>
+              <b class="has-text-accent is-size-5">{{ parseInt(repository.marketAccount.jobPrice, 16) / 1e6 }} NOS</b>
+            </div>
+            <p
+              v-if="repository && user && repository.user_id === user.user_id"
+              class="my-4"
+            >
+              <nuxt-link
+                v-if="repository"
+                class="button is-accent is-fullwidth is-wider"
+                :to="`/repositories/${id}/pipeline`"
+              >
+                Manage
+              </nuxt-link>
+            </p>
+          </div>
         </div>
-        <div v-else>
-          Loading..
+        <div
+          v-if="
+            canEdit &&
+              (permissionFound === false ||
+                (permissionFound === null && loading === false))
+          "
+          class="notification is-danger mt-3 has-radius-medium"
+        >
+          <span v-if="!repository.github_installation_id">
+            No Github installation found
+          </span>
+          <span v-else>
+            No permission for this repository in the Github App Installation.
+          </span>
+          <br>
+          <span
+            :class="{ 'is-loading': loading }"
+            class="button is-danger is-outlined is-small mt-2"
+            style="border-color: #fff"
+            @click="goToGithub"
+          >
+            <span
+              v-if="!repository.github_installation_id"
+              class="has-text-white"
+            >Setup Github Installation</span>
+            <span
+              v-else
+              class="has-text-white"
+            >Reconnect this repository</span>
+          </span>
         </div>
       </div>
+      <div v-else>
+        Loading..
+      </div>
 
-      <div class="table-container">
-        <table class="table is-striped is-fullwidth is-hoverable">
+      <div class="table-container mt-6">
+        <table class="table is-striped is-bordered  is-fullwidth is-hoverable">
           <thead>
-            <tr>
-              <th>Job ID</th>
-              <th>Message</th>
-              <th>Commit</th>
-              <th>Created</th>
-              <th>Status</th>
+            <tr class="has-background-light">
+              <th class="py-2 px-5">
+                <div class="px-3">
+                  Job ID
+                </div>
+              </th>
+              <th class="py-2 px-5">
+                <div class="px-3">
+                  Message
+                </div>
+              </th>
+              <th class="py-2 px-5">
+                <div class="px-3">
+                  Commit
+                </div>
+              </th>
+              <th class="py-2 px-5">
+                <div class="px-3">
+                  Created
+                </div>
+              </th>
+              <th class="py-2 px-5">
+                <div class="px-3">
+                  Status
+                </div>
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -127,7 +120,7 @@
               class="is-clickable"
               @click="$router.push(`/jobs/${commit.id}`)"
             >
-              <td>{{ commit.id }}</td>
+              <td><div>{{ commit.id }}</div></td>
               <td>{{ commit.payload.message.split("\n")[0] }}</td>
               <td>
                 <a :href="commit.payload.url" target="_blank" @click.stop>{{
@@ -206,7 +199,8 @@ export default {
       backendUrl: process.env.NUXT_ENV_BACKEND_URL,
       permissionFound: null,
       loading: false,
-      newInstallationId: null
+      newInstallationId: null,
+      communityMarketId: process.env.NUXT_ENV_COMMUNITY_MARKET_ID
     };
   },
   computed: {
@@ -404,5 +398,13 @@ export default {
 <style lang="scss" scoped>
 td {
   vertical-align: middle;
+}
+</style>
+<style lang="scss" scoped>
+.table.is-striped tbody tr:not(.is-selected):nth-child(odd) {
+  background-color: $grey-lighter;
+}
+.table td, .table th {
+  border-color: $grey-darker;
 }
 </style>

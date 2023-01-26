@@ -1,30 +1,34 @@
 <template>
-  <section class="section">
+  <section class="section py-4">
     <div class="container">
-      <nuxt-link :to="`/repositories/${id}`">
+      <nuxt-link :to="`/repositories/${id}`" class="has-text-accent has-text-weight-semibold">
         <i class="fas fa-chevron-left" /> Cancel
       </nuxt-link>
       <div class="mt-2">
         <form v-if="(repository && !loading && (pipeline || pipelineEditor))" @submit.prevent="edit">
-          <div class="is-flex is-align-items-center">
-            <h2 class="title">
-              {{ repository.repository }} Pipeline
-            </h2>
+          <div class="is-flex is-align-items-flex-start is-justify-content-space-between mb-4">
+            <div>
+              <h2 class="title mb-2">
+                Pipeline
+              </h2>
+              <p>
+                <a :href="'https://github.com/'+ repository.repository" target="_blank" @click.stop>https://github.com/{{ repository.repository }}</a>
+              </p>
+            </div>
+            <div class="buttons">
+              <nuxt-link :to="`/repositories/${id}/pipeline`" class="button is-accent px-5">
+                Pipeline
+              </nuxt-link>
+              <nuxt-link :to="`/repositories/${id}/secrets`" class="button is-accent px-5 is-outlined">
+                Secrets
+              </nuxt-link>
+              <nuxt-link :to="`/repositories/${id}/edit`" class="button is-accent px-5 is-outlined">
+                Settings
+              </nuxt-link>
+            </div>
           </div>
-          <p>
-            <a :href="'https://github.com/'+ repository.repository" target="_blank" @click.stop>https://github.com/{{ repository.repository }}</a>
-          </p>
 
-          <div class="tabs mt-3">
-            <ul>
-              <li
-                class="px-3 is-active"
-              >
-                <a class="p-3">Pipeline</a>
-              </li>
-            </ul>
-          </div>
-          <div class="columns">
+          <div class="columns mt-4">
             <div class="column is-9">
               <p v-if="canEdit">
                 Changes made to your pipeline will be pushed to the <code>.nosana-ci.yml</code>
@@ -86,7 +90,7 @@
         </div>
         <div v-else-if="(repository && !pipeline && !pipelineEditor && canEdit)">
           <h2 class="title is-2 mb-2">
-            Setup your <span class="has-text-accent">Nosana pipeline</span>
+            Setup your pipeline
           </h2>
           <p>
             Select a template to get started or start with
@@ -101,7 +105,7 @@
               :key="template.name"
               class="column is-4"
             >
-              <div class="box has-background-light">
+              <div class="box has-background-light" style="height: 100%;">
                 <div class="is-flex is-justify-content-space-between">
                   <h2 class="is-size-4 has-text-weight-semibold mb-0 has-text-black">
                     {{ template.name }}
@@ -127,8 +131,7 @@
 </template>
 
 <script>
-import { parse } from 'yaml';
-import { validateJson } from '@nosana-ci/schema-validator';
+import { validateYaml, parseYaml } from '@nosana/schema-validator';
 
 export default {
   data () {
@@ -163,7 +166,7 @@ export default {
       if (pipeline) {
         this.pipelineEditor = true;
         try {
-          const validated = validateJson(JSON.stringify(parse(pipeline)));
+          const validated = validateYaml(pipeline);
           this.validation.valid = validated.valid;
           this.validation.errors = validated.errors;
           this.validation.errorLines = [];
@@ -200,7 +203,7 @@ export default {
   methods: {
     async edit () {
       try {
-        const pipeline = parse(this.pipeline);
+        const pipeline = parseYaml(this.pipeline);
         // TODO: change for nice yaml scheme checker
         if (!pipeline.global) {
           throw new Error('Your yaml does not include a `global` config');
@@ -315,6 +318,9 @@ export default {
 };
 </script>
 <style scoped lang="scss">
+  .code-editor {
+    font-family: monospace;
+  }
   .template-icon {
     box-shadow: 1px 1px rgba(140,149,159,0.15);
     width: 42px;

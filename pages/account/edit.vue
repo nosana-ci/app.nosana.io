@@ -1,5 +1,37 @@
 <template>
   <section class="section">
+    <!-- <div v-if="user && user.address" class="columns is-centered">
+      <div class="column is-2">
+        <div class="box mb-0">
+          <small>Balance</small>
+          <div class="has-text-weight-semibold">
+            <span
+              v-if="!balance && balance !== 0"
+            >...</span>
+            <span v-else>{{ Math.trunc(balance*10000)/10000 }}</span> <span class="has-text-accent">NOS</span>
+          </div>
+        </div>
+        <a href="#" class="is-size-7" @click.prevent="depositPopup = true;">
+          Deposit NOS
+        </a>
+      </div>
+      <div class="column is-2">
+        <div class="box">
+          <small>Used for Jobs</small>
+          <div class="has-text-weight-semibold">
+            {{ usedBalance }} <span class="has-text-accent">NOS</span>
+          </div>
+        </div>
+      </div>
+      <div class="column is-2">
+        <div class="box">
+          <small>NOS Rewards</small>
+          <div class="has-text-weight-semibold">
+            {{ reward }} <span class="has-text-accent">NOS</span>
+          </div>
+        </div>
+      </div>
+    </div> -->
     <div class="level">
       <div class="level-item has-text-centered">
         <figure class="image is-128x128">
@@ -53,103 +85,13 @@
         <img class="is-rounded has-border" :src="require(`@/assets/img/icons/github.svg`)">
       </div>
     </div>
-    <!-- <div class="level-item has-text-centered">
-        <button
-          v-if="!user.address"
-          class="button is-outlined is-accent has-"
-          :class="{ 'is-loading': loading }"
-          @click="$sol.loginModal = true, $sol.addWalletToExistingAccount = true"
-        >
-          Connect wallet to account
-        </button>
-        <button
-          v-if="!user.github_account_id"
-          class="button is-outlined is-accent has-"
-          :class="{ 'is-loading': loading }"
-          @click="goToGithub"
-        >
-          Connect Github to account
-        </button>
-      </div> -->
-
     <form class="mx-auto" style="max-width: 522px;" @submit.prevent="updateUser">
       <div class="field has-background-grey-lighter py-2 px-5 has-radius has-text-centered">
         <label for="" class="is-small has-text-grey">Profile Completed</label>
         <progress class="progress is-success" :value="userCompletion" :max="100">
           {{ userCompletion }}
         </progress>
-        <!-- <div class="level is-mobile"> -->
-        <!-- <div v-for="(idx, index) in completionArray" :key="index" class="level-item has-text-centered"> -->
-        <!-- <progress v-if="index < userCompletion" class="progress is-success is-small mx-1" value="100" /> -->
-        <!-- <progress v-else class="progress is-success is-small" value="0" /> -->
-        <!-- </div> -->
-        <!-- </div> -->
       </div>
-
-      <!-- <div class="field has-text-centered p-4 m-4"> -->
-      <!-- <ul class="steps is-horizontal has-content-centered"> -->
-      <!-- <li -->
-      <!-- v-for="(idx, index) in completionRange" -->
-      <!-- :key="index" -->
-      <!-- class="steps-segment" -->
-      <!-- :class="{ 'is-active': index === completionIndex }" -->
-      <!-- > -->
-      <!-- <span href="#" class="steps-marker"> -->
-      <!-- <span class="icon is-small"> -->
-      <!-- <i class="fa-solid fa-circle-check" /> -->
-      <!-- </span> -->
-      <!-- </span> -->
-      <!-- </li> -->
-      <!-- </ul> -->
-      <!-- <br> -->
-      <!-- <p>Profile completion</p> -->
-      <!-- </div> -->
-      <!--  -->
-      <!-- <div class="field"> -->
-      <!-- <div class="buttons is-centered"> -->
-      <!-- <button class="button is-medium is-light has-background-grey"> -->
-      <!-- <span class="icon is-small"> -->
-      <!-- <i class="fab fa-github fa-font-light" /> -->
-      <!-- </span> -->
-      <!-- </button> -->
-      <!-- <button class="button is-medium is-light has-background-grey"> -->
-      <!-- <span class="icon is-small"> -->
-      <!-- <i class="fab fa-discord fa-font-light" /> -->
-      <!-- </span> -->
-      <!-- </button> -->
-      <!-- <button class="button is-medium is-light has-background-grey"> -->
-      <!-- <span class="icon is-small"> -->
-      <!-- <i class="fab fa-twitter fa-font-light" /> -->
-      <!-- </span> -->
-      <!-- </button> -->
-      <!-- </div> -->
-      <!-- </div> -->
-      <!-- <br> -->
-
-      <!-- <div class="field is-horizontal"> -->
-      <!-- <div class="field-body"> -->
-      <!-- <div class="field has-background-grey-lighter py-2 px-5 has-radius"> -->
-      <!-- <label for="" class="is-small has-text-grey">First Name*</label> -->
-      <!-- <p class="control is-expanded has-icons-left"> -->
-      <!-- <input v-model="firstName" class="input" type="text" placeholder="Jane"> -->
-      <!-- <span class="icon is-small is-left"> -->
-      <!-- <i class="fas fa-user" /> -->
-      <!-- </span> -->
-      <!-- </p> -->
-      <!-- </div> -->
-      <!--  -->
-      <!-- <div class="field has-background-grey-lighter py-2 px-5 has-radius"> -->
-      <!-- <label for="" class="is-small has-text-grey">Last Name*</label> -->
-      <!-- <p class="control is-expanded has-icons-left"> -->
-      <!-- <input v-model="lastName" class="input" type="text" placeholder="Doe"> -->
-      <!-- <span class="icon is-small is-left"> -->
-      <!-- <i class="fas fa-user" /> -->
-      <!-- </span> -->
-      <!-- </p> -->
-      <!-- </div> -->
-      <!-- </div> -->
-      <!-- </div> -->
-
       <div class="field has-background-grey-lighter py-2 px-5 has-radius">
         <label for="" class="is-small has-text-grey">Name</label>
         <p class="control is-expanded has-icons-left">
@@ -169,21 +111,6 @@
           </span>
         </p>
       </div>
-
-      <!-- <div class="field has-background-grey-lighter py-2 px-5 has-radius"> -->
-      <!-- <label for="" class="is-small has-text-grey">Country</label> -->
-      <!-- <multiselect -->
-      <!-- v-model="country" -->
-      <!-- :options="countries" -->
-      <!-- label="name" -->
-      <!-- placeholder="🗺 Select Country" -->
-      <!-- track-by="code" -->
-      <!-- > -->
-      <!-- <template slot="singleLabel" slot-scope="{ option }"> -->
-      <!-- {{ option.name }} -->
-      <!-- </template> -->
-      <!-- </multiselect> -->
-      <!-- </div> -->
 
       <div class="field has-background-grey-lighter py-2 px-5 has-radius">
         <label class="is-small has-text-grey">I want to:</label>
@@ -324,12 +251,82 @@
         </div>
       </div>
     </div>
+    <!-- Deposit popup -->
+    <div class="modal deposit-popup" :class="{ 'is-active': depositPopup }">
+      <div class="modal-background" @click="depositPopup = false,depositAmount = 0" />
+      <div class="modal-content">
+        <div class="modal-content has-background-white has-radius-medium p-5">
+          <h3 class="has-text-centered subtitle is-4 has-text-weight-semibold">
+            Deposit
+          </h3>
+          <div class="balances is-flex">
+            <div class="balance pl-3">
+              <span v-if="walletBalance === null" class="is-size-7">Loading..<br></span>
+              <span v-else class="is-size-7">NOS Wallet Balance<br></span>
+              <span @click="depositAmount = parseInt(walletBalance)">{{ walletBalance }} NOS</span>
+              <a v-if="walletBalance === 0" href="https://nosana.io/token" target="_blank" class="is-size-7">Buy NOS tokens</a>
+            </div>
+          </div>
+          <form class="is-fullwidth" @submit.prevent="deposit">
+            <div
+              class="mt-5 has-radius-medium has-text-centered columns
+              is-flex is-align-items-center is-multiline has-background-grey-lighter m-0 py-5"
+            >
+              <div class="column is-full">
+                <div class="field has-background-grey-light has-radius-medium">
+                  <div
+                    class="control px-1 pr-3 py-2
+                    is-flex is-flex-direction-row is-align-items-center is-justify-content-space-between"
+                  >
+                    <div class="amount-logo px-3">
+                      <img width="30" src="~assets/img/icons/token.svg">
+                    </div>
+                    <div class="is-flex is-align-items-center is-flex-grow-1">
+                      <input
+                        v-model="depositAmount"
+                        required
+                        class="input has-background-grey-light ml-3 my-3"
+                        :max="walletBalance"
+                        min="1"
+                        step="0.1"
+                        type="number"
+                        placeholder="0"
+                        style="width: 250px; height: 35px; border: none;"
+                      >
+                      <span class="is-size-7 pt-3 pl-2">NOS</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button
+              v-if="!walletLoggedIn"
+              class="button is-accent is-fullwidth mt-5 has-text-weight-semibold"
+              @click.stop.prevent="$sol.loginModal = true"
+            >
+              Connect Wallet
+            </button>
+            <button
+              v-else
+              type="submit"
+              class="button is-accent is-fullwidth mt-5 has-text-weight-semibold"
+              :class="{'is-loading': loading}"
+            >
+              Deposit
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
   </section>
 </template>
 
 <script>
 // // import Multiselect from 'vue-multiselect';
+import { Transaction, PublicKey } from '@solana/web3.js';
+import { getAssociatedTokenAddress, getAccount, TOKEN_PROGRAM_ID, createTransferInstruction, createAssociatedTokenAccountInstruction, ASSOCIATED_TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import countries from '@/static/countries.json';
+const anchor = require('@project-serum/anchor');
 
 const range = index => [...Array(index).keys()];
 
@@ -364,12 +361,28 @@ export default {
       completionRange: range(5),
       loading: false,
       activeNft: null,
-      openNftPopup: false
+      openNftPopup: false,
+
+      depositAmount: 0,
+      depositPopup: false,
+      walletBalance: null,
+      wallet: null
     };
   },
   computed: {
+    reward () {
+      let reward = 0;
+      if (this.balance > 0) {
+        reward += 500;
+      }
+
+      return Math.min(reward + this.usedBalance, 10000);
+    },
     loggedIn () {
       return this.$auth && this.$auth.loggedIn;
+    },
+    walletLoggedIn () {
+      return this.$sol && this.$sol.publicKey;
     },
     userTier () {
       return this.$stake?.stakeData?.tierInfo?.userTier;
@@ -399,6 +412,18 @@ export default {
     this.refreshStake();
   },
   methods: {
+    async getUserJobPrices () {
+      try {
+        const totalCosts = await this.$axios.$get('/user/jobs/price');
+        this.usedBalance = totalCosts / 1e6;
+      } catch (error) {
+        this.$modal.show({
+          color: 'danger',
+          text: error,
+          title: 'Error'
+        });
+      }
+    },
     goToGithub () {
       if (!this.user.github_account_id) {
         window.location.href = `https://github.com/login/oauth/authorize?client_id=${process.env.NUXT_ENV_GITHUB_APP_CLIENT_ID}&redirect_uri=${window.location.origin}/account/edit`;
@@ -457,6 +482,11 @@ export default {
         this.image = user.image;
         this.completionIndex = user.completion_index ?? 0;
         this.getNfts(this.user.address);
+        this.getUserJobPrices();
+        this.balance = (await this.$sol.getNosBalance(this.user.generated_address)).uiAmount;
+        if (this.user.address) {
+          this.walletBalance = (await this.$sol.getNosBalance(this.user.address)).uiAmount;
+        }
         if (this.$route.query.code) {
           this.authenticateGithub(this.$route.query.code);
         }
@@ -509,6 +539,70 @@ export default {
         this.openNftPopup = true;
         this.activeNft = nft;
       }
+    },
+    async deposit () {
+      this.loading = true;
+      try {
+        let node = this.network;
+        if (!this.network.includes('http')) {
+          node = anchor.web3.clusterApiUrl(node);
+        }
+        const connection = new anchor.web3.Connection(node, 'confirmed');
+        const mint = new PublicKey(process.env.NUXT_ENV_NOS_TOKEN);
+        const from = await getAssociatedTokenAddress(mint, this.wallet.publicKey);
+        const to = await getAssociatedTokenAddress(mint, new PublicKey(this.user.generated_address));
+        const tx = new Transaction();
+        try {
+          const account = await getAccount(connection, to, TOKEN_PROGRAM_ID);
+          console.log('get account!', account);
+        } catch (error) {
+          try {
+            tx.add(createAssociatedTokenAccountInstruction(
+              this.wallet.publicKey,
+              to,
+              new PublicKey(this.user.generated_address),
+              mint,
+              TOKEN_PROGRAM_ID,
+              ASSOCIATED_TOKEN_PROGRAM_ID
+            ));
+          } catch (e) {
+            console.log(e);
+            // Ignore all errors; for now there is no API-compatible way to selectively ignore the expected
+            // instruction error if the associated account exists already.
+          }
+        }
+
+        tx.add(
+          createTransferInstruction(
+            from,
+            to,
+            this.wallet.publicKey,
+            this.depositAmount * 1e6
+          )
+        );
+
+        tx.feePayer = this.wallet.publicKey;
+        tx.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
+        const signed = await this.wallet.signTransaction(tx);
+        const signature = await connection.sendRawTransaction(signed.serialize());
+        await connection.confirmTransaction(signature);
+        console.log('tx response', signature);
+        this.$modal.show({
+          color: 'success',
+          text: `Successfully deposited ${this.depositAmount} NOS`,
+          title: 'Deposit'
+        });
+        this.depositAmount = 0;
+        this.depositPopup = 0;
+      } catch (error) {
+        console.error(error);
+        this.$modal.show({
+          color: 'danger',
+          text: error,
+          title: 'Error'
+        });
+      }
+      this.loading = false;
     }
 
   }

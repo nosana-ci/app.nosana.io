@@ -118,10 +118,12 @@ export default (context, inject) => {
             this.onWalletChange,
             commitment
           );
+          console.log('sub wallet', this.walletListenerId);
         }
       },
 
       unsubWallet () {
+        console.log('unsub wallet ', this.walletListenerId);
         if (this.walletListenerId) {
           this.web3.removeAccountChangeListener(this.walletListenerId);
         }
