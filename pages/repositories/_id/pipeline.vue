@@ -131,8 +131,7 @@
 </template>
 
 <script>
-import { parse } from 'yaml';
-import { validateJson } from '@nosana-ci/schema-validator';
+import { validateYaml, parseYaml } from '@nosana/schema-validator';
 
 export default {
   data () {
@@ -167,7 +166,7 @@ export default {
       if (pipeline) {
         this.pipelineEditor = true;
         try {
-          const validated = validateJson(JSON.stringify(parse(pipeline)));
+          const validated = validateYaml(pipeline);
           this.validation.valid = validated.valid;
           this.validation.errors = validated.errors;
           this.validation.errorLines = [];
@@ -204,7 +203,7 @@ export default {
   methods: {
     async edit () {
       try {
-        const pipeline = parse(this.pipeline);
+        const pipeline = parseYaml(this.pipeline);
         // TODO: change for nice yaml scheme checker
         if (!pipeline.global) {
           throw new Error('Your yaml does not include a `global` config');

@@ -15,27 +15,13 @@
               target="_blank"
               @click.stop
             >https://github.com/{{ repository.repository }}</a>
-            <p class="mt-2">
-              <span
-                class="has-tooltip-arrow"
-                :class="{ 'has-tooltip': repository.secret }"
-                :data-tooltip="
-                  repository.secret
-                    ? 'Github Webhook:\n' +
-                      backendUrl +
-                      '/webhook/github/' +
-                      repository.secret
-                    : null
-                "
-                @click.stop="
-                  repository.secret
-                    ? copyToClipboard(
-                      backendUrl + '/webhook/github/' + repository.secret
-                    )
-                    : null
-                "
-              >Trigger on commit to {{ repository.branches }} branch(es)</span>
-            </p>
+            <div v-if="repository.market === communityMarketId" class="mt-3">
+              <p>
+                <b>Nosana Community Tier</b><br>
+                Your CI/CD jobs will run on the Nosana Community Tier.<br>
+                This is a free Tier that will run on a best-effort basis.
+              </p>
+            </div>
           </div>
           <div class="ml-auto">
             <div
@@ -213,7 +199,8 @@ export default {
       backendUrl: process.env.NUXT_ENV_BACKEND_URL,
       permissionFound: null,
       loading: false,
-      newInstallationId: null
+      newInstallationId: null,
+      communityMarketId: process.env.NUXT_ENV_COMMUNITY_MARKET_ID
     };
   },
   computed: {
