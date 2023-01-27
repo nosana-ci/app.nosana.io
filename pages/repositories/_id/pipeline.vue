@@ -331,9 +331,6 @@ export default {
 };
 </script>
 <style scoped lang="scss">
-  .code-editor {
-    font-family: monospace;
-  }
   .template-icon {
     box-shadow: 1px 1px rgba(140,149,159,0.15);
     width: 42px;

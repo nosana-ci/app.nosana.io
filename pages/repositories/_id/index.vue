@@ -222,8 +222,8 @@ export default {
   },
   created () {
     this.newInstallationId = this.$route.query.installation_id;
-    this.getCommits(this.queryPage);
     this.setup();
+    this.getCommits(this.queryPage);
     if (!this.refreshInterval) {
       this.refreshInterval = setInterval(() => {
         console.log('refreshing commits..');

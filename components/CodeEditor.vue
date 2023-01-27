@@ -92,7 +92,7 @@ export default {
 }
 .my-editor {
     background: $white-ter;
-    font-family: $family-headers;
+    font-family: monospace;
     // line-height: 1.5;
     font-size: 14px;
     padding: 5px;

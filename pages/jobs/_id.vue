@@ -597,9 +597,6 @@ export default {
 </style>
 
 <style lang="scss" scoped>
-.code-editor {
-  font-family: monospace;
-}
 .pre {
   white-space: pre-wrap;
 }
