@@ -76,7 +76,8 @@
                             class="blockchain-address-inline"
                           >{{ commit.job }}</a>
                           <a
-                            v-if="user && ((user.roles && user.roles.includes('admin') || user.id === commit.user_id))"
+                            v-if="user &&
+                              ((user.roles && user.roles.includes('admin')) || user.user_id === commit.user_id)"
                             class="has-text-warning"
                             @click="postJob(commit.id)"
                           >Re-run job</a>
@@ -89,12 +90,15 @@
                       </div>
                       <div class="row-count">
                         <span>
-                          <a
-                            v-if="user && ((user.roles && user.roles.includes('admin') || user.id === commit.user_id))"
-                            class="has-text-warning"
-                            @click="postJob(commit.id)"
-                          >Post manually</a>
-                          or wait for cron job to pick it up
+                          <template
+                            v-if="user && ((user.roles && user.roles.includes('admin'))
+                              || user.user_id === commit.user_id)"
+                          >
+                            <a
+                              class="has-text-warning"
+                              @click="postJob(commit.id)"
+                            >Post manually</a> or
+                          </template>wait for cron job to pick it up
                         </span>
                       </div>
                     </template>
@@ -305,7 +309,7 @@
                 <span v-if="commit.payload" style="white-space: pre-wrap">{{ commit.payload.message }}</span>
                 <div>
                   <button
-                    v-if="user && ((user.roles && user.roles.includes('admin') || user.id === commit.user_id)) &&
+                    v-if="user && ((user.roles && user.roles.includes('admin')) || user.user_id === commit.user_id) &&
                       (commit.status !== 'PENDING' && commit.status !== 'QUEUED')"
                     class="button is-accent is-outlined is-small mt-2"
                     @click="postJob(commit.id)"
