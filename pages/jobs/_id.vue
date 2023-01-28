@@ -161,7 +161,10 @@
                                 :class="{'has-text-accent': !step.status,
                                          'has-text-danger': step.status}"
                               >
-                                <span v-if="step.cmd.cmd" class="has-text-weight-bold">$ {{ step.cmd.cmd }}</span>
+                                <span v-if="step.cmd.cmd" class="has-text-weight-bold">
+                                  <span v-if="!step.cmd.cmd.startsWith('sh -c')">$ {{ step.cmd.cmd }}</span>
+                                  <i v-else class="has-text-grey">executing through sh -c</i>
+                                </span>
                                 <span v-else class="has-text-weight-bold">$ {{ step.cmd }}</span>
                               </div>
                               <div v-if="step.log && Array.isArray(step.log)">
