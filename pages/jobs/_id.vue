@@ -76,7 +76,8 @@
                             class="blockchain-address-inline"
                           >{{ commit.job }}</a>
                           <a
-                            v-if="user && ((user.roles && user.roles.includes('admin') || user.id === commit.user_id))"
+                            v-if="user &&
+                              ((user.roles && user.roles.includes('admin')) || user.user_id === commit.user_id)"
                             class="has-text-warning"
                             @click="postJob(commit.id)"
                           >Re-run job</a>
@@ -89,12 +90,15 @@
                       </div>
                       <div class="row-count">
                         <span>
-                          <a
-                            v-if="user && ((user.roles && user.roles.includes('admin') || user.id === commit.user_id))"
-                            class="has-text-warning"
-                            @click="postJob(commit.id)"
-                          >Post manually</a>
-                          or wait for cron job to pick it up
+                          <template
+                            v-if="user && ((user.roles && user.roles.includes('admin'))
+                              || user.user_id === commit.user_id)"
+                          >
+                            <a
+                              class="has-text-warning"
+                              @click="postJob(commit.id)"
+                            >Post manually</a> or
+                          </template>wait for cron job to pick it up
                         </span>
                       </div>
                     </template>
@@ -157,7 +161,10 @@
                                 :class="{'has-text-accent': !step.status,
                                          'has-text-danger': step.status}"
                               >
-                                <span v-if="step.cmd.cmd" class="has-text-weight-bold">$ {{ step.cmd.cmd }}</span>
+                                <span v-if="step.cmd.cmd" class="has-text-weight-bold">
+                                  <span v-if="!step.cmd.cmd.startsWith('sh -c')">$ {{ step.cmd.cmd }}</span>
+                                  <i v-else class="has-text-grey">executing through sh -c</i>
+                                </span>
                                 <span v-else class="has-text-weight-bold">$ {{ step.cmd }}</span>
                               </div>
                               <div v-if="step.log && Array.isArray(step.log)">
@@ -305,7 +312,7 @@
                 <span v-if="commit.payload" style="white-space: pre-wrap">{{ commit.payload.message }}</span>
                 <div>
                   <button
-                    v-if="user && ((user.roles && user.roles.includes('admin') || user.id === commit.user_id)) &&
+                    v-if="user && ((user.roles && user.roles.includes('admin')) || user.user_id === commit.user_id) &&
                       (commit.status !== 'PENDING' && commit.status !== 'QUEUED')"
                     class="button is-accent is-outlined is-small mt-2"
                     @click="postJob(commit.id)"
