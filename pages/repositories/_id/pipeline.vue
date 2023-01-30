@@ -66,7 +66,12 @@
                 type="text"
                 placeholder="Update .nosana-ci.yml pipeline"
               >
-              <button type="submit" class="button is-accent is-fullwidth mb-2" :disabled="!pipeline">
+              <button
+                type="submit"
+                class="button is-accent is-fullwidth mb-2"
+                :disabled="!pipeline"
+                :class="{'is-loading': saving}"
+              >
                 Commit changes
               </button>
               <nuxt-link :to="`/repositories/${id}`" class="button is-outlined is-fullwidth">
@@ -172,6 +177,7 @@ export default {
       defaultBranch: null,
       selectedBranch: null,
       templates: null,
+      saving: false,
       validation: {
         valid: null,
         errors: null,
@@ -231,6 +237,7 @@ export default {
   methods: {
     async edit () {
       try {
+        this.saving = true;
         const pipeline = parseYaml(this.pipeline);
         // TODO: change for nice yaml scheme checker
         if (!pipeline.global) {
@@ -262,26 +269,18 @@ export default {
           commit_message: this.commitMessage ? this.commitMessage : 'Update .nosana-ci.yml pipeline',
           branch: this.selectedBranch
         });
-        this.successPopup = true;
-        setTimeout(() => { 
-          this.disabledTimeOut = false;
-          this.loadingTimeOut = false;
-        }, 1000);
+        setTimeout(() => {
+          this.saving = false;
+          this.successPopup = true;
+        }, 2000);
       } catch (error) {
         console.error(error);
-        if (error.name === 'YAMLParseError') {
-          this.$modal.show({
-            color: 'danger',
-            text: error,
-            title: 'Could not parse YAML'
-          });
-        } else {
-          this.$modal.show({
-            color: 'danger',
-            text: error,
-            title: 'Could not parse YAML'
-          });
-        }
+        this.$modal.show({
+          color: 'danger',
+          text: error,
+          title: 'Could not save pipeline'
+        });
+        this.saving = false;
       }
     },
     async getUser () {
