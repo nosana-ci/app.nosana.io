@@ -185,8 +185,7 @@ export default {
       },
       pipelineEditor: null,
       successPopup: false,
-      disabledTimeOut: true,
-      loadingTimeOut: true
+      disabledTimeOut: true
     };
   },
   computed: {
