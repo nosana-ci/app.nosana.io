@@ -13,8 +13,8 @@
               class="tag is-small"
               :class="{
                 'is-accent': commit.status === 'COMPLETED' || commit.state === 2,
-                'is-info': commit.status === 'RUNNING' || commit.state === 1,
-                'is-warning': commit.status === 'QUEUED' || commit.state === 0,
+                'is-info': commit.status === 'RUNNING' || (!commit.status && commit.state === 1),
+                'is-warning': commit.status === 'QUEUED' || (!commit.status && commit.state === 0),
                 'is-danger': commit.status === ('FAILED' || 'STOPPED') || commit.state === 3
               }"
             >
@@ -75,12 +75,19 @@
                             :href="$sol.explorer + '/address/' + commit.job"
                             class="blockchain-address-inline"
                           >{{ commit.job }}</a>
-                          <a
+                          <template
                             v-if="user &&
                               ((user.roles && user.roles.includes('admin')) || user.user_id === commit.user_id)"
-                            class="has-text-warning"
-                            @click="postJob(commit.id)"
-                          >Re-run job</a>
+                          >
+                            <a
+                              v-if="!loading"
+                              class="has-text-warning"
+                              @click="postJob(commit.id)"
+                            >Re-run job</a>
+
+                            <span v-else class="loading-text-white">Posting to blockchain</span>
+                          </template>
+
                         </span>
                       </div>
                     </template>
@@ -135,15 +142,18 @@
                     </div>
                     <div>
                       <template
-                        v-if="commit.cache_result && commit.cache_result.results && commit.job_content.pipeline.jobs"
+                        v-if="commit.job_content.pipeline.jobs"
                       >
                         <div
                           v-for="jobName in ['checkout'].concat(commit.job_content.pipeline.jobs.map(j => j.name))"
                           :key="jobName"
                         >
-                          <template v-if="commit.cache_result.results[jobName]">
+                          <template
+                            v-if="(commit.cache_result && commit.cache_result.results
+                              && commit.cache_result.results[jobName])"
+                          >
                             <div class="row-count has-text-link">
-                              <span>- Executing step '{{ jobName }}'</span>
+                              <span>- Executed step '{{ jobName }}'</span>
                             </div>
                             <div
                               v-if="typeof commit.cache_result.results[jobName][1] === 'string'"
@@ -153,6 +163,7 @@
                             </div>
                             <div
                               v-for="(step, index) in commit.cache_result.results[jobName][1]"
+                              v-else
                               :key="index"
                             >
                               <div
@@ -190,9 +201,25 @@
                             </div>
                             <div class="row-count" />
                           </template>
+                          <template v-else-if="!commit.cache_result && (logs[jobName] || currentStep === jobName)">
+                            <div class="row-count has-text-link">
+                              <span
+                                :class="{'loading-text-link': currentStep === jobName}"
+                              >- Execut<span v-if="currentStep === jobName">ing</span>
+                                <span v-else>ed</span> step '{{ jobName }}'</span>
+                            </div>
+                            <template v-if="logs[jobName]">
+                              <div class="row-count">
+                                <span class="pre" v-html="logs[jobName].slice(0, 10000)" />
+                              </div>
+                            </template>
+                          </template>
                         </div>
                       </template>
-                      <div v-else class="row-count loading-text-white">
+                      <div
+                        v-if="!commit.cache_result || !commit.cache_result.results"
+                        class="row-count loading-text-white"
+                      >
                         <span>Waiting
                           <span v-if="nowSeconds">{{ nowSeconds - (parseInt(commit.cache_blockchain['timeStart'],16)) }}
                             seconds</span>
@@ -201,26 +228,30 @@
                     </div>
                   </div>
                 </template>
-                <template v-if="commit.cache_result && commit.cache_result.results">
+                <template v-if="commit.cache_blockchain && commit.cache_blockchain.state === 2">
                   <div class="row-count" />
                   <div>
                     <div class="row-count has-text-link">
                       <span>Finishing job</span>
                     </div>
                     <div>
-                      <template v-if="commit.cache_blockchain.state === 2">
+                      <template v-if="commit.cache_result && commit.cache_result.results">
                         <div class="row-count">
-                          <span>Job finished
-                            {{ $moment(parseInt(commit.cache_blockchain['timeEnd'],16)*1e3).fromNow() }}</span>
-                        </div>
-                        <div class="row-count">
-                          <span>Duration:
-                            {{ secondsToHms(commit.cache_blockchain['timeStart'], commit.cache_blockchain['timeEnd']) }}
-                          </span>
+                          <span>Uploaded results
+                            <a v-if="commit.resultIpfsHash" :href="'https://nosana.mypinata.cloud/ipfs/' + commit.resultIpfsHash" target="_blank">{{ commit.resultIpfsHash }}</a></span>
                         </div>
                       </template>
-                      <div v-else class="row-count loading-text-white">
-                        <span>Waiting for job to finish</span>
+                      <div v-else class="row-count has-text-danger">
+                        <span>Could not retrieve results</span>
+                      </div>
+                      <div class="row-count">
+                        <span>Job finished
+                          {{ $moment(parseInt(commit.cache_blockchain['timeEnd'],16)*1e3).fromNow() }}</span>
+                      </div>
+                      <div class="row-count">
+                        <span>Duration:
+                          {{ secondsToHms(commit.cache_blockchain['timeStart'], commit.cache_blockchain['timeEnd']) }}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -268,7 +299,7 @@
             </div>
           </div>
           <div class="column is-3">
-            <div v-if="commit.id">
+            <div v-if="commit.id" style="position: sticky; top: 20px;">
               <div class="box">
                 <div v-if="commit.job" class="mb-4">
                   <i class="fas fa-list mr-4 has-text-accent" />
@@ -315,6 +346,7 @@
                     v-if="user && ((user.roles && user.roles.includes('admin')) || user.user_id === commit.user_id) &&
                       (commit.status !== 'PENDING' && commit.status !== 'QUEUED')"
                     class="button is-accent is-outlined is-small mt-2"
+                    :class="{'is-loading': loading}"
                     @click="postJob(commit.id)"
                   >
                     Rerun job
@@ -396,8 +428,11 @@ export default {
       tab: 'result',
       user: null,
       refreshInterval: null,
+      logInterval: null,
       clockInterval: null,
       nowSeconds: null,
+      logs: {},
+      currentStep: null,
       hideResults: {},
       displayInfo: null,
       stateMap: [
@@ -432,6 +467,10 @@ export default {
     if (this.clockInterval) {
       clearInterval(this.clockInterval);
       this.clockInterval = null;
+    }
+    if (this.logInterval) {
+      clearInterval(this.logInterval);
+      this.logInterval = null;
     }
   },
   created () {
@@ -539,12 +578,46 @@ export default {
       // result is now being retrieved in backend
       // this.result = await this.retrieveIpfsContent(hash)
     },
+    async getLogs () {
+      if (this.currentStep) {
+        try {
+          const response = await fetch(`https://nostromo.k8s.dev.nos.ci/nosana/logs/${this.commit.job}/${this.currentStep}`);
+          if (response.status !== 200) {
+            throw new Error('Log error status ' + response.status);
+          }
+          this.logs[this.currentStep] = await response.text();
+          const lastCharacter = this.logs[this.currentStep].slice(-1);
+          this.logs[this.currentStep] = convert.toHtml(this.logs[this.currentStep].replace(String.fromCharCode(26), ''));
+          this.$nextTick(() => {
+            window.scrollTo({ left: 0, top: document.body.scrollHeight, behavior: 'smooth' });
+          });
+          // Check EOF character
+          if (lastCharacter.charCodeAt(0) === 26) {
+            if (this.commit.job_content.pipeline.jobs) {
+              const i = this.commit.job_content.pipeline.jobs.findIndex(item => item.name === this.currentStep) + 1;
+              if (i < this.commit.job_content.pipeline.jobs.length) {
+                this.currentStep = this.commit.job_content.pipeline.jobs[i].name;
+              } else {
+                this.currentStep = null;
+                clearInterval(this.logInterval);
+                this.logInterval = null;
+              }
+            } else {
+              this.currentStep = null;
+              clearInterval(this.logInterval);
+              this.logInterval = null;
+            }
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    },
     async getCommit () {
       const id = this.$route.params.id;
       try {
         const commit = await this.$axios.$get(`/commits/${id}`);
         if (commit.cache_result) {
-          console.log(commit.cache_result.results);
           for (const key in commit.cache_result.results) {
             const results = commit.cache_result.results[key];
             for (let i = 0; i < results[1].length; i++) {
@@ -558,6 +631,17 @@ export default {
           }
         }
         this.commit = commit;
+        if (this.commit.status === 'RUNNING') {
+          if (!this.logInterval && this.commit.cache_blockchain && this.commit.cache_blockchain.node === '4HoZogbrDGwK6UsD1eMgkFKTNDyaqcfb2eodLLtS8NTx') {
+            this.currentStep = 'checkout';
+            // Refresh logs every second
+            this.getLogs();
+            this.logInterval = setInterval(this.getLogs, parseInt(1000, 10));
+          }
+        } else if (this.logInterval) {
+          clearInterval(this.logInterval);
+          this.logInterval = null;
+        }
         if (this.commit.status === 'RUNNING' || this.commit.status === 'QUEUED' || this.commit.status === 'PENDING') {
           if (!this.refreshInterval) {
             // Refresh status every 10 seconds
@@ -588,6 +672,9 @@ export default {
           this.displayInfo = Object.assign({}, this.commit);
         }
         this.commit = commit;
+        this.$nextTick(() => {
+          window.scrollTo({ left: 0, top: document.body.scrollHeight, behavior: 'smooth' });
+        });
       } catch (error) {
         this.$modal.show({
           color: 'danger',

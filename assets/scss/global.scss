@@ -292,6 +292,32 @@ input {
     animation: dots-white 1.2s steps(5, end) infinite;
   }
 }
+@keyframes dots-link {
+  0%, 20% {
+    color: rgba($link,0);
+    text-shadow:
+      .25em 0 0 rgba($link,0),
+      .5em 0 0 rgba($link,0);}
+  40% {
+    color: $link;
+    text-shadow:
+      .25em 0 0 rgba($link,0),
+      .5em 0 0 rgba($link,0);}
+  60% {
+    text-shadow:
+      .25em 0 0 $link,
+      .5em 0 0 rgba($link,0);}
+  80%, 100% {
+    text-shadow:
+      .25em 0 0 $link,
+      .5em 0 0 $link;}}
+.loading-text-link {
+  padding-right: 0.5em;
+  &:after {
+    content: '.';
+    animation: dots-link 1.2s steps(5, end) infinite;
+  }
+}
 .panel-block {
   background-color: $light;
   &.is-active {
