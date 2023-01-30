@@ -36,12 +36,6 @@
             <li :class="{'is-active': tab === 'result'}">
               <a @click.prevent="tab='result'">Result</a>
             </li>
-            <li :class="{'is-active': tab === 'logs'}">
-              <a @click.prevent="tab='logs'">Job Info</a>
-            </li>
-            <li :class="{'is-active': tab === 'ipfs'}">
-              <a @click.prevent="tab='ipfs'">IPFS</a>
-            </li>
             <li :class="{'is-active': tab === 'pipeline'}">
               <a @click.prevent="tab='pipeline'">Pipeline</a>
             </li>
@@ -241,19 +235,8 @@
                 </div>
               </div>
             </div>
-            <div v-else-if="tab === 'logs'">
-              <pre>{{ displayInfo }}</pre>
-            </div>
             <div v-else-if="tab === 'payload'">
               <pre>{{ commit.payload }}</pre>
-            </div>
-            <div v-else-if="tab === 'ipfs'">
-              <div v-if="commit.jobIpfsHash">
-                Job IPFS: <a :href="'https://nosana.mypinata.cloud/ipfs/' + commit.jobIpfsHash" target="_blank">{{ commit.jobIpfsHash }}</a>
-              </div>
-              <div v-if="commit.resultIpfsHash">
-                Result IPFS: <a :href="'https://nosana.mypinata.cloud/ipfs/' + commit.resultIpfsHash" target="_blank">{{ commit.resultIpfsHash }}</a>
-              </div>
             </div>
             <div v-else-if="tab === 'pipeline'">
               <code-editor
@@ -270,23 +253,34 @@
           <div class="column is-3">
             <div v-if="commit.id">
               <div class="box">
-                <div v-if="commit.job" class="mb-4">
-                  <i class="fas fa-list mr-4 has-text-accent" />
-                  Smart Contract Job <a
-                    target="_blank"
-                    :href="$sol.explorer + '/address/' + commit.job"
-                    class="blockchain-address-inline"
-                  >{{ commit.job }}</a>
-                </div>
                 <div v-if="commit.job && commit.cache_blockchain" class="mb-4">
                   <i class="fas fa-coins mr-4 has-text-accent" />
-                  Pipeline total cost
+                  Pipeline Cost
                   <b class="has-text-accent">
                     {{ parseInt(
                       commit.cache_blockchain.price ?
                         commit.cache_blockchain.price : commit.cache_blockchain.tokens, 16)/1e6
                     }}
                     NOS</b>
+                </div>
+                <div v-if="commit.commit" class="has-overresult-ellipses">
+                  <i class="fab fa-git mr-4 has-text-accent" />
+                  Commit: <a
+                    :href="commit.payload.url"
+                    class="blockchain-address-inline"
+                    target="_blank"
+                    @click.stop
+                  >{{ commit.commit }}</a>
+                </div>
+                <span v-if="commit.payload" style="white-space: pre-wrap">{{ commit.payload.message }}</span>
+                <hr v-if="commit.job || commit.cache_blockchain || displayInfo">
+                <div v-if="commit.job" class="mb-4">
+                  <i class="fas fa-list mr-4 has-text-accent" />
+                  Job: <a
+                    target="_blank"
+                    :href="$sol.explorer + '/address/' + commit.job"
+                    class="blockchain-address-inline"
+                  >{{ commit.job }}</a>
                 </div>
                 <div
                   v-if="commit.job && commit.cache_blockchain
@@ -300,21 +294,55 @@
                     class="blockchain-address-inline"
                   >{{ commit.cache_blockchain.node }}</a>
                 </div>
-                <div v-if="commit.commit" class="has-overresult-ellipses">
-                  <i class="fab fa-git mr-4 has-text-accent" />
-                  Commit <a
-                    :href="commit.payload.url"
-                    class="blockchain-address-inline"
+                <div v-if="displayInfo && displayInfo.market" class="mb-4">
+                  <i class="fas fa-globe mr-4 has-text-accent" />
+                  Market: <a
                     target="_blank"
-                    @click.stop
-                  >{{ commit.commit }}</a>
+                    :href="$sol.explorer + '/address/' + displayInfo.market"
+                    class="blockchain-address-inline"
+                  >{{ displayInfo.market }}</a>
                 </div>
-                <span v-if="commit.payload" style="white-space: pre-wrap">{{ commit.payload.message }}</span>
-                <div>
+                <div v-if="displayInfo && displayInfo.payer" class="mb-4">
+                  <i class="fas fa-user mr-4 has-text-accent" />
+                  Payer: <a
+                    target="_blank"
+                    :href="$sol.explorer + '/address/' + displayInfo.payer"
+                    class="blockchain-address-inline"
+                  >{{ displayInfo.payer }}</a>
+                </div>
+                <div v-if="displayInfo && displayInfo.project">
+                  <i class="fas fa-project-diagram mr-4 has-text-accent" />
+                  Project: <a
+                    target="_blank"
+                    :href="$sol.explorer + '/address/' + displayInfo.project"
+                    class="blockchain-address-inline"
+                  >{{ displayInfo.project }}</a>
+                </div>
+                <hr v-if="commit.resultIpfsHash || commit.jobIpfsHash">
+                <div v-if="commit.jobIpfsHash" class="mb-4">
+                  <i class="fas fa-file mr-4 has-text-accent" />
+                  Job IPFS: <a
+                    target="_blank"
+                    :href="'https://nosana.mypinata.cloud/ipfs/' + commit.jobIpfsHash"
+                    class="blockchain-address-inline"
+                  >{{ commit.jobIpfsHash }}</a>
+                </div>
+                <div v-if="commit.resultIpfsHash">
+                  <i class="fas fa-file mr-4 has-text-accent" />
+                  Result IPFS: <a
+                    target="_blank"
+                    :href="'https://nosana.mypinata.cloud/ipfs/' + commit.resultIpfsHash"
+                    class="blockchain-address-inline"
+                  >{{ commit.resultIpfsHash }}</a>
+                </div>
+                <hr
+                  v-if="user && ((user.roles && user.roles.includes('admin')) || user.user_id === commit.user_id) &&
+                      (commit.status !== 'PENDING' && commit.status !== 'QUEUED')">
+                <div class="buttons is-centered">
                   <button
                     v-if="user && ((user.roles && user.roles.includes('admin')) || user.user_id === commit.user_id) &&
                       (commit.status !== 'PENDING' && commit.status !== 'QUEUED')"
-                    class="button is-accent is-outlined is-small mt-2"
+                    class="button is-accent is-outlined is-small is-fullwidth mt-2"
                     @click="postJob(commit.id)"
                   >
                     Rerun job
