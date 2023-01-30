@@ -29,10 +29,13 @@
         >
           <td>
             <div>
-              <span
+              <!-- <span
                 class="tag is-outlined is-light"
                 :class="{'is-success': repository.status === 'ACTIVE', 'is-info': repository.status === 'PENDING'}"
-              >{{ repository.status }}</span>
+              >{{ repository.status }}</span> -->
+              <span
+                class="tag is-outlined is-light is-success"
+              >ACTIVE</span>
             </div>
           </td>
 
