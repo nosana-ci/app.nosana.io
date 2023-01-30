@@ -148,11 +148,7 @@
         <p>
           Successfully updated repository.
         </p>
-        <button
-          class="button is-accent mt-5 is-less-wide mb-3"
-          :class="{ 'is-disabled': disabledTimeOut, 'is-loading': loadingTimeOut }"
-          @click="$router.push(`/repositories/${id}`);"
-        >
+        <button class="button is-accent mt-5 is-less-wide mb-3" @click="$router.push(`/repositories/${id}`);">
           OK
         </button>
       </div>
@@ -184,9 +180,7 @@ export default {
         errorLines: []
       },
       pipelineEditor: null,
-      successPopup: false,
-      disabledTimeOut: true,
-      loadingTimeOut: true
+      successPopup: false
     };
   },
   computed: {
