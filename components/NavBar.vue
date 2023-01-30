@@ -110,9 +110,9 @@
               Pipelines
             </nuxt-link>
           </li>
-          <li>
+          <li v-if="loggedIn" class="is-hidden-desktop">
             <a
-              class="button ml-3 is-hidden-desktop is-outlined is-danger is-small"
+              class="button ml-3 is-outlined is-danger is-small"
               style="max-width: 80px;"
               @click.prevent="$sol.logout"
             >Logout</a>
