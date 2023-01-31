@@ -55,16 +55,16 @@
 
           <div class="has-background-light">
             <div class="px-5 pt-5">
-              <div class="is-flex is-justify-content-space-between">
+              <div class="is-flex is-justify-content-space-between table-header">
                 <div class="is-flex-grow-1 pr-4">
                   <input v-model="search" class="input" placeholder="Search">
                 </div>
-                <div class="">
-                  <nuxt-link to="/repositories/new" class="button is-accent is-pulled-right">
-                    + Add more repositories
-                  </nuxt-link>
+                <div class="buttons">
                   <nuxt-link to="/secrets" class="button is-accent is-outlined mr-3 is-pulled-right">
                     Global Secrets
+                  </nuxt-link>
+                  <nuxt-link to="/repositories/new" class="button is-accent is-pulled-right">
+                    + Add more repositories
                   </nuxt-link>
                 </div>
               </div>
@@ -179,6 +179,22 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.table-header {
+  @media screen and (max-width: $tablet) {
+    display: block !important;
+    div {
+      padding-right: 0 !important;
+    }
+    .buttons {
+      margin-top: 15px;
+      a {
+        margin-right: 0 !important;
+        width: 100%;
+      }
+    }
+  }
+}
+
 .section {
   min-height: calc(100vh - 100px);
 }
