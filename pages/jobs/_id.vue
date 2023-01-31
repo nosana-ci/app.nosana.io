@@ -2,147 +2,35 @@
   <section class="section">
     <div class="container">
       <div v-if="commit">
-        <div v-if="commit.id">
-          <div class="is-flex is-align-items-center">
-            <div class="mr-4">
-              <nuxt-link :to="`/repositories/${commit.repository_id}`" class="is-size-5">
-                <i class="fas fa-chevron-left" />
-              </nuxt-link>
-            </div>
-            <div class="mr-4">
-              <div
-                class="tag is-small"
-                :class="{
-                  'is-accent': commit.status === 'COMPLETED',
-                  'is-info': commit.status === 'RUNNING',
-                  'is-warning': commit.status === 'QUEUED',
-                  'is-danger': commit.status === ('FAILED' || 'STOPPED')
-                }"
-              >
-                {{ commit.status }}
-              </div>
-            </div>
-            <div>Job <b>#{{ commit.id }}</b> triggered by <a target="_blank" :href="'https://github.com/'+commit.payload.author.username">{{ commit.payload.author.username }}</a> {{ $moment(commit.created_at).fromNow() }}</div>
+        <div class="is-flex is-align-items-center">
+          <div v-if="commit.repository_id" class="mr-4">
+            <nuxt-link :to="`/repositories/${commit.repository_id}`" class="is-size-5">
+              <i class="fas fa-chevron-left" />
+            </nuxt-link>
           </div>
-          <hr class="my-4">
-          <h1 class="title">
-            {{ commit.payload.message.split('\n')[0] }}
-          </h1>
-          <div class="box">
-            <div v-if="commit.job" class="mb-4">
-              <i class="fas fa-list mr-4 has-text-accent" />
-              Smart Contract Job <a
-                target="_blank"
-                :href="$sol.explorer + '/address/' + commit.job"
-                class="blockchain-address-inline"
-              >{{ commit.job }}</a>
-            </div>
-            <div v-if="commit.job && commit.cache_blockchain" class="mb-4">
-              <i class="fas fa-coins mr-4 has-text-accent" />
-              Pipeline total cost
-              <b class="has-text-accent">
-                {{ parseInt(
-                  commit.cache_blockchain.price ?
-                    commit.cache_blockchain.price : commit.cache_blockchain.tokens, 16)/1e6
-                }}
-                NOS</b>
-            </div>
+          <div class="mr-4">
             <div
-              v-if="commit.job && commit.cache_blockchain
-                && (commit.cache_blockchain.state > 0 || commit.cache_blockchain.jobStatus > 0)"
-              class="mb-4"
+              class="tag is-small"
+              :class="{
+                'is-accent': commit.status === 'COMPLETED' || commit.state === 2,
+                'is-info': commit.status === 'RUNNING' || (!commit.status && commit.state === 1),
+                'is-warning': commit.status === 'QUEUED' || (!commit.status && commit.state === 0),
+                'is-danger': commit.status === ('FAILED' || 'STOPPED') || commit.state === 3
+              }"
             >
-              <i class="fas fa-server mr-4 has-text-accent" />
-              Node: <a
-                target="_blank"
-                :href="$sol.explorer + '/address/' + commit.cache_blockchain.node"
-                class="blockchain-address-inline"
-              >{{ commit.cache_blockchain.node }}</a>
+              <span v-if="commit.status">{{ commit.status }}</span>
+              <span v-else>{{ stateMap[commit.state] }}</span>
             </div>
-            <div v-if="commit.commit" class="has-overresult-ellipses">
-              <i class="fab fa-git mr-4 has-text-accent" />
-              Commit <a
-                :href="commit.payload.url"
-                class="blockchain-address-inline"
-                target="_blank"
-                @click.stop
-              >{{ commit.commit }}</a>
-            </div>
-            <span v-if="commit.payload" style="white-space: pre-wrap">{{ commit.payload.message }}</span>
           </div>
-          <div v-if="!commit.job" class="level notification is-warning">
-            <div class="level-left">
-              <div class="level-item">
-                <span>Not posted to blockchain..</span>
-              </div>
-            </div>
-            <div v-if="user && (user.roles && user.roles.includes('admin'))" class="level-right">
-              <div class="level-item">
-                <button class="button is-small is-danger" style="display: none" @click="postJob(commit.id)">
-                  Retry transaction
-                </button>
-              </div>
-            </div>
+          <div v-if="commit.id">
+            Job <b>#{{ commit.id }}</b> triggered by <a target="_blank" :href="'https://github.com/'+commit.payload.author.username">{{ commit.payload.author.username }}</a> {{ $moment(commit.created_at).fromNow() }}
           </div>
         </div>
-
-        <!-- Info from blockchain if it doesn't exists in database -->
-        <div v-else-if="commit.ipfsJob">
-          <div class="is-flex is-align-items-center">
-            <div class="mr-4">
-              <div
-                class="tag is-small"
-                :class="{
-                  'is-accent': commit.state === 2,
-                  'is-info': commit.state === 1,
-                  'is-warning': commit.state === 0,
-                  'is-danger': commit.state === 3
-                }"
-              >
-                {{ stateMap[commit.state] }}
-              </div>
-            </div>
-          </div>
-          <hr class="my-4">
-          <div class="box">
-            <div v-if="$route.params.id" class="mb-4">
-              <i class="fas fa-list mr-4 has-text-accent" />
-              Smart Contract Job <a
-                target="_blank"
-                :href="$sol.explorer + '/address/' + $route.params.id"
-                class="blockchain-address-inline"
-              >{{ $route.params.id }}</a>
-            </div>
-            <div v-if="commit.price" class="mb-4">
-              <i class="fas fa-coins mr-4 has-text-accent" />
-              Pipeline total cost
-              <b class="has-text-accent">
-                {{ parseInt(commit.price, 16)/1e6
-                }}
-                NOS</b>
-            </div>
-            <div
-              class="mb-4"
-            >
-              <i class="fas fa-server mr-4 has-text-accent" />
-              Node: <a
-                target="_blank"
-                :href="$sol.explorer + '/address/' + commit.node"
-                class="blockchain-address-inline"
-              >{{ commit.node }}</a>
-            </div>
-            <div
-              class="mb-4"
-            >
-              <i class="fas fa-shop mr-4 has-text-accent" />
-              Market: <a
-                target="_blank"
-                :href="$sol.explorer + '/address/' + commit.market"
-                class="blockchain-address-inline"
-              >{{ commit.market }}</a>
-            </div>
-          </div>
-        </div>
+        <hr class="my-4">
+        <h1 class="title">
+          <span v-if="commit.payload">{{ commit.payload.message.split('\n')[0] }}</span>
+          <span v-else>External Job</span>
+        </h1>
         <div class="tabs is-medium">
           <ul>
             <li :class="{'is-active': tab === 'result'}">
@@ -159,184 +47,357 @@
             </li>
           </ul>
         </div>
-        <div v-if="tab === 'result'">
-          <div v-if="commit.job_content">
-            <div v-if="commit.ipfsJob">
-              <small v-if="parseInt(commit.timeEnd,16)">
-                Finished {{ $moment(parseInt(commit.timeEnd,16)*1e3).fromNow() }}<br>
-                Duration: {{ secondsToHms(commit.timeStart, commit.timeEnd) }}
-              </small>
-              <small
-                v-else-if="nowSeconds && parseInt(commit.timeStart,16)"
-              >
-                Running for {{ nowSeconds - (parseInt(commit.timeStart,16)) }} seconds
-              </small>
-            </div>
-            <div v-else>
-              <small v-if="commit.cache_blockchain && parseInt(commit.cache_blockchain['timeEnd'],16)">
-                Finished {{ $moment(parseInt(commit.cache_blockchain['timeEnd'],16)*1e3).fromNow() }}<br>
-                Duration: {{ secondsToHms(commit.cache_blockchain['timeStart'], commit.cache_blockchain['timeEnd']) }}
-              </small>
-              <small
-                v-else-if="nowSeconds && commit.cache_blockchain && parseInt(commit.cache_blockchain['timeStart'],16)"
-              >
-                Running for {{ nowSeconds - (parseInt(commit.cache_blockchain['timeStart'],16)) }} seconds
-              </small>
-            </div>
-          </div>
-          <div
-            v-if="commit.job_content"
-            class="box mt-2 px-5 content-block has-background-black"
-          >
-            <div v-if="commit.cache_result && commit.cache_result.results">
-              <div class="has-text-centered block">
-                <div class="tag is-medium">
-                  <b>Node:</b>&nbsp;{{ commit.cache_result['nos-id'] }}
-                </div>
-              </div>
-              <div v-for="(res, index, count) in commit.cache_result.results" :key="index">
-                <div v-if="index !== 'docker-cmds' && index.startsWith('cmd-')">
-                  <div
-                    class="is-flex is-justify-content-space-between is-align-items-center command is-clickable"
-                    @click="toggleResult(index)"
-                  >
-                    <p
-                      class="has-text-link has-text-weight-bold row-count"
-                      :class="{'has-text-danger': res.exit}"
-                    >
-                      <span
-                        v-if="commit.job_content.pipeline.jobs[parseInt(index.split('-')[1])]
-                          && commit.job_content.pipeline.jobs[parseInt(index.split('-')[1])].commands
-                          && Array.isArray(commit.job_content.pipeline.jobs[parseInt(index.split('-')[1])].commands)"
-                      >
-                        <span>
-                          <span
-                            v-for="cmd in commit.job_content.pipeline.jobs[parseInt(index.split('-')[1])].commands"
-                            :key="cmd"
-                          >
-                            {{ cmd }}
-                          </span>
+        <div class="columns">
+          <div class="column is-9">
+            <div v-if="tab === 'result'">
+              <div class="box px-5 content-block has-background-black">
+                <div>
+                  <div class="row-count has-text-link">
+                    <span>Posting job to blockchain</span>
+                  </div>
+                  <div>
+                    <template v-if="commit.job">
+                      <div class="row-count">
+                        <span>Job posted</span>
+                        <span v-if="commit.cache_blockchain">to market {{ commit.cache_blockchain.market }} for price
+                          <b class="has-text-accent">
+                            {{ parseInt(
+                              commit.cache_blockchain.price ?
+                                commit.cache_blockchain.price : commit.cache_blockchain.tokens, 16)/1e6
+                            }}
+                            NOS</b>
                         </span>
-                      </span>
-                      <span v-else>
-                        {{ commit.job_content.pipeline.jobs[parseInt(index.split('-')[1])] }}
-                      </span>
-                    </p>
-                    <i class="fas fa-chevron-down ml-2 has-text-link" :class="{'fa-chevron-up': !hideResults[index]}" />
+                      </div>
+                      <div class="row-count">
+                        <span>
+                          <a
+                            target="_blank"
+                            :href="$sol.explorer + '/address/' + commit.job"
+                            class="blockchain-address-inline"
+                          >{{ commit.job }}</a>
+                          <template
+                            v-if="user &&
+                              ((user.roles && user.roles.includes('admin')) || user.user_id === commit.user_id)"
+                          >
+                            <a
+                              v-if="!loading"
+                              class="has-text-warning"
+                              @click="postJob(commit.id)"
+                            >Re-run job</a>
+
+                            <span v-else class="loading-text-white">Posting to blockchain</span>
+                          </template>
+
+                        </span>
+                      </div>
+                    </template>
+                    <template v-else-if="!loading">
+                      <div class="row-count">
+                        <span>Not posted to blockchain.</span>
+                      </div>
+                      <div class="row-count">
+                        <span>
+                          <template
+                            v-if="user && ((user.roles && user.roles.includes('admin'))
+                              || user.user_id === commit.user_id)"
+                          >
+                            <a
+                              class="has-text-warning"
+                              @click="postJob(commit.id)"
+                            >Post manually</a> or
+                          </template>wait for cron job to pick it up
+                        </span>
+                      </div>
+                    </template>
+                    <div v-else class="row-count">
+                      <span class="loading-text-white">Posting to blockchain</span>
+                    </div>
                   </div>
-                  <p class="has-text-white row-count log" :class="{'hidden-log': hideResults[index]}">
-                    <span class="pre">{{ res.out }}</span>
-                    <span class="pre has-text-danger">{{ res.err }}</span>
-                  </p>
                 </div>
-                <div v-else>
-                  <div
-                    v-for="(item, i) of res[1]"
-                    :key="i"
-                  >
-                    <div
-                      v-if="item.cmd"
-                      class="is-flex is-justify-content-space-between is-align-items-center command is-clickable"
-                      @click="toggleResult(count + '.' + (i - 1))"
-                    >
-                      <p
-                        v-if="!item.cmd.cmd"
-                        class="row-count has-text-weight-bold has-text-link log"
-                        :class="{'has-text-danger': item.error}"
-                      >
-                        {{ item.cmd }}
-                      </p>
-                      <p
-                        v-else
-                        class="row-count has-text-weight-bold has-text-link log"
-                        :class="{'has-text-danger': item.error}"
-                      >
-                        {{ item.cmd.cmd }}
-                      </p>
-                      <div>
-                        <p v-if="item.time && i > 0" class="tag" style="font-family: monospace;">
-                          {{ timeStamp(res[1][i - 1]['time'], item.time) }}
-                        </p>
-                        <i
-                          class="fas fa-chevron-down ml-2 has-text-link"
-                          :class="{'fa-chevron-up': !hideResults[count + '.' + (i - 1)]}"
-                        />
+                <template v-if="commit.cache_blockchain">
+                  <div class="row-count" />
+                  <div>
+                    <div class="row-count has-text-link">
+                      <span>Finding node to run job</span>
+                    </div>
+                    <div>
+                      <div v-if="commit.cache_blockchain.state > 0" class="row-count">
+                        <span>Job claimed by node <a
+                          target="_blank"
+                          :href="$sol.explorer + '/address/' + commit.cache_blockchain.node"
+                          class="blockchain-address-inline"
+                        >{{ commit.cache_blockchain.node }}</a></span>
+                      </div>
+                      <div v-else class="row-count loading-text-white">
+                        <span>Waiting for node to claim job</span>
                       </div>
                     </div>
-                    <div v-if="item.log && Array.isArray(item.log)">
-                      <div
-                        v-for="(log, ik) in item.log"
-                        v-show=" log[1] !== ''"
-                        :key="ik"
-                        class="row-count log"
-                        :class="{'has-text-white': log[0] === 1 ||
-                                   res[0] === 'success' || (log[0] === 2 && !item.error),
-                                 'has-text-danger': log[0] === 2 && item.error,
-                                 'hidden-log': hideResults[count + '.' + (i - 1)] }"
-                      >
-                        {{ log[1] }}
-                      </div>
-                    </div>
-                    <p
-                      v-else-if="item.log"
-                      class="row-count has-text-white log"
-                      :class="{'hidden-log': hideResults[count + '.' + (i - 1)]}"
-                    >
-                      <span class="pre">{{ item.log | truncate(10000, '...\n') }}</span>
-                      <span class="pre has-text-danger">{{ item.error }}</span>
-                    </p>
                   </div>
+                </template>
+                <template v-if="commit.cache_blockchain && commit.cache_blockchain.state > 0">
+                  <div class="row-count" />
+                  <div>
+                    <div class="row-count has-text-link">
+                      <span>Running job</span>
+                    </div>
+                    <div>
+                      <template
+                        v-if="commit.job_content.pipeline.jobs"
+                      >
+                        <div
+                          v-for="jobName in ['checkout'].concat(commit.job_content.pipeline.jobs.map(j => j.name))"
+                          :key="jobName"
+                        >
+                          <template
+                            v-if="(commit.cache_result && commit.cache_result.results
+                              && commit.cache_result.results[jobName])"
+                          >
+                            <div class="row-count has-text-link">
+                              <span>- Executed step '{{ jobName }}'</span>
+                            </div>
+                            <div
+                              v-if="typeof commit.cache_result.results[jobName][1] === 'string'"
+                              class="has-text-danger row-count"
+                            >
+                              <span>{{ commit.cache_result.results[jobName][1] }}</span>
+                            </div>
+                            <div
+                              v-for="(step, index) in commit.cache_result.results[jobName][1]"
+                              v-else
+                              :key="index"
+                            >
+                              <div
+                                v-if="step.cmd"
+                                class="row-count"
+                                :class="{'has-text-accent': !step.status,
+                                         'has-text-danger': step.status}"
+                              >
+                                <span v-if="step.cmd.cmd" class="has-text-weight-bold">
+                                  <span v-if="!step.cmd.cmd.startsWith('sh -c')">$ {{ step.cmd.cmd }}</span>
+                                  <i v-else class="has-text-grey">executing through sh -c</i>
+                                </span>
+                                <span v-else class="has-text-weight-bold">$ {{ step.cmd }}</span>
+                              </div>
+                              <div v-if="step.log && Array.isArray(step.log)">
+                                <div
+                                  v-for="(log, ik) in step.log"
+                                  v-show=" log[1] !== ''"
+                                  :key="ik"
+                                  class="row-count"
+                                  :class="{'has-text-danger':
+                                    log[0] === 2
+                                    && step.status}"
+                                >
+                                  <span class="pre" v-html="log[1].slice(0, 10000)" />
+                                  <!-- {{ convert.toHtml(log[1].slice(0, 10000)) }} -->
+                                </div>
+                                <div v-if="step.error" class="row-count has-text-danger">
+                                  <span class="has-text-weight-bold">{{ step.error }}</span>
+                                </div>
+                                <div v-if="step.status" class="row-count has-text-danger">
+                                  <span class="has-text-weight-bold">Exited with code {{ step.status }}</span>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="row-count" />
+                          </template>
+                          <template v-else-if="!commit.cache_result && (logs[jobName] || currentStep === jobName)">
+                            <div class="row-count has-text-link">
+                              <span
+                                :class="{'loading-text-link': currentStep === jobName}"
+                              >- Execut<span v-if="currentStep === jobName">ing</span>
+                                <span v-else>ed</span> step '{{ jobName }}'</span>
+                            </div>
+                            <template v-if="logs[jobName]">
+                              <div class="row-count">
+                                <span class="pre" v-html="logs[jobName].slice(0, 10000)" />
+                              </div>
+                            </template>
+                          </template>
+                        </div>
+                      </template>
+                      <div
+                        v-if="!commit.cache_result || !commit.cache_result.results"
+                        class="row-count loading-text-white"
+                      >
+                        <span>Waiting
+                          <span v-if="nowSeconds">{{ nowSeconds - (parseInt(commit.cache_blockchain['timeStart'],16)) }}
+                            seconds</span>
+                          for results</span>
+                      </div>
+                    </div>
+                  </div>
+                </template>
+                <template v-if="commit.cache_blockchain && commit.cache_blockchain.state === 2">
+                  <div class="row-count" />
+                  <div>
+                    <div class="row-count has-text-link">
+                      <span>Finishing job</span>
+                    </div>
+                    <div>
+                      <template v-if="commit.cache_result && commit.cache_result.results">
+                        <div class="row-count">
+                          <span>Uploaded results
+                            <a v-if="commit.resultIpfsHash" :href="'https://nosana.mypinata.cloud/ipfs/' + commit.resultIpfsHash" target="_blank">{{ commit.resultIpfsHash }}</a></span>
+                        </div>
+                      </template>
+                      <div v-else class="row-count has-text-danger">
+                        <span>Could not retrieve results</span>
+                      </div>
+                      <div class="row-count">
+                        <span>Job finished
+                          {{ $moment(parseInt(commit.cache_blockchain['timeEnd'],16)*1e3).fromNow() }}</span>
+                      </div>
+                      <div class="row-count">
+                        <span>Duration:
+                          {{ secondsToHms(commit.cache_blockchain['timeStart'], commit.cache_blockchain['timeEnd']) }}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </template>
+                <div class="row-count" />
+                <div class="row-count">
+                  <span
+                    class="tag is-small"
+                    :class="{
+                      'is-accent': commit.status === 'COMPLETED',
+                      'is-info': commit.status === 'RUNNING',
+                      'is-warning': commit.status === 'QUEUED',
+                      'is-danger': commit.status === ('FAILED' || 'STOPPED')
+                    }"
+                  >
+                    <b>JOB {{ commit.status }}</b>
+                  </span>
                 </div>
               </div>
+            </div>
+            <div v-else-if="tab === 'logs'">
+              <pre>{{ displayInfo }}</pre>
+            </div>
+            <div v-else-if="tab === 'payload'">
+              <pre>{{ commit.payload }}</pre>
+            </div>
+            <div v-else-if="tab === 'ipfs'">
+              <div v-if="commit.jobIpfsHash">
+                Job IPFS: <a :href="'https://nosana.mypinata.cloud/ipfs/' + commit.jobIpfsHash" target="_blank">{{ commit.jobIpfsHash }}</a>
+              </div>
+              <div v-if="commit.resultIpfsHash">
+                Result IPFS: <a :href="'https://nosana.mypinata.cloud/ipfs/' + commit.resultIpfsHash" target="_blank">{{ commit.resultIpfsHash }}</a>
+              </div>
+            </div>
+            <div v-else-if="tab === 'pipeline'">
+              <code-editor
+                v-model="pipelineYml"
+                :highlight-lines="[0]"
+                :readonly="true"
+                class="py-3 pt-4 code-editor"
+              />
             </div>
             <div v-else>
-              <div
-                v-for="(job, index) in ['git clone', 'git checkout'].concat(commit.job_content.pipeline.jobs)"
-                :key="index"
-              >
+              Loading..
+            </div>
+          </div>
+          <div class="column is-3">
+            <div v-if="commit.id" style="position: sticky; top: 20px;">
+              <div class="box">
+                <div v-if="commit.job" class="mb-4">
+                  <i class="fas fa-list mr-4 has-text-accent" />
+                  Smart Contract Job <a
+                    target="_blank"
+                    :href="$sol.explorer + '/address/' + commit.job"
+                    class="blockchain-address-inline"
+                  >{{ commit.job }}</a>
+                </div>
+                <div v-if="commit.job && commit.cache_blockchain" class="mb-4">
+                  <i class="fas fa-coins mr-4 has-text-accent" />
+                  Pipeline total cost
+                  <b class="has-text-accent">
+                    {{ parseInt(
+                      commit.cache_blockchain.price ?
+                        commit.cache_blockchain.price : commit.cache_blockchain.tokens, 16)/1e6
+                    }}
+                    NOS</b>
+                </div>
                 <div
-                  v-if="job && job.commands && Array.isArray(job.commands)"
-                  class="has-text-link"
+                  v-if="commit.job && commit.cache_blockchain
+                    && (commit.cache_blockchain.state > 0 || commit.cache_blockchain.jobStatus > 0)"
+                  class="mb-4"
                 >
-                  <span class="row-count log">Job: {{ job.name }}</span><br>
-                  <div
-                    v-for="cmd in job.commands"
-                    :key="cmd"
-                    class="row-count log has-text-white"
+                  <i class="fas fa-server mr-4 has-text-accent" />
+                  Node: <a
+                    target="_blank"
+                    :href="$sol.explorer + '/address/' + commit.cache_blockchain.node"
+                    class="blockchain-address-inline"
+                  >{{ commit.cache_blockchain.node }}</a>
+                </div>
+                <div v-if="commit.commit" class="has-overresult-ellipses">
+                  <i class="fab fa-git mr-4 has-text-accent" />
+                  Commit <a
+                    :href="commit.payload.url"
+                    class="blockchain-address-inline"
+                    target="_blank"
+                    @click.stop
+                  >{{ commit.commit }}</a>
+                </div>
+                <span v-if="commit.payload" style="white-space: pre-wrap">{{ commit.payload.message }}</span>
+                <div>
+                  <button
+                    v-if="user && ((user.roles && user.roles.includes('admin')) || user.user_id === commit.user_id) &&
+                      (commit.status !== 'PENDING' && commit.status !== 'QUEUED')"
+                    class="button is-accent is-outlined is-small mt-2"
+                    :class="{'is-loading': loading}"
+                    @click="postJob(commit.id)"
                   >
-                    {{ cmd }}
-                  </div>
+                    Rerun job
+                  </button>
                 </div>
-                <div v-else class="has-text-link row-count log">
-                  {{ job }}
+              </div>
+            </div>
+
+            <!-- Info from blockchain if it doesn't exists in database -->
+            <div v-else-if="commit.ipfsJob">
+              <div class="box">
+                <div v-if="$route.params.id" class="mb-4">
+                  <i class="fas fa-list mr-4 has-text-accent" />
+                  Smart Contract Job <a
+                    target="_blank"
+                    :href="$sol.explorer + '/address/' + $route.params.id"
+                    class="blockchain-address-inline"
+                  >{{ $route.params.id }}</a>
                 </div>
-                <div class="log row-count has-text-white log">
-                  pending...
+                <div v-if="commit.price" class="mb-4">
+                  <i class="fas fa-coins mr-4 has-text-accent" />
+                  Pipeline total cost
+                  <b class="has-text-accent">
+                    {{ parseInt(commit.price, 16)/1e6
+                    }}
+                    NOS</b>
+                </div>
+                <div
+                  class="mb-4"
+                >
+                  <i class="fas fa-server mr-4 has-text-accent" />
+                  Node: <a
+                    target="_blank"
+                    :href="$sol.explorer + '/address/' + commit.node"
+                    class="blockchain-address-inline"
+                  >{{ commit.node }}</a>
+                </div>
+                <div
+                  class="mb-4"
+                >
+                  <i class="fas fa-shop mr-4 has-text-accent" />
+                  Market: <a
+                    target="_blank"
+                    :href="$sol.explorer + '/address/' + commit.market"
+                    class="blockchain-address-inline"
+                  >{{ commit.market }}</a>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div v-else-if="tab === 'logs'">
-          <pre>{{ displayInfo }}</pre>
-        </div>
-        <div v-else-if="tab === 'payload'">
-          <pre>{{ commit.payload }}</pre>
-        </div>
-        <div v-else-if="tab === 'ipfs'">
-          <div v-if="commit.jobIpfsHash">
-            Job IPFS: <a :href="'https://nosana.mypinata.cloud/ipfs/' + commit.jobIpfsHash" target="_blank">{{ commit.jobIpfsHash }}</a>
-          </div>
-          <div v-if="commit.resultIpfsHash">
-            Result IPFS: <a :href="'https://nosana.mypinata.cloud/ipfs/' + commit.resultIpfsHash" target="_blank">{{ commit.resultIpfsHash }}</a>
-          </div>
-        </div>
-        <div v-else-if="tab === 'pipeline'">
-          <pre>{{ commit.job_content.pipeline }}</pre>
-        </div>
-      </div>
-      <div v-else>
-        Loading..
       </div>
     </div>
   </section>
@@ -344,7 +405,9 @@
 
 <script>
 import bs58 from 'bs58';
-import { parse } from 'yaml';
+import { parse, stringify } from 'yaml';
+const Convert = require('ansi-to-html');
+const convert = new Convert();
 
 export default {
   filters: {
@@ -361,11 +424,15 @@ export default {
       commit: null,
       result: null,
       step: null,
+      loading: false,
       tab: 'result',
       user: null,
       refreshInterval: null,
+      logInterval: null,
       clockInterval: null,
       nowSeconds: null,
+      logs: {},
+      currentStep: null,
       hideResults: {},
       displayInfo: null,
       stateMap: [
@@ -375,6 +442,15 @@ export default {
         'Stopped'
       ]
     };
+  },
+  computed: {
+    pipelineYml () {
+      // commit.job_content.pipeline
+      if (this.commit && this.commit.job_content && this.commit.job_content.pipeline) {
+        return stringify(this.commit.job_content.pipeline);
+      }
+      return '';
+    }
   },
   watch: {
     '$auth.loggedIn' (loggedIn) {
@@ -391,6 +467,10 @@ export default {
     if (this.clockInterval) {
       clearInterval(this.clockInterval);
       this.clockInterval = null;
+    }
+    if (this.logInterval) {
+      clearInterval(this.logInterval);
+      this.logInterval = null;
     }
   },
   created () {
@@ -453,6 +533,7 @@ export default {
     },
     async postJob (id) {
       try {
+        this.loading = true;
         await this.$axios.$post(`/commits/${id}/job`);
         this.getCommit();
       } catch (error) {
@@ -462,6 +543,7 @@ export default {
           title: 'Error'
         });
       }
+      this.loading = false;
     },
     solHashToIpfsHash (hashArray) {
       // Convert the ipfs bytes from a solana job to a CID
@@ -496,12 +578,72 @@ export default {
       // result is now being retrieved in backend
       // this.result = await this.retrieveIpfsContent(hash)
     },
+    async getLogs () {
+      if (this.currentStep) {
+        try {
+          const response =
+          await fetch(`${process.env.NUXT_ENV_NODE_URL}/nosana/logs/${this.commit.job}/${this.currentStep}`);
+          if (response.status !== 200) {
+            throw new Error('Log error status ' + response.status);
+          }
+          this.logs[this.currentStep] = await response.text();
+          const lastCharacter = this.logs[this.currentStep].slice(-1);
+          this.logs[this.currentStep] = convert.toHtml(this.logs[this.currentStep].replace(String.fromCharCode(26), ''));
+          this.$nextTick(() => {
+            window.scrollTo({ left: 0, top: document.body.scrollHeight, behavior: 'smooth' });
+          });
+          // Check EOF character
+          if (lastCharacter.charCodeAt(0) === 26) {
+            if (this.commit.job_content.pipeline.jobs) {
+              const i = this.commit.job_content.pipeline.jobs.findIndex(item => item.name === this.currentStep) + 1;
+              if (i < this.commit.job_content.pipeline.jobs.length) {
+                this.currentStep = this.commit.job_content.pipeline.jobs[i].name;
+              } else {
+                this.currentStep = null;
+                clearInterval(this.logInterval);
+                this.logInterval = null;
+              }
+            } else {
+              this.currentStep = null;
+              clearInterval(this.logInterval);
+              this.logInterval = null;
+            }
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    },
     async getCommit () {
       const id = this.$route.params.id;
       try {
         const commit = await this.$axios.$get(`/commits/${id}`);
+        if (commit.cache_result) {
+          for (const key in commit.cache_result.results) {
+            const results = commit.cache_result.results[key];
+            for (let i = 0; i < results[1].length; i++) {
+              const step = results[1][i];
+              if (step.log && Array.isArray(step.log)) {
+                for (let j = 0; j < step.log.length; j++) {
+                  step.log[j][1] = convert.toHtml(step.log[j][1]);
+                }
+              }
+            }
+          }
+        }
         this.commit = commit;
-        if (this.commit.status === 'RUNNING' || this.commit.status === 'QUEUED') {
+        if (this.commit.status === 'RUNNING') {
+          if (!this.logInterval && this.commit.cache_blockchain && this.commit.cache_blockchain.node === '4HoZogbrDGwK6UsD1eMgkFKTNDyaqcfb2eodLLtS8NTx') {
+            this.currentStep = 'checkout';
+            // Refresh logs every second
+            this.getLogs();
+            this.logInterval = setInterval(this.getLogs, parseInt(1000, 10));
+          }
+        } else if (this.logInterval) {
+          clearInterval(this.logInterval);
+          this.logInterval = null;
+        }
+        if (this.commit.status === 'RUNNING' || this.commit.status === 'QUEUED' || this.commit.status === 'PENDING') {
           if (!this.refreshInterval) {
             // Refresh status every 10 seconds
             this.refreshInterval = setInterval(this.getCommit, parseInt(10000, 10));
@@ -531,6 +673,9 @@ export default {
           this.displayInfo = Object.assign({}, this.commit);
         }
         this.commit = commit;
+        this.$nextTick(() => {
+          window.scrollTo({ left: 0, top: document.body.scrollHeight, behavior: 'smooth' });
+        });
       } catch (error) {
         this.$modal.show({
           color: 'danger',
@@ -544,16 +689,21 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+</style>
+
+<style lang="scss" scoped>
 .pre {
-  white-space: pre-line;
-}
-.log {
-  word-break: break-word;
-  max-width: 85%;
-  padding-left: 40px;
+  white-space: pre-wrap;
 }
 .content-block{
+  color: white;
+  font-family: monospace;
+  font-size: 14px;
   counter-reset: line;
+  a {
+    color:white;
+    text-decoration: underline;
+  }
 }
 .hidden-log {
   overflow:hidden;
@@ -566,21 +716,24 @@ export default {
 }
 
 .row-count{
+  word-break: break-word;
+  max-width: 85%;
+  padding-left: 40px;
   &:before{
     counter-increment: line;
-    font-family: $family-headers;
+    font-family: $family-monospace;
     font-weight: normal;
     content: counter(line);
     display: inline-block;
     padding: 0 .5em;
     margin-right: .5em;
-    color: $accent !important;
+    color: $grey !important;
     min-width: 50px;
     text-align: right;
     margin-left: -62px;
   }
   &.has-text-danger:before {
-    color: $red;
+    color: $red !important;
   }
 }
 </style>

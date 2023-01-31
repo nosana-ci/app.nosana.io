@@ -192,7 +192,7 @@ export default {
         if (path) {
           this.$router.push(path);
         } else if (this.$route && this.$route.name === 'login') {
-          this.$router.push('/');
+          this.$router.push('/pipelines?login=true');
         }
       } catch (error) {
         console.error('ERR', error);

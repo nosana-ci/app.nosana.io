@@ -44,7 +44,8 @@ export default {
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
       { rel: 'preconnect', href: 'https://fonts.gstatic.com' },
       { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap' },
-      { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap' }
+      { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap' },
+      { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap' }
     ]
   },
 
@@ -112,7 +113,7 @@ export default {
     fullPathRedirect: true,
     redirect: {
       login: '/login',
-      logout: '/',
+      logout: '/login',
       home: false
     },
     plugins: [
@@ -129,10 +130,15 @@ export default {
         type: 'javascript/auto'
       });
     },
+    babel: {
+      plugins: [
+        ['@babel/plugin-proposal-nullish-coalescing-operator']
+      ]
+    },
     transpile: [
       'countup.js',
       'vue-countup-v2',
-      '@nosana-ci/schema-validator',
+      '@nosana/schema-validator',
       '@solana/spl-token',
       '@solana/wallet-adapter-base',
       '@solana/wallet-adapter-sollet',

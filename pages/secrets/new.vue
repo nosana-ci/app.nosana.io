@@ -1,22 +1,15 @@
 <template>
   <section class="section py-4">
     <div class="container">
-      <nuxt-link :to="`/repositories/${id}/secrets`" class="has-text-accent has-text-weight-semibold">
+      <nuxt-link to="/secrets" class="has-text-accent has-text-weight-semibold">
         <i class="fas fa-chevron-left" /> Cancel
       </nuxt-link>
-      <div v-if="repository" class="mt-2">
+      <div>
         <div class="is-flex is-align-items-center">
-          <h2 class="title">
-            Add new secret for {{ repository.repository }}
-          </h2>
+          <h1 class="title is-3 mt-4">
+            Add new global secret
+          </h1>
         </div>
-        <p>
-          <a
-            :href="'https://github.com/' + repository.repository"
-            target="_blank"
-            @click.stop
-          >https://github.com/{{ repository.repository }}</a>
-        </p>
       </div>
       <div v-if="!loggedInSecretManager" class="mt-3">
         <button
@@ -27,7 +20,7 @@
         </button>
       </div>
       <div v-else class="mt-2">
-        <form v-if="repository" class="has-limited-width" @submit.prevent="addSecret">
+        <form class="has-limited-width" @submit.prevent="addSecret">
           <div class="field">
             <label class="label">Name</label>
             <div class="control">
@@ -53,13 +46,10 @@
           </div>
           <div class="control">
             <button type="submit" class="button is-accent">
-              Add Secret
+              Add secret
             </button>
           </div>
         </form>
-        <div v-else>
-          Loading..
-        </div>
       </div>
     </div>
   </section>
@@ -76,9 +66,6 @@ export default {
   middleware: 'auth',
   data () {
     return {
-      id: this.$route.params.id,
-      repository: null,
-      user: null,
       secrets: {},
       loggedInSecretManager: false,
       newSecretKey: null,
@@ -86,26 +73,17 @@ export default {
     };
   },
   created () {
-    this.getUser();
     this.checkToken();
   },
   methods: {
     async login () {
-      // const timestamp = Math.floor(+new Date() / 1000);
-      // const signature = await this.$sol.sign(timestamp, 'nosana_secret');
-      // const response = await secretApi.post('/login', {
-      //   address: this.publicKey,
-      //   signature: bs58.encode(signature.data),
-      //   timestamp
-      // });
       const response = await this.$axios.$get('/user/secrets');
       this.$store.dispatch('secretsToken/addToken', response.token);
     },
     async addSecret () {
       try {
         await secretApi.post('/secrets', {
-          secrets: { [this.newSecretKey]: this.newSecretValue },
-          prefix: this.id + '_'
+          secrets: { [this.newSecretKey]: this.newSecretValue }
         });
         this.$modal.show({
           color: 'success',
@@ -114,43 +92,11 @@ export default {
           persistent: true,
           cancel: false,
           onConfirm: () => {
-            this.$router.push(`/repositories/${this.id}/secrets`);
+            this.$router.push('/secrets');
           }
         });
       } catch (error) {
         console.error(error);
-        this.$modal.show({
-          color: 'danger',
-          text: error,
-          title: 'Error'
-        });
-      }
-    },
-    async getUser () {
-      try {
-        const user = await this.$axios.$get('/user');
-        this.user = user;
-        await this.getRepository();
-      } catch (error) {
-        this.$modal.show({
-          color: 'danger',
-          text: error,
-          title: 'Error'
-        });
-      }
-      if (
-        !this.user ||
-        !this.repository ||
-        ((!this.user.roles || !this.user.roles.includes('admin')) &&
-          !this.user.user_id === this.repository.user_id)
-      ) {
-        this.$router.push(`/repositories/${this.id}`);
-      }
-    },
-    async getRepository () {
-      try {
-        this.repository = await this.$axios.$get(`/repositories/${this.id}`);
-      } catch (error) {
         this.$modal.show({
           color: 'danger',
           text: error,

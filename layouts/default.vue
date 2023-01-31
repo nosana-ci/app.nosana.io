@@ -6,12 +6,15 @@
     </client-only>
     <div class="columns m-0 is-fullheight">
       <div
-        class="column is-narrow has-background-light is-flex is-flex-direction-column sidebar"
+        class="column is-narrow has-background-secondary is-flex is-flex-direction-column sidebar"
       >
         <nav-bar />
-        <stake-block class="mt-auto is-hidden-mobile" />
+        <!-- <node-block class="mt-auto is-hidden-mobile" /> -->
+        <div class="mt-auto is-hidden-mobile has-text-centered">
+          <a class="has-text-danger is-size-7" @click.prevent="$sol.logout">Logout</a>
+        </div>
       </div>
-      <div class="column">
+      <div class="column" style="position: relative;">
         <Nuxt />
         <nos-footer />
       </div>
@@ -22,13 +25,11 @@
 <script>
 import NavBar from '@/components/NavBar';
 import SolWallet from '@/components/SolWallet';
-import StakeBlock from '@/components/Staking/StakeBlock';
 
 export default {
   components: {
     NavBar,
-    SolWallet,
-    StakeBlock
+    SolWallet
   }
 };
 </script>

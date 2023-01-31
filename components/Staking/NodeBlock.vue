@@ -1,8 +1,8 @@
 <template>
   <div class="box has-background-dark has-text-centered">
     <p>
-      <b>Want to earn rewards?</b>
-      <small><br>Check out our staking program!</small>
+      <b>Want to run your own node?</b>
+      <small><br>Run a node and earn NOS tokens</small>
     </p>
     <p class="my-3">
       <img src="~assets/img/icons/stake.svg">
@@ -14,7 +14,7 @@
         class="button is-outlined is-black is-small"
         style="opacity:0.3"
       >
-        <b>Go to staking</b>
+        <b>Go to node section</b>
       </nuxt-link>
     </p>
   </div>

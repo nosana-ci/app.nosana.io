@@ -1,12 +1,23 @@
 <template>
   <div class="table-container">
-    <table class="table is-striped is-fullwidth is-hoverable">
+    <table class="table is-striped is-bordered  is-fullwidth is-hoverable">
       <thead>
-        <tr>
-          <th>Status</th>
-          <th>Repository</th>
-          <th>Trigger</th>
-          <th>Commit</th>
+        <tr class="has-background-light">
+          <th class="py-2 px-5">
+            <div class="px-3">
+              Status
+            </div>
+          </th>
+          <th class="py-2 px-5">
+            <div class="px-3">
+              Repository
+            </div>
+          </th>
+          <th class="py-2 px-5">
+            <div class="px-3">
+              Commit
+            </div>
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -16,23 +27,19 @@
           class="is-clickable"
           @click="$router.push(`/repositories/${repository.id}`)"
         >
-          <td class="py-4">
-            <span
-              class="tag"
-              :class="{'is-success': repository.status === 'ACTIVE', 'is-info': repository.status === 'PENDING'}"
-            >{{ repository.status }}</span>
-          </td>
-          <td><a :href="'https://github.com/'+ repository.repository" target="_blank" @click.stop>{{ repository.repository }}</a></td>
           <td>
-            <span
-              class="has-tooltip-arrow"
-              :class="{'has-tooltip': repository.secret}"
-              :data-tooltip="repository.secret ?
-                ('Github Webhook:\n' + backendUrl + '/webhook/github/' + repository.secret) : null"
-              @click.stop="repository.secret ?
-                copyToClipboard(backendUrl + '/webhook/github/' + repository.secret)
-                : $router.push(`/repositories/${repository.id}`)"
-            >on commit to {{ repository.branches }} branch(es)</span>
+            <div>
+              <span
+                class="tag is-outlined is-light"
+                :class="{'is-success': repository.status === 'ACTIVE', 'is-info': repository.status === 'PENDING'}"
+              >{{ repository.status }}</span>
+            </div>
+          </td>
+
+          <td>
+            <div>
+              {{ repository.repository }}
+            </div>
           </td>
           <td>
             <div
@@ -53,6 +60,9 @@
                   />
                 </nuxt-link>
               </div>
+            </div>
+            <div v-else>
+              No jobs yet..
             </div>
           </td>
         </tr>

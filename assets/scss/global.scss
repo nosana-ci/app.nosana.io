@@ -122,8 +122,17 @@ a.card {
 }
 
 .button {
+  &.is-less-wide {
+    min-width: 110px;
+  }
   &.is-wide {
     min-width: 140px;
+  }
+  &.is-wider {
+    min-width: 240px;
+  }
+  &.is-widest {
+    min-width: 360px;
   }
   &.is-accent {
     color: $white;
@@ -197,4 +206,131 @@ a.card {
 .page-enter,
 .page-leave-to {
   opacity: 0;
+}
+
+.title.is-3 {
+  font-size: 1.9rem;
+}
+
+th {
+  font-weight: 600;
+}
+
+.tag.is-outlined {
+  @extend .button.is-outlined;
+  border: 1px solid;
+  pointer-events: none !important;
+  cursor: default;
+}
+
+input {
+  border-width: 1px !important;
+}
+
+.table.is-bordered td, .table.is-bordered th {
+  border-left: none;
+  border-right: none;
+}
+
+.table.is-striped tbody tr:not(.is-selected):nth-child(odd) {
+  background-color: $grey-lighter;
+}
+.table td, .table th {
+  border-color: $grey-darker;
+}
+
+@keyframes dots {
+  0%, 20% {
+    color: rgba(0,0,0,0);
+    text-shadow:
+      .25em 0 0 rgba(0,0,0,0),
+      .5em 0 0 rgba(0,0,0,0);}
+  40% {
+    color: $text;
+    text-shadow:
+      .25em 0 0 rgba(0,0,0,0),
+      .5em 0 0 rgba(0,0,0,0);}
+  60% {
+    text-shadow:
+      .25em 0 0 $text,
+      .5em 0 0 rgba(0,0,0,0);}
+  80%, 100% {
+    text-shadow:
+      .25em 0 0 $text,
+      .5em 0 0 $text;}}
+
+.loading-text {
+  padding-right: 0.5em;
+  &:after {
+    content: '.';
+    animation: dots 1.2s steps(5, end) infinite;
+  }
+}
+@keyframes dots-white {
+  0%, 20% {
+    color: rgba(255,255,255,0);
+    text-shadow:
+      .25em 0 0 rgba(255,255,255,0),
+      .5em 0 0 rgba(255,255,255,0);}
+  40% {
+    color: white;
+    text-shadow:
+      .25em 0 0 rgba(255,255,255,0),
+      .5em 0 0 rgba(255,255,255,0);}
+  60% {
+    text-shadow:
+      .25em 0 0 white,
+      .5em 0 0 rgba(255,255,255,0);}
+  80%, 100% {
+    text-shadow:
+      .25em 0 0 white,
+      .5em 0 0 white;}}
+.loading-text-white {
+  padding-right: 0.5em;
+  &:after {
+    content: '.';
+    animation: dots-white 1.2s steps(5, end) infinite;
+  }
+}
+@keyframes dots-link {
+  0%, 20% {
+    color: rgba($link,0);
+    text-shadow:
+      .25em 0 0 rgba($link,0),
+      .5em 0 0 rgba($link,0);}
+  40% {
+    color: $link;
+    text-shadow:
+      .25em 0 0 rgba($link,0),
+      .5em 0 0 rgba($link,0);}
+  60% {
+    text-shadow:
+      .25em 0 0 $link,
+      .5em 0 0 rgba($link,0);}
+  80%, 100% {
+    text-shadow:
+      .25em 0 0 $link,
+      .5em 0 0 $link;}}
+.loading-text-link {
+  padding-right: 0.5em;
+  &:after {
+    content: '.';
+    animation: dots-link 1.2s steps(5, end) infinite;
+  }
+}
+.panel-block {
+  background-color: $light;
+  &.is-active {
+    border-bottom-color: $accent;
+    border-top: 1px solid $accent;
+    background-color: $accent-transparent;
+    margin-top: -1px;
+    position: relative;
+    .panel-icon i {
+      display: none;
+      &.fa-circle-check {
+        display: block !important;
+      }
+    }
+  }
 }

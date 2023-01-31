@@ -1,44 +1,26 @@
 <template>
   <section class="section py-4">
     <div class="container">
-      <nuxt-link :to="`/repositories/${id}`" class="has-text-accent has-text-weight-semibold">
+      <nuxt-link to="/pipelines" class="has-text-accent has-text-weight-semibold">
         <i class="fas fa-chevron-left" /> Back
       </nuxt-link>
-      <div v-if="repository" class="mt-2">
-        <div class="is-flex is-align-items-flex-start is-justify-content-space-between mb-4">
-          <div>
-            <h2 class="title mb-1">
-              Secrets
-            </h2>
-            <p>
-              <a :href="'https://github.com/'+ repository.repository" target="_blank" @click.stop>https://github.com/{{ repository.repository }}</a>
-            </p>
-          </div>
-          <div class="buttons">
-            <nuxt-link :to="`/repositories/${id}/pipeline`" class="button is-accent px-5 is-outlined">
-              Pipeline
-            </nuxt-link>
-            <nuxt-link :to="`/repositories/${id}/secrets`" class="button is-accent px-5">
-              Secrets
-            </nuxt-link>
-            <nuxt-link :to="`/repositories/${id}/edit`" class="button is-accent px-5 is-outlined">
-              Settings
-            </nuxt-link>
-          </div>
+      <div class="is-flex">
+        <div>
+          <h1 class="title is-3 mt-4 mb-2">
+            Your Global Secrets
+          </h1>
+          <p>Manage here your global secrets.</p>
         </div>
         <nuxt-link
-          v-if="repository && user && (repository.user_id === user.user_id) && loggedInSecretManager"
+          v-if="loggedInSecretManager"
           class="button is-accent is-small"
           style="margin-left: auto"
-          :to="`/repositories/${id}/secrets/new`"
+          :to="`/secrets/new`"
         >
-          New secret
+          + New secret
         </nuxt-link>
       </div>
-      <p v-if="!loggedInSecretManager" class="mt-3">
-        Login to the Secret Manager to manage your repository secrets.
-      </p>
-      <div v-if="!loggedInSecretManager">
+      <div v-if="!loggedInSecretManager" class="mt-3">
         <button
           class="button is-accent is-widest mt-5 has-text-weight-semibold"
           @click.stop.prevent="login"
@@ -46,28 +28,33 @@
           Login to Secret Manager
         </button>
       </div>
-      <div v-else-if="repository" class="mt-5">
-        <table class="table is-striped has-radius">
+      <div v-else class="mt-5">
+        <table class="table is-striped is-bordered is-fullwidth is-hoverable">
           <thead>
-            <tr>
-              <th class="py-3 px-4">
-                Repository secrets
+            <tr class="has-background-light">
+              <th class="py-2 px-5">
+                <div class="px-3">
+                  Repository secrets
+                </div>
               </th>
-              <th class="is-size-7 py-2 px-3" />
+              <th class="py-2 px-5" />
             </tr>
           </thead>
           <tbody>
             <tr
               v-for="value, key in secrets"
               :key="key"
-              class="p-5 market-row"
             >
-              <td class="px-4 py-3">
-                {{ key.replace(id+"_","") }}
+              <td>
+                <div>
+                  {{ key }}
+                </div>
               </td>
-              <td class="py-3 px-5" style="text-align: right;">
-                <i class="fas fa-edit px-2" @click="openEditPopup(key, value)" />
-                <i class="fas fa-trash" @click="removeSecretConfirm(key)" />
+              <td style="text-align: right;">
+                <div>
+                  <i class="fas fa-edit px-2" @click="openEditPopup(key, value)" />
+                  <i class="fas fa-trash" @click="removeSecretConfirm(key)" />
+                </div>
               </td>
             </tr>
             <tr v-if="Object.keys(secrets).length === 0">
@@ -77,9 +64,6 @@
             </tr>
           </tbody>
         </table>
-      </div>
-      <div v-else>
-        Loading..
       </div>
     </div>
     <!-- Edit popup -->
@@ -145,7 +129,10 @@
 <script>
 // import { PublicKey } from '@solana/web3.js';
 import axios from 'axios';
-console.log(process.env.NUXT_ENV_SECRET_MANAGER_URL);
+function filterObject (obj, callback) {
+  return Object.fromEntries(Object.entries(obj)
+    .filter(([key, val]) => callback(val, key)));
+}
 const secretApi = axios.create({
   baseURL: process.env.NUXT_ENV_SECRET_MANAGER_URL
 });
@@ -154,9 +141,6 @@ export default {
   middleware: 'auth',
   data () {
     return {
-      id: this.$route.params.id,
-      repository: null,
-      user: null,
       secrets: {},
       newSecretValue: null,
       newSecretKey: null,
@@ -166,7 +150,6 @@ export default {
     };
   },
   created () {
-    this.getUser();
     this.checkToken();
   },
   methods: {
@@ -210,20 +193,16 @@ export default {
       }
     },
     async login () {
-      // const timestamp = Math.floor(+new Date() / 1000);
-      // const signature = await this.$sol.sign(timestamp, 'nosana_secret');
-      // const response = await secretApi.post('/login', {
-      //   address: this.publicKey,
-      //   signature: bs58.encode(signature.data),
-      //   timestamp
-      // });
       const response = await this.$axios.$get('/user/secrets');
       this.$store.dispatch('secretsToken/addToken', response.token);
     },
     async getSecrets () {
-      const prefix = this.id + '_';
-      const response = await secretApi.get('/secrets?prefix=' + prefix);
-      this.secrets = response.data;
+      const response = await secretApi.get('/secrets');
+      this.secrets = filterObject(response.data, (val, key) => {
+        const regex = /^[a-z,0-9,-]{36,36}$/;
+        const uuid = key.split('_')[0];
+        return !regex.test(uuid);
+      });
     },
     async editSecret () {
       try {
@@ -246,33 +225,6 @@ export default {
         this.selectedSecret = {};
         this.editPopup = false;
         console.error(error);
-        this.$modal.show({
-          color: 'danger',
-          text: error,
-          title: 'Error'
-        });
-      }
-    },
-    async getUser () {
-      try {
-        const user = await this.$axios.$get('/user');
-        this.user = user;
-        await this.getRepository();
-      } catch (error) {
-        this.$modal.show({
-          color: 'danger',
-          text: error,
-          title: 'Error'
-        });
-      }
-      if (!this.user || !this.repository || ((!this.user.roles || !this.user.roles.includes('admin')) && !this.user.user_id === this.repository.user_id)) {
-        this.$router.push(`/repositories/${this.id}`);
-      }
-    },
-    async getRepository () {
-      try {
-        this.repository = await this.$axios.$get(`/repositories/${this.id}`);
-      } catch (error) {
         this.$modal.show({
           color: 'danger',
           text: error,
