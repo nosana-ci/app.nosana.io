@@ -6,7 +6,7 @@
       </nuxt-link>
       <div class="mt-2">
         <form v-if="(repository && !loading && (pipeline || pipelineEditor))" @submit.prevent="edit">
-          <div class="is-flex is-align-items-flex-start is-justify-content-space-between mb-4">
+          <div class="is-flex-desktop is-align-items-flex-start is-justify-content-space-between mb-4">
             <div>
               <h2 class="title mb-2">
                 Pipeline
