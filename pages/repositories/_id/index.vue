@@ -5,7 +5,7 @@
         <i class="fas fa-chevron-left" /> All Repositories
       </nuxt-link>
       <div v-if="repository">
-        <div class="is-flex mb-2 mt-3">
+        <div class="mb-2 mt-3 is-flex-desktop">
           <div>
             <h2 class="title mb-3 mr-2">
               {{ repository.repository }}
