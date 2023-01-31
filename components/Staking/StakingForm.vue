@@ -247,7 +247,7 @@
         <div v-if="!stakeEndDate" class="container">
           <div v-if="!unstakeForm">
             <!--- Balances --->
-            <div v-if="!userHasStakedBefore" class="balances columns">
+            <div v-if="!userHasStakedBefore && loggedIn" class="balances columns">
               <div class="column is-two-thirds">
                 <div class="balance pl-3">
                   <span v-if="balance === null" class="is-size-7">Loading..<br></span>
