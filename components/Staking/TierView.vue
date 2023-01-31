@@ -346,6 +346,10 @@ export default {
 
 /* Table */
 .table {
+  td, th {
+    padding: 0.4em 1em;
+    border: none;
+  }
   background-color: transparent;
   &.is-striped tbody tr:not(.is-selected):nth-child(even) {
     background: transparent;
