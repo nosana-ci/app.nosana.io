@@ -25,6 +25,12 @@ a {
   margin-right: auto;
 }
 
+.is-fullwidth-touch {
+  @media screen and (max-width: $tablet) {
+    width: 100%;
+  }
+}
+
 .is-disabled {
   cursor: not-allowed !important;
   opacity: .65;
@@ -132,7 +138,8 @@ a.card {
     min-width: 240px;
   }
   &.is-widest {
-    min-width: 360px;
+    width: 100%;
+    max-width: 360px;
   }
   &.is-accent {
     color: $white;
