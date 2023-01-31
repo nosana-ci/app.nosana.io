@@ -5,7 +5,7 @@
         <i class="fas fa-chevron-left" /> Back
       </nuxt-link>
       <div v-if="repository" class="mt-2">
-        <div class="is-flex is-align-items-flex-start is-justify-content-space-between mb-4">
+        <div class="is-flex-desktop is-align-items-flex-start is-justify-content-space-between mb-4">
           <div>
             <h2 class="title mb-1">
               Secrets

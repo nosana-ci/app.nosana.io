@@ -17,13 +17,13 @@
               Having trouble with your Github Installation? <a :href="githubAppUrl">Try reconnecting it.</a>
             </p>
             <div
-              class="has-background-light is-flex is-align-content-center m-0 mb-5 p-5 columns is-multiline"
+              class="has-background-light is-flex-desktop is-align-content-center m-0 mb-5 p-5 columns is-multiline"
               style="border-radius: 4px;"
             >
               <div
                 v-for="installation in installations"
                 :key="installation.id"
-                class="column is-one-fifth is-half-mobile"
+                class="column is-one-fifth is-whole-mobile"
                 @click="githubApp(installation.installation_id)"
               >
                 <div
@@ -39,7 +39,7 @@
                   </p>
                 </div>
               </div>
-              <div class="column is-one-fifth is-half-mobile">
+              <div class="column is-one-fifth is-whole-mobile">
                 <a
                   :href="githubAppUrl"
                   class="is-flex is-align-items-center is-justify-content-flex-start installation px-3"
@@ -57,7 +57,7 @@
 
             <!-- Select repo -->
             <nav class="panel">
-              <div class="panel-heading is-flex is-align-items-center">
+              <div class="panel-heading is-flex-desktop is-align-items-center">
                 <div class="control has-icons-left is-flex-grow-1 mr-5">
                   <input v-model="search" class="input" type="text" placeholder="Search">
                   <span class="icon is-left">
@@ -66,7 +66,7 @@
                 </div>
                 <a
                   :class="{'is-loading': loading}"
-                  class="button is-accent is-outlined is-small py-4"
+                  class="button is-accent is-outlined is-small py-4 is-fullwidth-touch"
                   :href="githubAppUrl"
                 >
                   <span class="is-size-5 mr-1">+</span> Add more repositories
@@ -315,6 +315,13 @@ export default {
   }
   .icon img {
     border-radius: 50%;
+  }
+}
+
+.has-icons-left {
+  @media screen and (max-width: $tablet) {
+    width: 100%;
+    margin-right: 0 !important;
   }
 }
 </style>
