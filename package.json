@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "nuxt",
+    "dev:devnet": "APP_ENV=dev nuxt",
+    "dev:mainnet": "APP_ENV=mainnet nuxt",
     "build": "nuxt build",
     "start": "nuxt start",
     "generate": "nuxt generate",

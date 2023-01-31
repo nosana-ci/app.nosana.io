@@ -183,7 +183,7 @@
         </ul>
       </nav>
     </div>
-    <div class="has-text-centered container mt-6">
+    <div v-if="loggedIn" class="has-text-centered container mt-6">
       <div class="has-text-centered mb-4">
         <a
           class="button is-outlined is-danger is-small"
