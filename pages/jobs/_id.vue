@@ -581,7 +581,8 @@ export default {
     async getLogs () {
       if (this.currentStep) {
         try {
-          const response = await fetch(`https://nostromo.k8s.dev.nos.ci/nosana/logs/${this.commit.job}/${this.currentStep}`);
+          const response =
+          await fetch(`${process.env.NUXT_ENV_NODE_URL}/nosana/logs/${this.commit.job}/${this.currentStep}`);
           if (response.status !== 200) {
             throw new Error('Log error status ' + response.status);
           }
