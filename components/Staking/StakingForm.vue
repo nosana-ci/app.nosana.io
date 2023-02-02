@@ -1068,17 +1068,31 @@ export default {
     async close () {
       try {
         this.loading = true;
+        // const response = await this.$stake.program.methods
+        //   .close()
+        //   .preInstructions([
+        //     await this.$stake.program.methods
+        //       .withdraw()
+        //       .accounts(this.$stake.accounts)
+        //       .instruction()
+        //   ])
+        //   .accounts(this.$stake.accounts)
+        //   .rpc();
+
+        await this.$stake.program.methods
+          .withdraw()
+          .accounts(this.$stake.accounts)
+          .rpc();
         const response = await this.$stake.program.methods
           .close()
-          .preInstructions([
-            await this.$stake.program.methods
-              .withdraw()
-              .accounts(this.$stake.accounts)
-              .instruction()
-          ])
           .accounts(this.$stake.accounts)
           .rpc();
         console.log(response);
+        this.$modal.show({
+          color: 'success',
+          text: 'Successfully claimed back NOS',
+          title: 'Withdrawed!'
+        });
         setTimeout(async () => {
           await this.refreshStake();
         }, 1000);
