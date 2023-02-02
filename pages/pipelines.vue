@@ -2,7 +2,8 @@
   <div>
     <section class="section">
       <div class="container">
-        <div v-if="showTutorial">
+        <span v-if="loading">Loading..</span>
+        <div v-if="showTutorial && !loading">
           <div class="columns mt-3 is-centered has-text-centered">
             <div class="column is-12">
               <h1 class="title is-3">
@@ -41,14 +42,14 @@
         </div>
 
         <!-- Projects -->
-        <div v-if="!showTutorial" class="columns">
+        <div v-if="!showTutorial && !loading" class="columns">
           <div class="column is-4">
             <h1 class="title is-3">
               Pipelines
             </h1>
           </div>
         </div>
-        <div v-if="!showTutorial" class="mb-6 mt-5">
+        <div v-if="!showTutorial && !loading" class="mb-6 mt-5">
           <h2 class="subtitle has-text-weight-semibold">
             Your Repositories
           </h2>
@@ -161,8 +162,10 @@ export default {
           title: 'Error'
         });
       }
+      this.loading = false;
     },
     async getUser () {
+      this.loading = true;
       try {
         const user = await this.$axios.$get('/user');
         this.user = user;
