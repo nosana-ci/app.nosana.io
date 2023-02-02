@@ -247,7 +247,7 @@
         <div v-if="!stakeEndDate" class="container">
           <div v-if="!unstakeForm">
             <!--- Balances --->
-            <div v-if="!userHasStakedBefore" class="balances columns">
+            <div v-if="!userHasStakedBefore && loggedIn" class="balances columns">
               <div class="column is-two-thirds">
                 <div class="balance pl-3">
                   <span v-if="balance === null" class="is-size-7">Loading..<br></span>
@@ -1068,17 +1068,31 @@ export default {
     async close () {
       try {
         this.loading = true;
+        // const response = await this.$stake.program.methods
+        //   .close()
+        //   .preInstructions([
+        //     await this.$stake.program.methods
+        //       .withdraw()
+        //       .accounts(this.$stake.accounts)
+        //       .instruction()
+        //   ])
+        //   .accounts(this.$stake.accounts)
+        //   .rpc();
+
+        await this.$stake.program.methods
+          .withdraw()
+          .accounts(this.$stake.accounts)
+          .rpc();
         const response = await this.$stake.program.methods
           .close()
-          .preInstructions([
-            await this.$stake.program.methods
-              .withdraw()
-              .accounts(this.$stake.accounts)
-              .instruction()
-          ])
           .accounts(this.$stake.accounts)
           .rpc();
         console.log(response);
+        this.$modal.show({
+          color: 'success',
+          text: 'Successfully claimed back NOS',
+          title: 'Withdrawed!'
+        });
         setTimeout(async () => {
           await this.refreshStake();
         }, 1000);
