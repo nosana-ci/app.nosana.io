@@ -28,5 +28,15 @@
       "endpoint": "https://nos2.unraveled.tech",
       "logs": true
     }
+  },
+  "nods5F6w36njKief3djjcdTsTLW4hQuXXKUxqnQpiT7": {
+    "devnet": {
+      "endpoint": null,
+      "logs": false
+    },
+    "mainnet": {
+      "endpoint": "https://nos3.unraveled.tech",
+      "logs": true
+    }
   }
 }
