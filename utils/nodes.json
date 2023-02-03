@@ -1,0 +1,32 @@
+{
+  "4HoZogbrDGwK6UsD1eMgkFKTNDyaqcfb2eodLLtS8NTx": {
+    "devnet": {
+      "endpoint": "https://nostromo.k8s.dev.nos.ci",
+      "logs": true
+    },
+    "mainnet": {
+      "endpoint": "https://nostromo.k8s.prd.nos.ci",
+      "logs": true
+    }
+  },
+  "nodQBcRj6LbvseV1AGrSDNz7JdLuyosGzCdVyAc2Md9": {
+    "devnet": {
+      "endpoint": null,
+      "logs": false
+    },
+    "mainnet": {
+      "endpoint": "https://nos1.unraveled.tech",
+      "logs": true
+    }
+  },
+  "nodU2eSVwJSP8LtQJ9wTLrsTxYmYQNS8tiFEh6axhKN": {
+    "devnet": {
+      "endpoint": null,
+      "logs": false
+    },
+    "mainnet": {
+      "endpoint": "https://nos2.unraveled.tech",
+      "logs": true
+    }
+  }
+}
