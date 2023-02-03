@@ -5,29 +5,43 @@
         <i class="fas fa-chevron-left" /> Cancel
       </nuxt-link>
       <div class="mt-2">
-        <form v-if="(repository && !loading && (pipeline || pipelineEditor))" @submit.prevent="edit">
-          <div class="is-flex-desktop is-align-items-flex-start is-justify-content-space-between mb-4">
-            <div>
-              <h2 class="title mb-2">
-                Pipeline
-              </h2>
-              <p>
-                <a :href="'https://github.com/'+ repository.repository" target="_blank" @click.stop>https://github.com/{{ repository.repository }}</a>
-              </p>
-            </div>
-            <div class="buttons">
-              <nuxt-link :to="`/repositories/${id}/pipeline`" class="button is-accent px-5">
-                Pipeline
-              </nuxt-link>
-              <nuxt-link :to="`/repositories/${id}/secrets`" class="button is-accent px-5 is-outlined">
-                Secrets
-              </nuxt-link>
-              <nuxt-link :to="`/repositories/${id}/edit`" class="button is-accent px-5 is-outlined">
-                Settings
-              </nuxt-link>
-            </div>
+        <div class="is-flex-desktop is-align-items-flex-start is-justify-content-space-between mb-4">
+          <div>
+            <h2 class="title mb-2">
+              Pipeline
+            </h2>
+            <p v-if="repository">
+              <a :href="'https://github.com/'+ repository.repository" target="_blank" @click.stop>https://github.com/{{ repository.repository }}</a>
+            </p>
           </div>
-
+          <div class="buttons">
+            <nuxt-link :to="`/repositories/${id}/pipeline`" class="button is-accent px-5">
+              Pipeline
+            </nuxt-link>
+            <nuxt-link :to="`/repositories/${id}/secrets`" class="button is-accent px-5 is-outlined">
+              Secrets
+            </nuxt-link>
+            <nuxt-link :to="`/repositories/${id}/edit`" class="button is-accent px-5 is-outlined">
+              Settings
+            </nuxt-link>
+          </div>
+        </div>
+        <div v-if="branches">
+          Select the branch in which you want to edit the pipeline.<br>
+          <div class="select mb-1 mt-2">
+            <select v-model="editBranch" required @change="getPipeline(editBranch), pipelineEditor = false">
+              <option
+                v-for="branch in branches"
+                :key="branch.name"
+                :selected="branch.name === defaultBranch"
+                :value="branch.name"
+              >
+                {{ branch.name }} <span v-if="branch.name === defaultBranch">(Default)</span>
+              </option>
+            </select>
+          </div>
+        </div>
+        <form v-if="(repository && !loading && (pipeline || pipelineEditor))" @submit.prevent="edit">
           <div class="columns mt-4">
             <div class="column is-9">
               <p v-if="canEdit">
@@ -43,22 +57,10 @@
               />
             </div>
             <div v-if="canEdit" class="control column is-3 px-5">
-              <h3 class="subtitle has-text-weight-semibold is-size-4">
+              <h3 class="subtitle has-text-weight-semibold is-size-4 mb-3">
                 Commit changes
               </h3>
-              <span class="is-size-7">Branch</span>
-              <div class="select is-fullwidth mb-1">
-                <select v-model="selectedBranch" required>
-                  <option
-                    v-for="branch in branches"
-                    :key="branch.name"
-                    :selected="(branch.name === defaultBranch)"
-                    :value="branch.name"
-                  >
-                    {{ branch.name }} <span v-if="branch.name === defaultBranch">(Default)</span>
-                  </option>
-                </select>
-              </div>
+              Branch: <code>{{ editBranch }}</code><br>
               <span class="is-size-7">Commit message (optional)</span>
               <input
                 v-model="commitMessage"
@@ -93,8 +95,8 @@
         <div v-else-if="(loading || !repository)">
           Loading..
         </div>
-        <div v-else-if="(repository && !pipeline && !pipelineEditor && canEdit)">
-          <h2 class="title is-2 mb-2">
+        <div v-else-if="(repository && !pipeline && pipelineEditor === false && canEdit)">
+          <h2 class="title is-4 mb-1 mt-5">
             Setup your pipeline
           </h2>
           <p>
@@ -126,9 +128,6 @@
               </div>
             </div>
           </div>
-        </div>
-        <div v-else>
-          Not found
         </div>
       </div>
     </div>
@@ -162,6 +161,7 @@ import { validateYaml, parseYaml } from '@nosana/schema-validator';
 export default {
   data () {
     return {
+      editBranch: null,
       id: this.$route.params.id,
       repository: null,
       user: null,
@@ -171,7 +171,6 @@ export default {
       commitMessage: null,
       branches: null,
       defaultBranch: null,
-      selectedBranch: null,
       templates: null,
       saving: false,
       validation: {
@@ -225,7 +224,7 @@ export default {
   created () {
     this.getUser();
     this.getRepository();
-    this.getPipeline();
+    // this.getPipeline();
     this.getBranches();
   },
   methods: {
@@ -261,7 +260,7 @@ export default {
         await this.$axios.$post(`/repositories/${this.id}`, {
           pipeline: this.pipeline,
           commit_message: this.commitMessage ? this.commitMessage : 'Update .nosana-ci.yml pipeline',
-          branch: this.selectedBranch
+          branch: this.editBranch
         });
         setTimeout(() => {
           this.saving = false;
@@ -295,13 +294,15 @@ export default {
         });
       }
     },
-    async getPipeline () {
+    async getPipeline (branch) {
       try {
         this.loading = true;
-        this.pipeline = await this.$axios.$get(`/repositories/${this.id}/pipeline`);
+        this.pipeline = await this.$axios.$get(`/repositories/${this.id}/pipeline?branch=${branch}`);
         // this.pipeline = await null;
         this.loading = false;
       } catch (error) {
+        this.pipeline = null;
+        this.loading = false;
         if (error.response?.data?.type !== 'NotFoundError') {
           this.$modal.show({
             color: 'danger',
@@ -318,9 +319,9 @@ export default {
       try {
         this.loading = true;
         const result = await this.$axios.$get(`/repositories/${this.id}/branches`);
-        this.branches = result.branches;
         this.defaultBranch = result.default_branch;
-        this.selectedBranch = this.defaultBranch;
+        this.branches = result.branches;
+        // this.editBranch = this.defaultBranch;
         this.loading = false;
       } catch (error) {
         this.$modal.show({
