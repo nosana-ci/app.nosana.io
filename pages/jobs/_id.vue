@@ -368,7 +368,8 @@
                 </div>
                 <hr
                   v-if="user && ((user.roles && user.roles.includes('admin')) || user.user_id === commit.user_id) &&
-                      (commit.status !== 'PENDING' && commit.status !== 'QUEUED')">
+                    (commit.status !== 'PENDING' && commit.status !== 'QUEUED')"
+                >
                 <div class="buttons is-centered">
                   <button
                     v-if="user && ((user.roles && user.roles.includes('admin')) || user.user_id === commit.user_id) &&
@@ -436,6 +437,7 @@ import bs58 from 'bs58';
 import { parse, stringify } from 'yaml';
 const Convert = require('ansi-to-html');
 const convert = new Convert();
+const nodes = require('../../utils/nodes.json');
 
 export default {
   filters: {
@@ -606,11 +608,11 @@ export default {
       // result is now being retrieved in backend
       // this.result = await this.retrieveIpfsContent(hash)
     },
-    async getLogs () {
+    async getLogs (node) {
       if (this.currentStep) {
         try {
           const response =
-          await fetch(`${process.env.NUXT_ENV_NODE_URL}/nosana/logs/${this.commit.job}/${this.currentStep}`);
+          await fetch(`${node}/nosana/logs/${this.commit.job}/${this.currentStep}`);
           if (response.status !== 200) {
             throw new Error('Log error status ' + response.status);
           }
@@ -661,11 +663,15 @@ export default {
         }
         this.commit = commit;
         if (this.commit.status === 'RUNNING') {
-          if (!this.logInterval && this.commit.cache_blockchain && this.commit.cache_blockchain.node === '4HoZogbrDGwK6UsD1eMgkFKTNDyaqcfb2eodLLtS8NTx') {
-            this.currentStep = 'checkout';
-            // Refresh logs every second
-            this.getLogs();
-            this.logInterval = setInterval(this.getLogs, parseInt(1000, 10));
+          if (!this.logInterval && this.commit.cache_blockchain) {
+            const node = nodes[this.commit.cache_blockchain.node];
+            const network = process.env.NUXT_ENV_SOL_NETWORK_NAME;
+            if (node && node[network] && node[network].endpoint && node[network].logs) {
+              this.currentStep = 'checkout';
+              // Refresh logs every second
+              this.getLogs(node[network].endpoint);
+              this.logInterval = setInterval(() => { this.getLogs(node[network].endpoint); }, parseInt(1000, 10));
+            }
           }
         } else if (this.logInterval) {
           clearInterval(this.logInterval);
