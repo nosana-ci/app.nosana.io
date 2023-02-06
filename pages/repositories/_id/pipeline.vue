@@ -46,8 +46,8 @@
             <div class="column is-9">
               <p v-if="canEdit">
                 Changes made to your pipeline will be pushed to the <code>.nosana-ci.yml</code>
-                in your Github repository.
-                Learn more about the <a href="https://docs.nosana.io/pipelines/intro.html" target="_blank">Nosana pipeline syntax</a>.
+                in your Github repository.<br>
+                Learn more about the <a href="https://docs.nosana.io/pipelines/specification.html" target="_blank">Nosana pipeline syntax</a>.
               </p>
               <code-editor
                 v-model="pipeline"
@@ -103,7 +103,7 @@
             Select a template to get started or start with
             <a
               href="#"
-              @click.prevent="(pipelineEditor = true)"
+              @click.prevent="(pipelineEditor = true, pipeline = templates.find(t => t.name === 'Blank').template)"
             >a blank template</a>
           </p>
           <div class="columns is-multiline mt-4">
@@ -159,6 +159,13 @@
 import { validateYaml, parseYaml } from '@nosana/schema-validator';
 
 export default {
+  beforeRouteLeave (to, from, next) {
+    if (this.confirmStay()) {
+      next(false);
+    } else {
+      next();
+    }
+  },
   data () {
     return {
       editBranch: null,
@@ -179,7 +186,8 @@ export default {
         errorLines: []
       },
       pipelineEditor: null,
-      successPopup: false
+      successPopup: false,
+      pipelineBeforeEdit: null
     };
   },
   computed: {
@@ -226,6 +234,12 @@ export default {
     this.getRepository();
     // this.getPipeline();
     this.getBranches();
+  },
+  mounted () {
+    window.addEventListener('beforeunload', this.beforeWindowUnload);
+  },
+  beforeDestroy () {
+    window.removeEventListener('beforeunload', this.beforeWindowUnload);
   },
   methods: {
     async edit () {
@@ -298,6 +312,7 @@ export default {
       try {
         this.loading = true;
         this.pipeline = await this.$axios.$get(`/repositories/${this.id}/pipeline?branch=${branch}`);
+        this.pipelineBeforeEdit = this.pipeline;
         // this.pipeline = await null;
         this.loading = false;
       } catch (error) {
@@ -329,6 +344,22 @@ export default {
           text: error,
           title: 'Error'
         });
+      }
+    },
+    confirmLeave () {
+      return window.confirm('Do you really want to leave? You have unsaved changes!');
+    },
+
+    confirmStay () {
+      return this.pipeline !== this.pipelineBeforeEdit && !this.confirmLeave();
+    },
+
+    beforeWindowUnload (e) {
+      if (this.confirmStay()) {
+      // Cancel the event
+        e.preventDefault();
+        // Chrome requires returnValue to be set
+        e.returnValue = '';
       }
     }
   }
