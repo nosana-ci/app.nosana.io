@@ -165,10 +165,6 @@ export default {
         errorLines: []
       },
       pipelineEditor: null,
-<<<<<<< HEAD
-=======
-      successPopup: false,
->>>>>>> f188308299d21f01fe3497f156313857198dfae0
       pipelineBeforeEdit: null
     };
   },
