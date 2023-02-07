@@ -1,5 +1,26 @@
 <template>
-  <div class="modal" :class="{ 'is-active': visible }">
+  <div v-if="color === 'success'" class="modal" :class="{'is-active' : visible}">
+    <div class="modal-background" />
+    <div
+      class="modal-content has-background-white has-text-centered mx-3 pt-6 pb-5 has-radius-medium
+      has-limited-width-small"
+    >
+      <img
+        v-if="image"
+        :src="require(`@/assets/img/${image}`)"
+      >
+      <h3 class="title is-3 mb-3">
+        {{ title }}
+      </h3>
+      <p>
+        {{ text }}
+      </p>
+      <button class="button is-accent mt-5 is-less-wide mb-3" @click="confirm">
+        {{ confirmText }}
+      </button>
+    </div>
+  </div>
+  <div v-else class="modal" :class="{ 'is-active': visible }">
     <div class="modal-background" @click="!persistent ? hide() : null" />
     <div class="modal-content content box has-no-shadow" style="border: none" :class="['has-background-' + color]">
       <h2 v-if="title && title.length" :class="{'has-text-white': color !== 'white'}">
@@ -42,7 +63,8 @@ export default {
       confirmText: 'OK',
       cancelText: 'Cancel',
       onConfirm: {},
-      loading: false
+      loading: false,
+      image: false
     };
   },
   beforeMount () {
@@ -70,6 +92,7 @@ export default {
       this.confirmText = 'OK';
       this.cancelText = 'Cancel';
       this.onConfirm = {};
+      this.image = false;
     },
     async confirm () {
       // we must check if this.onConfirm is function
@@ -135,6 +158,7 @@ export default {
       // eslint-disable-next-line
       if (params.hasOwnProperty('persistent')) { this.persistent = params.persistent }
       if (params.color) { this.color = params.color; }
+      if (params.image) { this.image = params.image; }
       if (params.title) { this.title = params.title; } else if (params.color === 'error') { this.title = 'Error'; }
     }
   }

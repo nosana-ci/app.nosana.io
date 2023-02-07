@@ -867,7 +867,7 @@ export default {
         this.$modal.show({
           color: 'success',
           text: 'Successfully increased stake',
-          title: ''
+          title: 'Stake increased'
         });
         this.topupPopup = false;
       } catch (error) {

@@ -131,27 +131,6 @@
         </div>
       </div>
     </div>
-    <!-- TODO: make this in modalpopup component-->
-    <div class="modal saved-modal" :class="{'is-active' : successPopup}">
-      <div class="modal-background" />
-      <div
-        class="modal-content has-background-white has-text-centered mx-3 pt-6 pb-5 has-radius-medium
-      has-limited-width-small"
-      >
-        <img
-          :src="require(`@/assets/img/icons/saved.svg`)"
-        >
-        <h3 class="title is-3 mb-3">
-          Saved!
-        </h3>
-        <p>
-          Successfully updated repository.
-        </p>
-        <button class="button is-accent mt-5 is-less-wide mb-3" @click="$router.push(`/repositories/${id}`);">
-          OK
-        </button>
-      </div>
-    </div>
   </section>
 </template>
 
@@ -186,7 +165,6 @@ export default {
         errorLines: []
       },
       pipelineEditor: null,
-      successPopup: false,
       pipelineBeforeEdit: null
     };
   },
@@ -278,7 +256,15 @@ export default {
         });
         setTimeout(() => {
           this.saving = false;
-          this.successPopup = true;
+          this.$modal.show({
+            color: 'success',
+            title: 'Saved!',
+            text: 'Successfully updated repository.',
+            image: 'icons/saved.svg',
+            onConfirm: () => {
+              this.$router.push(`/repositories/${this.id}`);
+            }
+          });
         }, 2000);
       } catch (error) {
         console.error(error);
