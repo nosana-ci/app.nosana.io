@@ -38,5 +38,15 @@
       "endpoint": "https://nos3.unraveled.tech",
       "logs": true
     }
+  },
+  "8A1PyFti1cuFTpmKyXHMGuKE9bEuBCyPXSVkhQgGYPSm": {
+    "devnet": {
+      "endpoint": null,
+      "logs": false
+    },
+    "mainnet": {
+      "endpoint": "https://dbritt.nl",
+      "logs": true
+    }
   }
 }
