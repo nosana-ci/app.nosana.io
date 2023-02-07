@@ -356,7 +356,7 @@ export default {
 
     beforeWindowUnload (e) {
       if (this.confirmStay()) {
-      // Cancel the event
+        // Cancel the event
         e.preventDefault();
         // Chrome requires returnValue to be set
         e.returnValue = '';
