@@ -264,7 +264,7 @@
                     <b>JOB {{ commit.status }}</b>
                   </span>
                 </div>
-                <label class="checkbox ml-1 pt-5 is-flex">
+                <label v-if="commit.status === 'RUNNING'" class="checkbox ml-1 pt-5 is-flex">
                   <input v-model="disableAutoScroll" type="checkbox" class="mr-2">
                   Disable auto scroll
                 </label>
