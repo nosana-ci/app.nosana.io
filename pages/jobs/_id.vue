@@ -264,6 +264,10 @@
                     <b>JOB {{ commit.status }}</b>
                   </span>
                 </div>
+                <label v-if="commit.status === 'RUNNING'" class="checkbox ml-1 pt-5 is-flex">
+                  <input v-model="disableAutoScroll" type="checkbox" class="mr-2">
+                  Disable auto scroll
+                </label>
               </div>
             </div>
             <div v-else-if="tab === 'payload'">
@@ -465,6 +469,8 @@ export default {
       currentStep: null,
       hideResults: {},
       displayInfo: null,
+      autoScroll: true,
+      disableAutoScroll: false,
       stateMap: [
         'Queued',
         'Running',
@@ -486,6 +492,13 @@ export default {
     '$auth.loggedIn' (loggedIn) {
       if (loggedIn) {
         this.getUser();
+      }
+    },
+    tab (newTab) {
+      if (newTab === 'result') {
+        this.autoScroll = true;
+      } else {
+        this.autoScroll = false;
       }
     }
   },
@@ -619,9 +632,11 @@ export default {
           this.logs[this.currentStep] = await response.text();
           const lastCharacter = this.logs[this.currentStep].slice(-1);
           this.logs[this.currentStep] = convert.toHtml(this.logs[this.currentStep].replace(String.fromCharCode(26), ''));
-          this.$nextTick(() => {
-            window.scrollTo({ left: 0, top: document.body.scrollHeight, behavior: 'smooth' });
-          });
+          if (this.autoScroll && !this.disableAutoScroll) {
+            this.$nextTick(() => {
+              window.scrollTo({ left: 0, top: document.body.scrollHeight, behavior: 'smooth' });
+            });
+          }
           // Check EOF character
           if (lastCharacter.charCodeAt(0) === 26) {
             if (this.commit.job_content.pipeline.jobs) {
@@ -707,9 +722,11 @@ export default {
           this.displayInfo = Object.assign({}, this.commit);
         }
         this.commit = commit;
-        this.$nextTick(() => {
-          window.scrollTo({ left: 0, top: document.body.scrollHeight, behavior: 'smooth' });
-        });
+        if (this.autoScroll && this.commit.status === 'RUNNING' && !this.disableAutoScroll) {
+          this.$nextTick(() => {
+            window.scrollTo({ left: 0, top: document.body.scrollHeight, behavior: 'smooth' });
+          });
+        }
       } catch (error) {
         this.$modal.show({
           color: 'danger',
@@ -726,6 +743,11 @@ export default {
 </style>
 
 <style lang="scss" scoped>
+.checkbox {
+  &:hover {
+   color: $white;
+  }
+}
 .pre {
   white-space: pre-wrap;
 }
