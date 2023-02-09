@@ -366,7 +366,8 @@ export default {
       depositAmount: 0,
       depositPopup: false,
       walletBalance: null,
-      wallet: null
+      wallet: null,
+      network: process.env.NUXT_ENV_SOL_NETWORK
     };
   },
   computed: {
@@ -405,10 +406,21 @@ export default {
   watch: {
     '$sol.addWalletToExistingAccount': function (pubkey) {
       this.getUser();
+    },
+    '$sol.publicKey': function (pubkey) {
+      if (pubkey) {
+        this.wallet = this.$sol.getWallet();
+      }
     }
+
   },
   created () {
     this.getUser();
+    // this.getUserJobPrices();
+    // if (this.$sol) {
+    //   this.wallet = this.$sol.getWallet();
+    // }
+
     this.refreshStake();
   },
   methods: {
@@ -590,7 +602,10 @@ export default {
         this.$modal.show({
           color: 'success',
           text: `Successfully deposited ${this.depositAmount} NOS`,
-          title: 'Deposit'
+          title: 'Deposit',
+          onConfirm: () => {
+            this.$router.push('/pipelines');
+          }
         });
         this.depositAmount = 0;
         this.depositPopup = 0;

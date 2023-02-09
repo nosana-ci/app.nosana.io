@@ -107,6 +107,7 @@ export default {
   left: 2.5%;
   right: 0;
   overflow: hidden;
+  z-index: -1;
   img {
     margin-bottom: -15px;
     mask-image: linear-gradient(to top, rgba(0,0,0,1), rgba(0,0,0,0));

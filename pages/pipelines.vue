@@ -84,6 +84,7 @@
 <script>
 
 export default {
+  middleware: 'auth',
   data () {
     return {
       projects: null,
@@ -116,12 +117,6 @@ export default {
     }
   },
   watch: {
-    '$auth.loggedIn' (loggedIn) {
-      if (loggedIn) {
-        this.getUser();
-        this.getUserRepositories();
-      }
-    },
     '$sol.publicKey': function (pubkey) {
       if (pubkey) {
         this.wallet = this.$sol.getWallet();
@@ -129,12 +124,10 @@ export default {
     }
   },
   created () {
-    if (this.loggedIn) {
-      this.getUser();
-      this.getUserRepositories();
-      if (this.$sol) {
-        this.wallet = this.$sol.getWallet();
-      }
+    this.getUser();
+    this.getUserRepositories();
+    if (this.$sol) {
+      this.wallet = this.$sol.getWallet();
     }
     if (!this.interval) {
       this.interval = setInterval(() => {
@@ -228,6 +221,7 @@ border: 1px solid grey;
   z-index: 0;
   bottom: 0;
   overflow: hidden;
+  z-index: -1;
   img {
     mask-image: linear-gradient(to top, rgba(0,0,0,1), rgba(0,0,0,0));
     width: 100%;
