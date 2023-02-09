@@ -139,8 +139,12 @@ import { validateYaml, parseYaml } from '@nosana/schema-validator';
 
 export default {
   beforeRouteLeave (to, from, next) {
-    if (this.confirmStay()) {
-      next(false);
+    if (!this.savedPipeline) {
+      if (this.confirmStay()) {
+        next(false);
+      } else {
+        next();
+      }
     } else {
       next();
     }
@@ -165,7 +169,8 @@ export default {
         errorLines: []
       },
       pipelineEditor: null,
-      pipelineBeforeEdit: null
+      pipelineBeforeEdit: null,
+      savedPipeline: false
     };
   },
   computed: {
@@ -256,6 +261,7 @@ export default {
         });
         setTimeout(() => {
           this.saving = false;
+          this.savedPipeline = true;
           this.$modal.show({
             color: 'success',
             title: 'Saved!',
@@ -341,11 +347,13 @@ export default {
     },
 
     beforeWindowUnload (e) {
-      if (this.confirmStay()) {
+      if (!this.savedPipeline) {
+        if (this.confirmStay()) {
         // Cancel the event
-        e.preventDefault();
-        // Chrome requires returnValue to be set
-        e.returnValue = '';
+          e.preventDefault();
+          // Chrome requires returnValue to be set
+          e.returnValue = '';
+        }
       }
     }
   }
