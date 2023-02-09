@@ -228,6 +228,7 @@ border: 1px solid grey;
   z-index: 0;
   bottom: 0;
   overflow: hidden;
+  z-index: -1;
   img {
     mask-image: linear-gradient(to top, rgba(0,0,0,1), rgba(0,0,0,0));
     width: 100%;
