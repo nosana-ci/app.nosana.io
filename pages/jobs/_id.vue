@@ -678,8 +678,6 @@ export default {
         }
         this.commit = commit;
         if (this.commit.status === 'RUNNING') {
-          this.commit.cache_blockchain = {};
-          this.commit.cache_blockchain.node = '4HoZogbrDGwK6UsD1eMgkFKTNDyaqcfb2eodLLtS8NTx';
           if (!this.logInterval && this.commit.cache_blockchain) {
             const node = nodes[this.commit.cache_blockchain.node];
             const network = process.env.NUXT_ENV_SOL_NETWORK_NAME;
