@@ -36,6 +36,15 @@
         <div v-else>
           Authenticating to github..
         </div>
+        <br>
+        <small class="is-size-7">Looking for NOS staking?</small><br>
+        <nuxt-link
+          exact-active-class="is-hovered"
+          to="/stake"
+          class="button is-outlined is-accent is-small mt-1"
+        >
+          <b>Go to staking</b>
+        </nuxt-link>
       </div>
     </div>
     <div class="mt-6 pt-6 floor-image">

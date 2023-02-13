@@ -12,6 +12,12 @@ a {
   min-height: 100vh;
 }
 
+.section {
+  @media screen and (max-width: $tablet) {
+    padding: 3rem .5rem;
+  }
+}
+
 .has-limited-width {
   width: 640px;
   max-width: 100%;
