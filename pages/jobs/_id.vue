@@ -1,10 +1,10 @@
 <template>
   <section class="section">
     <div class="container">
-      <div v-if="commit">
+      <div v-if="job">
         <div class="is-flex is-align-items-center">
-          <div v-if="commit.repository_id" class="mr-4">
-            <nuxt-link :to="`/repositories/${commit.repository_id}`" class="is-size-5">
+          <div v-if="job.repository_id" class="mr-4">
+            <nuxt-link :to="`/repositories/${job.repository_id}`" class="is-size-5">
               <i class="fas fa-chevron-left" />
             </nuxt-link>
           </div>
@@ -12,23 +12,23 @@
             <div
               class="tag is-small"
               :class="{
-                'is-accent': commit.status === 'COMPLETED' || commit.state === 2,
-                'is-info': commit.status === 'RUNNING' || (!commit.status && commit.state === 1),
-                'is-warning': commit.status === 'QUEUED' || (!commit.status && commit.state === 0),
-                'is-danger': commit.status === ('FAILED' || 'STOPPED') || commit.state === 3
+                'is-accent': job.status === 'COMPLETED' || job.state === 2,
+                'is-info': job.status === 'RUNNING' || (!job.status && job.state === 1),
+                'is-warning': job.status === 'QUEUED' || (!job.status && job.state === 0),
+                'is-danger': job.status === ('FAILED' || 'STOPPED') || job.state === 3
               }"
             >
-              <span v-if="commit.status">{{ commit.status }}</span>
-              <span v-else>{{ stateMap[commit.state] }}</span>
+              <span v-if="job.status">{{ job.status }}</span>
+              <span v-else>{{ stateMap[job.state] }}</span>
             </div>
           </div>
-          <div v-if="commit.id">
-            Job <b>#{{ commit.id }}</b> triggered by <a target="_blank" :href="'https://github.com/'+commit.payload.author.username">{{ commit.payload.author.username }}</a> {{ $moment(commit.created_at).fromNow() }}
+          <div v-if="job.id">
+            Job <b>#{{ job.id }}</b> triggered by <a target="_blank" :href="'https://github.com/'+job.payload.author.username">{{ job.payload.author.username }}</a> {{ $moment(job.created_at).fromNow() }}
           </div>
         </div>
         <hr class="my-4">
         <h1 class="title">
-          <span v-if="commit.payload">{{ commit.payload.message.split('\n')[0] }}</span>
+          <span v-if="job.payload">{{ job.payload.message.split('\n')[0] }}</span>
           <span v-else>External Job</span>
         </h1>
         <div class="tabs is-medium">
@@ -50,14 +50,14 @@
                     <span>Posting job to blockchain</span>
                   </div>
                   <div>
-                    <template v-if="commit.job">
+                    <template v-if="job.job">
                       <div class="row-count">
                         <span>Job posted</span>
-                        <span v-if="commit.cache_blockchain">to market {{ commit.cache_blockchain.market }} for price
+                        <span v-if="job.cache_blockchain">to market {{ job.cache_blockchain.market }} for price
                           <b class="has-text-accent">
                             {{ parseInt(
-                              commit.cache_blockchain.price ?
-                                commit.cache_blockchain.price : commit.cache_blockchain.tokens, 16)/1e6
+                              job.cache_blockchain.price ?
+                                job.cache_blockchain.price : job.cache_blockchain.tokens, 16)/1e6
                             }}
                             NOS</b>
                         </span>
@@ -66,17 +66,17 @@
                         <span>
                           <a
                             target="_blank"
-                            :href="$sol.explorer + '/address/' + commit.job"
+                            :href="$sol.explorer + '/address/' + job.job"
                             class="blockchain-address-inline"
-                          >{{ commit.job }}</a>
+                          >{{ job.job }}</a>
                           <template
                             v-if="user &&
-                              ((user.roles && user.roles.includes('admin')) || user.user_id === commit.user_id)"
+                              ((user.roles && user.roles.includes('admin')) || user.user_id === job.user_id)"
                           >
                             <a
                               v-if="!loading"
                               class="has-text-warning"
-                              @click="postJob(commit.id)"
+                              @click="postJob(job.id)"
                             >Re-run job</a>
 
                             <span v-else class="loading-text-white">Posting to blockchain</span>
@@ -93,11 +93,11 @@
                         <span>
                           <template
                             v-if="user && ((user.roles && user.roles.includes('admin'))
-                              || user.user_id === commit.user_id)"
+                              || user.user_id === job.user_id)"
                           >
                             <a
                               class="has-text-warning"
-                              @click="postJob(commit.id)"
+                              @click="postJob(job.id)"
                             >Post manually</a> or
                           </template>wait for cron job to pick it up
                         </span>
@@ -108,19 +108,19 @@
                     </div>
                   </div>
                 </div>
-                <template v-if="commit.cache_blockchain">
+                <template v-if="job.cache_blockchain">
                   <div class="row-count" />
                   <div>
                     <div class="row-count has-text-link">
                       <span>Finding node to run job</span>
                     </div>
                     <div>
-                      <div v-if="commit.cache_blockchain.state > 0" class="row-count">
+                      <div v-if="job.cache_blockchain.state > 0" class="row-count">
                         <span>Job claimed by node <a
                           target="_blank"
-                          :href="$sol.explorer + '/address/' + commit.cache_blockchain.node"
+                          :href="$sol.explorer + '/address/' + job.cache_blockchain.node"
                           class="blockchain-address-inline"
-                        >{{ commit.cache_blockchain.node }}</a></span>
+                        >{{ job.cache_blockchain.node }}</a></span>
                       </div>
                       <div v-else class="row-count loading-text-white">
                         <span>Waiting for node to claim job</span>
@@ -128,7 +128,7 @@
                     </div>
                   </div>
                 </template>
-                <template v-if="commit.cache_blockchain && commit.cache_blockchain.state > 0">
+                <template v-if="job.cache_blockchain && job.cache_blockchain.state > 0">
                   <div class="row-count" />
                   <div>
                     <div class="row-count has-text-link">
@@ -136,27 +136,27 @@
                     </div>
                     <div>
                       <template
-                        v-if="commit.job_content.pipeline.jobs"
+                        v-if="job.job_content.pipeline.jobs"
                       >
                         <div
-                          v-for="jobName in ['checkout'].concat(commit.job_content.pipeline.jobs.map(j => j.name))"
+                          v-for="jobName in ['checkout'].concat(job.job_content.pipeline.jobs.map(j => j.name))"
                           :key="jobName"
                         >
                           <template
-                            v-if="(commit.cache_result && commit.cache_result.results
-                              && commit.cache_result.results[jobName])"
+                            v-if="(job.cache_result && job.cache_result.results
+                              && job.cache_result.results[jobName])"
                           >
                             <div class="row-count has-text-link">
                               <span>- Executed step '{{ jobName }}'</span>
                             </div>
                             <div
-                              v-if="typeof commit.cache_result.results[jobName][1] === 'string'"
+                              v-if="typeof job.cache_result.results[jobName][1] === 'string'"
                               class="has-text-danger row-count"
                             >
-                              <span>{{ commit.cache_result.results[jobName][1] }}</span>
+                              <span>{{ job.cache_result.results[jobName][1] }}</span>
                             </div>
                             <div
-                              v-for="(step, index) in commit.cache_result.results[jobName][1]"
+                              v-for="(step, index) in job.cache_result.results[jobName][1]"
                               v-else
                               :key="index"
                             >
@@ -195,7 +195,7 @@
                             </div>
                             <div class="row-count" />
                           </template>
-                          <template v-else-if="!commit.cache_result && (logs[jobName] || currentStep === jobName)">
+                          <template v-else-if="!job.cache_result && (logs[jobName] || currentStep === jobName)">
                             <div class="row-count has-text-link">
                               <span
                                 :class="{'loading-text-link': currentStep === jobName}"
@@ -211,28 +211,28 @@
                         </div>
                       </template>
                       <div
-                        v-if="!commit.cache_result || !commit.cache_result.results"
+                        v-if="!job.cache_result || !job.cache_result.results"
                         class="row-count loading-text-white"
                       >
                         <span>Waiting
-                          <span v-if="nowSeconds">{{ nowSeconds - (parseInt(commit.cache_blockchain['timeStart'],16)) }}
+                          <span v-if="nowSeconds">{{ nowSeconds - (parseInt(job.cache_blockchain['timeStart'],16)) }}
                             seconds</span>
                           for results</span>
                       </div>
                     </div>
                   </div>
                 </template>
-                <template v-if="commit.cache_blockchain && commit.cache_blockchain.state === 2">
+                <template v-if="job.cache_blockchain && job.cache_blockchain.state === 2">
                   <div class="row-count" />
                   <div>
                     <div class="row-count has-text-link">
                       <span>Finishing job</span>
                     </div>
                     <div>
-                      <template v-if="commit.cache_result && commit.cache_result.results">
+                      <template v-if="job.cache_result && job.cache_result.results">
                         <div class="row-count">
                           <span>Uploaded results
-                            <a v-if="commit.resultIpfsHash" :href="'https://nosana.mypinata.cloud/ipfs/' + commit.resultIpfsHash" target="_blank">{{ commit.resultIpfsHash }}</a></span>
+                            <a v-if="job.resultIpfsHash" :href="'https://nosana.mypinata.cloud/ipfs/' + job.resultIpfsHash" target="_blank">{{ job.resultIpfsHash }}</a></span>
                         </div>
                       </template>
                       <div v-else class="row-count has-text-danger">
@@ -240,11 +240,11 @@
                       </div>
                       <div class="row-count">
                         <span>Job finished
-                          {{ $moment(parseInt(commit.cache_blockchain['timeEnd'],16)*1e3).fromNow() }}</span>
+                          {{ $moment(parseInt(job.cache_blockchain['timeEnd'],16)*1e3).fromNow() }}</span>
                       </div>
                       <div class="row-count">
                         <span>Duration:
-                          {{ secondsToHms(commit.cache_blockchain['timeStart'], commit.cache_blockchain['timeEnd']) }}
+                          {{ secondsToHms(job.cache_blockchain['timeStart'], job.cache_blockchain['timeEnd']) }}
                         </span>
                       </div>
                     </div>
@@ -255,23 +255,23 @@
                   <span
                     class="tag is-small"
                     :class="{
-                      'is-accent': commit.status === 'COMPLETED',
-                      'is-info': commit.status === 'RUNNING',
-                      'is-warning': commit.status === 'QUEUED',
-                      'is-danger': commit.status === ('FAILED' || 'STOPPED')
+                      'is-accent': job.status === 'COMPLETED',
+                      'is-info': job.status === 'RUNNING',
+                      'is-warning': job.status === 'QUEUED',
+                      'is-danger': job.status === ('FAILED' || 'STOPPED')
                     }"
                   >
-                    <b>JOB {{ commit.status }}</b>
+                    <b>JOB {{ job.status }}</b>
                   </span>
                 </div>
-                <label v-if="commit.status === 'RUNNING'" class="checkbox ml-1 pt-5 is-flex">
+                <label v-if="job.status === 'RUNNING'" class="checkbox ml-1 pt-5 is-flex">
                   <input v-model="disableAutoScroll" type="checkbox" class="mr-2">
                   Disable auto scroll
                 </label>
               </div>
             </div>
             <div v-else-if="tab === 'payload'">
-              <pre>{{ commit.payload }}</pre>
+              <pre>{{ job.payload }}</pre>
             </div>
             <div v-else-if="tab === 'pipeline'">
               <code-editor
@@ -286,48 +286,48 @@
             </div>
           </div>
           <div class="column is-3">
-            <div v-if="commit.id" style="position: sticky; top: 20px;">
+            <div v-if="job.id" style="position: sticky; top: 20px;">
               <div class="box">
-                <div v-if="commit.job && commit.cache_blockchain" class="mb-4">
+                <div v-if="job.job && job.cache_blockchain" class="mb-4">
                   <i class="fas fa-coins mr-4 has-text-accent" />
                   Pipeline Cost
                   <b class="has-text-accent">
                     {{ parseInt(
-                      commit.cache_blockchain.price ?
-                        commit.cache_blockchain.price : commit.cache_blockchain.tokens, 16)/1e6
+                      job.cache_blockchain.price ?
+                        job.cache_blockchain.price : job.cache_blockchain.tokens, 16)/1e6
                     }}
                     NOS</b>
                 </div>
-                <div v-if="commit.commit" class="has-overresult-ellipses">
+                <div v-if="job.commit" class="has-overresult-ellipses">
                   <i class="fab fa-git mr-4 has-text-accent" />
                   Commit: <a
-                    :href="commit.payload.url"
+                    :href="job.payload.url"
                     class="blockchain-address-inline"
                     target="_blank"
                     @click.stop
-                  >{{ commit.commit }}</a>
+                  >{{ job.commit }}</a>
                 </div>
-                <span v-if="commit.payload" style="white-space: pre-wrap">{{ commit.payload.message }}</span>
-                <hr v-if="commit.job || commit.cache_blockchain || displayInfo">
-                <div v-if="commit.job" class="mb-4">
+                <span v-if="job.payload" style="white-space: pre-wrap">{{ job.payload.message }}</span>
+                <hr v-if="job.job || job.cache_blockchain || displayInfo">
+                <div v-if="job.job" class="mb-4">
                   <i class="fas fa-list mr-4 has-text-accent" />
                   Job: <a
                     target="_blank"
-                    :href="$sol.explorer + '/address/' + commit.job"
+                    :href="$sol.explorer + '/address/' + job.job"
                     class="blockchain-address-inline"
-                  >{{ commit.job }}</a>
+                  >{{ job.job }}</a>
                 </div>
                 <div
-                  v-if="commit.job && commit.cache_blockchain
-                    && (commit.cache_blockchain.state > 0 || commit.cache_blockchain.jobStatus > 0)"
+                  v-if="job.job && job.cache_blockchain
+                    && (job.cache_blockchain.state > 0 || job.cache_blockchain.jobStatus > 0)"
                   class="mb-4"
                 >
                   <i class="fas fa-server mr-4 has-text-accent" />
                   Node: <a
                     target="_blank"
-                    :href="$sol.explorer + '/address/' + commit.cache_blockchain.node"
+                    :href="$sol.explorer + '/address/' + job.cache_blockchain.node"
                     class="blockchain-address-inline"
-                  >{{ commit.cache_blockchain.node }}</a>
+                  >{{ job.cache_blockchain.node }}</a>
                 </div>
                 <div v-if="displayInfo && displayInfo.market" class="mb-4">
                   <i class="fas fa-globe mr-4 has-text-accent" />
@@ -353,34 +353,34 @@
                     class="blockchain-address-inline"
                   >{{ displayInfo.project }}</a>
                 </div>
-                <hr v-if="commit.resultIpfsHash || commit.jobIpfsHash">
-                <div v-if="commit.jobIpfsHash" class="mb-4">
+                <hr v-if="job.resultIpfsHash || job.jobIpfsHash">
+                <div v-if="job.jobIpfsHash" class="mb-4">
                   <i class="fas fa-file mr-4 has-text-accent" />
                   Job IPFS: <a
                     target="_blank"
-                    :href="'https://nosana.mypinata.cloud/ipfs/' + commit.jobIpfsHash"
+                    :href="'https://nosana.mypinata.cloud/ipfs/' + job.jobIpfsHash"
                     class="blockchain-address-inline"
-                  >{{ commit.jobIpfsHash }}</a>
+                  >{{ job.jobIpfsHash }}</a>
                 </div>
-                <div v-if="commit.resultIpfsHash">
+                <div v-if="job.resultIpfsHash">
                   <i class="fas fa-file mr-4 has-text-accent" />
                   Result IPFS: <a
                     target="_blank"
-                    :href="'https://nosana.mypinata.cloud/ipfs/' + commit.resultIpfsHash"
+                    :href="'https://nosana.mypinata.cloud/ipfs/' + job.resultIpfsHash"
                     class="blockchain-address-inline"
-                  >{{ commit.resultIpfsHash }}</a>
+                  >{{ job.resultIpfsHash }}</a>
                 </div>
                 <hr
-                  v-if="user && ((user.roles && user.roles.includes('admin')) || user.user_id === commit.user_id) &&
-                    (commit.status !== 'PENDING' && commit.status !== 'QUEUED')"
+                  v-if="user && ((user.roles && user.roles.includes('admin')) || user.user_id === job.user_id) &&
+                    (job.status !== 'PENDING' && job.status !== 'QUEUED')"
                 >
                 <div class="buttons is-centered">
                   <button
-                    v-if="user && ((user.roles && user.roles.includes('admin')) || user.user_id === commit.user_id) &&
-                      (commit.status !== 'PENDING' && commit.status !== 'QUEUED')"
+                    v-if="user && ((user.roles && user.roles.includes('admin')) || user.user_id === job.user_id) &&
+                      (job.status !== 'PENDING' && job.status !== 'QUEUED')"
                     class="button is-accent is-outlined is-small is-fullwidth mt-2"
                     :class="{'is-loading': loading}"
-                    @click="postJob(commit.id)"
+                    @click="postJob(job.id)"
                   >
                     Rerun job
                   </button>
@@ -389,7 +389,7 @@
             </div>
 
             <!-- Info from blockchain if it doesn't exists in database -->
-            <div v-else-if="commit.ipfsJob">
+            <div v-else-if="job.ipfsJob">
               <div class="box">
                 <div v-if="$route.params.id" class="mb-4">
                   <i class="fas fa-list mr-4 has-text-accent" />
@@ -399,11 +399,11 @@
                     class="blockchain-address-inline"
                   >{{ $route.params.id }}</a>
                 </div>
-                <div v-if="commit.price" class="mb-4">
+                <div v-if="job.price" class="mb-4">
                   <i class="fas fa-coins mr-4 has-text-accent" />
                   Pipeline total cost
                   <b class="has-text-accent">
-                    {{ parseInt(commit.price, 16)/1e6
+                    {{ parseInt(job.price, 16)/1e6
                     }}
                     NOS</b>
                 </div>
@@ -413,9 +413,9 @@
                   <i class="fas fa-server mr-4 has-text-accent" />
                   Node: <a
                     target="_blank"
-                    :href="$sol.explorer + '/address/' + commit.node"
+                    :href="$sol.explorer + '/address/' + job.node"
                     class="blockchain-address-inline"
-                  >{{ commit.node }}</a>
+                  >{{ job.node }}</a>
                 </div>
                 <div
                   class="mb-4"
@@ -423,9 +423,9 @@
                   <i class="fas fa-shop mr-4 has-text-accent" />
                   Market: <a
                     target="_blank"
-                    :href="$sol.explorer + '/address/' + commit.market"
+                    :href="$sol.explorer + '/address/' + job.market"
                     class="blockchain-address-inline"
-                  >{{ commit.market }}</a>
+                  >{{ job.market }}</a>
                 </div>
               </div>
             </div>
@@ -455,7 +455,7 @@ export default {
   },
   data () {
     return {
-      commit: null,
+      job: null,
       result: null,
       step: null,
       loading: false,
@@ -481,9 +481,9 @@ export default {
   },
   computed: {
     pipelineYml () {
-      // commit.job_content.pipeline
-      if (this.commit && this.commit.job_content && this.commit.job_content.pipeline) {
-        return stringify(this.commit.job_content.pipeline);
+      // job.job_content.pipeline
+      if (this.job && this.job.job_content && this.job.job_content.pipeline) {
+        return stringify(this.job.job_content.pipeline);
       }
       return '';
     }
@@ -517,7 +517,7 @@ export default {
     }
   },
   created () {
-    this.getCommit();
+    this.getJob();
     this.updateClock();
     if (!this.clockInterval) {
       this.clockInterval = setInterval(this.updateClock, 1000);
@@ -578,7 +578,7 @@ export default {
       try {
         this.loading = true;
         await this.$axios.$post(`/commits/${id}/job`);
-        this.getCommit();
+        this.getJob();
       } catch (error) {
         this.$modal.show({
           color: 'danger',
@@ -604,20 +604,20 @@ export default {
     },
     async getJobInfo (ipfsJob) {
       const hash = this.solHashToIpfsHash(ipfsJob);
-      this.$set(this.commit, 'jobIpfsHash', hash);
-      if (!this.commit.job_content) {
-        this.$set(this.commit, 'job_content', await this.retrieveIpfsContent(hash));
+      this.$set(this.job, 'jobIpfsHash', hash);
+      if (!this.job.job_content) {
+        this.$set(this.job, 'job_content', await this.retrieveIpfsContent(hash));
       }
-      if (this.commit.job_content.pipeline) {
-        this.$set(this.commit.job_content, 'pipeline', parse(this.commit.job_content.pipeline));
+      if (this.job.job_content.pipeline) {
+        this.$set(this.job.job_content, 'pipeline', parse(this.job.job_content.pipeline));
       } else {
-        this.$set(this.commit.job_content, 'pipeline', { jobs: this.commit.job_content.jobs });
+        this.$set(this.job.job_content, 'pipeline', { jobs: this.job.job_content.jobs });
       }
     },
     getResult (ipfsResult) {
       // this.result = { 'nos-id': 'IJnYh-qz3uCPTQUk9bCiF', 'finished-at': 1645545696, results: { 'cmd-0': { exit: 0, out: 'audited 1581 packages in 9.248s\n\n124 packages are looking for funding\n  run `npm fund` for details\n\nfound 44 vulnerabilities (2 low, 29 moderate, 13 high)\n  run `npm audit fix` to fix them, or `npm audit` for details\n', err: '' }, 'cmd-1': { exit: 0, out: "yarn run v1.21.1\n$ set -ex; npm run pretty; eslint . --ext .js,.ts\n\n> @solana/web3.js@0.0.0-development pretty\n> prettier --check '{,{src,test}/**/}*.{j,t}s'\n\nChecking formatting...\nAll matched files use Prettier code style!\nDone in 12.01s.\n", err: '+ npm run pretty\n+ eslint . --ext .js,.ts\n' }, 'cmd-2': { exit: 0, out: "yarn run v1.21.1\n$ mocha -r ts-node/register './test/**/*.test.ts'\n\n\n  Account\n    ✓ generate new account\n    ✓ account from secret key\n\n  AgentManager\n    ✓ works (5005ms)\n\n  Cluster Util\n    ✓ invalid\n    ✓ devnet\n\n  Connection\n    ✓ should pass HTTP headers to RPC\n    ✓ should allow middleware to augment request\n    ✓ should attribute middleware fatals to the middleware\n    ✓ should not attribute fetch errors to the middleware\n    ✓ get account info - not found\n    ✓ get multiple accounts info\n    ✓ get program accounts (140ms)\n    ✓ get balance\n    ✓ get inflation\n    ✓ get inflation reward\n    ✓ get epoch info\n    ✓ get epoch schedule\n    ✓ get leader schedule\n    ✓ get slot\n    ✓ get slot leader\n    ✓ get slot leaders\n    ✓ get cluster nodes\n    ✓ confirm transaction - error\n    ✓ get transaction count\n    ✓ get total supply\n    ✓ get minimum balance for rent exemption\n    ✓ get confirmed signatures for address\n    ✓ get signatures for address\n    ✓ get parsed confirmed transactions\n    ✓ get transaction\n    ✓ get confirmed transaction\n    ✓ get parsed confirmed transaction coerces public keys of inner instructions\n    ✓ get block\n    ✓ get confirmed block\n    ✓ get blocks between two slots\n    ✓ get blocks from starting slot\n    ✓ get block signatures\n    ✓ get recent blockhash\n    ✓ get latest blockhash\n    ✓ get fee calculator\n    ✓ get fee for message\n    ✓ get block time\n    ✓ get minimum ledger slot\n    ✓ get first available block\n    ✓ get supply\n    ✓ get supply without accounts\n    ✓ get performance samples\n    ✓ get performance samples limit too high\n    ✓ get largest accounts (82ms)\n    ✓ stake activation should throw when called for not delegated account\n    ✓ stake activation should only accept state with valid string literals\n    ✓ getVersion\n    ✓ getGenesisHash\n    ✓ request airdrop\n    ✓ transaction failure (123ms)\n\n  EpochSchedule\n    ✓ slot methods work\n\n  Keypair\n    ✓ new keypair\n    ✓ generate new keypair\n    ✓ create keypair from secret key\n    ✓ creating keypair from invalid secret key throws error\n    ✓ creating keypair from invalid secret key succeeds if validation is skipped\n    ✓ generate keypair from random seed\n\n  Nonce\n    ✓ create and query nonce account (83ms)\n    ✓ create and query nonce account with seed (51ms)\n\n  PublicKey\n    ✓ invalid\n    ✓ equals\n    ✓ toBase58\n    ✓ toJSON\n    ✓ toBuffer\n    ✓ equals (II)\n    ✓ createWithSeed\n    ✓ createProgramAddress\n    ✓ findProgramAddress\n    ✓ isOnCurve\n    ✓ canBeSerializedWithBorsh\n    ✓ canBeDeserializedUncheckedWithBorsh\n\n  shortvec\n    ✓ decodeLength\n    ✓ encodeLength\n\n  StakeProgram\n    ✓ createAccountWithSeed\n    ✓ createAccount\n    ✓ delegate\n    ✓ authorize\n    ✓ authorize with custodian\n    ✓ authorizeWithSeed\n    ✓ authorizeWithSeed with custodian\n    ✓ split\n    ✓ splitWithSeed\n    ✓ merge\n    ✓ withdraw\n    ✓ withdraw with custodian\n    ✓ deactivate\n    ✓ StakeInstructions\n\n  SystemProgram\n    ✓ createAccount\n    ✓ transfer\n    ✓ transferWithSeed\n    ✓ allocate\n    ✓ allocateWithSeed\n    ✓ assign\n    ✓ assignWithSeed\n    ✓ createAccountWithSeed\n    ✓ createNonceAccount\n    ✓ createNonceAccount with seed\n    ✓ nonceAdvance\n    ✓ nonceWithdraw\n    ✓ nonceAuthorize\n    ✓ non-SystemInstruction error\n\n  Transaction Payer\n    ✓ transaction-payer (97ms)\n\n  Transaction\n    ✓ partialSign (130ms)\n    ✓ transfer signatures (57ms)\n    ✓ dedup signatures\n    ✓ use nonce (62ms)\n    ✓ parse wire format and serialize (61ms)\n    ✓ populate transaction\n    ✓ serialize unsigned transaction\n    ✓ deprecated - externally signed stake delegate\n    ✓ externally signed stake delegate\n    ✓ can serialize, deserialize, and reserialize with a partial signer (85ms)\n    compileMessage\n      ✓ accountKeys are ordered (40ms)\n      ✓ payer is first account meta (61ms)\n      ✓ validation\n      ✓ payer is writable (67ms)\n    dedupe\n      ✓ setSigners\n      ✓ sign\n\n  ValidatorInfo\n    ✓ from config account data\n\n  VoteProgram\n    ✓ createAccount\n    ✓ initialize\n    ✓ authorize\n    ✓ withdraw\n\n\n  128 passing (7s)\n\nDone in 14.26s.\n", err: 'Transaction references a signature that is unnecessary, only the fee payer and instruction signer accounts should sign a transaction. This behavior is deprecated and will throw an error in the next major version release.\nTransaction references a signature that is unnecessary, only the fee payer and instruction signer accounts should sign a transaction. This behavior is deprecated and will throw an error in the next major version release.\nTransaction references a signature that is unnecessary, only the fee payer and instruction signer accounts should sign a transaction. This behavior is deprecated and will throw an error in the next major version release.\nTransaction references a signature that is unnecessary, only the fee payer and instruction signer accounts should sign a transaction. This behavior is deprecated and will throw an error in the next major version release.\nTransaction references a signature that is unnecessary, only the fee payer and instruction signer accounts should sign a transaction. This behavior is deprecated and will throw an error in the next major version release.\nTransaction references a signature that is unnecessary, only the fee payer and instruction signer accounts should sign a transaction. This behavior is deprecated and will throw an error in the next major version release.\nTransaction references a signature that is unnecessary, only the fee payer and instruction signer accounts should sign a transaction. This behavior is deprecated and will throw an error in the next major version release.\nTransaction references a signature that is unnecessary, only the fee payer and instruction signer accounts should sign a transaction. This behavior is deprecated and will throw an error in the next major version release.\nNo instructions provided\nNo instructions provided\nNo instructions provided\nNo instructions provided\n' } } }
       const hash = this.solHashToIpfsHash(ipfsResult);
-      this.$set(this.commit, 'resultIpfsHash', hash);
+      this.$set(this.job, 'resultIpfsHash', hash);
       // result is now being retrieved in backend
       // this.result = await this.retrieveIpfsContent(hash)
     },
@@ -625,7 +625,7 @@ export default {
       if (this.currentStep) {
         try {
           const response =
-          await fetch(`${node}/nosana/logs/${this.commit.job}/${this.currentStep}`);
+          await fetch(`${node}/nosana/logs/${this.job.job}/${this.currentStep}`);
           if (response.status !== 200) {
             throw new Error('Log error status ' + response.status);
           }
@@ -639,10 +639,10 @@ export default {
           }
           // Check EOF character
           if (lastCharacter.charCodeAt(0) === 26) {
-            if (this.commit.job_content.pipeline.jobs) {
-              const i = this.commit.job_content.pipeline.jobs.findIndex(item => item.name === this.currentStep) + 1;
-              if (i < this.commit.job_content.pipeline.jobs.length) {
-                this.currentStep = this.commit.job_content.pipeline.jobs[i].name;
+            if (this.job.job_content.pipeline.jobs) {
+              const i = this.job.job_content.pipeline.jobs.findIndex(item => item.name === this.currentStep) + 1;
+              if (i < this.job.job_content.pipeline.jobs.length) {
+                this.currentStep = this.job.job_content.pipeline.jobs[i].name;
               } else {
                 this.currentStep = null;
                 clearInterval(this.logInterval);
@@ -659,13 +659,13 @@ export default {
         }
       }
     },
-    async getCommit () {
+    async getJob () {
       const id = this.$route.params.id;
       try {
-        const commit = await this.$axios.$get(`/commits/${id}`);
-        if (commit.cache_result) {
-          for (const key in commit.cache_result.results) {
-            const results = commit.cache_result.results[key];
+        const job = await this.$axios.$get(`/jobs/${id}`);
+        if (job.cache_result) {
+          for (const key in job.cache_result.results) {
+            const results = job.cache_result.results[key];
             for (let i = 0; i < results[1].length; i++) {
               const step = results[1][i];
               if (step.log && Array.isArray(step.log)) {
@@ -676,10 +676,10 @@ export default {
             }
           }
         }
-        this.commit = commit;
-        if (this.commit.status === 'RUNNING') {
-          if (!this.logInterval && this.commit.cache_blockchain) {
-            const node = nodes[this.commit.cache_blockchain.node];
+        this.job = job;
+        if (this.job.status === 'RUNNING') {
+          if (!this.logInterval && this.job.cache_blockchain) {
+            const node = nodes[this.job.cache_blockchain.node];
             const network = process.env.NUXT_ENV_SOL_NETWORK_NAME;
             if (node && node[network] && node[network].endpoint && node[network].logs) {
               this.currentStep = 'checkout';
@@ -692,37 +692,37 @@ export default {
           clearInterval(this.logInterval);
           this.logInterval = null;
         }
-        if (this.commit.status === 'RUNNING' || this.commit.status === 'QUEUED' || this.commit.status === 'PENDING') {
+        if (this.job.status === 'RUNNING' || this.job.status === 'QUEUED' || this.job.status === 'PENDING') {
           if (!this.refreshInterval) {
             // Refresh status every 10 seconds
-            this.refreshInterval = setInterval(this.getCommit, parseInt(10000, 10));
+            this.refreshInterval = setInterval(this.getJob, parseInt(10000, 10));
           }
         } else if (this.refreshInterval) {
           clearInterval(this.refreshInterval);
           this.refreshInterval = null;
         }
-        if (this.commit.cache_blockchain) {
+        if (this.job.cache_blockchain) {
           // posted to blockchain, retrieve job
-          this.getJobInfo(this.commit.cache_blockchain.ipfsJob);
-          if (commit.cache_blockchain.state === 2 || commit.cache_blockchain.jobStatus === 2) {
+          this.getJobInfo(this.job.cache_blockchain.ipfsJob);
+          if (job.cache_blockchain.state === 2 || job.cache_blockchain.jobStatus === 2) {
             // completed, retrieve results
-            this.getResult(this.commit.cache_blockchain.ipfsResult);
+            this.getResult(this.job.cache_blockchain.ipfsResult);
           }
-          this.displayInfo = Object.assign({}, this.commit.cache_blockchain);
+          this.displayInfo = Object.assign({}, this.job.cache_blockchain);
           delete this.displayInfo.ipfsJob;
           delete this.displayInfo.ipfsResult;
         }
 
-        if (this.commit.ipfsJob) {
-          await this.getJobInfo(this.commit.ipfsJob);
-          if (this.commit.ipfsResult && this.commit.state === 2) {
+        if (this.job.ipfsJob) {
+          await this.getJobInfo(this.job.ipfsJob);
+          if (this.job.ipfsResult && this.job.state === 2) {
             // completed, retrieve results
-            this.getResult(this.commit.ipfsResult);
+            this.getResult(this.job.ipfsResult);
           }
-          this.displayInfo = Object.assign({}, this.commit);
+          this.displayInfo = Object.assign({}, this.job);
         }
-        this.commit = commit;
-        if (this.autoScroll && this.commit.status === 'RUNNING' && !this.disableAutoScroll) {
+        this.job = job;
+        if (this.autoScroll && this.job.status === 'RUNNING' && !this.disableAutoScroll) {
           this.$nextTick(() => {
             window.scrollTo({ left: 0, top: document.body.scrollHeight, behavior: 'smooth' });
           });
