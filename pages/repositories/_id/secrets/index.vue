@@ -147,6 +147,7 @@
           <button
             type="submit"
             class="button is-accent is-fullwidth mt-5 has-text-weight-semibold"
+            :disabled="hideSecretToggle"
           >
             Save
           </button>
