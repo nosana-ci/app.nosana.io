@@ -211,13 +211,21 @@
                         </div>
                       </template>
                       <div
-                        v-if="!commit.cache_result || !commit.cache_result.results"
+                        v-if="(!commit.cache_result || !commit.cache_result.results)
+                          && !(commit.cache_blockchain && commit.cache_blockchain.state === 2)"
                         class="row-count loading-text-white"
                       >
                         <span>Waiting
                           <span v-if="nowSeconds">{{ nowSeconds - (parseInt(commit.cache_blockchain['timeStart'],16)) }}
                             seconds</span>
                           for results</span>
+                      </div>
+                      <div
+                        v-else-if="(!commit.cache_result || !commit.cache_result.results)
+                          && (commit.cache_blockchain && commit.cache_blockchain.state === 2)"
+                        class="row-count has-text-danger"
+                      >
+                        <span>Could not retrieve results</span>
                       </div>
                     </div>
                   </div>
@@ -235,9 +243,6 @@
                             <a v-if="commit.resultIpfsHash" :href="'https://nosana.mypinata.cloud/ipfs/' + commit.resultIpfsHash" target="_blank">{{ commit.resultIpfsHash }}</a></span>
                         </div>
                       </template>
-                      <div v-else class="row-count has-text-danger">
-                        <span>Could not retrieve results</span>
-                      </div>
                       <div class="row-count">
                         <span>Job finished
                           {{ $moment(parseInt(commit.cache_blockchain['timeEnd'],16)*1e3).fromNow() }}</span>
