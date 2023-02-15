@@ -70,7 +70,7 @@
     <div class="modal" :class="{ 'is-active': editPopup }">
       <div
         class="modal-background"
-        @click="editPopup = false, selectedSecret = {}"
+        @click="closeModal"
       />
       <div class="modal-content has-background-white has-radius-medium p-5">
         <h3 class="has-text-centered subtitle is-4 has-text-weight-semibold">
@@ -95,12 +95,34 @@
               </div>
             </div>
             <div class="field">
-              <label class="label">Secret</label>
+              <label class="label">Secret
+                <button
+                  class="button is-small is-light ml-2"
+                  @click.prevent="hideSecretToggle = !hideSecretToggle"
+                >
+                  <span class="icon is-small">
+                    <i v-if="hideSecretToggle" class="fas fa-eye small" />
+                    <i v-else class="fas fa-eye-slash small" />
+                  </span>
+                </button>
+              </label>
               <div class="control">
                 <textarea
+                  v-if="!hideSecretToggle"
                   v-model="selectedSecret[Object.keys(selectedSecret)[0]]"
+                  type="password"
                   class="textarea"
                   placeholder="Secret value"
+                  :disabled="hideSecretToggle"
+                  required
+                />
+                <textarea
+                  v-else
+                  v-model="obfuscateText"
+                  type="text"
+                  class="textarea"
+                  placeholder="Secret value"
+                  :disabled="hideSecretToggle"
                   required
                 />
               </div>
@@ -109,6 +131,7 @@
           <button
             type="submit"
             class="button is-accent is-fullwidth mt-5 has-text-weight-semibold"
+            :disabled="hideSecretToggle"
           >
             Save
           </button>
@@ -120,7 +143,7 @@
       <button
         class="modal-close is-large"
         aria-label="close"
-        @click="editPopup = false, selectedSecret = {}"
+        @click="closeModal"
       />
     </div>
   </section>
@@ -146,8 +169,20 @@ export default {
       newSecretKey: null,
       loggedInSecretManager: false,
       editPopup: false,
-      selectedSecret: {}
+      selectedSecret: {},
+      hideSecretToggle: true,
+      secretInputFieldType: 'password'
     };
+  },
+  computed: {
+    obfuscateText () {
+      const secret = this.selectedSecret[Object.keys(this.selectedSecret)[0]];
+      if (secret) {
+        return secret.replace(/./g, '●');
+      } else {
+        return '';
+      }
+    }
   },
   created () {
     this.checkToken();
@@ -209,8 +244,7 @@ export default {
         await secretApi.post('/secrets', {
           secrets: this.selectedSecret
         });
-        this.selectedSecret = {};
-        this.editPopup = false;
+        this.closeModal();
         this.$modal.show({
           color: 'success',
           text: 'Successfully saved secret',
@@ -253,6 +287,14 @@ export default {
       secretApi.defaults.headers.Authorization = 'Bearer ' + this.$store.state.secretsToken.token;
       this.loggedInSecretManager = true;
       this.getSecrets();
+    },
+    switchVisibility () {
+      this.hideSecretToggle = !this.hideSecretToggle;
+    },
+    closeModal () {
+      this.selectedSecret = {};
+      this.editPopup = false;
+      this.hideSecretToggle = true;
     }
   }
 };

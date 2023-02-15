@@ -44,7 +44,7 @@
         <div class="columns">
           <div class="column is-9">
             <div v-if="tab === 'result'">
-              <div class="box px-5 content-block has-background-black">
+              <div id="terminal" class="box px-5 content-block has-background-black terminal">
                 <div>
                   <div class="row-count has-text-link">
                     <span>Posting job to blockchain</span>
@@ -639,7 +639,8 @@ export default {
           this.logs[this.currentStep] = convert.toHtml(this.logs[this.currentStep].replace(String.fromCharCode(26), ''));
           if (this.autoScroll && !this.disableAutoScroll) {
             this.$nextTick(() => {
-              window.scrollTo({ left: 0, top: document.body.scrollHeight, behavior: 'smooth' });
+              const terminal = document.getElementById('terminal');
+              terminal.scrollTop = terminal.scrollHeight;
             });
           }
           // Check EOF character
@@ -757,6 +758,8 @@ export default {
   white-space: pre-wrap;
 }
 .content-block{
+  max-height: 500px;
+  overflow-y: auto;
   color: white;
   font-family: monospace;
   font-size: 14px;
