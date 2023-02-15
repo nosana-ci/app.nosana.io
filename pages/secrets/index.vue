@@ -97,10 +97,13 @@
             <div class="field">
               <label class="label">Secret
                 <button
-                  class="button is-small"
-                  @click.prevent="switchVisibility"
+                  class="button is-small is-light ml-2"
+                  @click.prevent="hideSecretToggle = !hideSecretToggle"
                 >
-                  <i class="fas fa-eye px-2" />
+                  <span class="icon is-small">
+                    <i v-if="hideSecretToggle" class="fas fa-eye small" />
+                    <i v-else class="fas fa-eye-slash small" />
+                  </span>
                 </button>
               </label>
               <div class="control">
@@ -175,7 +178,7 @@ export default {
     obfuscateText () {
       const secret = this.selectedSecret[Object.keys(this.selectedSecret)[0]];
       if (secret) {
-        return secret.replace(/./g, '🥷🏽');
+        return secret.replace(/./g, '●');
       } else {
         return '';
       }
@@ -241,8 +244,7 @@ export default {
         await secretApi.post('/secrets', {
           secrets: this.selectedSecret
         });
-        this.selectedSecret = {};
-        this.editPopup = false;
+        this.closeModal();
         this.$modal.show({
           color: 'success',
           text: 'Successfully saved secret',
@@ -290,8 +292,8 @@ export default {
       this.hideSecretToggle = !this.hideSecretToggle;
     },
     closeModal () {
-      this.editPopup = false;
       this.selectedSecret = {};
+      this.editPopup = false;
       this.hideSecretToggle = true;
     }
   }
