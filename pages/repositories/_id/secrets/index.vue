@@ -185,7 +185,7 @@ export default {
       loggedInSecretManager: false,
       editPopup: false,
       selectedSecret: {},
-      hideSecretToggle: false
+      hideSecretToggle: true
     };
   },
   computed: {
