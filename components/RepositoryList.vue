@@ -56,7 +56,7 @@
                 @click.stop=""
               >
                 <nuxt-link :to="`/jobs/${job.id}`">
-                  <commit-status
+                  <job-status
                     :status="job.status"
                     class="has-tooltip-arrow"
                     :data-tooltip="job.job.substring(0,7)"
