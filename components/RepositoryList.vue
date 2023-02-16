@@ -46,20 +46,20 @@
           </td>
           <td>
             <div
-              v-if="repository.commits"
+              v-if="repository.jobs"
               class="is-flex"
             >
               <div
-                v-for="commit in repository.commits.slice().reverse()"
-                :key="commit.id"
+                v-for="job in repository.jobs.slice().reverse()"
+                :key="job.id"
                 class="mx-1"
                 @click.stop=""
               >
-                <nuxt-link :to="`/jobs/${commit.id}`">
+                <nuxt-link :to="`/jobs/${job.id}`">
                   <commit-status
-                    :status="commit.status"
+                    :status="job.status"
                     class="has-tooltip-arrow"
-                    :data-tooltip="commit.commit.substring(0,7)"
+                    :data-tooltip="job.job.substring(0,7)"
                   />
                 </nuxt-link>
               </div>
