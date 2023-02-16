@@ -728,9 +728,10 @@ export default {
           this.displayInfo = Object.assign({}, this.commit);
         }
         this.commit = commit;
-        if (this.autoScroll && this.commit.status === 'RUNNING' && !this.disableAutoScroll) {
+        if (this.autoScroll && !this.disableAutoScroll) {
           this.$nextTick(() => {
-            window.scrollTo({ left: 0, top: document.body.scrollHeight, behavior: 'smooth' });
+            const terminal = document.getElementById('terminal');
+            terminal.scrollTop = terminal.scrollHeight;
           });
         }
       } catch (error) {
