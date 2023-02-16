@@ -139,7 +139,10 @@
                         v-if="commit.job_content.pipeline.jobs"
                       >
                         <div
-                          v-for="jobName in ['checkout'].concat(commit.job_content.pipeline.jobs.map(j => j.name))"
+                          v-for="jobName in (commit.job_content.pipeline.jobs
+                            .find(j => j.id === 'checkout') ? [] : ['checkout'])
+                            .concat(commit.job_content.pipeline.jobs
+                              .map(j => j.name || j.id))"
                           :key="jobName"
                         >
                           <template
@@ -613,10 +616,13 @@ export default {
       if (!this.commit.job_content) {
         this.$set(this.commit, 'job_content', await this.retrieveIpfsContent(hash));
       }
+      console.log('TEST', this.commit.job_content);
       if (this.commit.job_content.pipeline) {
         this.$set(this.commit.job_content, 'pipeline', parse(this.commit.job_content.pipeline));
-      } else {
+      } else if (this.commit.job_content.jobs) {
         this.$set(this.commit.job_content, 'pipeline', { jobs: this.commit.job_content.jobs });
+      } else if (this.commit.job_content.ops) {
+        this.$set(this.commit.job_content, 'pipeline', { jobs: this.commit.job_content.ops });
       }
     },
     getResult (ipfsResult) {
@@ -646,9 +652,11 @@ export default {
           // Check EOF character
           if (lastCharacter.charCodeAt(0) === 26) {
             if (this.commit.job_content.pipeline.jobs) {
-              const i = this.commit.job_content.pipeline.jobs.findIndex(item => item.name === this.currentStep) + 1;
+              const i = this.commit.job_content.pipeline.jobs.findIndex(item => item.name === this.currentStep ||
+              item.id === this.currentStep) + 1;
               if (i < this.commit.job_content.pipeline.jobs.length) {
-                this.currentStep = this.commit.job_content.pipeline.jobs[i].name;
+                this.currentStep = this.commit.job_content.pipeline.jobs[i].name ||
+                this.commit.job_content.pipeline.jobs[i].id;
               } else {
                 this.currentStep = null;
                 clearInterval(this.logInterval);
@@ -672,11 +680,17 @@ export default {
         if (commit.cache_result) {
           for (const key in commit.cache_result.results) {
             const results = commit.cache_result.results[key];
-            for (let i = 0; i < results[1].length; i++) {
-              const step = results[1][i];
-              if (step.log && Array.isArray(step.log)) {
-                for (let j = 0; j < step.log.length; j++) {
-                  step.log[j][1] = convert.toHtml(step.log[j][1]);
+            if (Array.isArray(results)) {
+              if (results[1]) {
+                if (Array.isArray(results[1])) {
+                  for (let i = 0; i < results[1].length; i++) {
+                    const step = results[1][i];
+                    if (step.log && Array.isArray(step.log)) {
+                      for (let j = 0; j < step.log.length; j++) {
+                        step.log[j][1] = convert.toHtml(step.log[j][1]);
+                      }
+                    }
+                  }
                 }
               }
             }
