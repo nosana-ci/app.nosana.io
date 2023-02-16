@@ -1,41 +1,41 @@
 {
   "4HoZogbrDGwK6UsD1eMgkFKTNDyaqcfb2eodLLtS8NTx": {
     "devnet": {
-      "endpoint": "https://nostromo.k8s.dev.nos.ci",
+      "endpoint": "https://arthur.k8s.dev.nos.ci",
       "logs": true
     },
     "mainnet": {
-      "endpoint": "https://nostromo.k8s.prd.nos.ci",
+      "endpoint": "https://arthur.k8s.prd.nos.ci",
       "logs": true
     }
   },
   "nodQBcRj6LbvseV1AGrSDNz7JdLuyosGzCdVyAc2Md9": {
     "devnet": {
-      "endpoint": null,
-      "logs": false
+      "endpoint":  "https://thomas.k8s.dev.nos.ci",
+      "logs": true
     },
     "mainnet": {
-      "endpoint": "https://nos1.unraveled.tech",
+      "endpoint": "https://thomas.k8s.prd.nos.ci",
       "logs": true
     }
   },
   "nodU2eSVwJSP8LtQJ9wTLrsTxYmYQNS8tiFEh6axhKN": {
     "devnet": {
-      "endpoint": null,
-      "logs": false
+      "endpoint": "https://jones.k8s.dev.nos.ci",
+      "logs": true
     },
     "mainnet": {
-      "endpoint": "https://nos2.unraveled.tech",
+      "endpoint": "https://jones.k8s.prd.nos.ci",
       "logs": true
     }
   },
   "nods5F6w36njKief3djjcdTsTLW4hQuXXKUxqnQpiT7": {
     "devnet": {
-      "endpoint": null,
-      "logs": false
+      "endpoint": "https://ellen.k8s.dev.nos.ci",
+      "logs": true
     },
     "mainnet": {
-      "endpoint": "https://nos3.unraveled.tech",
+      "endpoint": "https://ellen.k8s.prd.nos.ci",
       "logs": true
     }
   },
