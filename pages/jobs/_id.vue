@@ -44,7 +44,7 @@
         <div class="columns">
           <div class="column is-9">
             <div v-if="tab === 'result'">
-              <div class="box px-5 content-block has-background-black">
+              <div id="terminal" class="box px-5 content-block has-background-black terminal">
                 <div>
                   <div class="row-count has-text-link">
                     <span>Posting job to blockchain</span>
@@ -217,7 +217,8 @@
                         </div>
                       </template>
                       <div
-                        v-if="!job.cache_result || !job.cache_result.results || job.cache_run_account"
+                        v-if="(!job.cache_result || !job.cache_result.results || job.cache_run_account)
+                          && !(job.cache_blockchain && job.cache_blockchain.state === 2)"
                         class="row-count loading-text-white"
                       >
                         <span>Waiting
@@ -225,6 +226,13 @@
                             (parseInt(job.cache_run_account.account['time'],16)) }}
                             seconds</span>
                           for results</span>
+                      </div>
+                      <div
+                        v-else-if="(!job.cache_result || !job.cache_result.results)
+                          && (job.cache_blockchain && job.cache_blockchain.state === 2)"
+                        class="row-count has-text-danger"
+                      >
+                        <span>Could not retrieve results</span>
                       </div>
                     </div>
                   </div>
@@ -242,9 +250,6 @@
                             <a v-if="job.resultIpfsHash" :href="'https://nosana.mypinata.cloud/ipfs/' + job.resultIpfsHash" target="_blank">{{ job.resultIpfsHash }}</a></span>
                         </div>
                       </template>
-                      <div v-else class="row-count has-text-danger">
-                        <span>Could not retrieve results</span>
-                      </div>
                       <div class="row-count">
                         <span>Job finished
                           {{ $moment(parseInt(job.cache_blockchain['timeEnd'],16)*1e3).fromNow() }}</span>
@@ -648,7 +653,8 @@ export default {
           this.logs[this.currentStep] = convert.toHtml(this.logs[this.currentStep].replace(String.fromCharCode(26), ''));
           if (this.autoScroll && !this.disableAutoScroll) {
             this.$nextTick(() => {
-              window.scrollTo({ left: 0, top: document.body.scrollHeight, behavior: 'smooth' });
+              const terminal = document.getElementById('terminal');
+              terminal.scrollTop = terminal.scrollHeight;
             });
           }
           // Check EOF character
@@ -772,6 +778,8 @@ export default {
   white-space: pre-wrap;
 }
 .content-block{
+  max-height: 500px;
+  overflow-y: auto;
   color: white;
   font-family: monospace;
   font-size: 14px;
