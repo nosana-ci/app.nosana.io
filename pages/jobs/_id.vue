@@ -76,7 +76,7 @@
                             <a
                               v-if="!loading"
                               class="has-text-warning"
-                              @click="postJob(job.id)"
+                              @click="postJob(job.commit_id)"
                             >Re-run job</a>
 
                             <span v-else class="loading-text-white">Posting to blockchain</span>
@@ -97,7 +97,7 @@
                           >
                             <a
                               class="has-text-warning"
-                              @click="postJob(job.id)"
+                              @click="postJob(job.commit_id)"
                             >Post manually</a> or
                           </template>wait for cron job to pick it up
                         </span>
@@ -119,9 +119,11 @@
                         <span>Job claimed by node <a
                           target="_blank"
                           :href="$sol.explorer + '/address/' +
-                            (job.cache_run_account ? job.cache_run_account.node : job.cache_blockchain.node)"
+                            (job.cache_run_account ?
+                              job.cache_run_account.account.node : job.cache_blockchain.node)"
                           class="blockchain-address-inline"
-                        >{{ job.cache_run_account ? job.cache_run_account.node : job.cache_blockchain.node }}</a></span>
+                        >{{ job.cache_run_account ?
+                          job.cache_run_account.account.node : job.cache_blockchain.node }}</a></span>
                       </div>
                       <div v-else class="row-count loading-text-white">
                         <span>Waiting for node to claim job</span>
@@ -129,7 +131,10 @@
                     </div>
                   </div>
                 </template>
-                <template v-if="job.cache_blockchain && (job.cache_blockchain.state > 0 || job.cache_run_account)">
+                <template
+                  v-if="job.cache_blockchain &&
+                    (job.cache_blockchain.state > 0 || job.cache_run_account)"
+                >
                   <div class="row-count" />
                   <div>
                     <div class="row-count has-text-link">
@@ -212,11 +217,12 @@
                         </div>
                       </template>
                       <div
-                        v-if="!job.cache_result || !job.cache_result.results"
+                        v-if="!job.cache_result || !job.cache_result.results || job.cache_run_account"
                         class="row-count loading-text-white"
                       >
                         <span>Waiting
-                          <span v-if="nowSeconds">{{ nowSeconds - (parseInt(job.cache_blockchain['timeStart'],16)) }}
+                          <span v-if="nowSeconds">{{ nowSeconds -
+                            (parseInt(job.cache_run_account.account['time'],16)) }}
                             seconds</span>
                           for results</span>
                       </div>
@@ -320,16 +326,19 @@
                 </div>
                 <div
                   v-if="job.address && job.cache_blockchain
-                    && (job.cache_blockchain.state > 0 || job.cache_blockchain.jobStatus > 0 || job.cache_run_account)"
+                    && (job.cache_blockchain.state > 0 ||
+                      job.cache_blockchain.jobStatus > 0 || job.cache_run_account)"
                   class="mb-4"
                 >
                   <i class="fas fa-server mr-4 has-text-accent" />
                   Node: <a
                     target="_blank"
                     :href="$sol.explorer + '/address/'
-                      + (job.cache_run_account ? job.cache_run_account.node : job.cache_blockchain.node)"
+                      + (job.cache_run_account ?
+                        job.cache_run_account.account.node : job.cache_blockchain.node)"
                     class="blockchain-address-inline"
-                  >{{ job.cache_run_account ? job.cache_run_account.node : job.cache_blockchain.node }}</a>
+                  >{{ job.cache_run_account ?
+                    job.cache_run_account.account.node : job.cache_blockchain.node }}</a>
                 </div>
                 <div v-if="displayInfo && displayInfo.market" class="mb-4">
                   <i class="fas fa-globe mr-4 has-text-accent" />
@@ -382,7 +391,7 @@
                       (job.status !== 'PENDING' && job.status !== 'QUEUED')"
                     class="button is-accent is-outlined is-small is-fullwidth mt-2"
                     :class="{'is-loading': loading}"
-                    @click="postJob(job.id)"
+                    @click="postJob(job.commit_id)"
                   >
                     Rerun job
                   </button>
@@ -416,9 +425,11 @@
                   Node: <a
                     target="_blank"
                     :href="$sol.explorer + '/address/'
-                      + (job.cache_run_account ? job.cache_run_account.node : job.cache_blockchain.node)"
+                      + (job.cache_run_account ?
+                        job.cache_run_account.account.node : job.cache_blockchain.node)"
                     class="blockchain-address-inline"
-                  >{{ job.cache_run_account ? job.cache_run_account.node : job.cache_blockchain.node }}</a>
+                  >{{ job.cache_run_account ?
+                    job.cache_run_account.account.node : job.cache_blockchain.node }}</a>
                 </div>
                 <div
                   class="mb-4"
@@ -580,8 +591,8 @@ export default {
     async postJob (id) {
       try {
         this.loading = true;
-        await this.$axios.$post(`/commits/${id}/job`);
-        this.getJob();
+        const createdJob = await this.$axios.$post(`/commits/${id}/job`);
+        this.$router.push(`/jobs/${createdJob[0].id}`);
       } catch (error) {
         this.$modal.show({
           color: 'danger',
@@ -684,7 +695,7 @@ export default {
         this.job = job;
         if (this.job.status === 'RUNNING') {
           if (!this.logInterval && this.job.cache_run_account) {
-            const node = nodes[this.job.cache_run_account.node];
+            const node = nodes[this.job.cache_run_account.account.node];
             const network = process.env.NUXT_ENV_SOL_NETWORK_NAME;
             if (node && node[network] && node[network].endpoint && node[network].logs) {
               this.currentStep = 'checkout';
@@ -715,8 +726,8 @@ export default {
           }
           this.displayInfo = Object.assign({}, this.job.cache_blockchain);
           if (this.job.cache_run_account) {
-            this.displayInfo.node = this.job.cache_run_account.node;
-            this.displayInfo.market = this.job.cache_run_account.market;
+            this.displayInfo.node = this.job.cache_run_account.account.node;
+            this.displayInfo.market = this.job.cache_run_account.account.market;
           }
           delete this.displayInfo.ipfsJob;
           delete this.displayInfo.ipfsResult;

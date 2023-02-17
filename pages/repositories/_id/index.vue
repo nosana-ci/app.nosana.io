@@ -269,7 +269,6 @@ export default {
         const jobs = await this.$axios.$get(
           `/repositories/${this.$route.params.id}/jobs?page=${page}`
         );
-        console.log('jobs', jobs.data);
         this.jobs = jobs.data;
         this.pagination = jobs.pagination;
       } catch (error) {
