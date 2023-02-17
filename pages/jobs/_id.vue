@@ -13,7 +13,7 @@
               class="tag is-small"
               :class="{
                 'is-accent': job.status === 'COMPLETED' || job.state === 2,
-                'is-info': job.status === 'RUNNING' || (!job.status && job.state === 1),
+                'is-info': job.status === 'RUNNING' || (!job.status && job.cache_run_account),
                 'is-warning': job.status === 'QUEUED' || (!job.status && job.state === 0),
                 'is-danger': job.status === ('FAILED' || 'STOPPED') || job.state === 3
               }"
@@ -50,7 +50,7 @@
                     <span>Posting job to blockchain</span>
                   </div>
                   <div>
-                    <template v-if="job.job">
+                    <template v-if="job.address">
                       <div class="row-count">
                         <span>Job posted</span>
                         <span v-if="job.cache_blockchain">to market {{ job.cache_blockchain.market }} for price
@@ -66,9 +66,9 @@
                         <span>
                           <a
                             target="_blank"
-                            :href="$sol.explorer + '/address/' + job.job"
+                            :href="$sol.explorer + '/address/' + job.address"
                             class="blockchain-address-inline"
-                          >{{ job.job }}</a>
+                          >{{ job.address }}</a>
                           <template
                             v-if="user &&
                               ((user.roles && user.roles.includes('admin')) || user.user_id === job.user_id)"
@@ -115,12 +115,13 @@
                       <span>Finding node to run job</span>
                     </div>
                     <div>
-                      <div v-if="job.cache_blockchain.state > 0" class="row-count">
+                      <div v-if="job.cache_blockchain.state > 0 || job.cache_run_account" class="row-count">
                         <span>Job claimed by node <a
                           target="_blank"
-                          :href="$sol.explorer + '/address/' + job.cache_blockchain.node"
+                          :href="$sol.explorer + '/address/' +
+                            (job.cache_run_account ? job.cache_run_account.node : job.cache_blockchain.node)"
                           class="blockchain-address-inline"
-                        >{{ job.cache_blockchain.node }}</a></span>
+                        >{{ job.cache_run_account ? job.cache_run_account.node : job.cache_blockchain.node }}</a></span>
                       </div>
                       <div v-else class="row-count loading-text-white">
                         <span>Waiting for node to claim job</span>
@@ -128,7 +129,7 @@
                     </div>
                   </div>
                 </template>
-                <template v-if="job.cache_blockchain && job.cache_blockchain.state > 0">
+                <template v-if="job.cache_blockchain && (job.cache_blockchain.state > 0 || job.cache_run_account)">
                   <div class="row-count" />
                   <div>
                     <div class="row-count has-text-link">
@@ -288,7 +289,7 @@
           <div class="column is-3">
             <div v-if="job.id" style="position: sticky; top: 20px;">
               <div class="box">
-                <div v-if="job.job && job.cache_blockchain" class="mb-4">
+                <div v-if="job.address && job.cache_blockchain" class="mb-4">
                   <i class="fas fa-coins mr-4 has-text-accent" />
                   Pipeline Cost
                   <b class="has-text-accent">
@@ -308,26 +309,27 @@
                   >{{ job.commit }}</a>
                 </div>
                 <span v-if="job.payload" style="white-space: pre-wrap">{{ job.payload.message }}</span>
-                <hr v-if="job.job || job.cache_blockchain || displayInfo">
-                <div v-if="job.job" class="mb-4">
+                <hr v-if="job.address || job.cache_blockchain || displayInfo">
+                <div v-if="job.address" class="mb-4">
                   <i class="fas fa-list mr-4 has-text-accent" />
                   Job: <a
                     target="_blank"
-                    :href="$sol.explorer + '/address/' + job.job"
+                    :href="$sol.explorer + '/address/' + job.address"
                     class="blockchain-address-inline"
-                  >{{ job.job }}</a>
+                  >{{ job.address }}</a>
                 </div>
                 <div
-                  v-if="job.job && job.cache_blockchain
-                    && (job.cache_blockchain.state > 0 || job.cache_blockchain.jobStatus > 0)"
+                  v-if="job.address && job.cache_blockchain
+                    && (job.cache_blockchain.state > 0 || job.cache_blockchain.jobStatus > 0 || job.cache_run_account)"
                   class="mb-4"
                 >
                   <i class="fas fa-server mr-4 has-text-accent" />
                   Node: <a
                     target="_blank"
-                    :href="$sol.explorer + '/address/' + job.cache_blockchain.node"
+                    :href="$sol.explorer + '/address/'
+                      + (job.cache_run_account ? job.cache_run_account.node : job.cache_blockchain.node)"
                     class="blockchain-address-inline"
-                  >{{ job.cache_blockchain.node }}</a>
+                  >{{ job.cache_run_account ? job.cache_run_account.node : job.cache_blockchain.node }}</a>
                 </div>
                 <div v-if="displayInfo && displayInfo.market" class="mb-4">
                   <i class="fas fa-globe mr-4 has-text-accent" />
@@ -413,9 +415,10 @@
                   <i class="fas fa-server mr-4 has-text-accent" />
                   Node: <a
                     target="_blank"
-                    :href="$sol.explorer + '/address/' + job.node"
+                    :href="$sol.explorer + '/address/'
+                      + (job.cache_run_account ? job.cache_run_account.node : job.cache_blockchain.node)"
                     class="blockchain-address-inline"
-                  >{{ job.node }}</a>
+                  >{{ job.cache_run_account ? job.cache_run_account.node : job.cache_blockchain.node }}</a>
                 </div>
                 <div
                   class="mb-4"
@@ -625,7 +628,7 @@ export default {
       if (this.currentStep) {
         try {
           const response =
-          await fetch(`${node}/nosana/logs/${this.job.job}/${this.currentStep}`);
+          await fetch(`${node}/nosana/logs/${this.job.address}/${this.currentStep}`);
           if (response.status !== 200) {
             throw new Error('Log error status ' + response.status);
           }
@@ -666,11 +669,13 @@ export default {
         if (job.cache_result) {
           for (const key in job.cache_result.results) {
             const results = job.cache_result.results[key];
-            for (let i = 0; i < results[1].length; i++) {
-              const step = results[1][i];
-              if (step.log && Array.isArray(step.log)) {
-                for (let j = 0; j < step.log.length; j++) {
-                  step.log[j][1] = convert.toHtml(step.log[j][1]);
+            if (results[1]) {
+              for (let i = 0; i < results[1].length; i++) {
+                const step = results[1][i];
+                if (step.log && Array.isArray(step.log)) {
+                  for (let j = 0; j < step.log.length; j++) {
+                    step.log[j][1] = convert.toHtml(step.log[j][1]);
+                  }
                 }
               }
             }
@@ -678,8 +683,8 @@ export default {
         }
         this.job = job;
         if (this.job.status === 'RUNNING') {
-          if (!this.logInterval && this.job.cache_blockchain) {
-            const node = nodes[this.job.cache_blockchain.node];
+          if (!this.logInterval && this.job.cache_run_account) {
+            const node = nodes[this.job.cache_run_account.node];
             const network = process.env.NUXT_ENV_SOL_NETWORK_NAME;
             if (node && node[network] && node[network].endpoint && node[network].logs) {
               this.currentStep = 'checkout';
@@ -709,6 +714,10 @@ export default {
             this.getResult(this.job.cache_blockchain.ipfsResult);
           }
           this.displayInfo = Object.assign({}, this.job.cache_blockchain);
+          if (this.job.cache_run_account) {
+            this.displayInfo.node = this.job.cache_run_account.node;
+            this.displayInfo.market = this.job.cache_run_account.market;
+          }
           delete this.displayInfo.ipfsJob;
           delete this.displayInfo.ipfsResult;
         }
