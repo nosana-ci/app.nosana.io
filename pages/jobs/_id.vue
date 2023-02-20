@@ -85,6 +85,21 @@
                         </span>
                       </div>
                     </template>
+                    <template v-else-if="($route.params.id.length > 10 && job.ipfsJob)">
+                      <div class="row-count">
+                        Job posted to market {{ job.market }} for price
+                        <b class="has-text-accent">{{ parseInt(job.price, 16)/1e6 }} NOS</b>
+                      </div>
+                      <div class="row-count">
+                        <span>
+                          <a
+                            target="_blank"
+                            :href="$sol.explorer + '/address/' + $route.params.id"
+                            class="blockchain-address-inline"
+                          >{{ $route.params.id }}</a>
+                        </span>
+                      </div>
+                    </template>
                     <template v-else-if="!loading">
                       <div class="row-count">
                         <span>Not posted to blockchain.</span>
@@ -433,11 +448,9 @@
                   Node: <a
                     target="_blank"
                     :href="$sol.explorer + '/address/'
-                      + (job.cache_run_account ?
-                        job.cache_run_account.account.node : job.cache_blockchain.node)"
+                      + job.node"
                     class="blockchain-address-inline"
-                  >{{ job.cache_run_account ?
-                    job.cache_run_account.account.node : job.cache_blockchain.node }}</a>
+                  >{{ job.node }}</a>
                 </div>
                 <div
                   class="mb-4"
