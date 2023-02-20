@@ -145,7 +145,10 @@
                         v-if="job.job_content.pipeline.jobs"
                       >
                         <div
-                          v-for="jobName in ['checkout'].concat(job.job_content.pipeline.jobs.map(j => j.name))"
+                          v-for="jobName in (job.job_content.pipeline.jobs
+                            .find(j => j.id === 'checkout') ? [] : ['checkout'])
+                            .concat(job.job_content.pipeline.jobs
+                              .map(j => j.name || j.id))"
                           :key="jobName"
                         >
                           <template
@@ -627,10 +630,13 @@ export default {
       if (!this.job.job_content) {
         this.$set(this.job, 'job_content', await this.retrieveIpfsContent(hash));
       }
+      console.log('TEST', this.job.job_content);
       if (this.job.job_content.pipeline) {
         this.$set(this.job.job_content, 'pipeline', parse(this.job.job_content.pipeline));
-      } else {
+      } else if (this.job.job_content.jobs) {
         this.$set(this.job.job_content, 'pipeline', { jobs: this.job.job_content.jobs });
+      } else if (this.job.job_content.ops) {
+        this.$set(this.job.job_content, 'pipeline', { jobs: this.job.job_content.ops });
       }
     },
     getResult (ipfsResult) {
@@ -660,9 +666,11 @@ export default {
           // Check EOF character
           if (lastCharacter.charCodeAt(0) === 26) {
             if (this.job.job_content.pipeline.jobs) {
-              const i = this.job.job_content.pipeline.jobs.findIndex(item => item.name === this.currentStep) + 1;
+              const i = this.job.job_content.pipeline.jobs.findIndex(item => item.name === this.currentStep ||
+              item.id === this.currentStep) + 1;
               if (i < this.job.job_content.pipeline.jobs.length) {
-                this.currentStep = this.job.job_content.pipeline.jobs[i].name;
+                this.currentStep = this.job.job_content.pipeline.jobs[i].name ||
+                this.job.job_content.pipeline.jobs[i].id;
               } else {
                 this.currentStep = null;
                 clearInterval(this.logInterval);
@@ -686,12 +694,16 @@ export default {
         if (job.cache_result) {
           for (const key in job.cache_result.results) {
             const results = job.cache_result.results[key];
-            if (results[1]) {
-              for (let i = 0; i < results[1].length; i++) {
-                const step = results[1][i];
-                if (step.log && Array.isArray(step.log)) {
-                  for (let j = 0; j < step.log.length; j++) {
-                    step.log[j][1] = convert.toHtml(step.log[j][1]);
+            if (Array.isArray(results)) {
+              if (results[1]) {
+                if (Array.isArray(results[1])) {
+                  for (let i = 0; i < results[1].length; i++) {
+                    const step = results[1][i];
+                    if (step.log && Array.isArray(step.log)) {
+                      for (let j = 0; j < step.log.length; j++) {
+                        step.log[j][1] = convert.toHtml(step.log[j][1]);
+                      }
+                    }
                   }
                 }
               }
@@ -748,9 +760,10 @@ export default {
           this.displayInfo = Object.assign({}, this.job);
         }
         this.job = job;
-        if (this.autoScroll && this.job.status === 'RUNNING' && !this.disableAutoScroll) {
+        if (this.autoScroll && !this.disableAutoScroll) {
           this.$nextTick(() => {
-            window.scrollTo({ left: 0, top: document.body.scrollHeight, behavior: 'smooth' });
+            const terminal = document.getElementById('terminal');
+            terminal.scrollTop = terminal.scrollHeight;
           });
         }
       } catch (error) {
