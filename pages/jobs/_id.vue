@@ -411,7 +411,7 @@
                 <div class="buttons is-centered">
                   <button
                     v-if="user && ((user.roles && user.roles.includes('admin')) || user.user_id === job.user_id) &&
-                      (job.status !== 'PENDING' && job.status !== 'QUEUED')"
+                      (job.status !== 'PENDING' && job.status !== 'NOT_POSTED' && job.status !== 'QUEUED')"
                     class="button is-accent is-outlined is-small is-fullwidth mt-2"
                     :class="{'is-loading': loading}"
                     @click="postJob(job.commit_id)"
@@ -612,8 +612,13 @@ export default {
     async postJob (id) {
       try {
         this.loading = true;
-        const createdJob = await this.$axios.$post(`/commits/${id}/job`);
-        this.$router.push(`/jobs/${createdJob[0].id}`);
+        const createdJobId = await this.$axios.$post(`/commits/${id}/job`, {
+          jobId: this.job.status === ('NOT_POSTED' || 'PENDING') ? this.job.id : null
+        });
+        if (createdJobId) {
+          this.$router.push(`/jobs/${createdJobId.id}`);
+        }
+        await this.getJob();
       } catch (error) {
         this.$modal.show({
           color: 'danger',
@@ -643,7 +648,6 @@ export default {
       if (!this.job.job_content) {
         this.$set(this.job, 'job_content', await this.retrieveIpfsContent(hash));
       }
-      console.log('TEST', this.job.job_content);
       if (this.job.job_content.pipeline) {
         this.$set(this.job.job_content, 'pipeline', parse(this.job.job_content.pipeline));
       } else if (this.job.job_content.jobs) {
