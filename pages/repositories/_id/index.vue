@@ -98,7 +98,7 @@
               </th>
               <th class="py-2 px-5">
                 <div class="px-3">
-                  Commit
+                  Ref
                 </div>
               </th>
               <th class="py-2 px-5">
@@ -121,9 +121,15 @@
               @click="$router.push(`/jobs/${job.id}`)"
             >
               <td><div>{{ job.id }}</div></td>
-              <td>{{ job.payload.message.split("\n")[0] }}</td>
               <td>
-                <a :href="job.payload.url" target="_blank" @click.stop>{{
+                <span v-if="job.payload.message">{{ job.payload.message.split("\n")[0] }}</span>
+                <span v-else-if="job.payload.title">
+                  {{ job.payload.title }}
+                </span>
+              </td>
+
+              <td>
+                <a :href="job.payload.html_url || job.payload.url" target="_blank" @click.stop>{{
                   job.commit | shortenHashes
                 }}</a>
               </td>

@@ -23,12 +23,16 @@
             </div>
           </div>
           <div v-if="job.id">
-            Job <b>#{{ job.id }}</b> triggered by <a target="_blank" :href="'https://github.com/'+job.payload.author.username">{{ job.payload.author.username }}</a> {{ $moment(job.created_at).fromNow() }}
+            Job <b>#{{ job.id }}</b>
+            <span v-if="job.payload.author">triggered by <a target="_blank" :href="'https://github.com/'+job.payload.author.username">{{ job.payload.author.username }}</a></span>
+            <span v-else-if="job.payload.user">triggered by <a target="_blank" :href="'https://github.com/'+job.payload.user.login">{{ job.payload.user.login }}</a></span>
+            {{ $moment(job.created_at).fromNow() }}
           </div>
         </div>
         <hr class="my-4">
         <h1 class="title">
-          <span v-if="job.payload">{{ job.payload.message.split('\n')[0] }}</span>
+          <span v-if="job.payload && job.payload.message">{{ job.payload.message.split('\n')[0] }}</span>
+          <span v-if="job.payload && job.payload.title">{{ job.payload.title }}</span>
           <span v-else>External Job</span>
         </h1>
         <div class="tabs is-medium">
@@ -330,8 +334,8 @@
                 </div>
                 <div v-if="job.commit" class="has-overresult-ellipses">
                   <i class="fab fa-git mr-4 has-text-accent" />
-                  Commit: <a
-                    :href="job.payload.url"
+                  Ref: <a
+                    :href="job.payload.html_url || job.payload.url"
                     class="blockchain-address-inline"
                     target="_blank"
                     @click.stop
