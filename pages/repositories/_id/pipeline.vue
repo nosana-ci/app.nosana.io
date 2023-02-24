@@ -328,7 +328,8 @@ export default {
         const result = await this.$axios.$get(`/repositories/${this.id}/branches`);
         this.defaultBranch = result.default_branch;
         this.branches = result.branches;
-        // this.editBranch = this.defaultBranch;
+        this.editBranch = this.defaultBranch;
+        this.getPipeline(this.editBranch);
         this.loading = false;
       } catch (error) {
         this.$modal.show({
