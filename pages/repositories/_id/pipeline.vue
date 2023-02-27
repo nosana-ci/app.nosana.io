@@ -95,7 +95,7 @@
         <div v-else-if="(loading || !repository)">
           Loading..
         </div>
-        <div v-else-if="(repository && !pipeline && pipelineEditor === false && canEdit)">
+        <div v-else-if="(repository && !pipeline && !pipelineEditor && canEdit)">
           <h2 class="title is-4 mb-1 mt-5">
             Setup your pipeline
           </h2>
@@ -328,7 +328,8 @@ export default {
         const result = await this.$axios.$get(`/repositories/${this.id}/branches`);
         this.defaultBranch = result.default_branch;
         this.branches = result.branches;
-        // this.editBranch = this.defaultBranch;
+        this.editBranch = this.defaultBranch;
+        await this.getPipeline(this.editBranch);
         this.loading = false;
       } catch (error) {
         this.$modal.show({

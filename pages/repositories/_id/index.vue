@@ -98,7 +98,7 @@
               </th>
               <th class="py-2 px-5">
                 <div class="px-3">
-                  Commit
+                  Ref
                 </div>
               </th>
               <th class="py-2 px-5">
@@ -115,53 +115,59 @@
           </thead>
           <tbody>
             <tr
-              v-for="commit in commits"
-              :key="commit.id"
+              v-for="job in jobs"
+              :key="job.id"
               class="is-clickable"
-              @click="$router.push(`/jobs/${commit.id}`)"
+              @click="$router.push(`/jobs/${job.id}`)"
             >
-              <td><div>{{ commit.id }}</div></td>
-              <td>{{ commit.payload.message.split("\n")[0] }}</td>
+              <td><div>{{ job.id }}</div></td>
               <td>
-                <a :href="commit.payload.url" target="_blank" @click.stop>{{
-                  commit.commit | shortenHashes
+                <span v-if="job.payload.message">{{ job.payload.message.split("\n")[0] }}</span>
+                <span v-else-if="job.payload.title">
+                  {{ job.payload.title }}
+                </span>
+              </td>
+
+              <td>
+                <a :href="job.payload.html_url || job.payload.url" target="_blank" @click.stop>{{
+                  job.commit | shortenHashes
                 }}</a>
               </td>
-              <td>{{ $moment(commit.created_at).fromNow() }}</td>
+              <td>{{ $moment(job.created_at).fromNow() }}</td>
               <td class="py-4">
                 <div
                   class="tag is-small"
                   :class="{
-                    'is-accent': commit.status === 'COMPLETED',
-                    'is-info': commit.status === 'RUNNING',
-                    'is-warning': commit.status === 'QUEUED',
-                    'is-danger': commit.status === ('FAILED' || 'STOPPED'),
+                    'is-accent': job.status === 'COMPLETED',
+                    'is-info': job.status === 'RUNNING',
+                    'is-warning': job.status === 'QUEUED',
+                    'is-danger': job.status === ('FAILED' || 'STOPPED'),
                   }"
                 >
-                  {{ commit.status }}
+                  {{ job.status }}
                 </div>
               </td>
             </tr>
             <tr
-              v-if="!commits || !commits.length"
+              v-if="!jobs || !jobs.length"
               class="has-text-centered has-text-weight-bold"
             >
-              <td v-if="!commits" colspan="5">
-                Loading commits...
+              <td v-if="!jobs" colspan="5">
+                Loading jobs...
               </td>
               <td v-else colspan="5">
-                No commits
+                No jobs
               </td>
             </tr>
           </tbody>
         </table>
       </div>
       <pagination-helper
-        v-if="commits && commits.length > 0 && pagination"
+        v-if="jobs && jobs.length > 0 && pagination"
         :total-pages="Math.ceil(pagination.total / pagination.perPage)"
         :per-page="pagination.perPage"
         :current-page="parseInt(pagination.currentPage)"
-        @pagechanged="getCommits"
+        @pagechanged="getJobs"
       />
     </div>
   </section>
@@ -190,7 +196,6 @@ export default {
       queryPage: this.$route.query.page || 1,
       showPipeline: true,
       pagination: null,
-      commits: null,
       refreshInterval: null,
       repository: null,
       project: null,
@@ -200,7 +205,8 @@ export default {
       permissionFound: null,
       loading: false,
       newInstallationId: null,
-      communityMarketId: process.env.NUXT_ENV_COMMUNITY_MARKET_ID
+      communityMarketId: process.env.NUXT_ENV_COMMUNITY_MARKET_ID,
+      jobs: null
     };
   },
   computed: {
@@ -223,11 +229,11 @@ export default {
   created () {
     this.newInstallationId = this.$route.query.installation_id;
     this.setup();
-    this.getCommits(this.queryPage);
+    this.getJobs(this.queryPage);
     if (!this.refreshInterval) {
       this.refreshInterval = setInterval(() => {
-        console.log('refreshing commits..');
-        this.getCommits(this.queryPage);
+        console.log('refreshing jobs..');
+        this.getJobs(this.queryPage);
       }, 20000);
     }
   },
@@ -264,13 +270,13 @@ export default {
         });
       }
     },
-    async getCommits (page) {
+    async getJobs (page) {
       try {
-        const commits = await this.$axios.$get(
-          `/repositories/${this.$route.params.id}/commits?page=${page}`
+        const jobs = await this.$axios.$get(
+          `/repositories/${this.$route.params.id}/jobs?page=${page}`
         );
-        this.commits = commits.data;
-        this.pagination = commits.pagination;
+        this.jobs = jobs.data;
+        this.pagination = jobs.pagination;
       } catch (error) {
         this.$modal.show({
           color: 'danger',
