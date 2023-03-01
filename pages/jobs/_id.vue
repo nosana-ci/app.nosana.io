@@ -682,9 +682,11 @@ export default {
           this.logs[this.currentStep] = convert.toHtml(this.logs[this.currentStep].replace(String.fromCharCode(26), ''));
           if (this.autoScroll && !this.disableAutoScroll) {
             this.$nextTick(() => {
-              const terminal = document.getElementById('terminal');
-              if (terminal) {
-                terminal.scrollTop = terminal.scrollHeight;
+              if (document) {
+                const terminal = document.getElementById('terminal');
+                if (terminal) {
+                  terminal.scrollTop = terminal.scrollHeight;
+                }
               }
             });
           }
@@ -790,9 +792,11 @@ export default {
         this.job = job;
         if (this.autoScroll && !this.disableAutoScroll) {
           this.$nextTick(() => {
-            const terminal = document.getElementById('terminal');
-            if (terminal) {
-              terminal.scrollTop = terminal.scrollHeight;
+            if (document) {
+              const terminal = document.getElementById('terminal');
+              if (terminal) {
+                terminal.scrollTop = terminal.scrollHeight;
+              }
             }
           });
         }
