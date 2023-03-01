@@ -501,6 +501,7 @@ export default {
       tab: 'result',
       user: null,
       refreshInterval: null,
+      destroying: false,
       logInterval: null,
       clockInterval: null,
       nowSeconds: null,
@@ -542,6 +543,7 @@ export default {
     }
   },
   beforeDestroy () {
+    this.destroying = true;
     if (this.refreshInterval) {
       clearInterval(this.refreshInterval);
       this.refreshInterval = null;
@@ -681,7 +683,9 @@ export default {
           if (this.autoScroll && !this.disableAutoScroll) {
             this.$nextTick(() => {
               const terminal = document.getElementById('terminal');
-              terminal.scrollTop = terminal.scrollHeight;
+              if (terminal) {
+                terminal.scrollTop = terminal.scrollHeight;
+              }
             });
           }
           // Check EOF character
@@ -709,6 +713,7 @@ export default {
       }
     },
     async getJob () {
+      if (this.destroying) { return; }
       const id = this.$route.params.id;
       try {
         const job = await this.$axios.$get(`/jobs/${id}`);
@@ -740,7 +745,9 @@ export default {
               this.currentStep = 'checkout';
               // Refresh logs every second
               this.getLogs(node[network].endpoint);
-              this.logInterval = setInterval(() => { this.getLogs(node[network].endpoint); }, parseInt(1000, 10));
+              if (!this.destroying) {
+                this.logInterval = setInterval(() => { this.getLogs(node[network].endpoint); }, parseInt(1000, 10));
+              }
             }
           }
         } else if (this.logInterval) {
@@ -748,7 +755,7 @@ export default {
           this.logInterval = null;
         }
         if (this.job.status === 'RUNNING' || this.job.status === 'QUEUED' || this.job.status === 'PENDING') {
-          if (!this.refreshInterval) {
+          if (!this.refreshInterval && !this.destroying) {
             // Refresh status every 10 seconds
             this.refreshInterval = setInterval(this.getJob, parseInt(10000, 10));
           }
@@ -784,7 +791,9 @@ export default {
         if (this.autoScroll && !this.disableAutoScroll) {
           this.$nextTick(() => {
             const terminal = document.getElementById('terminal');
-            terminal.scrollTop = terminal.scrollHeight;
+            if (terminal) {
+              terminal.scrollTop = terminal.scrollHeight;
+            }
           });
         }
       } catch (error) {
