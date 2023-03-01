@@ -336,7 +336,7 @@
                 </div>
                 <div v-if="job.commit" class="has-overresult-ellipses">
                   <i class="fab fa-git mr-4 has-text-accent" />
-                  Ref: <a
+                  Commit: <a
                     :href="job.payload.html_url || job.payload.url"
                     class="blockchain-address-inline"
                     target="_blank"
@@ -369,7 +369,7 @@
                   >{{ job.cache_run_account ?
                     job.cache_run_account.account.node : job.cache_blockchain.node }}</a>
                 </div>
-                <div v-if="displayInfo && displayInfo.market" class="mb-4">
+                <div v-if="displayInfo && displayInfo.market && user.roles === 'admin'" class="mb-4">
                   <i class="fas fa-globe mr-4 has-text-accent" />
                   Market: <a
                     target="_blank"
@@ -377,7 +377,7 @@
                     class="blockchain-address-inline"
                   >{{ displayInfo.market }}</a>
                 </div>
-                <div v-if="displayInfo && displayInfo.payer" class="mb-4">
+                <div v-if="displayInfo && displayInfo.payer && user.roles === 'admin'" class="mb-4">
                   <i class="fas fa-user mr-4 has-text-accent" />
                   Payer: <a
                     target="_blank"
@@ -385,7 +385,7 @@
                     class="blockchain-address-inline"
                   >{{ displayInfo.payer }}</a>
                 </div>
-                <div v-if="displayInfo && displayInfo.project">
+                <div v-if="displayInfo && displayInfo.project && user.roles === 'admin'">
                   <i class="fas fa-project-diagram mr-4 has-text-accent" />
                   Project: <a
                     target="_blank"
