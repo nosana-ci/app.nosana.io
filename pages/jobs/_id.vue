@@ -40,7 +40,7 @@
             <li :class="{'is-active': tab === 'result'}">
               <a @click.prevent="tab='result'">Result</a>
             </li>
-            <li :class="{'is-active': tab === 'pipeline'}">
+            <li v-show="user && user.roles === 'admin'" :class="{'is-active': tab === 'pipeline'}">
               <a @click.prevent="tab='pipeline'">Pipeline</a>
             </li>
           </ul>
@@ -295,6 +295,14 @@
             </div>
             <div v-else-if="tab === 'payload'">
               <pre>{{ job.payload }}</pre>
+            </div>
+            <div v-else-if="tab === 'pipeline'">
+              <code-editor
+                v-model="pipelineYml"
+                :highlight-lines="[0]"
+                :readonly="true"
+                class="py-3 pt-4 code-editor"
+              />
             </div>
             <div v-else>
               Loading..
