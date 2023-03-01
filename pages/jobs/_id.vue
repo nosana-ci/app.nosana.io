@@ -300,12 +300,14 @@
             <div v-else-if="tab === 'payload'">
               <pre>{{ job.payload }}</pre>
             </div>
-            <div v-else-if="tab === 'pipeline'">
+            <div
+              v-else-if="tab === 'pipeline'"
+            >
               <code-editor
                 v-model="pipelineYml"
                 :highlight-lines="[0]"
                 :readonly="true"
-                class="py-3 pt-4 code-editor"
+                class="code-editor"
               />
             </div>
             <div v-else>
