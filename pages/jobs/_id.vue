@@ -594,20 +594,16 @@ export default {
   methods: {
     handleScroll (el) {
       const terminal = document.getElementById('terminal');
-      console.log(
-        terminal.scrollTop,
-        terminal.scrollHeight,
-        terminal.clientHeight
+      terminal.addEventListener('scroll', () => {
+        // check if terminal is at bottom
+        if (terminal.scrollTop === terminal.scrollHeight - terminal.clientHeight) {
+          this.disableAutoScroll = false;
+        } else {
+          this.disableAutoScroll = true;
+        }
+      },
+      false
       );
-      if (this.lastScrollPosition === null) {
-        this.lastScrollPosition = terminal.scrollTop;
-        return;
-      } else if (terminal.scrollTop < this.lastScrollPosition) {
-        this.disableAutoScroll = true;
-      } else if (terminal.scrollTop === terminal.scrollHeight - terminal.clientHeight) {
-        this.disableAutoScroll = false;
-      }
-      this.lastScrollPosition = terminal.scrollTop;
     },
     toggleResult (i) {
       if (i in this.hideResults) {
