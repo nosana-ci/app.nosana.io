@@ -48,7 +48,11 @@
         <div class="columns">
           <div class="column" :class="{ 'is-9': minimizeSideBar, 'is-11': minimizeSideBar}">
             <div v-if="tab === 'result'">
-              <div id="terminal" class="box px-5 content-block has-background-black terminal">
+              <div
+                id="terminal"
+                class="box px-5 content-block has-background-black terminal"
+                @scroll.prevent="handleScroll"
+              >
                 <div>
                   <div class="row-count has-text-link">
                     <span>Posting job to blockchain</span>
@@ -340,7 +344,11 @@
                     @click.stop
                   >{{ job.commit }}</a>
                 </div>
-                <span v-if="job.payload" style="white-space: pre-wrap">{{ job.payload.message }}</span>
+                <span
+                  v-if="job.payload"
+                  class="blockchain-address-inline"
+                  style="white-space: pre-wrap"
+                >{{ job.payload.message }}</span>
                 <hr v-if="job.address || job.cache_blockchain || displayInfo">
                 <div v-if="job.address" class="mb-4">
                   <i class="fas fa-list mr-4 has-text-accent" />
@@ -524,6 +532,7 @@ export default {
       autoScroll: true,
       disableAutoScroll: false,
       minimizeSideBar: false,
+      lastScrollPosition: null,
       stateMap: [
         'Queued',
         'Running',
@@ -581,8 +590,22 @@ export default {
     }
   },
   methods: {
-    toggleSideBar () {
-      this.minimizeSideBar = !this.minimizeSideBar;
+    handleScroll (el) {
+      const terminal = document.getElementById('terminal');
+      console.log(
+        terminal.scrollTop,
+        terminal.scrollHeight,
+        terminal.clientHeight
+      );
+      if (this.lastScrollPosition === null) {
+        this.lastScrollPosition = terminal.scrollTop;
+        return;
+      } else if (terminal.scrollTop < this.lastScrollPosition) {
+        this.disableAutoScroll = true;
+      } else if (terminal.scrollTop === terminal.scrollHeight - terminal.clientHeight) {
+        this.disableAutoScroll = false;
+      }
+      this.lastScrollPosition = terminal.scrollTop;
     },
     toggleResult (i) {
       if (i in this.hideResults) {
