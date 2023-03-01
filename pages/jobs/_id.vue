@@ -239,17 +239,6 @@
                         </div>
                       </template>
                       <div
-                        v-if="(!job.cache_result || !job.cache_result.results || job.cache_run_account)
-                          && !(job.cache_blockchain && job.cache_blockchain.state === 2)"
-                        class="row-count loading-text-white"
-                      >
-                        <span>Waiting
-                          <span v-if="nowSeconds">{{ nowSeconds -
-                            (parseInt(job.cache_run_account.account['time'],16)) }}
-                            seconds</span>
-                          for results</span>
-                      </div>
-                      <div
                         v-else-if="(!job.cache_result || !job.cache_result.results)
                           && (job.cache_blockchain && job.cache_blockchain.state === 2)"
                         class="row-count has-text-danger"
@@ -369,7 +358,7 @@
                   >{{ job.cache_run_account ?
                     job.cache_run_account.account.node : job.cache_blockchain.node }}</a>
                 </div>
-                <div v-if="displayInfo && displayInfo.market && user.roles === 'admin'" class="mb-4">
+                <div v-if="displayInfo && displayInfo.market && user && user.roles === 'admin'" class="mb-4">
                   <i class="fas fa-globe mr-4 has-text-accent" />
                   Market: <a
                     target="_blank"
@@ -377,7 +366,7 @@
                     class="blockchain-address-inline"
                   >{{ displayInfo.market }}</a>
                 </div>
-                <div v-if="displayInfo && displayInfo.payer && user.roles === 'admin'" class="mb-4">
+                <div v-if="displayInfo && displayInfo.payer && user && user.roles === 'admin'" class="mb-4">
                   <i class="fas fa-user mr-4 has-text-accent" />
                   Payer: <a
                     target="_blank"
@@ -385,7 +374,7 @@
                     class="blockchain-address-inline"
                   >{{ displayInfo.payer }}</a>
                 </div>
-                <div v-if="displayInfo && displayInfo.project && user.roles === 'admin'">
+                <div v-if="displayInfo && displayInfo.project && user && user.roles === 'admin'">
                   <i class="fas fa-project-diagram mr-4 has-text-accent" />
                   Project: <a
                     target="_blank"
@@ -844,7 +833,7 @@ export default {
   white-space: pre-wrap;
 }
 .content-block{
-  max-height: 500px;
+  max-height: calc(100vh - 350px);
   overflow-y: auto;
   color: white;
   font-family: monospace;
