@@ -46,7 +46,7 @@
           </ul>
         </div>
         <div class="columns">
-          <div class="column is-9">
+          <div class="column" :class="{ 'is-9': minimizeSideBar, 'is-11': minimizeSideBar}">
             <div v-if="tab === 'result'">
               <div id="terminal" class="box px-5 content-block has-background-black terminal">
                 <div>
@@ -307,24 +307,26 @@
             <div v-else-if="tab === 'payload'">
               <pre>{{ job.payload }}</pre>
             </div>
-            <div v-else-if="tab === 'pipeline'">
-              <code-editor
-                v-model="pipelineYml"
-                :highlight-lines="[0]"
-                :readonly="true"
-                class="py-3 pt-4 code-editor"
-              />
-            </div>
             <div v-else>
               Loading..
             </div>
           </div>
-          <div class="column is-3">
+          <div v-if="!minimizeSideBar" class="column is-3">
             <div v-if="job.id" style="position: sticky; top: 20px;">
               <div class="box">
+                <!-- minimize icon -->
+                <div class="buttons">
+                  <button
+                    class="button is-small is-light"
+                    @click="minimizeSideBar = true"
+                  >
+                    <i class="fas fa-angle-double-right" />
+                  </button>
+                </div>
+                <hr>
                 <div v-if="job.address && job.cache_blockchain" class="mb-4">
                   <i class="fas fa-coins mr-4 has-text-accent" />
-                  Pipeline Cost
+                  Cost
                   <b class="has-text-accent">
                     {{ parseInt(
                       job.cache_blockchain.price ?
@@ -469,6 +471,19 @@
               </div>
             </div>
           </div>
+          <div v-else class="column" :class="{ 'is-1': minimizeSideBar }">
+            <div class="box">
+              <!-- looking glass icon -->
+              <div class="buttons is-centered px-1">
+                <button
+                  class="button is-small is-light"
+                  @click="minimizeSideBar = false"
+                >
+                  <i class="fas fa-angle-double-left" />
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -511,6 +526,7 @@ export default {
       displayInfo: null,
       autoScroll: true,
       disableAutoScroll: false,
+      minimizeSideBar: false,
       stateMap: [
         'Queued',
         'Running',
@@ -568,6 +584,9 @@ export default {
     }
   },
   methods: {
+    toggleSideBar () {
+      this.minimizeSideBar = !this.minimizeSideBar;
+    },
     toggleResult (i) {
       if (i in this.hideResults) {
         this.hideResults[i] = !this.hideResults[i];
