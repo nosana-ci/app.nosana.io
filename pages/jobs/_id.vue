@@ -341,7 +341,20 @@
                     @click.stop
                   >{{ job.commit }}</a>
                 </div>
-                <span v-if="job.payload" style="white-space: pre-wrap">{{ job.payload.message }}</span>
+                <span
+                  v-if="job.payload"
+                  class="blockchain-address-inline"
+                  style="white-space: pre-wrap"
+                >{{ job.payload.message }}</span>
+                <div v-if="job.repository && job.commit" class="has-overresult-ellipses">
+                  <i class="fab fa-git mr-4 has-text-accent" />
+                  Pipeline: <a
+                    :href="`https://github.com/${job.repository}/blob/${job.commit}/.nosana-ci.yml`"
+                    class="blockchain-address-inline"
+                    target="_blank"
+                    @click.stop
+                  >.nosana-ci.yml</a>
+                </div>
                 <hr v-if="job.address || job.cache_blockchain || displayInfo">
                 <div v-if="job.address" class="mb-4">
                   <i class="fas fa-list mr-4 has-text-accent" />
