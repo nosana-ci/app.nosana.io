@@ -180,7 +180,8 @@
                 <span>{{ userInfo.rank }}</span>
               </td>
               <td class="blockchain-address">
-                {{ userInfo.address }}
+                <span v-if="userInfo.address">{{ userInfo.address }}</span>
+                <span v-else>Connected to Github</span>
               </td>
               <td class="is-family-monospace">
                 {{ parseInt(userInfo.duration/(3600*24)) }}
@@ -345,6 +346,10 @@ export default {
 
 /* Table */
 .table {
+  td, th {
+    padding: 0.4em 1em;
+    border: none;
+  }
   background-color: transparent;
   &.is-striped tbody tr:not(.is-selected):nth-child(even) {
     background: transparent;

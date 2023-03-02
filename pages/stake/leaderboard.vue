@@ -1,6 +1,9 @@
 <template>
-  <section class="section">
-    <h3 class="title is-4">
+  <section class="section py-4">
+    <nuxt-link to="/stake/" class="has-text-accent has-text-weight-semibold">
+      <i class="fas fa-chevron-left" /> Back
+    </nuxt-link>
+    <h3 class="title is-4 mt-5">
       Leaderboard
     </h3>
     <div v-if="tiers" class="is-flex is-flex-wrap-wrap">
@@ -69,7 +72,8 @@
               <span>{{ userInfo.rank }}</span>
             </td>
             <td class="blockchain-address">
-              {{ userInfo.address }}
+              <span v-if="userInfo.address">{{ userInfo.address }}</span>
+              <span v-else>Connected to GitHub</span>
             </td>
             <td class="is-family-monospace">
               {{ parseInt(userInfo.duration/(3600*24)) }}
@@ -146,7 +150,8 @@
               <span>{{ userInfo.rank }}</span>
             </td>
             <td class="blockchain-address">
-              {{ userInfo.address }}
+              <span v-if="userInfo.address">{{ userInfo.address }}</span>
+              <span v-else>Connected to GitHub</span>
             </td>
             <td class="is-family-monospace">
               {{ parseInt(userInfo.duration/(3600*24)) }}
@@ -177,6 +182,7 @@ export default {
       return Number(num).toLocaleString('en-US');
     }
   },
+  layout: 'logged-out',
   data () {
     return {
       loading: false,
@@ -283,6 +289,10 @@ export default {
 @import "bulma/sass/utilities/mixins";
   /* Table */
 .table {
+  td, th {
+    padding: 0.4em 1em;
+    border: none;
+  }
   background-color: transparent;
   &.is-striped tbody tr:not(.is-selected):nth-child(even) {
     background: transparent;

@@ -1,0 +1,52 @@
+{
+  "4HoZogbrDGwK6UsD1eMgkFKTNDyaqcfb2eodLLtS8NTx": {
+    "devnet": {
+      "endpoint": "https://arthur.k8s.dev.nos.ci",
+      "logs": true
+    },
+    "mainnet": {
+      "endpoint": "https://arthur.k8s.prd.nos.ci",
+      "logs": true
+    }
+  },
+  "nodQBcRj6LbvseV1AGrSDNz7JdLuyosGzCdVyAc2Md9": {
+    "devnet": {
+      "endpoint":  "https://thomas.k8s.dev.nos.ci",
+      "logs": true
+    },
+    "mainnet": {
+      "endpoint": "https://thomas.k8s.prd.nos.ci",
+      "logs": true
+    }
+  },
+  "nodU2eSVwJSP8LtQJ9wTLrsTxYmYQNS8tiFEh6axhKN": {
+    "devnet": {
+      "endpoint": "https://jones.k8s.dev.nos.ci",
+      "logs": true
+    },
+    "mainnet": {
+      "endpoint": "https://jones.k8s.prd.nos.ci",
+      "logs": true
+    }
+  },
+  "nods5F6w36njKief3djjcdTsTLW4hQuXXKUxqnQpiT7": {
+    "devnet": {
+      "endpoint": "https://ellen.k8s.dev.nos.ci",
+      "logs": true
+    },
+    "mainnet": {
+      "endpoint": "https://ellen.k8s.prd.nos.ci",
+      "logs": true
+    }
+  },
+  "8A1PyFti1cuFTpmKyXHMGuKE9bEuBCyPXSVkhQgGYPSm": {
+    "devnet": {
+      "endpoint": null,
+      "logs": false
+    },
+    "mainnet": {
+      "endpoint": "https://dbritt.nl",
+      "logs": true
+    }
+  }
+}

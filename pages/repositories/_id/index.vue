@@ -1,136 +1,183 @@
 <template>
-  <section class="section">
+  <section class="section py-4">
     <div class="container">
-      <nuxt-link v-if="repository" to="/pipelines">
-        <i class="fas fa-chevron-left" /> All repositories
+      <nuxt-link to="/pipelines" class="has-text-accent has-text-weight-semibold">
+        <i class="fas fa-chevron-left" /> All Repositories
       </nuxt-link>
-      <div class="mt-2">
-        <div v-if="repository">
-          <div class="is-flex is-align-items-center mb-2">
-            <h2 class="title mb-0 mr-2">
+      <div v-if="repository">
+        <div class="mb-2 mt-3 is-flex-desktop">
+          <div>
+            <h2 class="title mb-3 mr-2">
               {{ repository.repository }}
             </h2>
-            <div class="ml-auto">
-              <nuxt-link
-                v-if="repository && user &&
-                  (repository.user_id === user.user_id)"
-                class="button is-outlined is-accent is-small"
-                :to="`/repositories/${id}/secrets`"
-              >
-                secrets
-              </nuxt-link>
-              <nuxt-link
-                v-if="repository && user &&
-                  (repository.user_id === user.user_id || (user.roles && user.roles.includes('admin')))"
-                class="button is-outlined is-accent is-small"
-                :to="`/repositories/${id}/edit`"
-              >
-                edit
-              </nuxt-link>
-            </div>
-          </div>
-          <p>
             <a
               :href="'https://github.com/' + repository.repository"
               target="_blank"
               @click.stop
             >https://github.com/{{ repository.repository }}</a>
-          </p>
-          <p>
-            <span
-              class="has-tooltip-arrow"
-              :class="{'has-tooltip': repository.secret}"
-              :data-tooltip="repository.secret ?
-                ('Github Webhook:\n' + backendUrl + '/webhook/github/' + repository.secret) : null"
-              @click.stop="repository.secret ?
-                copyToClipboard(backendUrl + '/webhook/github/' + repository.secret) : null"
-            >Trigger on commit to {{ repository.branches }} branch(es)</span>
-          </p>
-          <p v-if="repository.marketAccount">
-            Pipeline price: <b class="has-text-accent">
-              {{ parseInt(repository.marketAccount.jobPrice, 16) / 1e6 }} NOS</b>
-          </p>
-          <p class="is-size-7">
-            <a @click="showPipeline = !showPipeline">
-              <span v-if="showPipeline">Hide</span><span v-else>Show</span> pipeline
-            </a>
-          </p>
-          <div v-if="repository && showPipeline">
-            <code-editor v-model="repository.pipeline" :readonly="true" />
+            <div v-if="repository.market === communityMarketId" class="mt-3">
+              <p>
+                <b>Nosana Community Tier</b><br>
+                Your CI/CD jobs will run on the Nosana Community Tier.<br>
+                This is a free Tier that will run on a best-effort basis.
+              </p>
+            </div>
+          </div>
+          <div class="ml-auto">
+            <div
+              v-if="repository.marketAccount"
+              class="has-background-light has-text-centered px-6 py-4
+              has-radius-medium"
+            >
+              Pipeline price<br>
+              <b class="has-text-accent is-size-5">{{ parseInt(repository.marketAccount.jobPrice, 16) / 1e6 }} NOS</b>
+            </div>
+            <p
+              v-if="repository && user && repository.user_id === user.user_id"
+              class="my-4"
+            >
+              <nuxt-link
+                v-if="repository"
+                class="button is-accent is-fullwidth is-wider"
+                :to="`/repositories/${id}/pipeline`"
+              >
+                Manage
+              </nuxt-link>
+            </p>
           </div>
         </div>
-        <div v-else>
-          Loading..
+        <div
+          v-if="
+            canEdit &&
+              (permissionFound === false ||
+                (permissionFound === null && loading === false))
+          "
+          class="notification is-danger mt-3 has-radius-medium"
+        >
+          <span v-if="!repository.github_installation_id">
+            No Github installation found
+          </span>
+          <span v-else>
+            No permission for this repository in the Github App Installation.
+          </span>
+          <br>
+          <span
+            :class="{ 'is-loading': loading }"
+            class="button is-danger is-outlined is-small mt-2"
+            style="border-color: #fff"
+            @click="goToGithub"
+          >
+            <span
+              v-if="!repository.github_installation_id"
+              class="has-text-white"
+            >Setup Github Installation</span>
+            <span
+              v-else
+              class="has-text-white"
+            >Reconnect this repository</span>
+          </span>
         </div>
       </div>
+      <div v-else>
+        Loading..
+      </div>
 
-      <div class="table-container">
-        <table class="table is-striped is-fullwidth is-hoverable">
+      <div class="table-container mt-6">
+        <table class="table is-striped is-bordered  is-fullwidth is-hoverable">
           <thead>
-            <tr>
-              <th>Job ID</th>
-              <th>Message</th>
-              <th>Commit</th>
-              <th>Created</th>
-              <th>Status</th>
+            <tr class="has-background-light">
+              <th class="py-2 px-5">
+                <div class="px-3">
+                  Job ID
+                </div>
+              </th>
+              <th class="py-2 px-5">
+                <div class="px-3">
+                  Message
+                </div>
+              </th>
+              <th class="py-2 px-5">
+                <div class="px-3">
+                  Ref
+                </div>
+              </th>
+              <th class="py-2 px-5">
+                <div class="px-3">
+                  Created
+                </div>
+              </th>
+              <th class="py-2 px-5">
+                <div class="px-3">
+                  Status
+                </div>
+              </th>
             </tr>
           </thead>
           <tbody>
             <tr
-              v-for="commit in commits"
-              :key="commit.id"
+              v-for="job in jobs"
+              :key="job.id"
               class="is-clickable"
-              @click="$router.push(`/jobs/${commit.id}`)"
+              @click="$router.push(`/jobs/${job.id}`)"
             >
-              <td>{{ commit.id }}</td>
-              <td>{{ commit.payload.message.split("\n")[0] }}</td>
+              <td><div>{{ job.id }}</div></td>
               <td>
-                <a :href="commit.payload.url" target="_blank" @click.stop>{{
-                  commit.commit | shortenHashes
+                <span v-if="job.payload.message">{{ job.payload.message.split("\n")[0] }}</span>
+                <span v-else-if="job.payload.title">
+                  {{ job.payload.title }}
+                </span>
+              </td>
+
+              <td>
+                <a :href="job.payload.html_url || job.payload.url" target="_blank" @click.stop>{{
+                  job.commit | shortenHashes
                 }}</a>
               </td>
-              <td>{{ $moment(commit.created_at).fromNow() }}</td>
+              <td>{{ $moment(job.created_at).fromNow() }}</td>
               <td class="py-4">
                 <div
                   class="tag is-small"
                   :class="{
-                    'is-accent': commit.status === 'COMPLETED',
-                    'is-info': commit.status === 'RUNNING',
-                    'is-warning': commit.status === 'QUEUED',
-                    'is-danger': commit.status === ('FAILED' || 'STOPPED'),
+                    'is-accent': job.status === 'COMPLETED',
+                    'is-info': job.status === 'RUNNING',
+                    'is-warning': job.status === 'QUEUED',
+                    'is-danger': job.status === ('FAILED' || 'STOPPED'),
                   }"
                 >
-                  {{ commit.status }}
+                  {{ job.status }}
                 </div>
               </td>
             </tr>
             <tr
-              v-if="!commits || !commits.length"
+              v-if="!jobs || !jobs.length"
               class="has-text-centered has-text-weight-bold"
             >
-              <td v-if="!commits" colspan="5">
-                Loading commits...
+              <td v-if="!jobs" colspan="5">
+                Loading jobs...
               </td>
               <td v-else colspan="5">
-                No commits
+                No jobs
               </td>
             </tr>
           </tbody>
         </table>
       </div>
       <pagination-helper
-        v-if="commits && commits.length > 0 && pagination"
+        v-if="jobs && jobs.length > 0 && pagination"
         :total-pages="Math.ceil(pagination.total / pagination.perPage)"
         :per-page="pagination.perPage"
         :current-page="parseInt(pagination.currentPage)"
-        @pagechanged="getCommits"
+        @pagechanged="getJobs"
       />
     </div>
   </section>
 </template>
 
 <script>
+import axios from 'axios';
 import PaginationHelper from '@/components/Pagination/PaginationHelper.vue';
+
+let githubApi;
 export default {
   components: { PaginationHelper },
   filters: {
@@ -145,16 +192,32 @@ export default {
   },
   data () {
     return {
+      githubAppUrl: process.env.NUXT_ENV_GITHUB_APP_URL,
       queryPage: this.$route.query.page || 1,
       showPipeline: true,
       pagination: null,
-      commits: null,
+      refreshInterval: null,
       repository: null,
       project: null,
       id: this.$route.params.id,
       user: null,
-      backendUrl: process.env.NUXT_ENV_BACKEND_URL
+      backendUrl: process.env.NUXT_ENV_BACKEND_URL,
+      permissionFound: null,
+      loading: false,
+      newInstallationId: null,
+      communityMarketId: process.env.NUXT_ENV_COMMUNITY_MARKET_ID,
+      jobs: null
     };
+  },
+  computed: {
+    canEdit () {
+      return (
+        this.repository &&
+        this.user &&
+        (this.repository.user_id === this.user.user_id ||
+          (this.user.roles && this.user.roles.includes('admin')))
+      );
+    }
   },
   watch: {
     '$auth.loggedIn' (loggedIn) {
@@ -164,17 +227,32 @@ export default {
     }
   },
   created () {
-    this.getCommits(this.queryPage);
-    this.getRepository();
-    if (this.$auth && this.$auth.loggedIn) {
-      this.getUser();
+    this.newInstallationId = this.$route.query.installation_id;
+    this.setup();
+    this.getJobs(this.queryPage);
+    if (!this.refreshInterval) {
+      this.refreshInterval = setInterval(() => {
+        console.log('refreshing jobs..');
+        this.getJobs(this.queryPage);
+      }, 20000);
     }
-    // setInterval(() => {
-    //   console.log('refreshing commits..')
-    //   this.getCommits()
-    // }, 20000)
+  },
+  beforeDestroy () {
+    if (this.refreshInterval) {
+      clearInterval(this.refreshInterval);
+      this.refreshInterval = null;
+    }
   },
   methods: {
+    async setup () {
+      await this.getRepository();
+      if (this.$auth && this.$auth.loggedIn) {
+        await this.getUser();
+      }
+      if (this.canEdit) {
+        await this.githubInstallationCheck();
+      }
+    },
     copyToClipboard (content) {
       navigator.clipboard.writeText(content).then(() => {
         alert('Webhook URL copied!');
@@ -192,13 +270,35 @@ export default {
         });
       }
     },
-    async getCommits (page) {
+    async getJobs (page) {
       try {
-        const commits = await this.$axios.$get(
-          `/repositories/${this.$route.params.id}/commits?page=${page}`
+        const jobs = await this.$axios.$get(
+          `/repositories/${this.$route.params.id}/jobs?page=${page}`
         );
-        this.commits = commits.data;
-        this.pagination = commits.pagination;
+        this.jobs = jobs.data;
+        this.pagination = jobs.pagination;
+      } catch (error) {
+        this.$modal.show({
+          color: 'danger',
+          text: error,
+          title: 'Error'
+        });
+      }
+    },
+    async githubInstallationCheck () {
+      try {
+        // GH installation check
+        if (this.repository.github_installation_id) {
+          await this.githubApp(
+            parseInt(this.repository.github_installation_id)
+          );
+        } else if (this.newInstallationId) {
+          await this.githubApp(parseInt(this.newInstallationId));
+        } else {
+          console.log('no github installation id found');
+          this.loading = false;
+          this.permissionFound = false;
+        }
       } catch (error) {
         this.$modal.show({
           color: 'danger',
@@ -209,6 +309,7 @@ export default {
     },
     async getRepository () {
       try {
+        localStorage.removeItem('repo-id');
         this.repository = await this.$axios.$get(`/repositories/${this.id}`);
       } catch (error) {
         this.$modal.show({
@@ -217,6 +318,84 @@ export default {
           title: 'Error'
         });
       }
+    },
+    goToGithub () {
+      localStorage.setItem('repo-id', this.repository.id);
+      window.location.href = this.githubAppUrl;
+    },
+    async githubApp (installationId) {
+      try {
+        this.loading = true;
+        const response = await this.$axios.$get(
+          '/github/auth/' + installationId
+        );
+        this.githubToken = response.token;
+        githubApi = axios.create({
+          baseURL: 'https://api.github.com',
+          headers: { Authorization: 'token ' + this.githubToken }
+        });
+        this.getUserRepos();
+      } catch (error) {
+        this.$modal.show({
+          color: 'danger',
+          text: error,
+          title: 'Error'
+        });
+        this.permissionFound = false;
+        this.loading = false;
+      }
+    },
+    async getUserRepos () {
+      try {
+        if (githubApi) {
+          let page = 1;
+          let response;
+          this.repositories = [];
+          do {
+            response = await githubApi.get(
+              `/installation/repositories?type=public&per_page=100&page=${page}&t=${new Date().getTime()}`
+            );
+            console.log('response', response);
+            if (response && response.data) {
+              this.repositories = this.repositories.concat(
+                response.data.repositories
+              );
+            }
+            page++;
+          } while (
+            response &&
+            response.data &&
+            response.data.repositories.length >= 100
+          );
+
+          // check if current repo is amongst the selected repositories && != private
+          for (const repo of this.repositories) {
+            if (
+              repo.full_name === this.repository.repository &&
+              !repo.private
+            ) {
+              this.permissionFound = true;
+
+              if (
+                !this.repository.github_installation_id &&
+                this.newInstallationId
+              ) {
+                // update installation id for repo, if we there's no id in db
+                await this.$axios.$post(`/repositories/${this.id}`, {
+                  github_installation_id: this.newInstallationId
+                });
+              }
+            }
+          }
+        }
+      } catch (error) {
+        this.$modal.show({
+          color: 'danger',
+          text: error,
+          title: 'Error'
+        });
+      }
+      this.loading = false;
     }
   }
 };
@@ -225,5 +404,13 @@ export default {
 <style lang="scss" scoped>
 td {
   vertical-align: middle;
+}
+</style>
+<style lang="scss" scoped>
+.table.is-striped tbody tr:not(.is-selected):nth-child(odd) {
+  background-color: $grey-lighter;
+}
+.table td, .table th {
+  border-color: $grey-darker;
 }
 </style>

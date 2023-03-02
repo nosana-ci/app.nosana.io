@@ -43,6 +43,8 @@ export default {
     SubscribeView,
     TierView
   },
+  auth: false,
+  layout: 'logged-out',
   data () {
     return {
       loading: false,

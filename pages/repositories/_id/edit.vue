@@ -1,78 +1,70 @@
 <template>
-  <section class="section">
+  <section class="section py-4">
     <div class="container">
-      <nuxt-link :to="`/repositories/${id}`">
-        <i class="fas fa-chevron-left" /> Cancel
+      <nuxt-link :to="`/repositories/${id}`" class="has-text-accent has-text-weight-semibold">
+        <i class="fas fa-chevron-left" /> Back
       </nuxt-link>
-      <div class="mt-2">
-        <form v-if="repository" @submit.prevent="edit">
-          <div class="is-flex is-align-items-center">
-            <h2 class="title">
-              Edit {{ repository.repository }}
+      <form v-if="repository" class="mt-2" @submit.prevent="edit">
+        <div class="is-flex-desktop is-align-items-flex-start is-justify-content-space-between mb-4">
+          <div>
+            <h2 class="title mb-2">
+              Settings
             </h2>
-          </div>
-          <p>
-            <a :href="'https://github.com/'+ repository.repository" target="_blank" @click.stop>https://github.com/{{ repository.repository }}</a>
-          </p>
-
-          <div class="tabs mt-3">
-            <ul>
-              <li
-                class="px-3"
-                :class="{'is-active': activeTab === 'general'}"
-                @click="activeTab = 'general'"
-              >
-                <a class="p-3">General</a>
-              </li>
-              <li
-                class="px-3"
-                :class="{'is-active': activeTab === 'pipeline'}"
-                @click="activeTab = 'pipeline'"
-              >
-                <a class="p-3">Pipeline</a>
-              </li>
-            </ul>
-          </div>
-          <div v-if="activeTab === 'general'">
-            <market-selector v-if="repository" :repository="repository" @select-market="selectMarket" />
-            <div class="field py-3">
-              <div class="control">
-                <label class="checkbox">
-                  <input v-model="repository.enable_check_runs" type="checkbox">
-                  Enable Github Check-Runs
-                </label>
-              </div>
-            </div>
-          </div>
-          <div v-if="activeTab === 'pipeline'">
             <p>
-              Changes made to your pipeline will be pushed to the <code>nosana-ci.yml</code> in your Github repository.
+              <a :href="'https://github.com/'+ repository.repository" target="_blank" @click.stop>https://github.com/{{ repository.repository }}</a>
             </p>
-            <code-editor v-model="repository.pipeline" class="py-3 pt-4" />
-            <div class="field py-3">
-              <label class="label">Trigger branches (comma seperated)</label>
-              <div class="control">
-                <input v-model="repository.branches" required class="input" type="text" placeholder="main,master">
-              </div>
+          </div>
+          <div class="buttons">
+            <nuxt-link :to="`/repositories/${id}/pipeline`" class="button is-accent px-5 is-outlined">
+              Pipeline
+            </nuxt-link>
+            <nuxt-link :to="`/repositories/${id}/secrets`" class="button is-accent px-5 is-outlined">
+              Secrets
+            </nuxt-link>
+            <nuxt-link :to="`/repositories/${id}/edit`" class="button is-accent px-5">
+              Settings
+            </nuxt-link>
+          </div>
+        </div>
+
+        <div v-if="activeTab === 'general'">
+          <market-selector v-if="repository" :repository="repository" @select-market="selectMarket" />
+          <div class="field py-3">
+            <div class="control">
+              <label class="checkbox">
+                <input v-model="repository.enable_check_runs" type="checkbox">
+                Enable Github Check-Runs
+              </label>
             </div>
           </div>
-          <div class="control">
-            <button type="submit" class="button is-accent" :disabled="!selectedMarket">
-              Save
-            </button>
-          </div>
-        </form>
-        <div v-else>
-          Loading..
         </div>
+        <div v-if="activeTab === 'pipeline'">
+          <code-editor
+            v-model="repository.pipeline"
+            class="py-3 pt-4"
+          />
+          <div class="field py-3">
+            <label class="label">Trigger branches (comma seperated)</label>
+            <div class="control">
+              <input v-model="repository.branches" required class="input" type="text" placeholder="main,master">
+            </div>
+          </div>
+        </div>
+        <div class="control">
+          <button type="submit" class="button is-accent is-wide" :disabled="!selectedMarket">
+            Save
+          </button>
+        </div>
+      </form>
+      <div v-else>
+        Loading..
       </div>
     </div>
   </section>
 </template>
 
 <script>
-import { parse } from 'yaml';
-import MarketSelector from '../../../components/MarketSelector.vue';
+import MarketSelector from '@/components/MarketSelector.vue';
 
 export default {
   components: { MarketSelector },
@@ -92,47 +84,22 @@ export default {
   methods: {
     async edit () {
       try {
-        const pipeline = parse(this.repository.pipeline);
-        // TODO: change for nice yaml scheme checker
-        if (!pipeline.global) {
-          throw new Error('Your yaml does not include a `global` config');
-        }
-        if (!pipeline.nosana) {
-          throw new Error('Your yaml does not include a `nosana` config');
-        }
-        if (!pipeline.jobs || !Array.isArray(pipeline.jobs) || !pipeline.jobs.length) {
-          throw new Error('Your yaml does not include a array `jobs` config');
-        }
-        if (!pipeline.global.trigger || !pipeline.global.trigger.branch) {
-          throw new Error('Your yaml does not include a `global.trigger.branch` config');
-        }
-        if (!pipeline.global.image) {
-          throw new Error('Your yaml does not include a `global.image` config');
-        }
-        if (!pipeline.nosana.description) {
-          throw new Error('Your yaml does not include a `nosana.description` config');
-        }
-        pipeline.jobs.forEach((job, index) => {
-          if (!job.name) {
-            throw new Error(`Job ${index + 1} does not include a 'name'`);
-          }
-          if (!job.commands || !Array.isArray(job.commands) || !job.commands.length) {
-            throw new Error(`Job ${index + 1} does not include a 'commands' array`);
-          }
-        });
-
-        await this.$axios.$post(`/repositories/${this.id}`, {
+        const updateData = {
           pipeline: this.repository.pipeline,
           market: this.selectedMarket.publicKey,
           branches: this.repository.branches,
           enable_check_runs: this.repository.enable_check_runs
-        });
+        };
+        if (this.repository.pipeline && this.repository.pipeline.length) {
+          updateData.pipeline = this.repository.pipeline;
+        }
+
+        await this.$axios.$post(`/repositories/${this.id}`, updateData);
         this.$modal.show({
           color: 'success',
-          text: 'Successfully updated repository',
           title: 'Saved!',
-          persistent: true,
-          cancel: false,
+          text: 'Successfully updated repository.',
+          image: 'icons/saved.svg',
           onConfirm: () => {
             this.$router.push(`/repositories/${this.id}`);
           }

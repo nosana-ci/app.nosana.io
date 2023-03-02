@@ -68,6 +68,7 @@
             </div>
             <div v-else>
               <nuxt-link
+                v-if="$auth.user.address"
                 class="button is-accent px-5"
                 to="/account/edit"
                 exact-active-class="is-active"
@@ -79,12 +80,26 @@
               >
                 <div>My Account</div>
               </nuxt-link>
-
+              <div v-else-if="$auth.user.github_account_id">
+                <div class="block">
+                  <b class="has-text-black">Selected wallet</b>
+                  <a
+                    :href="$sol.explorer + '/address/' + publicKey"
+                    target="_blank"
+                    class="blockchain-address"
+                  >{{ publicKey }}</a>
+                  <a
+                    class="has-text-danger"
+                    @click="$sol.switch(); error = null; $sol.addWalletToExistingAccount = true;"
+                  >
+                    <small class="is-size-7">Switch wallet</small>
+                  </a>
+                </div>
+              </div>
               <div class="has-text-right">
                 <a
                   class="has-text-danger is-small"
-                  style="border-radius: 6px"
-                  @click="$sol.logout()"
+                  @click="$sol.unsubWallet()"
                 >Logout</a>
               </div>
             </div>
@@ -129,11 +144,21 @@ export default {
     loggedIn () {
       return this.$sol && this.$sol.publicKey;
     },
-    solError () {
-      return this.$sol && this.$sol.error;
+    solError: {
+      get () {
+        return this.$sol && this.$sol.error;
+      },
+      set (val) {
+        this.$sol.error = val;
+      }
     }
   },
   watch: {
+    '$sol.loginModal': function (loginModal) {
+      if (!loginModal) {
+        this.$sol.addWalletToExistingAccount = false;
+      }
+    },
     '$sol.publicKey': function (pubkey) {
       if (pubkey && this.$sol.skipLogin) {
         this.$sol.loginModal = false;
@@ -167,7 +192,7 @@ export default {
         if (path) {
           this.$router.push(path);
         } else if (this.$route && this.$route.name === 'login') {
-          this.$router.push('/');
+          this.$router.push('/pipelines?login=true');
         }
       } catch (error) {
         console.error('ERR', error);

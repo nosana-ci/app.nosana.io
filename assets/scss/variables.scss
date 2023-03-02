@@ -4,15 +4,15 @@
 
 //@import url("https://use.typekit.net/bsr3vel.css");
 // @import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
-$family-sans-serif: 'Space Grotesk', sans-serif;
-$family-headers: 'Space Mono', monospace;
+$family-sans-serif: 'Inter', sans-serif;
+$family-headers: 'Space Grotesk', sans-serif;
 $family-monospace: 'Space Mono', monospace;
 
 // Colors
 $primary: white;
 $secondary: #EAEEE9;
-$accent:  #03BC00;
-$green: #03BC00;
+$accent:  #03A600;
+$green: #03A600;
 $grey-darker: #CBD1C9;
 $grey-dark: #E0E6DE;
 $grey-light: #EAEEE9;
@@ -25,6 +25,8 @@ $dark: $grey-dark;
 $secondary-invert: findColorInvert($secondary) !default;
 $accent-invert: findColorInvert($accent) !default;
 
+$accent-transparent: rgba(3, 150, 0, 0.06);
+
 $custom-colors: (
   "secondary":($secondary, $secondary-invert),
   "accent":($accent, $accent-invert),
@@ -33,7 +35,7 @@ $custom-colors: (
 $text: #4D4F4C;
 $text-strong: #010C04;
 
-$link: #4e9dff;
+$link: #2F80ED;
 $link-hover: $accent;
 $link-focus: $accent;
 $link-active: $accent;
@@ -82,6 +84,16 @@ $tablet: 1024px;
 
 $modal-background-background-color: rgba(0,0,0, 0.5);
 
-$table-cell-padding: 0.25em 0.75em;
-
 $fullhd: 1680px;
+
+$table-cell-padding: 1.2em 2.25em;
+$table-striped-row-even-background-color: $light;
+$table-striped-row-even-hover-background-color: $light;
+$table-row-hover-background-color: $light;
+
+$input-border-color: $grey-dark;
+
+$panel-shadow: none;
+$panel-radius: 4px;
+$panel-block-active-icon-color: $accent;
+$panel-block-active-color: $accent;

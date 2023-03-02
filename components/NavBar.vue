@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="is-flex is-justify-content-center">
-      <div class="py-4 px-6 has-text-centered">
+      <div class="py-3 px-6 has-text-centered">
         <nuxt-link to="/">
           <img class="logo" width="150" :src="require('@/assets/img/Nosana_Logo_horizontal_color_black.svg')">
         </nuxt-link>
@@ -23,7 +23,7 @@
     </div>
 
     <div :class="{'is-hidden-mobile': !mobileMenu}">
-      <hr class="has-background-grey-lighter">
+      <hr class="has-background-grey-dark mt-0">
       <div class="my-4">
         <div v-if="!loggedIn" class="has-text-centered">
           <nuxt-link
@@ -32,48 +32,60 @@
             to="/account/edit"
             :class="{'is-outlined': loggedIn}"
           >
-            <div class="blockchain-address" style="max-width: 185px;" @click="$sol.loginModal = true">
-              Connect Wallet
+            <div style="max-width: 185px;">
+              Login
             </div>
           </nuxt-link>
         </div>
-        <div v-else class="is-flex is-align-items-flex-start is-justify-content-flex-start">
-          <div class="mr-4">
-            <figure class="image is-32x32">
-              <img v-if="$auth.user.image" :src="$auth.user.image" class="is-rounded has-border">
-              <img
-                v-else-if="userTier"
-                :src="require(`@/assets/img/tiers/icons/tier${userTier.tier}.svg`)"
-                class="is-rounded"
-              >
-            </figure>
-          </div>
-          <div style="max-width: 100%;">
-            <h2 v-if="$auth.user.name" class="title is-6 has-text-weight-semibold">
-              {{ $auth.user.name }}
-              <nuxt-link to="/account/edit">
-                <i class="fas fa-edit" />
-              </nuxt-link>
-            </h2>
-            <h2 v-else class="title is-6 has-text-weight-semibold">
-              <nuxt-link to="/account/edit">
-                <i class="fas fa-edit" /> Edit User info
-              </nuxt-link>
-            </h2>
-
-            <h2 class="subtitle is-7 mb-1">
-              <a target="_blank" :href="`https://solscan.io/address/${$auth.user.address}`" class="blockchain-address" style="max-width: 140px;">
-                {{ $auth.user.address }}
-              </a>
-            </h2>
-            <div class="">
-              <a class="has-text-danger is-size-7" @click.prevent="$sol.logout">Logout</a>
+        <div v-else>
+          <nuxt-link to="/account/edit">
+            <div class="is-flex is-align-items-center is-justify-content-flex-start mb-5 account">
+              <div class="ml-3 mr-3">
+                <figure class="image is-32x32">
+                  <img v-if="$auth.user.image" :src="$auth.user.image" class="is-rounded has-border">
+                  <img
+                    v-else-if="userTier"
+                    :src="require(`@/assets/img/tiers/icons/tier${userTier.tier}.svg`)"
+                    class="is-rounded"
+                  >
+                  <img
+                    v-else-if="$auth.user.github_name"
+                    :src="require(`@/assets/img/icons/github.svg`)"
+                    class="is-rounded"
+                  >
+                  <img
+                    v-else
+                    :src="require(`@/assets/img/default-profile.svg`)"
+                    class="is-rounded"
+                  >
+                </figure>
+              </div>
+              <div style="max-width: 100%;">
+                <h2 v-if="$auth.user.name" class="title is-6 has-text-weight-semibold">
+                  {{ $auth.user.name }}
+                </h2>
+                <h2
+                  v-if="!$auth.user.name &&
+                    $auth.user.address && $sol"
+                  class="subtitle is-6 mb-0 has-text-weight-semibold"
+                >
+                  <span
+                    class="blockchain-address"
+                    style="max-width: 140px;"
+                  >
+                    {{ $auth.user.address }}
+                  </span>
+                </h2>
+                <h2 v-else-if="$auth.user.github_name" class="subtitle is-6 mb-0 has-text-weight-semibold">
+                  {{ $auth.user.github_name }}
+                </h2>
+              </div>
             </div>
-          </div>
+          </nuxt-link>
         </div>
       </div>
       <aside class="menu">
-        <ul class="menu-list">
+        <ul class="menu-list mt-5">
           <li>
             <nuxt-link
               to="/account/edit"
@@ -98,7 +110,14 @@
               Pipelines
             </nuxt-link>
           </li>
-          <li>
+          <li v-if="loggedIn" class="is-hidden-desktop">
+            <a
+              class="button ml-3 is-outlined is-danger is-small"
+              style="max-width: 80px;"
+              @click.prevent="$sol.logout"
+            >Logout</a>
+          </li>
+          <!-- <li>
             <nuxt-link
               to="/stake"
               exact-active-class="is-active"
@@ -109,7 +128,7 @@
               </span>
               Staking & Rewards
             </nuxt-link>
-          </li>
+          </li> -->
           <!-- <li>
             <nuxt-link
               to="/markets"
@@ -122,7 +141,7 @@
               Markets
             </nuxt-link>
           </li> -->
-          <li>
+          <!-- <li>
             <nuxt-link
               to="/stats"
               exact-active-class="is-active"
@@ -133,7 +152,7 @@
               </span>
               Network Statistics
             </nuxt-link>
-          </li>
+          </li> -->
         </ul>
       </aside>
     </div>
@@ -171,10 +190,15 @@ font-size: 14px;
   }
   a{
     &.is-active {
-      i {
-        color: $accent;
-      }
+      background-color: $grey-dark;
+      color: $accent;
     }
+  }
+}
+
+.account {
+  h2:hover {
+    text-decoration: underline;
   }
 }
 </style>
