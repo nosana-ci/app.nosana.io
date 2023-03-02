@@ -8,6 +8,7 @@
         class="my-editor"
         :highlight="highlighter"
         line-numbers
+        :class="{'has-max-height': maxHeight}"
       />
     </client-only>
   </div>
@@ -27,7 +28,7 @@ export default {
   components: {
     PrismEditor
   },
-  props: ['value', 'readonly', 'highlight-lines'],
+  props: ['value', 'readonly', 'highlight-lines', 'max-height'],
   data () {
     return {
     };
@@ -97,6 +98,10 @@ export default {
     font-size: 14px;
     padding: 5px;
     position: relative;
+}
+
+.has-max-height {
+    max-height: 600px;
 }
 
 .prism-editor__textarea:focus {
