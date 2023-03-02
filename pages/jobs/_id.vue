@@ -681,7 +681,9 @@ export default {
           if (this.autoScroll && !this.disableAutoScroll) {
             this.$nextTick(() => {
               const terminal = document.getElementById('terminal');
-              terminal.scrollTop = terminal.scrollHeight;
+              if (terminal) {
+                terminal.scrollTop = terminal.scrollHeight;
+              }
             });
           }
           // Check EOF character
@@ -784,7 +786,9 @@ export default {
         if (this.autoScroll && !this.disableAutoScroll) {
           this.$nextTick(() => {
             const terminal = document.getElementById('terminal');
-            terminal.scrollTop = terminal.scrollHeight;
+            if (terminal) {
+              terminal.scrollTop = terminal.scrollHeight;
+            }
           });
         }
       } catch (error) {
