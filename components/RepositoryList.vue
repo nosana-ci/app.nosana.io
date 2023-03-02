@@ -57,6 +57,7 @@
               >
                 <nuxt-link :to="`/jobs/${job.id}`">
                   <job-status
+                    v-if="job.job"
                     :status="job.status"
                     class="has-tooltip-arrow"
                     :data-tooltip="job.job.substring(0,7)"

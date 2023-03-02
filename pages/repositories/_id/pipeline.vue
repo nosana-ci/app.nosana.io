@@ -7,10 +7,10 @@
       <div class="mt-2">
         <div class="is-flex-desktop is-align-items-flex-start is-justify-content-space-between mb-4">
           <div>
-            <h2 class="title mb-2">
+            <h2 class="title mb-1">
               Pipeline
             </h2>
-            <p v-if="repository">
+            <p v-if="repository" class="is-size-7">
               <a :href="'https://github.com/'+ repository.repository" target="_blank" @click.stop>https://github.com/{{ repository.repository }}</a>
             </p>
           </div>
@@ -29,7 +29,11 @@
         <div v-if="branches">
           Select the branch in which you want to edit the pipeline.<br>
           <div class="select mb-1 mt-2">
-            <select v-model="editBranch" required @change="getPipeline(editBranch), pipelineEditor = false">
+            <select
+              v-model="editBranch"
+              required
+              @change="changeBranch"
+            >
               <option
                 v-for="branch in branches"
                 :key="branch.name"
@@ -46,15 +50,31 @@
             <div class="column is-9">
               <p v-if="canEdit">
                 Changes made to your pipeline will be pushed to the <code>.nosana-ci.yml</code>
-                in your Github repository.<br>
-                Learn more about the <a href="https://docs.nosana.io/pipelines/specification.html" target="_blank">Nosana pipeline syntax</a>.
+                in your Github repository. Learn more about the <a href="https://docs.nosana.io/pipelines/specification.html" target="_blank">Nosana pipeline syntax</a>.
               </p>
               <code-editor
                 v-model="pipeline"
                 :highlight-lines="validation.errorLines"
                 :readonly="!canEdit"
+                :max-height="true"
                 class="py-3 pt-4 code-editor"
               />
+              <br>
+              <div v-if="canEdit && useTemplate && readme(useTemplate)" class="mt-5">
+                <div class="box has-background-white">
+                  <span class="is-size-7 has-text-grey pb-5">README.md</span><br>
+                  <div
+                    ref="readme"
+                    class="py-4 px-5 readme"
+                    :class="{'expanded': expand}"
+                    v-html="readme(useTemplate)"
+                  />
+                  <div class="fade has-text-centered" :class="{'expanded': expand}">
+                    <span v-if="!expand" @click="expand = !expand">Expand <i class="fa-solid fa-chevron-down" /></span>
+                    <span v-else @click="expand = !expand">Collapse <i class="fa-solid fa-chevron-up" /></span>
+                  </div>
+                </div>
+              </div>
             </div>
             <div v-if="canEdit" class="control column is-3 px-5">
               <h3 class="subtitle has-text-weight-semibold is-size-4 mb-3">
@@ -122,7 +142,10 @@
                   </div>
                 </div>
                 <p>{{ template.description }}</p>
-                <button class="button is-accent is-small mt-2" @click="(pipeline = template.template)">
+                <button
+                  class="button is-accent is-small mt-2"
+                  @click="(pipeline = template.template, useTemplate = template.id)"
+                >
                   Use template
                 </button>
               </div>
@@ -136,6 +159,7 @@
 
 <script>
 import { validateYaml, parseYaml } from '@nosana/schema-validator';
+import { marked } from 'marked';
 
 export default {
   beforeRouteLeave (to, from, next) {
@@ -151,6 +175,7 @@ export default {
   },
   data () {
     return {
+      previousEditBranch: null,
       editBranch: null,
       id: this.$route.params.id,
       repository: null,
@@ -170,7 +195,10 @@ export default {
       },
       pipelineEditor: null,
       pipelineBeforeEdit: null,
-      savedPipeline: false
+      savedPipeline: false,
+      readmeMD: null,
+      useTemplate: false,
+      expand: false
     };
   },
   computed: {
@@ -308,6 +336,7 @@ export default {
         // this.pipeline = await null;
         this.loading = false;
       } catch (error) {
+        this.pipelineBeforeEdit = null;
         this.pipeline = null;
         this.loading = false;
         if (error.response?.data?.type !== 'NotFoundError') {
@@ -356,11 +385,85 @@ export default {
           e.returnValue = '';
         }
       }
+    },
+    readme (id) {
+      const template = this.templates.find(t => t.id === parseInt(id)).readme;
+      if (template) {
+        return marked(template);
+      }
+      return null;
+    },
+    changeBranch (event) {
+      if (!this.savedPipeline) {
+        if (!this.confirmStay()) {
+          this.editBranch = event.target.value;
+          this.getPipeline(this.editBranch); this.pipelineEditor = false; this.useTemplate = false;
+        } else {
+          // stay
+          this.editBranch = this.previousEditBranch;
+        }
+      } else {
+        this.editBranch = event.target.value;
+        this.getPipeline(this.editBranch); this.pipelineEditor = false; this.useTemplate = false;
+      }
+      this.previousEditBranch = this.editBranch;
     }
   }
 };
 </script>
 <style scoped lang="scss">
+.code-editor {
+  max-height: 600px;
+}
+
+.readme {
+  max-height: 200px;
+  overflow: hidden;
+  &.expanded {
+    max-height: none;
+  }
+  ::v-deep p {
+    margin-bottom: .5rem;
+    font-size: .9rem;
+  }
+  ::v-deep h1, h2, h3, h4 {
+    font-weight: bold;
+  }
+  ::v-deep h1 {
+    font-size: 1.5rem;
+    border-bottom: $dark solid 1px;
+    margin-bottom: .8rem;
+    padding-bottom: .5rem;
+  }
+}
+
+.fade {
+  border-radius: 15px;
+  transition: all 0.2 ease;
+  background: linear-gradient(0deg, rgba(252,252,252,1) 10%, rgba(10,10,10,0) 100%);
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 200px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 15px;
+  span {
+    font-size: .9rem;
+    cursor: pointer;
+    i {
+      font-size: .8rem;
+    }
+  }
+  &.expanded {
+    position: relative;
+    background: none;
+    height: auto;
+    padding-bottom: 0px;
+  }
+}
   .template-icon {
     box-shadow: 1px 1px rgba(140,149,159,0.15);
     width: 42px;
