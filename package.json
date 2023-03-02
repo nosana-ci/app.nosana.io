@@ -30,6 +30,7 @@
     "bulma-o-steps": "^1.1.0",
     "core-js": "3.22.8",
     "countup.js": "2.2.0",
+    "marked": "^4.2.12",
     "nuxt": "2.15.8",
     "prismjs": "1.27.0",
     "tweetnacl": "^1.0.3",
