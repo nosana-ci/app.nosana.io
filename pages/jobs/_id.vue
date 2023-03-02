@@ -40,15 +40,19 @@
             <li :class="{'is-active': tab === 'result'}">
               <a @click.prevent="tab='result'">Result</a>
             </li>
-            <li :class="{'is-active': tab === 'pipeline'}">
+            <li v-show="user && user.roles === 'admin'" :class="{'is-active': tab === 'pipeline'}">
               <a @click.prevent="tab='pipeline'">Pipeline</a>
             </li>
           </ul>
         </div>
         <div class="columns">
-          <div class="column is-9">
+          <div class="column" :class="{ 'is-9': minimizeSideBar, 'is-11': minimizeSideBar}">
             <div v-if="tab === 'result'">
-              <div id="terminal" class="box px-5 content-block has-background-black terminal">
+              <div
+                id="terminal"
+                class="box px-5 content-block has-background-black terminal"
+                @scroll.prevent="handleScroll"
+              >
                 <div>
                   <div class="row-count has-text-link">
                     <span>Posting job to blockchain</span>
@@ -239,17 +243,6 @@
                         </div>
                       </template>
                       <div
-                        v-if="(!job.cache_result || !job.cache_result.results || job.cache_run_account)
-                          && !(job.cache_blockchain && job.cache_blockchain.state === 2)"
-                        class="row-count loading-text-white"
-                      >
-                        <span>Waiting
-                          <span v-if="nowSeconds">{{ nowSeconds -
-                            (parseInt(job.cache_run_account.account['time'],16)) }}
-                            seconds</span>
-                          for results</span>
-                      </div>
-                      <div
                         v-else-if="(!job.cache_result || !job.cache_result.results)
                           && (job.cache_blockchain && job.cache_blockchain.state === 2)"
                         class="row-count has-text-danger"
@@ -307,24 +300,36 @@
             <div v-else-if="tab === 'payload'">
               <pre>{{ job.payload }}</pre>
             </div>
-            <div v-else-if="tab === 'pipeline'">
+            <div
+              v-else-if="tab === 'pipeline'"
+            >
               <code-editor
                 v-model="pipelineYml"
                 :highlight-lines="[0]"
                 :readonly="true"
-                class="py-3 pt-4 code-editor"
+                class="code-editor"
               />
             </div>
             <div v-else>
               Loading..
             </div>
           </div>
-          <div class="column is-3">
+          <div v-if="!minimizeSideBar" class="column is-3">
             <div v-if="job.id" style="position: sticky; top: 20px;">
               <div class="box">
+                <!-- minimize icon -->
+                <div class="buttons">
+                  <button
+                    class="button is-small is-light"
+                    @click="minimizeSideBar = true"
+                  >
+                    <i class="fas fa-angle-double-right" />
+                  </button>
+                </div>
+                <hr>
                 <div v-if="job.address && job.cache_blockchain" class="mb-4">
                   <i class="fas fa-coins mr-4 has-text-accent" />
-                  Pipeline Cost
+                  Cost
                   <b class="has-text-accent">
                     {{ parseInt(
                       job.cache_blockchain.price ?
@@ -334,7 +339,7 @@
                 </div>
                 <div v-if="job.commit" class="has-overresult-ellipses">
                   <i class="fab fa-git mr-4 has-text-accent" />
-                  Ref: <a
+                  Commit: <a
                     :href="job.payload.html_url || job.payload.url"
                     class="blockchain-address-inline"
                     target="_blank"
@@ -380,7 +385,7 @@
                   >{{ job.cache_run_account ?
                     job.cache_run_account.account.node : job.cache_blockchain.node }}</a>
                 </div>
-                <div v-if="displayInfo && displayInfo.market" class="mb-4">
+                <div v-if="displayInfo && displayInfo.market && user && user.roles === 'admin'" class="mb-4">
                   <i class="fas fa-globe mr-4 has-text-accent" />
                   Market: <a
                     target="_blank"
@@ -388,7 +393,7 @@
                     class="blockchain-address-inline"
                   >{{ displayInfo.market }}</a>
                 </div>
-                <div v-if="displayInfo && displayInfo.payer" class="mb-4">
+                <div v-if="displayInfo && displayInfo.payer && user && user.roles === 'admin'" class="mb-4">
                   <i class="fas fa-user mr-4 has-text-accent" />
                   Payer: <a
                     target="_blank"
@@ -396,7 +401,7 @@
                     class="blockchain-address-inline"
                   >{{ displayInfo.payer }}</a>
                 </div>
-                <div v-if="displayInfo && displayInfo.project">
+                <div v-if="displayInfo && displayInfo.project && user && user.roles === 'admin'">
                   <i class="fas fa-project-diagram mr-4 has-text-accent" />
                   Project: <a
                     target="_blank"
@@ -482,6 +487,19 @@
               </div>
             </div>
           </div>
+          <div v-else class="column" :class="{ 'is-1': minimizeSideBar }">
+            <div class="box">
+              <!-- looking glass icon -->
+              <div class="buttons is-centered px-1">
+                <button
+                  class="button is-small is-light"
+                  @click="minimizeSideBar = false"
+                >
+                  <i class="fas fa-angle-double-left" />
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -524,6 +542,8 @@ export default {
       displayInfo: null,
       autoScroll: true,
       disableAutoScroll: false,
+      minimizeSideBar: false,
+      lastScrollPosition: null,
       stateMap: [
         'Queued',
         'Running',
@@ -581,6 +601,19 @@ export default {
     }
   },
   methods: {
+    handleScroll (el) {
+      const terminal = document.getElementById('terminal');
+      terminal.addEventListener('scroll', () => {
+        // check if terminal is at bottom
+        if (terminal.scrollTop === terminal.scrollHeight - terminal.clientHeight) {
+          this.disableAutoScroll = false;
+        } else {
+          this.disableAutoScroll = true;
+        }
+      },
+      false
+      );
+    },
     toggleResult (i) {
       if (i in this.hideResults) {
         this.hideResults[i] = !this.hideResults[i];
@@ -838,7 +871,7 @@ export default {
   white-space: pre-wrap;
 }
 .content-block{
-  max-height: 500px;
+  max-height: calc(100vh - 350px);
   overflow-y: auto;
   color: white;
   font-family: monospace;
