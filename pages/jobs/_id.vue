@@ -118,10 +118,13 @@
                             v-if="user && ((user.roles && user.roles.includes('admin'))
                               || user.user_id === job.user_id)"
                           >
-                            <a
-                              class="has-text-warning"
-                              @click="postJob(job.commit_id)"
-                            >Post manually</a> or
+                            <span v-if="job.status === 'NOT_POSTED'">
+                              <a
+                                class="has-text-warning"
+                                @click="postJob(job.commit_id)"
+                              >Post manually</a>
+                              or
+                            </span>
                           </template>wait for cron job to pick it up
                         </span>
                       </div>
