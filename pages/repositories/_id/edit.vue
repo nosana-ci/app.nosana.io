@@ -7,10 +7,10 @@
       <form v-if="repository" class="mt-2" @submit.prevent="edit">
         <div class="is-flex-desktop is-align-items-flex-start is-justify-content-space-between mb-4">
           <div>
-            <h2 class="title mb-2">
+            <h2 class="title mb-1">
               Settings
             </h2>
-            <p>
+            <p class="is-size-7">
               <a :href="'https://github.com/'+ repository.repository" target="_blank" @click.stop>https://github.com/{{ repository.repository }}</a>
             </p>
           </div>
