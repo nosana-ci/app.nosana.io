@@ -109,7 +109,7 @@
                       </div>
                     </template>
                     <template v-else-if="!loading">
-                      <div class="row-count">
+                      <div class="row-count" v-if="job.status === 'NOT_POSTED'">
                         <span>Not posted to blockchain.</span>
                       </div>
                       <div class="row-count">
@@ -123,9 +123,14 @@
                                 class="has-text-warning"
                                 @click="postJob(job.commit_id)"
                               >Post manually</a>
-                              or
+                              or wait for cron job to pick it up
                             </span>
-                          </template>wait for cron job to pick it up
+                          </template>
+                        </span>
+                      </div>
+                      <div class="row-count">
+                        <span v-if="job.status === 'PENDING'">
+                          <span class="loading-text-white">Posting to blockchain</span>
                         </span>
                       </div>
                     </template>
