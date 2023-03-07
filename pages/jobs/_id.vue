@@ -109,7 +109,7 @@
                       </div>
                     </template>
                     <template v-else-if="!loading">
-                      <div class="row-count" v-if="job.status === 'NOT_POSTED'">
+                      <div v-if="job.status === 'NOT_POSTED'" class="row-count">
                         <span>Not posted to blockchain.</span>
                       </div>
                       <div class="row-count">
@@ -128,10 +128,8 @@
                           </template>
                         </span>
                       </div>
-                      <div class="row-count">
-                        <span v-if="job.status === 'PENDING'">
-                          <span class="loading-text-white">Posting to blockchain</span>
-                        </span>
+                      <div v-if="job.status === 'PENDING'" class="row-count">
+                        <span class="loading-text-white">Posting to blockchain</span>
                       </div>
                     </template>
                     <div v-else class="row-count">
