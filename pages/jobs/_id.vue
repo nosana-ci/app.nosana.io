@@ -109,7 +109,7 @@
                       </div>
                     </template>
                     <template v-else-if="!loading">
-                      <div class="row-count">
+                      <div v-if="job.status === 'NOT_POSTED'" class="row-count">
                         <span>Not posted to blockchain.</span>
                       </div>
                       <div class="row-count">
@@ -118,12 +118,18 @@
                             v-if="user && ((user.roles && user.roles.includes('admin'))
                               || user.user_id === job.user_id)"
                           >
-                            <a
-                              class="has-text-warning"
-                              @click="postJob(job.commit_id)"
-                            >Post manually</a> or
-                          </template>wait for cron job to pick it up
+                            <span v-if="job.status === 'NOT_POSTED'">
+                              <a
+                                class="has-text-warning"
+                                @click="postJob(job.commit_id)"
+                              >Post manually</a>
+                              or wait for cron job to pick it up
+                            </span>
+                          </template>
                         </span>
+                      </div>
+                      <div v-if="job.status === 'PENDING'" class="row-count">
+                        <span class="loading-text-white">Posting to blockchain</span>
                       </div>
                     </template>
                     <div v-else class="row-count">
@@ -351,6 +357,15 @@
                   class="blockchain-address-inline"
                   style="white-space: pre-wrap"
                 >{{ job.payload.message }}</span>
+                <div v-if="job.repository && job.commit" class="has-overresult-ellipses">
+                  <i class="fab fa-git mr-4 has-text-accent" />
+                  Pipeline: <a
+                    :href="`https://github.com/${job.repository}/blob/${job.commit}/.nosana-ci.yml`"
+                    class="blockchain-address-inline"
+                    target="_blank"
+                    @click.stop
+                  >.nosana-ci.yml</a>
+                </div>
                 <hr v-if="job.address || job.cache_blockchain || displayInfo">
                 <div v-if="job.address" class="mb-4">
                   <i class="fas fa-list mr-4 has-text-accent" />

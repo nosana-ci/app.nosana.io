@@ -7,15 +7,16 @@
       <div v-if="repository">
         <div class="mb-2 mt-3 is-flex-desktop">
           <div>
-            <h2 class="title mb-3 mr-2">
+            <h2 class="title mb-0 mr-2">
               {{ repository.repository }}
             </h2>
             <a
+              class="is-size-7"
               :href="'https://github.com/' + repository.repository"
               target="_blank"
               @click.stop
             >https://github.com/{{ repository.repository }}</a>
-            <div v-if="repository.market === communityMarketId" class="mt-3">
+            <div v-if="repository.market === communityMarketId" class="mt-5">
               <p>
                 <b>Nosana Community Tier</b><br>
                 Your CI/CD jobs will run on the Nosana Community Tier.<br>

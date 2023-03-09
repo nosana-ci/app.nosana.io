@@ -6,11 +6,11 @@
       </nuxt-link>
       <div class="mt-2">
         <div class="is-flex-desktop is-align-items-flex-start is-justify-content-space-between mb-4">
-          <div>
-            <h2 class="title mb-1">
-              Pipeline
+          <div v-if="repository">
+            <h2 class="title mb-1 mr-2">
+              {{ repository.repository }}
             </h2>
-            <p v-if="repository" class="is-size-7">
+            <p class="is-size-7 mb-3">
               <a :href="'https://github.com/'+ repository.repository" target="_blank" @click.stop>https://github.com/{{ repository.repository }}</a>
             </p>
           </div>
@@ -26,7 +26,7 @@
             </nuxt-link>
           </div>
         </div>
-        <div v-if="branches">
+        <div v-if="branches && !pipelineEditor && !loading">
           Select the branch in which you want to edit the pipeline.<br>
           <div class="select mb-1 mt-2">
             <select
@@ -46,21 +46,9 @@
           </div>
         </div>
         <form v-if="(repository && !loading && (pipeline || pipelineEditor))" @submit.prevent="edit">
-          <div class="columns mt-4">
+          <div class="columns">
             <div class="column is-9">
-              <p v-if="canEdit">
-                Changes made to your pipeline will be pushed to the <code>.nosana-ci.yml</code>
-                in your Github repository. Learn more about the <a href="https://docs.nosana.io/pipelines/specification.html" target="_blank">Nosana pipeline syntax</a>.
-              </p>
-              <code-editor
-                v-model="pipeline"
-                :highlight-lines="validation.errorLines"
-                :readonly="!canEdit"
-                :max-height="true"
-                class="py-3 pt-4 code-editor"
-              />
-              <br>
-              <div v-if="canEdit && useTemplate && readme(useTemplate)" class="mt-5">
+              <div v-if="canEdit && useTemplate && readme(useTemplate)" class="mb-5">
                 <div class="box has-background-white">
                   <span class="is-size-7 has-text-grey pb-5">README.md</span><br>
                   <div
@@ -75,12 +63,41 @@
                   </div>
                 </div>
               </div>
+              <code-editor
+                v-model="pipeline"
+                :highlight-lines="validation.errorLines"
+                :readonly="!canEdit"
+                :max-height="true"
+                class="py-3 pt-2 code-editor mb-6"
+              />
+              <br>
             </div>
             <div v-if="canEdit" class="control column is-3 px-5">
               <h3 class="subtitle has-text-weight-semibold is-size-4 mb-3">
                 Commit changes
               </h3>
-              Branch: <code>{{ editBranch }}</code><br>
+              <div v-if="branches && pipelineEditor">
+                <p class="is-size-7">
+                  Select the branch in which you want to edit the pipeline.
+                </p>
+                <div class="select mb-2 mt-2" style="width: 100%;">
+                  <select
+                    v-model="editBranch"
+                    required
+                    style="width: 100%;"
+                    @change="changeBranch"
+                  >
+                    <option
+                      v-for="branch in branches"
+                      :key="branch.name"
+                      :selected="branch.name === defaultBranch"
+                      :value="branch.name"
+                    >
+                      {{ branch.name }} <span v-if="branch.name === defaultBranch">(Default)</span>
+                    </option>
+                  </select>
+                </div>
+              </div>
               <span class="is-size-7">Commit message (optional)</span>
               <input
                 v-model="commitMessage"

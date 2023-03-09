@@ -10,7 +10,7 @@
             <h2 class="title mb-1">
               Secrets
             </h2>
-            <p>
+            <p class="is-size-7">
               <a :href="'https://github.com/'+ repository.repository" target="_blank" @click.stop>https://github.com/{{ repository.repository }}</a>
             </p>
           </div>

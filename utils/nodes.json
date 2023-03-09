@@ -39,6 +39,46 @@
       "logs": true
     }
   },
+  "nodCMAdrGT3oLduvsLMFUp7SMovyaDVJ4kVumz65j7M": {
+    "devnet": {
+      "endpoint": "https://joan.k8s.dev.nos.ci",
+      "logs": true
+    },
+    "mainnet": {
+      "endpoint": "https://joan.k8s.prd.nos.ci",
+      "logs": true
+    }
+  },
+  "nodhCkfKHpDvsSYi3eYeA2DwLnaLd43MFFt42oHXcYg": {
+    "devnet": {
+      "endpoint": "https://dennis.k8s.dev.nos.ci",
+      "logs": true
+    },
+    "mainnet": {
+      "endpoint": "https://dennis.k8s.prd.nos.ci",
+      "logs": true
+    }
+  },
+  "nodDWoEv546tp2dHT4C2Y3hmMfLqdVq1pQMCWWVHdby": {
+    "devnet": {
+      "endpoint": "https://samuel.k8s.dev.nos.ci",
+      "logs": true
+    },
+    "mainnet": {
+      "endpoint": "https://samuel.k8s.prd.nos.ci",
+      "logs": true
+    }
+  },
+  "nodd7PopriDU7TyANkNxPPVLRV2G61cVqQEmZHbpMmL": {
+    "devnet": {
+      "endpoint": "https://ash.k8s.dev.nos.ci",
+      "logs": true
+    },
+    "mainnet": {
+      "endpoint": "https://ash.k8s.prd.nos.ci",
+      "logs": true
+    }
+  },
   "8A1PyFti1cuFTpmKyXHMGuKE9bEuBCyPXSVkhQgGYPSm": {
     "devnet": {
       "endpoint": null,
