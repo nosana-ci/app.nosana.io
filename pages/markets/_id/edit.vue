@@ -76,6 +76,21 @@
             </div>
           </div>
           <div class="field">
+            <label class="label mb-0">Node Access Key</label>
+            <p class="is-size-7 mb-2">
+              The NFT collection address of an NFT that the node holds, in order to access this market.
+            </p>
+            <div class="control is-expanded">
+              <input
+                v-model="market.nodeAccessKey"
+                required
+                class="input is-primary"
+                type="text"
+                placeholder="Address of Access Key"
+              >
+            </div>
+          </div>
+          <div class="field">
             <label class="label mb-0">Job Type</label>
             <p class="is-size-7 mb-2">
               Choose the type of jobs in this market
@@ -148,7 +163,8 @@ export default {
         jobTimeout: null,
         jobType: null,
         nodeStakeMinimum: null,
-        jobExpiration: null
+        jobExpiration: null,
+        nodeAccessKey: null
       }
     };
   },
@@ -189,6 +205,7 @@ export default {
             new anchor.BN(this.market.nodeStakeMinimum * 1e6)
           ).accounts({
             ...this.$job.accounts,
+            accessKey: new anchor.web3.PublicKey(this.market.nodeAccessKey),
             market: new anchor.web3.PublicKey(this.id)
           })
           .rpc();
