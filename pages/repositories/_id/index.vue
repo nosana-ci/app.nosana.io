@@ -89,7 +89,7 @@
             <tr class="has-background-light">
               <th class="py-2 px-5">
                 <div class="px-3">
-                  Job ID
+                  #
                 </div>
               </th>
               <th class="py-2 px-5">
@@ -99,7 +99,7 @@
               </th>
               <th class="py-2 px-5">
                 <div class="px-3">
-                  Ref
+                  Commit
                 </div>
               </th>
               <th class="py-2 px-5">
@@ -116,12 +116,17 @@
           </thead>
           <tbody>
             <tr
-              v-for="job in jobs"
-              :key="job.id"
+              v-for="(job, index) in jobs"
+              :key="job.uuid"
               class="is-clickable"
-              @click="$router.push(`/jobs/${job.id}`)"
+              @click="$router.push(`/jobs/${job.uuid}`)"
             >
-              <td><div>{{ job.id }}</div></td>
+              <td>
+                <div>
+                  {{ (pagination.total -
+                    (parseInt(pagination.currentPage) === 1 ? index : (pagination.from + index ))) }}
+                </div>
+              </td>
               <td>
                 <span v-if="job.payload.message">{{ job.payload.message.split("\n")[0] }}</span>
                 <span v-else-if="job.payload.title">
