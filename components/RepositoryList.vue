@@ -51,16 +51,16 @@
             >
               <div
                 v-for="job in repository.jobs.slice().reverse()"
-                :key="job.id"
+                :key="job.uuid"
                 class="mx-1"
                 @click.stop=""
               >
-                <nuxt-link :to="`/jobs/${job.id}`">
+                <nuxt-link :to="`/jobs/${job.uuid}`">
                   <job-status
                     v-if="job.job"
                     :status="job.status"
                     class="has-tooltip-arrow"
-                    :data-tooltip="job.job.substring(0,7)"
+                    :data-tooltip="job.uuid.substring(0,7)"
                   />
                 </nuxt-link>
               </div>
