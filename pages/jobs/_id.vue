@@ -14,12 +14,12 @@
               :class="{
                 'is-accent': job.status === 'COMPLETED' || job.state === 2,
                 'is-info': job.status === 'RUNNING' || (!job.status && job.cache_run_account),
-                'is-warning': job.status === 'QUEUED' || (!job.status && job.state === 0),
+                'is-warning': job.status === 'QUEUED' || (!job.status && job.state === 0 && !job.cache_run_account),
                 'is-danger': job.status === ('FAILED' || 'STOPPED') || job.state === 3
               }"
             >
               <span v-if="job.status">{{ job.status }}</span>
-              <span v-else>{{ stateMap[job.state] }}</span>
+              <span v-else>{{ stateMap[job.cache_run_account ? 1 : job.state] }}</span>
             </div>
           </div>
           <div v-if="job.id">
@@ -795,7 +795,7 @@ export default {
           if (!this.logInterval && this.job.cache_run_account) {
             const node = nodes[this.job.cache_run_account.account.node];
             const network = process.env.NUXT_ENV_SOL_NETWORK_NAME;
-            if (node && node[network] && node[network].endpoint && node[network].logs) {
+            if (node && node[network] && node[network].endpoint && node[network].logs && this.job.payload) {
               this.currentStep = 'checkout';
               // Refresh logs every second
               this.getLogs(node[network].endpoint);
