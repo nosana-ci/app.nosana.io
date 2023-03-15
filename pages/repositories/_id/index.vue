@@ -78,6 +78,23 @@
             >Reconnect this repository</span>
           </span>
         </div>
+        <div
+          v-if="repository.status === 'DEACTIVATED'"
+          class="notification is-danger mt-3 has-radius-medium"
+        >
+          This repository is deactivated and will not create jobs based on your commits.<br>
+          Reactivate this repository in the settings.
+          <br>
+          <nuxt-link
+            class="button is-danger is-outlined is-small mt-2"
+            style="border-color: #fff"
+            :to="`/repositories/${id}/edit`"
+          >
+            <span
+              class="has-text-white"
+            >Settings</span>
+          </nuxt-link>
+        </div>
       </div>
       <div v-else>
         Loading..
