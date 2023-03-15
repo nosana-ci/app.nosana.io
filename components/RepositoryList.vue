@@ -27,15 +27,13 @@
           class="is-clickable"
           @click="$router.push(`/repositories/${repository.id}`)"
         >
-          <td>
+          <td style="max-width: 100px;">
             <div>
-              <!-- <span
-                class="tag is-outlined is-light"
-                :class="{'is-success': repository.status === 'ACTIVE', 'is-info': repository.status === 'PENDING'}"
-              >{{ repository.status }}</span> -->
               <span
-                class="tag is-outlined is-light is-success"
-              >ACTIVE</span>
+                class="tag is-outlined is-light"
+                :class="{'is-success': repository.status !== 'DEACTIVATED',
+                         'is-danger': repository.status === 'DEACTIVATED'}"
+              >{{ repository.status !== 'DEACTIVATED' ? 'ACTIVE' : repository.status }}</span>
             </div>
           </td>
 

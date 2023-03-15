@@ -1,7 +1,9 @@
 <template>
   <div>
     <div v-if="user && (user.roles && user.roles.includes('admin'))" class="market-selector py-3">
-      <label class="label">Select a market (admin)</label>
+      <h4 class="title is-5 settings-title mb-5 mt-5">
+        Select a market (admin)
+      </h4>
       <table class="table is-hoverable is-striped has-radius">
         <thead>
           <tr>
@@ -43,7 +45,7 @@
         </tbody>
       </table>
     </div>
-    <p v-if="selectedMarket && selectedMarket.publicKey === communityMarketId" class="has-text-accent pt-3">
+    <p v-if="selectedMarket && selectedMarket.publicKey === communityMarketId" class="has-text-accent pt-2">
       Your CI/CD jobs will run on the Nosana Community Tier.<br>
       This is a free Tier that will run on a best-effort basis.
     </p>
