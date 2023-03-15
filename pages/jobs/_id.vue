@@ -14,18 +14,18 @@
               :class="{
                 'is-accent': job.status === 'COMPLETED' || job.state === 2,
                 'is-info': job.status === 'RUNNING' || (!job.status && job.cache_run_account),
-                'is-warning': job.status === 'QUEUED' || (!job.status && job.state === 0),
+                'is-warning': job.status === 'QUEUED' || (!job.status && job.state === 0 && !job.cache_run_account),
                 'is-danger': job.status === ('FAILED' || 'STOPPED') || job.state === 3
               }"
             >
               <span v-if="job.status">{{ job.status }}</span>
-              <span v-else>{{ stateMap[job.state] }}</span>
+              <span v-else>{{ stateMap[job.cache_run_account ? 1 : job.state] }}</span>
             </div>
           </div>
-          <div v-if="job.id">
-            Job <b>#{{ job.id }}</b>
-            <span v-if="job.payload.author">triggered by <a target="_blank" :href="'https://github.com/'+job.payload.author.username">{{ job.payload.author.username }}</a></span>
-            <span v-else-if="job.payload.user">triggered by <a target="_blank" :href="'https://github.com/'+job.payload.user.login">{{ job.payload.user.login }}</a></span>
+          <div>
+            Job
+            <span v-if="job.payload && job.payload.author">triggered by <a target="_blank" :href="'https://github.com/'+job.payload.author.username">{{ job.payload.author.username }}</a></span>
+            <span v-else-if="job.payload && job.payload.user">triggered by <a target="_blank" :href="'https://github.com/'+job.payload.user.login">{{ job.payload.user.login }}</a></span>
             {{ $moment(job.created_at).fromNow() }}
           </div>
         </div>
@@ -33,7 +33,7 @@
         <h1 class="title">
           <span v-if="job.payload && job.payload.message">{{ job.payload.message.split('\n')[0] }}</span>
           <span v-if="job.payload && job.payload.title">{{ job.payload.title }}</span>
-          <span v-else>External Job</span>
+          <span v-else-if="!job.payload">External Job</span>
         </h1>
         <div class="tabs is-medium">
           <ul>
@@ -671,10 +671,10 @@ export default {
       try {
         this.loading = true;
         const createdJobId = await this.$axios.$post(`/commits/${id}/job`, {
-          jobId: this.job.status === ('NOT_POSTED' || 'PENDING') ? this.job.id : null
+          jobUuid: this.job.status === ('NOT_POSTED' || 'PENDING') ? this.job.uuid : null
         });
         if (createdJobId) {
-          this.$router.push(`/jobs/${createdJobId.id}`);
+          this.$router.push(`/jobs/${createdJobId.uuid}`);
         }
         await this.getJob();
       } catch (error) {
@@ -795,7 +795,7 @@ export default {
           if (!this.logInterval && this.job.cache_run_account) {
             const node = nodes[this.job.cache_run_account.account.node];
             const network = process.env.NUXT_ENV_SOL_NETWORK_NAME;
-            if (node && node[network] && node[network].endpoint && node[network].logs) {
+            if (node && node[network] && node[network].endpoint && node[network].logs && this.job.payload) {
               this.currentStep = 'checkout';
               // Refresh logs every second
               this.getLogs(node[network].endpoint);

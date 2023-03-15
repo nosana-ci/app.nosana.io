@@ -69,8 +69,14 @@
                   </nuxt-link>
                 </div>
               </div>
+              <div class="is-flex is-justify-content-end">
+                <label class="checkbox is-size-7 mt-4 is-flex is-align-items-center">
+                  <input v-model="showDeactivatedRepos" type="checkbox" style="height: 11px; margin-right: 3px;">
+                  Show deactivated
+                </label>
+              </div>
             </div>
-            <repository-list class="mt-5" :repositories="filteredRepositories" />
+            <repository-list class="mt-4" :repositories="filteredRepositories" />
           </div>
         </div>
       </div>
@@ -93,7 +99,8 @@ export default {
       search: null,
       interval: null,
       network: process.env.NUXT_ENV_SOL_NETWORK,
-      loading: false
+      loading: false,
+      showDeactivatedRepos: false
     };
   },
   computed: {
@@ -112,6 +119,12 @@ export default {
             (r.repository.description && r.repository.description.toLowerCase().includes(this.search.toLowerCase())) ||
             (r.repository.name && r.repository.name.toLowerCase().includes(this.search.toLowerCase())));
       }
+
+      if (filteredRepositories && !this.showDeactivatedRepos) {
+        filteredRepositories = filteredRepositories.filter(r => r.status !== 'DEACTIVATED');
+      }
+
+      filteredRepositories.sort((a, b) => b.status.localeCompare(a.status));
 
       return filteredRepositories;
     }

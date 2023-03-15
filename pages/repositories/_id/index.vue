@@ -78,6 +78,23 @@
             >Reconnect this repository</span>
           </span>
         </div>
+        <div
+          v-if="repository.status === 'DEACTIVATED'"
+          class="notification is-danger mt-3 has-radius-medium"
+        >
+          This repository is deactivated and will not create jobs based on your commits.<br>
+          Reactivate this repository in the settings.
+          <br>
+          <nuxt-link
+            class="button is-danger is-outlined is-small mt-2"
+            style="border-color: #fff"
+            :to="`/repositories/${id}/edit`"
+          >
+            <span
+              class="has-text-white"
+            >Settings</span>
+          </nuxt-link>
+        </div>
       </div>
       <div v-else>
         Loading..
@@ -89,7 +106,7 @@
             <tr class="has-background-light">
               <th class="py-2 px-5">
                 <div class="px-3">
-                  Job ID
+                  #
                 </div>
               </th>
               <th class="py-2 px-5">
@@ -99,7 +116,7 @@
               </th>
               <th class="py-2 px-5">
                 <div class="px-3">
-                  Ref
+                  Commit
                 </div>
               </th>
               <th class="py-2 px-5">
@@ -116,12 +133,17 @@
           </thead>
           <tbody>
             <tr
-              v-for="job in jobs"
-              :key="job.id"
+              v-for="(job, index) in jobs"
+              :key="job.uuid"
               class="is-clickable"
-              @click="$router.push(`/jobs/${job.id}`)"
+              @click="$router.push(`/jobs/${job.uuid}`)"
             >
-              <td><div>{{ job.id }}</div></td>
+              <td>
+                <div>
+                  {{ (pagination.total -
+                    (parseInt(pagination.currentPage) === 1 ? index : (pagination.from + index ))) }}
+                </div>
+              </td>
               <td>
                 <span v-if="job.payload.message">{{ job.payload.message.split("\n")[0] }}</span>
                 <span v-else-if="job.payload.title">
