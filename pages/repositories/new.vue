@@ -77,8 +77,9 @@
                   v-for="repo in filteredRepositories"
                   :key="repo.id"
                   class="panel-block px-4 py-3"
-                  :class="{'is-active': repository === repo.full_name, 'is-disabled': repo.private}"
-                  @click.stop="!repo.private ? repository=repo.full_name : notPublic()"
+                  :class="{'is-active':
+                    repository && repository.full_name === repo.full_name, 'is-disabled': repo.private}"
+                  @click.stop="!repo.private ? repository=repo : notPublic()"
                 >
                   <span class="panel-icon mr-3">
                     <i class="fas fa-code-branch" aria-hidden="true" />
@@ -97,7 +98,7 @@
                 Repository selected:
               </h2>
               <h3 class="subtitle is-5 has-text-weight-semibold mb-5 mt-1">
-                {{ repository }}
+                {{ repository.full_name }}
               </h3>
               <button
                 type="submit"
@@ -146,7 +147,7 @@ export default {
         filteredRepositories =
         filteredRepositories
           .filter(r => r.full_name.toLowerCase().includes(this.search.toLowerCase()))
-          .filter(r => !this.userRepositories.find(ur => ur.repository === r.full_name));
+          .filter(r => !this.userRepositories.find(ur => ur.repository.full_name === r.full_name));
       }
 
       return filteredRepositories;
@@ -266,10 +267,11 @@ export default {
     async addRepository () {
       try {
         const createdRepo = await this.$axios.$post('/repositories', {
-          repository: this.repository,
+          repository: this.repository.full_name,
           market: this.selectedMarket.publicKey,
           type: 'GITHUB',
-          installationId: this.installationId
+          installationId: this.installationId,
+          external_id: this.repository.id
         });
         // await this.addWebhook(repo);
         this.$router.push(`/repositories/${createdRepo.id}/pipeline`);
