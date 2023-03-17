@@ -186,11 +186,12 @@ export default {
     async deactivateRepo () {
       try {
         await this.$modal.show({
-          color: 'warning',
+          color: 'danger',
           text:
           'When you deactivate your repository your new commits in this repository won\'t trigger new jobs. \n\n' +
           'You can always reactivate a repository.',
           title: 'Are you sure you want to deactivate this repository?',
+          confirmText: 'Deactivate',
           onConfirm: async () => {
             await this.$axios.$post(`/repositories/${this.id}`, { status: 'DEACTIVATED' });
             this.$modal.show({
