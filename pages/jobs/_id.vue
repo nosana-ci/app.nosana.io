@@ -1,6 +1,11 @@
 <template>
   <section class="section">
     <div class="container">
+      <div v-if="loadingJob">
+        <p class="loading-dots">
+          Loading job
+        </p>
+      </div>
       <div v-if="job">
         <div class="is-flex is-align-items-center">
           <div v-if="job.repository_id" class="mr-4">
@@ -535,6 +540,7 @@ export default {
       result: null,
       step: null,
       loading: false,
+      loadingJob: false,
       tab: 'result',
       user: null,
       refreshInterval: null,
@@ -768,6 +774,7 @@ export default {
     },
     async getJob () {
       if (this.destroying) { return; }
+      this.loadingJob = true;
       const id = this.$route.params.id;
       try {
         const job = await this.$axios.$get(`/jobs/${id}`);
@@ -853,12 +860,18 @@ export default {
           });
         }
       } catch (error) {
+        const url = this.job ? `/repositories/${this.job.repository_id}` : '/pipelines';
         this.$modal.show({
           color: 'danger',
           text: error,
-          title: 'Error'
+          title: 'Error',
+          cancel: false,
+          onConfirm: () => {
+            this.$router.push(url);
+          }
         });
       }
+      this.loadingJob = false;
     }
   }
 };
@@ -919,4 +932,28 @@ export default {
     color: $red !important;
   }
 }
+
+.loading-dots:after {
+  content: '.';
+  animation: dots 1s steps(5, end) infinite;}
+
+@keyframes dots {
+  0%, 20% {
+    color: white;
+    text-shadow:
+      .25em 0 0 white,
+      .5em 0 0 white;}
+  40% {
+    color: black;
+    text-shadow:
+      .25em 0 0 white,
+      .5em 0 0 white;}
+  60% {
+    text-shadow:
+      .25em 0 0 black,
+      .5em 0 0 white;}
+  80%, 100% {
+    text-shadow:
+      .25em 0 0 black,
+      .5em 0 0 black;}}
 </style>

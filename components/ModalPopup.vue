@@ -20,6 +20,41 @@
       </button>
     </div>
   </div>
+  <div
+    v-else-if="(color === 'warning' || color === 'danger' || color === 'info') && typeof onConfirm === 'function'"
+    class="modal"
+    :class="{ 'is-active': visible }"
+  >
+    <div class="modal-background" />
+    <article class="message has-limited-width" :class="['is-' + color]" style="z-index: 100;">
+      <div class="message-header py-4 px-5">
+        <p>{{ title }}</p>
+      </div>
+      <div class="message-body">
+        <div>
+          <ul v-if="(text instanceof Array)" class="headline">
+            <!-- eslint-disable-next-line -->
+          <li v-for="textValue in text" v-html="textValue" />
+          </ul>
+          <!-- eslint-disable-next-line -->
+        <h5 v-else style="white-space:pre-wrap" v-html="text" />
+        </div>
+        <div class="has-text-right mt-4">
+          <button
+            v-if="cancel"
+            class="button is-light"
+            :class="{'is-loading': loading, ['is-' + color]: true}"
+            @click="hide"
+          >
+            {{ cancelText }}
+          </button>
+          <button class="button" :class="{'is-loading': loading, ['is-' + color]: true}" @click="confirm">
+            {{ confirmText }}
+          </button>
+        </div>
+      </div>
+    </article>
+  </div>
   <div v-else class="modal" :class="{ 'is-active': visible }">
     <div class="modal-background" @click="!persistent ? hide() : null" />
     <div class="modal-content content box has-no-shadow" style="border: none" :class="['has-background-' + color]">
