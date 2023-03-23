@@ -4,7 +4,7 @@
       Page not found
     </h1>
     <h1 v-else class="title">
-      An error occurred
+      An error has occurred
     </h1>
     <nuxt-link to="/" class="button">
       Home page

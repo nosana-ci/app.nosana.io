@@ -144,7 +144,7 @@
           </thead>
           <tbody>
             <tr
-              v-for="(user, index) in leaderboard"
+              v-for="(user, index) in the leaderboard"
               :key="user.address"
               :class="{'user-ranking': userInfo && userInfo.rank === (index + 1)}"
             >
@@ -166,7 +166,7 @@
               class="has-text-centered has-text-weight-bold"
             >
               <td v-if="!leaderboard" colspan="5">
-                Loading users..
+                Loading users...
               </td>
               <td v-else colspan="5">
                 No users

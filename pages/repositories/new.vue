@@ -14,7 +14,7 @@
           </div>
           <div v-else>
             <p v-if="installationError" class="mb-2">
-              Having trouble with your Github Installation? <a :href="githubAppUrl">Try reconnecting it.</a>
+              Having trouble with your GitHub installation? <a :href="githubAppUrl">Try reconnecting it.</a>
             </p>
             <div
               class="has-background-light is-flex-desktop is-align-content-center m-0 mb-5 p-5 columns is-multiline"
@@ -55,7 +55,7 @@
               </div>
             </div>
 
-            <!-- Select repo -->
+            <!-- Select a repo -->
             <nav class="panel">
               <div class="panel-heading is-flex-desktop is-align-items-center">
                 <div class="control has-icons-left is-flex-grow-1 mr-5">
@@ -105,7 +105,7 @@
                 class="button is-accent is-wider"
                 :disabled="!repository || !selectedMarket"
               >
-                Add Selected
+                Add selected
               </button>
             </form>
           </div>
@@ -168,8 +168,8 @@ export default {
     notPublic () {
       this.$modal.show({
         color: 'danger',
-        text: 'This repo is not public, make this repository public first',
-        title: 'Cannot select repo'
+        text: 'This repo is not public. You'll need to make this repository public first',
+        title: 'Cannot select the repo'
       });
     },
     async getUserRepositories () {

@@ -25,7 +25,7 @@
       </div>
       <div class="column is-2">
         <div class="box">
-          <small>NOS Rewards</small>
+          <small>NOS rewards</small>
           <div class="has-text-weight-semibold">
             {{ reward }} <span class="has-text-accent">NOS</span>
           </div>
@@ -78,7 +78,7 @@
         class="mx-2"
         :data-tooltip="
           !user.github_account_id
-            ? 'Connect your Github account'
+            ? 'Connect your GitHub account'
             : `Connected: ${user.github_name}`"
         @click="goToGithub"
       >
@@ -122,7 +122,7 @@
         <br>
         <label class="checkbox">
           <input v-model="wantToEarn" type="checkbox">
-          Earn with the Nosana Network
+          Earn with the Nosana network
         </label>
         <br>
         <label class="checkbox">
@@ -262,7 +262,7 @@
           <div class="balances is-flex">
             <div class="balance pl-3">
               <span v-if="walletBalance === null" class="is-size-7">Loading..<br></span>
-              <span v-else class="is-size-7">NOS Wallet Balance<br></span>
+              <span v-else class="is-size-7">NOS wallet balance<br></span>
               <span @click="depositAmount = parseInt(walletBalance)">{{ walletBalance }} NOS</span>
               <a v-if="walletBalance === 0" href="https://nosana.io/token" target="_blank" class="is-size-7">Buy NOS tokens</a>
             </div>
@@ -304,7 +304,7 @@
               class="button is-accent is-fullwidth mt-5 has-text-weight-semibold"
               @click.stop.prevent="$sol.loginModal = true"
             >
-              Connect Wallet
+              Connect wallet
             </button>
             <button
               v-else
@@ -580,7 +580,7 @@ export default {
           } catch (e) {
             console.log(e);
             // Ignore all errors; for now there is no API-compatible way to selectively ignore the expected
-            // instruction error if the associated account exists already.
+            // instruction error if the associated account already exists.
           }
         }
 

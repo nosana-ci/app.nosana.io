@@ -20,8 +20,8 @@
         </div>
         <header class="modal-card-head">
           <p class="modal-card-title">
-            <span v-if="loggedIn">Your Account</span>
-            <span v-else>Connect Solana Wallet</span>
+            <span v-if="loggedIn">Your account</span>
+            <span v-else>Connect your Solana wallet</span>
           </p>
           <button
             class="delete"
@@ -58,7 +58,7 @@
               </div>
               <p class="block">
                 Login by verifying your address. This does not cost any
-                transaction fees
+                transaction fees.
               </p>
               <div class="has-text-centered">
                 <a class="button is-accent is-wide" :disabled="isDisabled" @click="login">
@@ -78,7 +78,7 @@
                   error = null;
                 "
               >
-                <div>My Account</div>
+                <div>My account</div>
               </nuxt-link>
               <div v-else-if="$auth.user.github_account_id">
                 <div class="block">

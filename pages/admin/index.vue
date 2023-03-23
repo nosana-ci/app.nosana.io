@@ -24,7 +24,7 @@
               v-model="search"
               class="input"
               type="text"
-              placeholder="Search.."
+              placeholder="Search..."
             >
           </div>
           <div class="control">

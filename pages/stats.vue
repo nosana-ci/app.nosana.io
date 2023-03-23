@@ -3,8 +3,8 @@
     <div class="columns">
       <div class="column is-4">
         <h1 class="title is-4">
-          Statistics for <b v-if="network === 'devnet'" class="has-text-accent">DevNet</b>
-          <b v-else class="has-text-accent">Testnet</b>
+          Statistics for <b v-if="network === 'devnet'" class="has-text-accent">Devnet</b>
+          <b v-else class="has-text-accent">testnet</b>
         </h1>
         <p class="has-limited-width-small">
           Below you can find live statistics about the number of commits, jobs, users and repositories

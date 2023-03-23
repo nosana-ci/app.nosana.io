@@ -8,13 +8,13 @@
         <thead>
           <tr>
             <th class="is-size-7 py-2 px-3">
-              Public Key
+              Public key
             </th>
             <th class="is-size-7 py-2 px-3">
-              Job Price
+              Job price
             </th>
             <th class="is-size-7 py-2 px-3">
-              Job Timeout
+              Job timeout
             </th>
           </tr>
         </thead>
@@ -46,8 +46,8 @@
       </table>
     </div>
     <p v-if="selectedMarket && selectedMarket.publicKey === communityMarketId" class="has-text-accent pt-2">
-      Your CI/CD jobs will run on the Nosana Community Tier.<br>
-      This is a free Tier that will run on a best-effort basis.
+      Your CI/CD jobs will run on the Nosana community tier.<br>
+      This is a free tier that will run on a best-effort basis.
     </p>
   </div>
 </template>

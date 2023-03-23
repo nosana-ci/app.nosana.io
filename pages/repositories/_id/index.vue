@@ -2,7 +2,7 @@
   <section class="section py-4">
     <div class="container">
       <nuxt-link to="/pipelines" class="has-text-accent has-text-weight-semibold">
-        <i class="fas fa-chevron-left" /> All Repositories
+        <i class="fas fa-chevron-left" /> All repositories
       </nuxt-link>
       <div v-if="repository">
         <div class="mb-2 mt-3 is-flex-desktop">
@@ -18,9 +18,9 @@
             >https://github.com/{{ repository.repository }}</a>
             <div v-if="repository.market === communityMarketId" class="mt-5">
               <p>
-                <b>Nosana Community Tier</b><br>
-                Your CI/CD jobs will run on the Nosana Community Tier.<br>
-                This is a free Tier that will run on a best-effort basis.
+                <b>Nosana community tier</b><br>
+                Your CI/CD jobs will run on the Nosana community tier.<br>
+                This is a free tier that will run on a best-effort basis.
               </p>
             </div>
           </div>
@@ -56,10 +56,10 @@
           class="notification is-danger mt-3 has-radius-medium"
         >
           <span v-if="!repository.github_installation_id">
-            No Github installation found
+            No GitHub installation found
           </span>
           <span v-else>
-            No permission for this repository in the Github App Installation.
+            No permission for this repository in the GitHub app installation.
           </span>
           <br>
           <span
@@ -71,7 +71,7 @@
             <span
               v-if="!repository.github_installation_id"
               class="has-text-white"
-            >Setup Github Installation</span>
+            >Setup GitHub installation</span>
             <span
               v-else
               class="has-text-white"
@@ -83,7 +83,7 @@
           class="notification is-danger mt-3 has-radius-medium"
         >
           This repository is deactivated and will not create jobs based on your commits.<br>
-          Reactivate this repository in the settings.
+          You can reactivate this repository in the settings menu.
           <br>
           <nuxt-link
             class="button is-danger is-outlined is-small mt-2"
@@ -97,7 +97,7 @@
         </div>
       </div>
       <div v-else>
-        Loading..
+        Loading...
       </div>
 
       <div class="table-container mt-6">
