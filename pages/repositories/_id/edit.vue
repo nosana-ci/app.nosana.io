@@ -27,14 +27,46 @@
           </div>
         </div>
 
-        <div v-if="activeTab === 'general'">
-          <market-selector v-if="repository" :repository="repository" @select-market="selectMarket" />
-          <div class="field py-3">
-            <div class="control">
-              <label class="checkbox">
+        <div v-if="activeTab === 'general'" class="mt-5">
+          <market-selector v-if="repository" :repository="repository" class="pb-4" @select-market="selectMarket" />
+          <h4 class="title is-5 settings-title mb-4 mt-5">
+            Github Check-Runs
+          </h4>
+          <div class="field pb-4">
+            <div class="control is-flex">
+              <label class="checkbox mx-2 pt-1">
                 <input v-model="repository.enable_check_runs" type="checkbox">
-                Enable Github Check-Runs
               </label>
+              <div>
+                <p class="has-text-weight-semibold">
+                  Enable Github Check-Runs
+                </p>
+                <p class="is-size-7">
+                  Creates a Github Check-Run for every job in this repository.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <h4 class="title is-5 settings-title mt-5 mb-4">
+            Repository Status <span class="is-size-7">(<span
+              class="has-text-weight-semibold"
+              :class="{'has-text-danger' : repository.status === 'DEACTIVATED',
+                       'has-text-accent' : repository.status !== 'DEACTIVATED'}"
+            >{{ repository.status !== 'DEACTIVATED' ? 'ACTIVE' : 'DEACTIVATED' }}</span>)</span>
+          </h4>
+          <div class="settings-block">
+            <div v-if="repository.status === 'DEACTIVATED'">
+              <p>Your repository is deactivated. Reactivate your repository to run your pipelines on Nosana.</p>
+              <button class="button is-success is-outlined" @click.prevent="activateRepo">
+                (Re)activate repository
+              </button>
+            </div>
+            <div v-else>
+              <p>When the repository is deactivated, commits won't trigger new Nosana jobs.</p>
+              <button class="button is-danger is-light mt-2" @click.prevent="deactivateRepo">
+                Deactivate repository
+              </button>
             </div>
           </div>
         </div>
@@ -50,7 +82,7 @@
             </div>
           </div>
         </div>
-        <div class="control">
+        <div class="control mt-6">
           <button type="submit" class="button is-accent is-wide" :disabled="!selectedMarket">
             Save
           </button>
@@ -150,7 +182,52 @@ export default {
     },
     selectMarket (market) {
       this.selectedMarket = market;
+    },
+    async deactivateRepo () {
+      try {
+        await this.$modal.show({
+          color: 'danger',
+          text:
+          'When you deactivate your repository your new commits in this repository won\'t trigger new jobs. \n\n' +
+          'You can always reactivate a repository.',
+          title: 'Are you sure you want to deactivate this repository?',
+          confirmText: 'Deactivate',
+          onConfirm: async () => {
+            await this.$axios.$post(`/repositories/${this.id}`, { status: 'DEACTIVATED' });
+            this.$modal.show({
+              color: 'success',
+              title: 'Deactivated repository'
+            });
+            this.$router.push(`/repositories/${this.id}`);
+          }
+        });
+      } catch (error) {
+        this.$modal.show({
+          color: 'danger',
+          text: error,
+          title: 'Something went wrong, please try again later.'
+        });
+      }
+    },
+    async activateRepo () {
+      await this.$axios.$post(`/repositories/${this.id}`, { status: 'PENDING' });
+      this.$modal.show({
+        color: 'success',
+        title: 'Saved!',
+        text: 'Successfully activated repository.',
+        image: 'icons/saved.svg',
+        onConfirm: () => {
+          this.$router.push(`/repositories/${this.id}`);
+        }
+      });
     }
   }
 };
 </script>
+<style lang="scss">
+.settings-title {
+  border-bottom: 1px solid $grey-darker;
+  width: 100%;
+  padding-bottom: 8px;
+}
+</style>

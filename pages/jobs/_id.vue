@@ -1,6 +1,11 @@
 <template>
   <section class="section">
     <div class="container">
+      <div v-if="loadingJob">
+        <p class="loading-dots">
+          Loading job
+        </p>
+      </div>
       <div v-if="job">
         <div class="is-flex is-align-items-center">
           <div v-if="job.repository_id" class="mr-4">
@@ -22,10 +27,10 @@
               <span v-else>{{ stateMap[job.cache_run_account ? 1 : job.state] }}</span>
             </div>
           </div>
-          <div v-if="job.id">
-            Job <b>#{{ job.id }}</b>
-            <span v-if="job.payload.author">triggered by <a target="_blank" :href="'https://github.com/'+job.payload.author.username">{{ job.payload.author.username }}</a></span>
-            <span v-else-if="job.payload.user">triggered by <a target="_blank" :href="'https://github.com/'+job.payload.user.login">{{ job.payload.user.login }}</a></span>
+          <div>
+            Job
+            <span v-if="job.payload && job.payload.author">triggered by <a target="_blank" :href="'https://github.com/'+job.payload.author.username">{{ job.payload.author.username }}</a></span>
+            <span v-else-if="job.payload && job.payload.user">triggered by <a target="_blank" :href="'https://github.com/'+job.payload.user.login">{{ job.payload.user.login }}</a></span>
             {{ $moment(job.created_at).fromNow() }}
           </div>
         </div>
@@ -33,7 +38,7 @@
         <h1 class="title">
           <span v-if="job.payload && job.payload.message">{{ job.payload.message.split('\n')[0] }}</span>
           <span v-if="job.payload && job.payload.title">{{ job.payload.title }}</span>
-          <span v-else>External Job</span>
+          <span v-else-if="!job.payload">External Job</span>
         </h1>
         <div class="tabs is-medium">
           <ul>
@@ -535,6 +540,7 @@ export default {
       result: null,
       step: null,
       loading: false,
+      loadingJob: false,
       tab: 'result',
       user: null,
       refreshInterval: null,
@@ -671,10 +677,10 @@ export default {
       try {
         this.loading = true;
         const createdJobId = await this.$axios.$post(`/commits/${id}/job`, {
-          jobId: this.job.status === ('NOT_POSTED' || 'PENDING') ? this.job.id : null
+          jobUuid: this.job.status === ('NOT_POSTED' || 'PENDING') ? this.job.uuid : null
         });
         if (createdJobId) {
-          this.$router.push(`/jobs/${createdJobId.id}`);
+          this.$router.push(`/jobs/${createdJobId.uuid}`);
         }
         await this.getJob();
       } catch (error) {
@@ -768,6 +774,7 @@ export default {
     },
     async getJob () {
       if (this.destroying) { return; }
+      this.loadingJob = true;
       const id = this.$route.params.id;
       try {
         const job = await this.$axios.$get(`/jobs/${id}`);
@@ -853,12 +860,18 @@ export default {
           });
         }
       } catch (error) {
+        const url = this.job ? `/repositories/${this.job.repository_id}` : '/pipelines';
         this.$modal.show({
           color: 'danger',
           text: error,
-          title: 'Error'
+          title: 'Error',
+          cancel: false,
+          onConfirm: () => {
+            this.$router.push(url);
+          }
         });
       }
+      this.loadingJob = false;
     }
   }
 };
@@ -919,4 +932,28 @@ export default {
     color: $red !important;
   }
 }
+
+.loading-dots:after {
+  content: '.';
+  animation: dots 1s steps(5, end) infinite;}
+
+@keyframes dots {
+  0%, 20% {
+    color: white;
+    text-shadow:
+      .25em 0 0 white,
+      .5em 0 0 white;}
+  40% {
+    color: black;
+    text-shadow:
+      .25em 0 0 white,
+      .5em 0 0 white;}
+  60% {
+    text-shadow:
+      .25em 0 0 black,
+      .5em 0 0 white;}
+  80%, 100% {
+    text-shadow:
+      .25em 0 0 black,
+      .5em 0 0 black;}}
 </style>
