@@ -2,12 +2,12 @@
   <section class="section admin-page">
     <div class="container">
       <h1 class="title is-4">
-        Job <span class="has-text-accent">Markets</span>
+        Job <span class="has-text-accent">markets</span>
       </h1>
       <p class="has-limited-width-small mb-6" />
       <div v-if="user && (user.roles && user.roles.includes('admin'))">
         <nuxt-link to="/markets/new" class="button is-accent is-outlined is-pulled-right">
-          Add new market
+          Add a new market
         </nuxt-link>
       </div>
       <div class="block">
@@ -19,7 +19,7 @@
       </div>
       <div v-if="loading" class="has-text-centered subtitle">
         <progress class="progress is-small is-primary" max="100">
-          Loading
+          Loading...
         </progress>
       </div>
       <div class="table-container">
@@ -27,19 +27,19 @@
           <thead>
             <tr>
               <th class="is-size-7 py-2 px-3">
-                Public Key
+                Public key
               </th>
               <th class="is-size-7 py-2 px-3">
-                Job Price
+                Job price
               </th>
               <th class="is-size-7 py-2 px-3">
-                Job Timeout
+                Job timeout
               </th>
               <th class="is-size-7 py-2 px-3">
-                Nodes in Queue
+                Nodes in the queue
               </th>
               <th class="is-size-7 py-2 px-3">
-                Jobs in Queue
+                Jobs in the queue
               </th>
             </tr>
           </thead>

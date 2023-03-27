@@ -126,7 +126,7 @@
               <span class="icon is-medium p-1 m-1 has-radius">
                 <i class="fa-solid fa-coins" />
               </span>
-              Staking & Rewards
+              Staking & rewards
             </nuxt-link>
           </li> -->
           <!-- <li>
@@ -150,7 +150,7 @@
               <span class="icon is-medium p-1 m-1 has-radius">
                 <i class="fa-solid fa-chart-line" />
               </span>
-              Network Statistics
+              Network statistics
             </nuxt-link>
           </li> -->
         </ul>

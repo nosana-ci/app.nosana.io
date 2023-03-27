@@ -2,11 +2,11 @@
   <section class="section admin-page">
     <div v-if="user && allowed" class="container">
       <h1 class="title is-4">
-        Create a new  <span class="has-text-accent">Market</span>
+        Create a new  <span class="has-text-accent">market</span>
       </h1>
       <form class="has-background-light p-6 column is-6" @submit.prevent="createMarket()">
         <div class="field">
-          <label class="label mb-0">Job Price</label>
+          <label class="label mb-0">Job price</label>
           <p class="is-size-7 mb-2">
             Price for a job in NOS
           </p>
@@ -38,7 +38,7 @@
         <div class="field">
           <label class="label mb-0">Job Expiration</label>
           <p class="is-size-7 mb-2">
-            Job Expiration in days
+            Job expiration in days
           </p>
           <div class="control is-expanded">
             <input
@@ -53,7 +53,7 @@
         <div class="field">
           <label class="label mb-0">Stake Minimum</label>
           <p class="is-size-7 mb-2">
-            The minimum XNOS a node needs to stake
+            The minimum xNOS a node needs to stake
           </p>
           <div class="control is-expanded">
             <input
@@ -69,7 +69,7 @@
         <div class="field">
           <label class="label mb-0">Node Access Key</label>
           <p class="is-size-7 mb-2">
-            The NFT collection address of an NFT that the node holds, in order to access this market.
+            The NFT collection address of an NFT that the node holds in order to access this market.
           </p>
           <div class="control is-expanded">
             <input
@@ -77,14 +77,14 @@
               required
               class="input is-primary"
               type="text"
-              placeholder="Address of Acces Key"
+              placeholder="Address of acces key"
             >
           </div>
         </div>
         <div class="field">
           <label class="label mb-0">Job Type</label>
           <p class="is-size-7 mb-2">
-            Choose the type of jobs for this market
+            Choose the type of job for this market
           </p>
           <div class="select">
             <select v-model="newMarket.jobType" required>
@@ -116,7 +116,7 @@
               class="button is-medium is-accent is-fullwidth mt-5 is-outlined"
               @click.prevent.stop="$sol.loginModal = true"
             >
-              <strong>Connect Wallet</strong>
+              <strong>Connect wallet</strong>
             </button>
             <button
               v-else
@@ -125,7 +125,7 @@
               class="button is-medium is-accent is-fullwidth mt-5"
               type="submit"
             >
-              <strong>Create Market</strong>
+              <strong>Create a market</strong>
             </button>
           </div>
         </div>

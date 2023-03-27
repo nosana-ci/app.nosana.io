@@ -1,22 +1,22 @@
 <template>
   <section class="section">
     <h1 class="title has-text-centered">
-      Welcome to the Nosana Network
+      Welcome to the Nosana network
     </h1>
     <div>
       <div class="columns">
         <div class="column is-half">
           <p class="block has-limited-width-small has-text-justified is-horizontal-centered">
-            In this dashboard you can see the pipelines that are running on the Nosana Network.
+            This dashboard shows the pipelines that are running on the Nosana network.
             You can also create and run your own CI/CD pipelines for your open-source project in the
             <nuxt-link to="/pipelines">
-              pipelines.
+              pipelines menu.
             </nuxt-link>
           </p>
         </div>
         <div class="column is-half">
           <p class="block has-limited-width-small has-text-justified is-horizontal-centered">
-            You can also earn <b>$NOS</b> by becoming a node to use your spare CPU power to run pipelines.
+            You can earn <b>$NOS</b> by becoming a node to use your spare CPU power to run pipelines.
             Head over to the
             <nuxt-link to="/stake">
               staking section
@@ -33,7 +33,7 @@
             <img src="~assets/img/icons/account.svg" style="height: 70px;">
           </div>
           <h2 class="subtitle">
-            <b>Account Completion</b>
+            <b>Account completion</b>
           </h2>
           <p class="block is-size-7">
             Make sure to boost your account to 100%.
@@ -53,12 +53,12 @@
             <img src="~assets/img/icons/pipelines.svg" style="height: 70px;">
           </div>
           <h2 class="subtitle">
-            <b>CI/CD Pipelines</b>
+            <b>CI/CD pipelines</b>
           </h2>
           <p class="block is-size-7">
-            Our decentralized crowd-hosted platform has computing options for every development need.
-            Whether you’re building mobile apps or the next DEX.
-            If it works in a container, it works on the Nosana Network.
+            Our decentralized crowd-hosted platform has computing options for every development need,
+            whether you’re building mobile apps or the next DEX.
+            If it works in a container, it works on the Nosana network.
             We can run any container command, letting you ship faster than ever before.
           </p>
           <p class="block mt-auto">
@@ -74,12 +74,12 @@
             <img src="~assets/img/icons/nos.svg" style="height: 70px;">
           </div>
           <h2 class="subtitle">
-            <b>Staking contract is audited!</b>
+            <b>Our staking contract is audited!</b>
           </h2>
           <p class="block is-size-7">
             The $NOS staking contract has been audited by our partners at <a href="https://opcodes.fr/" target="_blank" rel="noopener noreferrer">OPCODES</a>.
             We are confident that the contract is safe to use.
-            Read it at the link below.
+            Read about it at the link below.
           </p>
           <p class="block mt-auto">
             <a
@@ -88,7 +88,7 @@
               target="_blank"
               rel="noopener noreferrer"
             >
-              <strong>Audit Report</strong>
+              <strong>Audit report</strong>
             </a>
           </p>
         </div>
@@ -108,7 +108,7 @@
             Receiving token rewards is one of the major benefits of staking.
             The reward pool comes from future usage of the network in the form of network fees.
             As the network is still very much in development, the current rewards pool will come from the mining pool.
-            The Nosana Network has 20 million tokens reserved for network participants.
+            The Nosana network has 20 million tokens reserved for network participants.
             In the first year, a portion of these will be released daily into the reward pool.
           </p>
           <p class="block mt-auto">
@@ -124,10 +124,10 @@
             <img src="~assets/img/icons/phone.svg" style="height: 70px;">
           </div>
           <h2 class="subtitle">
-            <b>The Burner Phone countdown starts soon!</b>
+            <b>The burner phone countdown starts soon!</b>
           </h2>
           <p class="block is-size-7">
-            We don’t do minting fees – a Burner Phone costs exactly 0 SOL. Are you a Nosana Network user?
+            We don’t do minting fees – a Burner Phone costs exactly 0 SOL. Are you a Nosana network user?
             Stake $NOS for a chance to mint your very own and have exclusive rights to earn $NOS with our network.
           </p>
           <p class="block mt-auto">
@@ -143,7 +143,7 @@
             <img src="~assets/img/icons/stats.svg" style="height: 70px;">
           </div>
           <h2 class="subtitle">
-            <b>Network Statistics</b>
+            <b>Network statistics</b>
           </h2>
           <p class="block is-size-7">
             Want to learn more about how the network is doing? Check it out here!

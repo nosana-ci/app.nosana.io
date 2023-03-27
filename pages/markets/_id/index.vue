@@ -19,13 +19,13 @@
             </div>
           </div>
           <div v-else>
-            Loading..
+            Loading...
           </div>
         </div>
         <div class="box">
           <div class="mb-4">
             <i class="fas fa-list mr-4 has-text-accent" />
-            Market Address <a
+            Market address <a
               target="_blank"
               :href="$sol.explorer + '/address/' + id"
               class="blockchain-address-inline"
@@ -41,12 +41,12 @@
           </div>
           <div class="mb-4">
             <i class="fas fa-suitcase mr-4 has-text-accent" />
-            Job Type
+            Job type
             <b class="has-text-accent" style="text-transform: capitalize;">{{ jobTypes[market.jobType] }}</b>
           </div>
           <div class="mb-4">
             <i class="fas fa-coins mr-4 has-text-accent" />
-            Job Price
+            Job price
             <b class="has-text-accent">
               {{ parseInt(
                 market.jobPrice, 16)/1e6
@@ -55,30 +55,30 @@
           </div>
           <div class="mb-4">
             <i class="fas fa-clock mr-4 has-text-accent" />
-            Job Timeout
+            Job timeout
             <b class="has-text-accent">
               {{ parseInt(market.jobTimeout, 16) / 60 }} min
             </b>
           </div>
           <div class="mb-4">
             <i class="fas fa-calendar mr-4 has-text-accent" />
-            Job Expiration Time
+            Job expiration time
             <b class="has-text-accent">
               {{ parseInt(market.jobExpiration, 16) / 60 / 60 / 24 }} days
             </b>
           </div>
           <div class="mb-4">
             <i class="fas fa-layer-group mr-4 has-text-accent" />
-            Node Minimum Stake
+            Node minimum stake
             <b class="has-text-accent">
               {{ parseInt(
                 market.nodeXnosMinimum, 16)/1e6
               }}
-              XNOS</b>
+              xNOS</b>
           </div>
           <div class="mb-4">
             <i class="fas fa-key mr-4 has-text-accent" />
-            Node Access Key
+            Node access key
             <a
               target="_blank"
               :href="$sol.explorer + '/address/' + market.nodeAccessKey"
@@ -141,7 +141,7 @@
               </table>
             </div>
             <p v-else>
-              There are no jobs or nodes in queue
+              There are no jobs or nodes in the queue
             </p>
           </div>
         </div>
@@ -150,7 +150,7 @@
         Market not found
       </div>
       <div v-else>
-        Loading..
+        Loading...
       </div>
     </div>
   </section>

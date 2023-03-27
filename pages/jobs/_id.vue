@@ -60,7 +60,7 @@
               >
                 <div>
                   <div class="row-count has-text-link">
-                    <span>Posting job to blockchain</span>
+                    <span>Posting job to the blockchain</span>
                   </div>
                   <div>
                     <template v-if="job.address">
@@ -100,7 +100,7 @@
                     </template>
                     <template v-else-if="($route.params.id.length > 10 && job.ipfsJob)">
                       <div class="row-count">
-                        Job posted to market {{ job.market }} for price
+                        Job has been posted to the {{ job.market }} for the price of
                         <b class="has-text-accent">{{ parseInt(job.price, 16)/1e6 }} NOS</b>
                       </div>
                       <div class="row-count">
@@ -115,7 +115,7 @@
                     </template>
                     <template v-else-if="!loading">
                       <div v-if="job.status === 'NOT_POSTED'" class="row-count">
-                        <span>Not posted to blockchain.</span>
+                        <span>Job has not been posted to the blockchain.</span>
                       </div>
                       <div class="row-count">
                         <span>
@@ -128,17 +128,17 @@
                                 class="has-text-warning"
                                 @click="postJob(job.commit_id)"
                               >Post manually</a>
-                              or wait for cron job to pick it up
+                              or wait for a cron job to pick it up
                             </span>
                           </template>
                         </span>
                       </div>
                       <div v-if="job.status === 'PENDING'" class="row-count">
-                        <span class="loading-text-white">Posting to blockchain</span>
+                        <span class="loading-text-white">Posting to the blockchain</span>
                       </div>
                     </template>
                     <div v-else class="row-count">
-                      <span class="loading-text-white">Posting to blockchain</span>
+                      <span class="loading-text-white">Posting to the blockchain</span>
                     </div>
                   </div>
                 </div>
@@ -146,11 +146,11 @@
                   <div class="row-count" />
                   <div>
                     <div class="row-count has-text-link">
-                      <span>Finding node to run job</span>
+                      <span>Finding a node to run the job</span>
                     </div>
                     <div>
                       <div v-if="job.cache_blockchain.state > 0 || job.cache_run_account" class="row-count">
-                        <span>Job claimed by node <a
+                        <span>Job has been claimed by a node <a
                           target="_blank"
                           :href="$sol.explorer + '/address/' +
                             (job.cache_run_account ?
@@ -160,7 +160,7 @@
                           job.cache_run_account.account.node : job.cache_blockchain.node }}</a></span>
                       </div>
                       <div v-else class="row-count loading-text-white">
-                        <span>Waiting for node to claim job</span>
+                        <span>Waiting for a node to claim the job</span>
                       </div>
                     </div>
                   </div>
@@ -172,7 +172,7 @@
                   <div class="row-count" />
                   <div>
                     <div class="row-count has-text-link">
-                      <span>Running job</span>
+                      <span>Running the job</span>
                     </div>
                     <div>
                       <template
@@ -258,7 +258,7 @@
                           && (job.cache_blockchain && job.cache_blockchain.state === 2)"
                         class="row-count has-text-danger"
                       >
-                        <span>Could not retrieve results</span>
+                        <span>Could not retrieve the results</span>
                       </div>
                     </div>
                   </div>
@@ -267,17 +267,17 @@
                   <div class="row-count" />
                   <div>
                     <div class="row-count has-text-link">
-                      <span>Finishing job</span>
+                      <span>Finishing the job</span>
                     </div>
                     <div>
                       <template v-if="job.cache_result && job.cache_result.results">
                         <div class="row-count">
-                          <span>Uploaded results
+                          <span>Uploaded results:
                             <a v-if="job.resultIpfsHash" :href="'https://nosana.mypinata.cloud/ipfs/' + job.resultIpfsHash" target="_blank">{{ job.resultIpfsHash }}</a></span>
                         </div>
                       </template>
                       <div class="row-count">
-                        <span>Job finished
+                        <span>The job is finished
                           {{ $moment(parseInt(job.cache_blockchain['timeEnd'],16)*1e3).fromNow() }}</span>
                       </div>
                       <div class="row-count">
@@ -322,7 +322,7 @@
               />
             </div>
             <div v-else>
-              Loading..
+              Loading...
             </div>
           </div>
           <div v-if="!minimizeSideBar" class="column is-3">
@@ -449,18 +449,18 @@
                     :class="{'is-loading': loading}"
                     @click="postJob(job.commit_id)"
                   >
-                    Rerun job
+                    Rerun the job
                   </button>
                 </div>
               </div>
             </div>
 
-            <!-- Info from blockchain if it doesn't exists in database -->
+            <!-- Info from the blockchain if it doesn't exist in the database -->
             <div v-else-if="job.ipfsJob">
               <div class="box">
                 <div v-if="$route.params.id" class="mb-4">
                   <i class="fas fa-list mr-4 has-text-accent" />
-                  Smart Contract Job <a
+                  Smart contract job <a
                     target="_blank"
                     :href="$sol.explorer + '/address/' + $route.params.id"
                     class="blockchain-address-inline"
@@ -724,7 +724,7 @@ export default {
       // this.result = { 'nos-id': 'IJnYh-qz3uCPTQUk9bCiF', 'finished-at': 1645545696, results: { 'cmd-0': { exit: 0, out: 'audited 1581 packages in 9.248s\n\n124 packages are looking for funding\n  run `npm fund` for details\n\nfound 44 vulnerabilities (2 low, 29 moderate, 13 high)\n  run `npm audit fix` to fix them, or `npm audit` for details\n', err: '' }, 'cmd-1': { exit: 0, out: "yarn run v1.21.1\n$ set -ex; npm run pretty; eslint . --ext .js,.ts\n\n> @solana/web3.js@0.0.0-development pretty\n> prettier --check '{,{src,test}/**/}*.{j,t}s'\n\nChecking formatting...\nAll matched files use Prettier code style!\nDone in 12.01s.\n", err: '+ npm run pretty\n+ eslint . --ext .js,.ts\n' }, 'cmd-2': { exit: 0, out: "yarn run v1.21.1\n$ mocha -r ts-node/register './test/**/*.test.ts'\n\n\n  Account\n    ✓ generate new account\n    ✓ account from secret key\n\n  AgentManager\n    ✓ works (5005ms)\n\n  Cluster Util\n    ✓ invalid\n    ✓ devnet\n\n  Connection\n    ✓ should pass HTTP headers to RPC\n    ✓ should allow middleware to augment request\n    ✓ should attribute middleware fatals to the middleware\n    ✓ should not attribute fetch errors to the middleware\n    ✓ get account info - not found\n    ✓ get multiple accounts info\n    ✓ get program accounts (140ms)\n    ✓ get balance\n    ✓ get inflation\n    ✓ get inflation reward\n    ✓ get epoch info\n    ✓ get epoch schedule\n    ✓ get leader schedule\n    ✓ get slot\n    ✓ get slot leader\n    ✓ get slot leaders\n    ✓ get cluster nodes\n    ✓ confirm transaction - error\n    ✓ get transaction count\n    ✓ get total supply\n    ✓ get minimum balance for rent exemption\n    ✓ get confirmed signatures for address\n    ✓ get signatures for address\n    ✓ get parsed confirmed transactions\n    ✓ get transaction\n    ✓ get confirmed transaction\n    ✓ get parsed confirmed transaction coerces public keys of inner instructions\n    ✓ get block\n    ✓ get confirmed block\n    ✓ get blocks between two slots\n    ✓ get blocks from starting slot\n    ✓ get block signatures\n    ✓ get recent blockhash\n    ✓ get latest blockhash\n    ✓ get fee calculator\n    ✓ get fee for message\n    ✓ get block time\n    ✓ get minimum ledger slot\n    ✓ get first available block\n    ✓ get supply\n    ✓ get supply without accounts\n    ✓ get performance samples\n    ✓ get performance samples limit too high\n    ✓ get largest accounts (82ms)\n    ✓ stake activation should throw when called for not delegated account\n    ✓ stake activation should only accept state with valid string literals\n    ✓ getVersion\n    ✓ getGenesisHash\n    ✓ request airdrop\n    ✓ transaction failure (123ms)\n\n  EpochSchedule\n    ✓ slot methods work\n\n  Keypair\n    ✓ new keypair\n    ✓ generate new keypair\n    ✓ create keypair from secret key\n    ✓ creating keypair from invalid secret key throws error\n    ✓ creating keypair from invalid secret key succeeds if validation is skipped\n    ✓ generate keypair from random seed\n\n  Nonce\n    ✓ create and query nonce account (83ms)\n    ✓ create and query nonce account with seed (51ms)\n\n  PublicKey\n    ✓ invalid\n    ✓ equals\n    ✓ toBase58\n    ✓ toJSON\n    ✓ toBuffer\n    ✓ equals (II)\n    ✓ createWithSeed\n    ✓ createProgramAddress\n    ✓ findProgramAddress\n    ✓ isOnCurve\n    ✓ canBeSerializedWithBorsh\n    ✓ canBeDeserializedUncheckedWithBorsh\n\n  shortvec\n    ✓ decodeLength\n    ✓ encodeLength\n\n  StakeProgram\n    ✓ createAccountWithSeed\n    ✓ createAccount\n    ✓ delegate\n    ✓ authorize\n    ✓ authorize with custodian\n    ✓ authorizeWithSeed\n    ✓ authorizeWithSeed with custodian\n    ✓ split\n    ✓ splitWithSeed\n    ✓ merge\n    ✓ withdraw\n    ✓ withdraw with custodian\n    ✓ deactivate\n    ✓ StakeInstructions\n\n  SystemProgram\n    ✓ createAccount\n    ✓ transfer\n    ✓ transferWithSeed\n    ✓ allocate\n    ✓ allocateWithSeed\n    ✓ assign\n    ✓ assignWithSeed\n    ✓ createAccountWithSeed\n    ✓ createNonceAccount\n    ✓ createNonceAccount with seed\n    ✓ nonceAdvance\n    ✓ nonceWithdraw\n    ✓ nonceAuthorize\n    ✓ non-SystemInstruction error\n\n  Transaction Payer\n    ✓ transaction-payer (97ms)\n\n  Transaction\n    ✓ partialSign (130ms)\n    ✓ transfer signatures (57ms)\n    ✓ dedup signatures\n    ✓ use nonce (62ms)\n    ✓ parse wire format and serialize (61ms)\n    ✓ populate transaction\n    ✓ serialize unsigned transaction\n    ✓ deprecated - externally signed stake delegate\n    ✓ externally signed stake delegate\n    ✓ can serialize, deserialize, and reserialize with a partial signer (85ms)\n    compileMessage\n      ✓ accountKeys are ordered (40ms)\n      ✓ payer is first account meta (61ms)\n      ✓ validation\n      ✓ payer is writable (67ms)\n    dedupe\n      ✓ setSigners\n      ✓ sign\n\n  ValidatorInfo\n    ✓ from config account data\n\n  VoteProgram\n    ✓ createAccount\n    ✓ initialize\n    ✓ authorize\n    ✓ withdraw\n\n\n  128 passing (7s)\n\nDone in 14.26s.\n", err: 'Transaction references a signature that is unnecessary, only the fee payer and instruction signer accounts should sign a transaction. This behavior is deprecated and will throw an error in the next major version release.\nTransaction references a signature that is unnecessary, only the fee payer and instruction signer accounts should sign a transaction. This behavior is deprecated and will throw an error in the next major version release.\nTransaction references a signature that is unnecessary, only the fee payer and instruction signer accounts should sign a transaction. This behavior is deprecated and will throw an error in the next major version release.\nTransaction references a signature that is unnecessary, only the fee payer and instruction signer accounts should sign a transaction. This behavior is deprecated and will throw an error in the next major version release.\nTransaction references a signature that is unnecessary, only the fee payer and instruction signer accounts should sign a transaction. This behavior is deprecated and will throw an error in the next major version release.\nTransaction references a signature that is unnecessary, only the fee payer and instruction signer accounts should sign a transaction. This behavior is deprecated and will throw an error in the next major version release.\nTransaction references a signature that is unnecessary, only the fee payer and instruction signer accounts should sign a transaction. This behavior is deprecated and will throw an error in the next major version release.\nTransaction references a signature that is unnecessary, only the fee payer and instruction signer accounts should sign a transaction. This behavior is deprecated and will throw an error in the next major version release.\nNo instructions provided\nNo instructions provided\nNo instructions provided\nNo instructions provided\n' } } }
       const hash = this.solHashToIpfsHash(ipfsResult);
       this.$set(this.job, 'resultIpfsHash', hash);
-      // result is now being retrieved in backend
+      // the result is now being retrieved in the backend
       // this.result = await this.retrieveIpfsContent(hash)
     },
     async getLogs (node) {

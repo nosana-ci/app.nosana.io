@@ -5,10 +5,10 @@
         <img class="image mx-auto" src="~/assets/img/Nosana_Logo_horizontal_color_black.svg" style="width:200px">
 
         <h1 class="title has-text-centered mt-6">
-          Welcome to the<br>Nosana Network
+          Welcome to the<br>Nosana network
         </h1>
         <div v-if="!loading">
-          <p>Login with your Github account<br> or connect your Solana wallet to get started.</p>
+          <p>Login with your GitHub account<br> or connect your Solana wallet to get started.</p>
           <br>
           <div>
             <div>
@@ -19,7 +19,7 @@
               exact-active-class="is-active"
               @click="goToGithub"
             >
-              Login with Github
+              Login with GitHub
             </div>
           </div>
           <small>
@@ -29,12 +29,12 @@
               exact-active-class="is-active"
               @click.prevent="$sol.loginModal = true"
             >
-              Connect Solana Wallet
+              Connect your Solana wallet
             </a>
           </small>
         </div>
         <div v-else>
-          Authenticating to github..
+          Authenticating to GitHub...
         </div>
         <br>
         <small class="is-size-7">Looking for NOS staking?</small><br>

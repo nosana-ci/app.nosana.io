@@ -7,13 +7,13 @@
           <div class="columns mt-3 is-centered has-text-centered">
             <div class="column is-12">
               <h1 class="title is-3">
-                Get Started
+                Get started
               </h1>
               <p v-if="loggedIn" class="has-text-centered has-limited-width">
-                Install the Nosana Github App, which will have read-only permission to your selected repositories.
+                Install the Nosana GitHub app, which will have read-only permission to your selected repositories.
                 After you have installed the app, you can add your repositories and manage their pipelines.
-                You can specify on which triggers (e.g. commits on the main branch) pipelines are automatically being
-                posted to the blockchain
+                You can specify on which triggers (e.g. commits on the main branch)
+                the pipelines will be automatically posted to the blockchain.
               </p>
               <p v-else class="has-text-centered has-limited-width">
                 To get started with running pipelines on Nosana, create an account or login.
@@ -27,7 +27,7 @@
             >
               <div class="has-text-centered my-2">
                 <h2 class="subtitle has-text-weight-bold mt-4">
-                  Add your first Repository
+                  Add your first repository
                 </h2>
                 <img class="my-4" src="~assets/img/icons/repository_grey.svg" style="width: 70px;"><br>
                 <nuxt-link to="/repositories/new" class="button is-accent my-3 px-6">
@@ -51,7 +51,7 @@
         </div>
         <div v-if="!showTutorial && !loading" class="mb-6 mt-5">
           <h2 class="subtitle has-text-weight-semibold">
-            Your Repositories
+            Your repositories
           </h2>
 
           <div class="has-background-light">
@@ -62,7 +62,7 @@
                 </div>
                 <div class="buttons">
                   <nuxt-link to="/secrets" class="button is-accent is-outlined mr-3 is-pulled-right">
-                    Global Secrets
+                    Global secrets
                   </nuxt-link>
                   <nuxt-link to="/repositories/new" class="button is-accent is-pulled-right">
                     + Add more repositories

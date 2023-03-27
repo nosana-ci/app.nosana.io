@@ -7,7 +7,7 @@
       <div>
         <div class="is-flex is-align-items-center">
           <h1 class="title is-3 mt-4">
-            Add new global secret
+            Add a new global secret
           </h1>
         </div>
       </div>
@@ -16,7 +16,7 @@
           class="button is-accent is-fullwidth mt-5 has-text-weight-semibold"
           @click.stop.prevent="login"
         >
-          Login to secret manager
+          Login to the secret manager
         </button>
       </div>
       <div v-else class="mt-2">
@@ -46,7 +46,7 @@
           </div>
           <div class="control">
             <button type="submit" class="button is-accent">
-              Add secret
+              Add a secret
             </button>
           </div>
         </form>
@@ -87,7 +87,7 @@ export default {
         });
         this.$modal.show({
           color: 'success',
-          text: 'Successfully saved secret',
+          text: 'The secret has been saved successfully',
           title: 'Saved!',
           persistent: true,
           cancel: false,
@@ -107,7 +107,7 @@ export default {
     async checkToken () {
       const token = this.$store.state.secretsToken.token;
       if (!token) {
-        console.log('Theres no token, need to sign');
+        console.log('There is no token. You need to sign.');
         await this.login();
       } else {
         const currentTime = Date.now() / 1000;
@@ -115,7 +115,7 @@ export default {
         const payload = JSON.parse(atob(tokenParts[1]));
 
         if (payload.exp < currentTime || !this.$store.state.secretsToken.token) {
-          console.log('Token expired, need to sign');
+          console.log('The token is expired. You need to sign.');
           await this.login();
         } else {
           console.log('Token still valid');

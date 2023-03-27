@@ -36,14 +36,14 @@
         </nuxt-link>
       </div>
       <p v-if="!loggedInSecretManager" class="mt-3">
-        Login to the Secret Manager to manage your repository secrets.
+        Login to the secret manager to manage your repository secrets.
       </p>
       <div v-if="!loggedInSecretManager">
         <button
           class="button is-accent is-widest mt-5 has-text-weight-semibold"
           @click.stop.prevent="login"
         >
-          Login to Secret Manager
+          Login to secret manager
         </button>
       </div>
       <div v-else-if="repository" class="mt-5">
@@ -79,7 +79,7 @@
         </table>
       </div>
       <div v-else>
-        Loading..
+        Loading...
       </div>
     </div>
     <!-- Edit popup -->
@@ -153,7 +153,7 @@
           </button>
         </form>
         <div v-else>
-          Could not find secret
+          Could not find the secret
         </div>
       </div>
       <button
@@ -226,7 +226,7 @@ export default {
         });
         this.$modal.show({
           color: 'success',
-          text: 'Successfully removed secret',
+          text: 'Secret successfully removed',
           title: 'Removed!',
           persistent: true,
           cancel: false,
@@ -267,7 +267,7 @@ export default {
         this.closeModal();
         this.$modal.show({
           color: 'success',
-          text: 'Successfully saved secret',
+          text: 'Successfully saved the secret',
           title: 'Saved!',
           persistent: true,
           cancel: false,

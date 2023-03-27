@@ -70,7 +70,7 @@
         </tr>
         <tr v-if="!repositories || !repositories.length" class="has-text-centered has-text-weight-bold">
           <td v-if="!repositories" colspan="4">
-            Loading repositories..
+            Loading repositories...
           </td>
           <td v-else colspan="4">
             No repositories

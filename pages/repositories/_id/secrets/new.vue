@@ -7,7 +7,7 @@
       <div v-if="repository" class="mt-2">
         <div class="is-flex is-align-items-center">
           <h2 class="title">
-            Add new secret for {{ repository.repository }}
+            Add a new secret for {{ repository.repository }}
           </h2>
         </div>
         <p>
@@ -23,7 +23,7 @@
           class="button is-accent is-fullwidth mt-5 has-text-weight-semibold"
           @click.stop.prevent="login"
         >
-          Login to secret manager
+          Login to the secret manager
         </button>
       </div>
       <div v-else class="mt-2">
@@ -53,12 +53,12 @@
           </div>
           <div class="control">
             <button type="submit" class="button is-accent">
-              Add Secret
+              Add a secret
             </button>
           </div>
         </form>
         <div v-else>
-          Loading..
+          Loading...
         </div>
       </div>
     </div>
@@ -169,10 +169,10 @@ export default {
         const payload = JSON.parse(atob(tokenParts[1]));
 
         if (payload.exp < currentTime || !this.$store.state.secretsToken.token) {
-          console.log('Token expired, need to sign');
+          console.log('Token expired, you need to sign');
           await this.login();
         } else {
-          console.log('Token still valid');
+          console.log('Token is still valid');
         }
       }
 
