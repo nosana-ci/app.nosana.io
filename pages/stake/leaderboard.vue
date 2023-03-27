@@ -133,7 +133,7 @@
             class="has-text-centered has-text-weight-bold"
           >
             <td v-if="!leaderboard" colspan="5">
-              Loading users..
+              Loading users...
             </td>
             <td v-else colspan="5">
               No users

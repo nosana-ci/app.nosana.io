@@ -17,7 +17,7 @@
           <div class="field">
             <label class="label mb-0">Job Price</label>
             <p class="is-size-7 mb-2">
-              Price for a job in NOS
+              Job price in NOS
             </p>
             <div class="control is-expanded">
               <input
@@ -47,7 +47,7 @@
           <div class="field">
             <label class="label mb-0">Job Expiration</label>
             <p class="is-size-7 mb-2">
-              Job Expiration in days
+              Job expiration in days
             </p>
             <div class="control is-expanded">
               <input
@@ -62,7 +62,7 @@
           <div class="field">
             <label class="label mb-0">Stake Minimum</label>
             <p class="is-size-7 mb-2">
-              The minimum XNOS a node needs to stake
+              The minimum xNOS a node needs to stake
             </p>
             <div class="control is-expanded">
               <input
@@ -70,7 +70,7 @@
                 required
                 class="input is-primary"
                 type="number"
-                placeholder="Minimum stake in XNOS"
+                placeholder="Minimum stake in xNOS"
                 min="0"
               >
             </div>
@@ -78,7 +78,7 @@
           <div class="field">
             <label class="label mb-0">Node Access Key</label>
             <p class="is-size-7 mb-2">
-              The NFT collection address of an NFT that the node holds, in order to access this market.
+              The NFT collection address of an NFT that the node holds in order to access this market.
             </p>
             <div class="control is-expanded">
               <input
@@ -86,7 +86,7 @@
                 required
                 class="input is-primary"
                 type="text"
-                placeholder="Address of Access Key"
+                placeholder="Address of access key"
               >
             </div>
           </div>
@@ -125,7 +125,7 @@
                 class="button is-medium is-accent is-fullwidth mt-5 is-outlined"
                 @click.prevent.stop="$sol.loginModal = true"
               >
-                <strong>Connect Wallet</strong>
+                <strong>Connect wallet</strong>
               </button>
               <button
                 v-else
@@ -134,7 +134,7 @@
                 class="button is-medium is-accent is-fullwidth mt-5"
                 type="submit"
               >
-                <strong>Update Market</strong>
+                <strong>Update market</strong>
               </button>
             </div>
           </div>

@@ -5,7 +5,7 @@
       <div class="modal-background" @click="extendPopup = false, amount = 0, extraUnstakeDays = 0" />
       <div v-if="stakeData && stakeData.duration" class="modal-content has-background-white has-radius-medium p-5">
         <h3 class="has-text-centered subtitle is-4 has-text-weight-semibold">
-          Extend unstake period
+          Extend the unstake period
         </h3>
         <form class="is-fullwidth" @submit.prevent="stake">
           <div
@@ -14,7 +14,7 @@
           >
             <div class="column is-8 is-full-mobile">
               <div class="is-flex is-align-items-center is-justify-content-center">
-                <span>Extend unstake period with</span>
+                <span>Extend the unstake period with</span>
                 <div class="is-flex is-align-items-center is-flex-direction-columns">
                   <button
                     class="px-2 button is-accent is-outlined has-text-weight-semibold is-uppercase is-size-7"
@@ -83,7 +83,7 @@
             class="button is-accent is-fullwidth mt-5 has-text-weight-semibold"
             @click.stop.prevent="$sol.loginModal = true"
           >
-            Connect Wallet
+            Connect wallet
           </button>
           <button
             v-else
@@ -206,7 +206,7 @@
                 class="button is-accent is-fullwidth mt-5 has-text-weight-semibold"
                 @click.stop.prevent="$sol.loginModal = true"
               >
-                Connect Wallet
+                Connect wallet
               </button>
               <button
                 v-else
@@ -375,7 +375,7 @@
                   class="button is-accent is-outlined has-text-weight-semibold"
                   @click.stop.prevent="$sol.loginModal = true; $sol.skipLogin = true"
                 >
-                  Connect Wallet
+                  Connect wallet
                 </button>
                 <button v-else type="submit" class="button is-accent" :class="{'is-loading': loading}">
                   Stake NOS
@@ -395,7 +395,7 @@
             </form>
             <div v-else class="your-stake">
               <h3 class="has-text-centered subtitle is-4 has-text-weight-semibold">
-                Your Stake
+                Your stake
               </h3>
               <div class="scores">
                 <div
@@ -535,7 +535,7 @@
                 class="button is-accent is-outlined has-text-weight-semibold"
                 @click.stop.prevent="$sol.loginModal = true"
               >
-                Connect Wallet
+                Connect wallet
               </button>
               <button
                 v-else-if="userHasStakedBefore"
@@ -622,7 +622,7 @@
 
           <div v-if="!countdownFinished" class="mt-5 has-text-centered">
             <div class="box has-background-light">
-              <p>Withdrawable Tokens</p>
+              <p>Withdrawable tokens</p>
               <h2 class="title is-3 has-text-success mb-0">
                 <ICountUp
                   class="is-family-monospace"
@@ -644,7 +644,7 @@
               class="button is-accent is-fullwidth has-text-weight-semibold"
               @click.stop.prevent="$sol.loginModal = true"
             >
-              Connect Wallet
+              Connect wallet
             </button>
             <button
               v-else-if="userHasStakedBefore"
@@ -662,7 +662,7 @@
               :class="{'is-loading': loading}"
               @click="withdraw"
             >
-              Withdraw Released Tokens
+              Withdraw released tokens
             </button>
           </div>
         </div>
@@ -725,10 +725,10 @@ export default {
         unstakeTime = this.unstakeDays * SECONDS_PER_DAY;
       }
       if (unstakeTime < (14 * SECONDS_PER_DAY)) {
-        errors.push('Minimum unstake period is 14 days');
+        errors.push('The minimum unstake period is 14 days');
       }
       if (unstakeTime > (365 * SECONDS_PER_DAY)) {
-        errors.push('Maximum unstake period is 365 days');
+        errors.push('The maximum unstake period is 365 days');
       }
       return errors;
     },
@@ -866,7 +866,7 @@ export default {
         await this.getBalance();
         this.$modal.show({
           color: 'success',
-          text: 'Successfully increased stake',
+          text: 'Your stake has been increased successfully.',
           title: 'Stake increased'
         });
         this.topupPopup = false;
@@ -925,8 +925,8 @@ export default {
         await this.getBalance();
         this.$modal.show({
           color: 'success',
-          text: 'Successfully staked NOS',
-          title: 'Staked'
+          text: 'Nos has been staked successfully.',
+          title: 'Staked NOS'
         });
       } catch (error) {
         this.$modal.show({
@@ -962,8 +962,8 @@ export default {
         await this.getBalance();
         this.$modal.show({
           color: 'success',
-          text: 'Successfully extended stake',
-          title: 'Extended'
+          text: 'Your stake has been extended successfully.',
+          title: 'Extended Stake'
         });
         this.extendPopup = false;
       } catch (error) {
@@ -1019,8 +1019,8 @@ export default {
         await this.getBalance();
         this.$modal.show({
           color: 'success',
-          text: 'Successfully unstaked NOS',
-          title: 'Unstaked'
+          text: 'NOS has been unstaked successfully.',
+          title: 'Unstaked NOS'
         });
       } catch (error) {
         this.$modal.show({
@@ -1053,8 +1053,8 @@ export default {
         await this.getBalance();
         this.$modal.show({
           color: 'success',
-          text: 'Successfully restaked NOS',
-          title: 'Restaked!'
+          text: 'NOS has been restaked successfully.',
+          title: 'Restaked NOS!'
         });
       } catch (error) {
         this.$modal.show({
@@ -1090,8 +1090,8 @@ export default {
         console.log(response);
         this.$modal.show({
           color: 'success',
-          text: 'Successfully claimed back NOS',
-          title: 'Withdrawed!'
+          text: 'Your NOS has been reclaimed successfully.',
+          title: 'Withdrawed NOS!'
         });
         setTimeout(async () => {
           await this.refreshStake();
@@ -1121,8 +1121,8 @@ export default {
         this.amount = null;
         this.$modal.show({
           color: 'success',
-          text: 'Successfully withdrawn NOS',
-          title: 'Withdrawn!'
+          text: 'Your NOS has been withdrawn successfully.',
+          title: 'Withdrawn NOS!'
         });
       } catch (error) {
         this.$modal.show({

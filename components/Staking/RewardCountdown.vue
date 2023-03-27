@@ -121,7 +121,7 @@
                       class="button is-accent is-fullwidth mt-5 has-text-weight-semibold"
                       @click.stop.prevent="$sol.loginModal = true"
                     >
-                      Connect Wallet
+                      Connect wallet
                     </button>
                     <div v-else>
                       <button
@@ -292,7 +292,7 @@ export default {
         this.balance = await this.$stake.getBalance(this.$stake.accounts.authority);
         this.$modal.show({
           color: 'success',
-          text: 'Successfully claimed & restaked rewards',
+          text: 'You have successfully claimed & restaked your rewards',
           title: 'Claimed & restaked'
         });
       } catch (error) {

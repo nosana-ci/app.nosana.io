@@ -30,7 +30,7 @@
         <div v-if="activeTab === 'general'" class="mt-5">
           <market-selector v-if="repository" :repository="repository" class="pb-4" @select-market="selectMarket" />
           <h4 class="title is-5 settings-title mb-4 mt-5">
-            Github Check-Runs
+            GitHub check-runs
           </h4>
           <div class="field pb-4">
             <div class="control is-flex">
@@ -39,17 +39,17 @@
               </label>
               <div>
                 <p class="has-text-weight-semibold">
-                  Enable Github Check-Runs
+                  Enable GitHub check-runs
                 </p>
                 <p class="is-size-7">
-                  Creates a Github Check-Run for every job in this repository.
+                  Creates a GitHub check-run for every job in this repository.
                 </p>
               </div>
             </div>
           </div>
 
           <h4 class="title is-5 settings-title mt-5 mb-4">
-            Repository Status <span class="is-size-7">(<span
+            Repository status <span class="is-size-7">(<span
               class="has-text-weight-semibold"
               :class="{'has-text-danger' : repository.status === 'DEACTIVATED',
                        'has-text-accent' : repository.status !== 'DEACTIVATED'}"
@@ -89,7 +89,7 @@
         </div>
       </form>
       <div v-else>
-        Loading..
+        Loading...
       </div>
     </div>
   </section>
@@ -196,7 +196,7 @@ export default {
             await this.$axios.$post(`/repositories/${this.id}`, { status: 'DEACTIVATED' });
             this.$modal.show({
               color: 'success',
-              title: 'Deactivated repository'
+              title: 'Repository is deactivated'
             });
             this.$router.push(`/repositories/${this.id}`);
           }
@@ -214,7 +214,7 @@ export default {
       this.$modal.show({
         color: 'success',
         title: 'Saved!',
-        text: 'Successfully activated repository.',
+        text: 'The repository has been successfully activated.',
         image: 'icons/saved.svg',
         onConfirm: () => {
           this.$router.push(`/repositories/${this.id}`);

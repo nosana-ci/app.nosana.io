@@ -7,9 +7,9 @@
       <div class="is-flex">
         <div>
           <h1 class="title is-3 mt-4 mb-2">
-            Your Global Secrets
+            Your global secrets
           </h1>
-          <p>Manage here your global secrets.</p>
+          <p>Manage your global secrets here.</p>
         </div>
         <nuxt-link
           v-if="loggedInSecretManager"
@@ -25,7 +25,7 @@
           class="button is-accent is-widest mt-5 has-text-weight-semibold"
           @click.stop.prevent="login"
         >
-          Login to Secret Manager
+          Login to the secret manager
         </button>
       </div>
       <div v-else class="mt-5">
@@ -74,7 +74,7 @@
       />
       <div class="modal-content has-background-white has-radius-medium p-5">
         <h3 class="has-text-centered subtitle is-4 has-text-weight-semibold">
-          Edit secret
+          Edit the secret
         </h3>
         <form v-if="selectedSecret" @submit.prevent="editSecret">
           <div
@@ -137,7 +137,7 @@
           </button>
         </form>
         <div v-else>
-          Could not find secret
+          Could not find the secret
         </div>
       </div>
       <button
@@ -210,7 +210,7 @@ export default {
         });
         this.$modal.show({
           color: 'success',
-          text: 'Successfully removed secret',
+          text: 'The secret has been removed successfully.',
           title: 'Removed!',
           persistent: true,
           cancel: false,

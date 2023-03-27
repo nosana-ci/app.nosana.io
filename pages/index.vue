@@ -3,7 +3,7 @@
     <div>
       <div v-if="!loggedIn">
         <h1 class="title has-text-centered">
-          Loading..
+          Loading...
         </h1>
         <img class="image mx-auto" src="https://nosana.io/img/Nosana_Logomark_black.svg" alt="" srcset="" style="max-height: 200px;">
       </div>

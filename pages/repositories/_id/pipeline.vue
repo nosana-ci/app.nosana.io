@@ -27,7 +27,7 @@
           </div>
         </div>
         <div v-if="branches && !pipelineEditor && !loading">
-          Select the branch in which you want to edit the pipeline.<br>
+          Choose the branch where you want to edit the pipeline.<br>
           <div class="select mb-1 mt-2">
             <select
               v-model="editBranch"
@@ -78,7 +78,7 @@
               </h3>
               <div v-if="branches && pipelineEditor">
                 <p class="is-size-7">
-                  Select the branch in which you want to edit the pipeline.
+                  Choose the branch where you want to edit the pipeline.
                 </p>
                 <div class="select mb-2 mt-2" style="width: 100%;">
                   <select
@@ -111,10 +111,10 @@
                 :disabled="!pipeline"
                 :class="{'is-loading': saving}"
               >
-                Commit changes
+                Commit the changes
               </button>
               <nuxt-link :to="`/repositories/${id}`" class="button is-outlined is-fullwidth">
-                Cancel changes
+                Cancel the changes
               </nuxt-link>
               <div
                 v-if="validation.valid === false
@@ -130,18 +130,18 @@
           </div>
         </form>
         <div v-else-if="(loading || !repository)">
-          Loading..
+          Loading...
         </div>
         <div v-else-if="(repository && !pipeline && !pipelineEditor && canEdit)">
           <h2 class="title is-4 mb-1 mt-5">
-            Setup your pipeline
+            Set up your pipeline
           </h2>
           <p>
             Select a template to get started or start with
             <a
               href="#"
               @click.prevent="(pipelineEditor = true, pipeline = templates.find(t => t.name === 'Blank').template)"
-            >a blank template</a>
+            >a blank template.</a>
           </p>
           <div class="columns is-multiline mt-4">
             <div
@@ -163,7 +163,7 @@
                   class="button is-accent is-small mt-2"
                   @click="(pipeline = template.template, useTemplate = template.id)"
                 >
-                  Use template
+                  Use this template
                 </button>
               </div>
             </div>
