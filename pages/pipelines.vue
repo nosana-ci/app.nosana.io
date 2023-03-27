@@ -12,7 +12,7 @@
               <p v-if="loggedIn" class="has-text-centered has-limited-width">
                 Install the Nosana GitHub app, which will have read-only permission to your selected repositories.
                 After you have installed the app, you can add your repositories and manage their pipelines.
-                You can specify on which triggers (e.g. commits on the main branch) 
+                You can specify on which triggers (e.g. commits on the main branch)
                 the pipelines will be automatically posted to the blockchain.
               </p>
               <p v-else class="has-text-centered has-limited-width">
