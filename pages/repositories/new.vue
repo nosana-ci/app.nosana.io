@@ -168,7 +168,7 @@ export default {
     notPublic () {
       this.$modal.show({
         color: 'danger',
-        text: 'This repo is not public. You'll need to make this repository public first',
+        text: 'This repo is not public. Make this repository public first',
         title: 'Cannot select the repo'
       });
     },

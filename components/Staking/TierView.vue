@@ -144,7 +144,7 @@
           </thead>
           <tbody>
             <tr
-              v-for="(user, index) in the leaderboard"
+              v-for="(user, index) in leaderboard"
               :key="user.address"
               :class="{'user-ranking': userInfo && userInfo.rank === (index + 1)}"
             >
