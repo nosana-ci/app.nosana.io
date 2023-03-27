@@ -232,7 +232,7 @@
                                   <span class="has-text-weight-bold">{{ step.error }}</span>
                                 </div>
                                 <div v-if="step.status" class="row-count has-text-danger">
-                                  <span class="has-text-weight-bold">Exicuted with code {{ step.status }}</span>
+                                  <span class="has-text-weight-bold">Exited with code {{ step.status }}</span>
                                 </div>
                               </div>
                             </div>
