@@ -302,10 +302,6 @@
                     <b>JOB {{ job.status }}</b>
                   </span>
                 </div>
-                <label v-if="job.status === 'RUNNING'" class="checkbox ml-1 pt-5 is-flex">
-                  <input v-model="disableAutoScroll" type="checkbox" class="mr-2">
-                  Disable auto scroll
-                </label>
               </div>
             </div>
             <div v-else-if="tab === 'payload'">
@@ -614,17 +610,18 @@ export default {
   },
   methods: {
     handleScroll (el) {
-      const terminal = document.getElementById('terminal');
-      terminal.addEventListener('scroll', () => {
-        // check if terminal is at bottom
-        if (terminal.scrollTop === terminal.scrollHeight - terminal.clientHeight) {
-          this.disableAutoScroll = false;
-        } else {
-          this.disableAutoScroll = true;
-        }
-      },
-      false
-      );
+      const terminal = el.target;
+      console.log(terminal.scrollTop, terminal.scrollHeight - terminal.clientHeight);
+      // terminal.addEventListener('scroll', () => {
+      // check if terminal is at bottom
+      if (terminal.scrollTop + 5 >= terminal.scrollHeight - terminal.clientHeight) {
+        this.disableAutoScroll = false;
+      } else {
+        this.disableAutoScroll = true;
+      }
+      // },
+      // false
+      // );
     },
     toggleResult (i) {
       if (i in this.hideResults) {
@@ -765,6 +762,16 @@ export default {
               this.currentStep = null;
               clearInterval(this.logInterval);
               this.logInterval = null;
+            }
+            if (this.autoScroll && !this.disableAutoScroll) {
+              this.$nextTick(() => {
+                if (document) {
+                  const terminal = document.getElementById('terminal');
+                  if (terminal) {
+                    terminal.scrollTop = terminal.scrollHeight;
+                  }
+                }
+              });
             }
           }
         } catch (e) {
