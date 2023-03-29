@@ -611,17 +611,11 @@ export default {
   methods: {
     handleScroll (el) {
       const terminal = el.target;
-      console.log(terminal.scrollTop, terminal.scrollHeight - terminal.clientHeight);
-      // terminal.addEventListener('scroll', () => {
-      // check if terminal is at bottom
       if (terminal.scrollTop + 5 >= terminal.scrollHeight - terminal.clientHeight) {
         this.disableAutoScroll = false;
       } else {
         this.disableAutoScroll = true;
       }
-      // },
-      // false
-      // );
     },
     toggleResult (i) {
       if (i in this.hideResults) {
