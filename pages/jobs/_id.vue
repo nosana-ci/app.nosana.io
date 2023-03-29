@@ -516,8 +516,8 @@
 <script>
 import bs58 from 'bs58';
 import { parse, stringify } from 'yaml';
-const Convert = require('ansi-to-html');
-const convert = new Convert();
+import AnsiUp from 'ansi_up';
+const ansi = new AnsiUp();
 const nodes = require('../../utils/nodes.json');
 
 export default {
@@ -728,7 +728,7 @@ export default {
           }
           this.logs[this.currentStep] = await response.text();
           const lastCharacter = this.logs[this.currentStep].slice(-1);
-          this.logs[this.currentStep] = convert.toHtml(this.logs[this.currentStep].replace(String.fromCharCode(26), ''));
+          this.logs[this.currentStep] = ansi.ansi_to_html(this.logs[this.currentStep].replace(String.fromCharCode(26), ''));
           if (this.autoScroll && !this.disableAutoScroll) {
             this.$nextTick(() => {
               if (document) {
@@ -789,7 +789,7 @@ export default {
                     const step = results[1][i];
                     if (step.log && Array.isArray(step.log)) {
                       for (let j = 0; j < step.log.length; j++) {
-                        step.log[j][1] = convert.toHtml(step.log[j][1]);
+                        step.log[j][1] = ansi.ansi_to_html(step.log[j][1]);
                       }
                     }
                   }
