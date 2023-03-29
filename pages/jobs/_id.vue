@@ -204,7 +204,7 @@
                               :key="index"
                             >
                               <div
-                                v-if="step.cmd"
+                                v-if="step.cmd && false"
                                 class="row-count"
                                 :class="{'has-text-accent': !step.status,
                                          'has-text-danger': step.status}"
