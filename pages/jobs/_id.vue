@@ -723,11 +723,10 @@ export default {
         try {
           const response =
           await fetch(`${node}/nosana/logs/${this.job.address}/${this.currentStep}`);
-          if (response.status !== 200) {
+          if (response.status !== 200 && response.status !== 206) {
             throw new Error('Log error status ' + response.status);
           }
           this.logs[this.currentStep] = await response.text();
-          const lastCharacter = this.logs[this.currentStep].slice(-1);
           this.logs[this.currentStep] = ansi.ansi_to_html(this.logs[this.currentStep].replace(String.fromCharCode(26), ''));
           if (this.autoScroll && !this.disableAutoScroll) {
             this.$nextTick(() => {
@@ -739,8 +738,8 @@ export default {
               }
             });
           }
-          // Check EOF character
-          if (lastCharacter.charCodeAt(0) === 26) {
+          // When status code = 200 the log is finished
+          if (response.status === 200) {
             if (this.job.job_content.pipeline.jobs) {
               const i = this.job.job_content.pipeline.jobs.findIndex(item => item.name === this.currentStep ||
               item.id === this.currentStep) + 1;
