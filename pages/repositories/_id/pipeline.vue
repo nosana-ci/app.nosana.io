@@ -311,10 +311,7 @@ export default {
             color: 'success',
             title: 'Saved!',
             text: 'Successfully updated repository.',
-            image: 'icons/saved.svg',
-            onConfirm: () => {
-              this.$router.push(`/repositories/${this.id}`);
-            }
+            image: 'icons/saved.svg'
           });
         }, 2000);
       } catch (error) {
