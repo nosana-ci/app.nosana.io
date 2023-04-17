@@ -193,16 +193,26 @@
                               <span>- Executed step '{{ jobName }}'</span>
                             </div>
                             <div
-                              v-if="typeof job.cache_result.results[jobName][1] === 'string'"
+                              v-if="typeof job.cache_result.results[jobName][1] === 'string'
+                                && !job.cache_result.results[jobName][2]"
                               class="has-text-danger row-count"
                             >
                               <span>{{ job.cache_result.results[jobName][1] }}</span>
                             </div>
                             <div
-                              v-for="(step, index) in job.cache_result.results[jobName][1]"
+                              v-for="(step, index)
+                                in ((job.cache_result.results[jobName][2]
+                                  && Array.isArray(job.cache_result.results[jobName][2]))
+                                  ? job.cache_result.results[jobName][2][1] : job.cache_result.results[jobName][1])"
                               v-else
                               :key="index"
                             >
+                              <span
+                                v-if="typeof job.cache_result.results[jobName][1] === 'string'
+                                  && job.cache_result.results[jobName][2] && index === 0"
+                                class="has-text-danger row-count"
+                              >
+                                {{ job.cache_result.results[jobName][1] }}</span>
                               <div
                                 v-if="step.cmd && false"
                                 class="row-count"
@@ -218,7 +228,7 @@
                               <div v-if="step.log && Array.isArray(step.log)">
                                 <div
                                   v-for="(log, ik) in step.log"
-                                  v-show=" log[1] !== ''"
+                                  v-show="log[1] !== '' && log[1].replace(/\s/g, '').length"
                                   :key="ik"
                                   class="row-count"
                                   :class="{'has-text-danger':
@@ -236,7 +246,6 @@
                                 </div>
                               </div>
                             </div>
-                            <div class="row-count" />
                           </template>
                           <template v-else-if="!job.cache_result && (logs[jobName] || currentStep === jobName)">
                             <div class="row-count has-text-link">
