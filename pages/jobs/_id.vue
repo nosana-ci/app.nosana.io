@@ -228,7 +228,6 @@
                               <div v-if="step.log && Array.isArray(step.log)">
                                 <div
                                   v-for="(log, ik) in step.log"
-                                  v-show="log[1] !== '' && log[1].replace(/\s/g, '').length"
                                   :key="ik"
                                   class="row-count"
                                   :class="{'has-text-danger':
