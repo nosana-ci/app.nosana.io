@@ -228,7 +228,6 @@
                               <div v-if="step.log && Array.isArray(step.log)">
                                 <div
                                   v-for="(log, ik) in step.log"
-                                  v-show="log[1] !== '' && log[1].replace(/\s/g, '').length"
                                   :key="ik"
                                   class="row-count"
                                   :class="{'has-text-danger':
@@ -796,9 +795,10 @@ export default {
                   for (let i = 0; i < results[1].length; i++) {
                     const step = results[1][i];
                     if (step.log && Array.isArray(step.log)) {
-                      for (let j = 0; j < step.log.length; j++) {
-                        step.log[j][1] = ansi.ansi_to_html(step.log[j][1]);
-                      }
+                      step.log = step.log
+                        .reduce((str, log) => str.concat(log[1]), '')
+                        .split('\n')
+                        .map(l => [1, ansi.ansi_to_html(l)]);
                     }
                   }
                 }
