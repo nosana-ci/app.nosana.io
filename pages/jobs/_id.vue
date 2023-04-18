@@ -193,18 +193,28 @@
                               <span>- Executed step '{{ jobName }}'</span>
                             </div>
                             <div
-                              v-if="typeof job.cache_result.results[jobName][1] === 'string'"
+                              v-if="typeof job.cache_result.results[jobName][1] === 'string'
+                                && !job.cache_result.results[jobName][2]"
                               class="has-text-danger row-count"
                             >
                               <span>{{ job.cache_result.results[jobName][1] }}</span>
                             </div>
                             <div
-                              v-for="(step, index) in job.cache_result.results[jobName][1]"
+                              v-for="(step, index)
+                                in ((job.cache_result.results[jobName][2]
+                                  && Array.isArray(job.cache_result.results[jobName][2]))
+                                  ? job.cache_result.results[jobName][2][1] : job.cache_result.results[jobName][1])"
                               v-else
                               :key="index"
                             >
+                              <span
+                                v-if="typeof job.cache_result.results[jobName][1] === 'string'
+                                  && job.cache_result.results[jobName][2] && index === 0"
+                                class="has-text-danger row-count"
+                              >
+                                {{ job.cache_result.results[jobName][1] }}</span>
                               <div
-                                v-if="step.cmd"
+                                v-if="step.cmd && false"
                                 class="row-count"
                                 :class="{'has-text-accent': !step.status,
                                          'has-text-danger': step.status}"
@@ -218,7 +228,7 @@
                               <div v-if="step.log && Array.isArray(step.log)">
                                 <div
                                   v-for="(log, ik) in step.log"
-                                  v-show=" log[1] !== ''"
+                                  v-show="log[1] !== '' && log[1].replace(/\s/g, '').length"
                                   :key="ik"
                                   class="row-count"
                                   :class="{'has-text-danger':
@@ -236,7 +246,6 @@
                                 </div>
                               </div>
                             </div>
-                            <div class="row-count" />
                           </template>
                           <template v-else-if="!job.cache_result && (logs[jobName] || currentStep === jobName)">
                             <div class="row-count has-text-link">
@@ -302,10 +311,6 @@
                     <b>JOB {{ job.status }}</b>
                   </span>
                 </div>
-                <label v-if="job.status === 'RUNNING'" class="checkbox ml-1 pt-5 is-flex">
-                  <input v-model="disableAutoScroll" type="checkbox" class="mr-2">
-                  Disable auto scroll
-                </label>
               </div>
             </div>
             <div v-else-if="tab === 'payload'">
@@ -520,8 +525,8 @@
 <script>
 import bs58 from 'bs58';
 import { parse, stringify } from 'yaml';
-const Convert = require('ansi-to-html');
-const convert = new Convert();
+import AnsiUp from 'ansi_up';
+const ansi = new AnsiUp();
 const nodes = require('../../utils/nodes.json');
 
 export default {
@@ -614,17 +619,12 @@ export default {
   },
   methods: {
     handleScroll (el) {
-      const terminal = document.getElementById('terminal');
-      terminal.addEventListener('scroll', () => {
-        // check if terminal is at bottom
-        if (terminal.scrollTop === terminal.scrollHeight - terminal.clientHeight) {
-          this.disableAutoScroll = false;
-        } else {
-          this.disableAutoScroll = true;
-        }
-      },
-      false
-      );
+      const terminal = el.target;
+      if (terminal.scrollTop + 5 >= terminal.scrollHeight - terminal.clientHeight) {
+        this.disableAutoScroll = false;
+      } else {
+        this.disableAutoScroll = true;
+      }
     },
     toggleResult (i) {
       if (i in this.hideResults) {
@@ -732,12 +732,11 @@ export default {
         try {
           const response =
           await fetch(`${node}/nosana/logs/${this.job.address}/${this.currentStep}`);
-          if (response.status !== 200) {
+          if (response.status !== 200 && response.status !== 206) {
             throw new Error('Log error status ' + response.status);
           }
           this.logs[this.currentStep] = await response.text();
-          const lastCharacter = this.logs[this.currentStep].slice(-1);
-          this.logs[this.currentStep] = convert.toHtml(this.logs[this.currentStep].replace(String.fromCharCode(26), ''));
+          this.logs[this.currentStep] = ansi.ansi_to_html(this.logs[this.currentStep].replace(String.fromCharCode(26), ''));
           if (this.autoScroll && !this.disableAutoScroll) {
             this.$nextTick(() => {
               if (document) {
@@ -748,8 +747,8 @@ export default {
               }
             });
           }
-          // Check EOF character
-          if (lastCharacter.charCodeAt(0) === 26) {
+          // When status code = 200 the log is finished
+          if (response.status === 200) {
             if (this.job.job_content.pipeline.jobs) {
               const i = this.job.job_content.pipeline.jobs.findIndex(item => item.name === this.currentStep ||
               item.id === this.currentStep) + 1;
@@ -765,6 +764,16 @@ export default {
               this.currentStep = null;
               clearInterval(this.logInterval);
               this.logInterval = null;
+            }
+            if (this.autoScroll && !this.disableAutoScroll) {
+              this.$nextTick(() => {
+                if (document) {
+                  const terminal = document.getElementById('terminal');
+                  if (terminal) {
+                    terminal.scrollTop = terminal.scrollHeight;
+                  }
+                }
+              });
             }
           }
         } catch (e) {
@@ -788,7 +797,7 @@ export default {
                     const step = results[1][i];
                     if (step.log && Array.isArray(step.log)) {
                       for (let j = 0; j < step.log.length; j++) {
-                        step.log[j][1] = convert.toHtml(step.log[j][1]);
+                        step.log[j][1] = ansi.ansi_to_html(step.log[j][1]);
                       }
                     }
                   }

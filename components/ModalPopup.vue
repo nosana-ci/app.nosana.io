@@ -3,7 +3,7 @@
     <div class="modal-background" />
     <div
       class="modal-content has-background-white has-text-centered mx-3 pt-6 pb-5 has-radius-medium
-      has-limited-width-small"
+      has-limited-width-small px-5"
     >
       <img
         v-if="image"
@@ -15,6 +15,9 @@
       <p>
         {{ text }}
       </p>
+      <button v-if="successCancel" class="button is-outlined is-accent mt-5 is-less-wide mb-3" @click="hide()">
+        {{ cancelText }}
+      </button>
       <button class="button is-accent mt-5 is-less-wide mb-3" @click="confirm">
         {{ confirmText }}
       </button>
@@ -99,7 +102,8 @@ export default {
       cancelText: 'Cancel',
       onConfirm: {},
       loading: false,
-      image: false
+      image: false,
+      successCancel: false
     };
   },
   beforeMount () {
@@ -128,6 +132,7 @@ export default {
       this.cancelText = 'Cancel';
       this.onConfirm = {};
       this.image = false;
+      this.successCancel = false;
     },
     async confirm () {
       // we must check if this.onConfirm is function
@@ -188,6 +193,7 @@ export default {
       if (typeof this.onConfirm !== 'function') { this.cancel = false; }
       if (params.confirmText) { this.confirmText = params.confirmText; }
       if (params.cancelText) { this.cancelText = params.cancelText; }
+      if (params.successCancel) { this.successCancel = params.successCancel; }
       // eslint-disable-next-line
       if (params.hasOwnProperty('cancel')) { this.cancel = params.cancel }
       // eslint-disable-next-line
