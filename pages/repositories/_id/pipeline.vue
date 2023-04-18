@@ -314,8 +314,7 @@ export default {
             image: 'icons/saved.svg',
             onConfirm: () => {
               this.$router.push(`/repositories/${this.id}`);
-            },
-            successCancel: true
+            }
           });
         }, 2000);
       } catch (error) {
