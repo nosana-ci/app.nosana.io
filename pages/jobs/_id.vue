@@ -791,9 +791,10 @@ export default {
             const results = job.cache_result.results[key];
             if (Array.isArray(results)) {
               if (results[1]) {
-                if (Array.isArray(results[1])) {
-                  for (let i = 0; i < results[1].length; i++) {
-                    const step = results[1][i];
+                if (Array.isArray(results[1]) || Array.isArray(results[2])) {
+                  const resultsArray = Array.isArray(results[1]) ? results[1] : results[2][1];
+                  for (let i = 0; i < resultsArray.length; i++) {
+                    const step = resultsArray[i];
                     if (step.log && Array.isArray(step.log)) {
                       step.log = step.log
                         .reduce((str, log) => str.concat(log[1]), '')
