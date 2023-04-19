@@ -194,7 +194,9 @@
                             </div>
                             <div
                               v-if="typeof job.cache_result.results[jobName][1] === 'string'
-                                && !job.cache_result.results[jobName][2]"
+                                && (!job.cache_result.results[jobName][2]
+                                  || (Array.isArray(job.cache_result.results[jobName][2])
+                                    && job.cache_result.results[jobName][2].length === 0))"
                               class="has-text-danger row-count"
                             >
                               <span>{{ job.cache_result.results[jobName][1] }}</span>
@@ -793,13 +795,15 @@ export default {
               if (results[1]) {
                 if (Array.isArray(results[1]) || Array.isArray(results[2])) {
                   const resultsArray = Array.isArray(results[1]) ? results[1] : results[2][1];
-                  for (let i = 0; i < resultsArray.length; i++) {
-                    const step = resultsArray[i];
-                    if (step.log && Array.isArray(step.log)) {
-                      step.log = step.log
-                        .reduce((str, log) => str.concat(log[1]), '')
-                        .split('\n')
-                        .map(l => [1, ansi.ansi_to_html(l)]);
+                  if (resultsArray) {
+                    for (let i = 0; i < resultsArray.length; i++) {
+                      const step = resultsArray[i];
+                      if (step.log && Array.isArray(step.log)) {
+                        step.log = step.log
+                          .reduce((str, log) => str.concat(log[1]), '')
+                          .split('\n')
+                          .map(l => [1, ansi.ansi_to_html(l)]);
+                      }
                     }
                   }
                 }
