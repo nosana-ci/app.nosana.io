@@ -176,7 +176,7 @@
                     </div>
                     <div>
                       <template
-                        v-if="job.job_content.pipeline.jobs"
+                        v-if="job.job_content.pipeline && job.job_content.pipeline.jobs"
                       >
                         <div
                           v-for="jobName in (job.job_content.pipeline.jobs
@@ -567,7 +567,8 @@ export default {
         'Running',
         'Done',
         'Stopped'
-      ]
+      ],
+      nodeLogSignature: null
     };
   },
   computed: {
@@ -812,7 +813,17 @@ export default {
           }
         }
         this.job = job;
+        if (!this.nodeLogSignature) {
+          try {
+            const response = await this.$axios.$get('/user/log-signature');
+            console.log('response log signature', response);
+            this.nodeLogSignature = response.signature;
+          } catch (error) {
+            console.error('cannot get signature for logs', error);
+          }
+        }
         if (this.job.status === 'RUNNING') {
+          // place here
           if (!this.logInterval && this.job.cache_run_account) {
             const node = nodes[this.job.cache_run_account.account.node];
             const network = process.env.NUXT_ENV_SOL_NETWORK_NAME;
