@@ -1,81 +1,81 @@
 {
   "4HoZogbrDGwK6UsD1eMgkFKTNDyaqcfb2eodLLtS8NTx": {
     "devnet": {
-      "endpoint": "https://arthur.k8s.dev.nos.ci",
+      "endpoint": "https://arthur.$MARKET.k8s.dev.nos.ci",
       "logs": true
     },
     "mainnet": {
-      "endpoint": "https://arthur.k8s.prd.nos.ci",
+      "endpoint": "https://arthur.$MARKET.k8s.prd.nos.ci",
       "logs": true
     }
   },
   "nodQBcRj6LbvseV1AGrSDNz7JdLuyosGzCdVyAc2Md9": {
     "devnet": {
-      "endpoint":  "https://thomas.k8s.dev.nos.ci",
+      "endpoint":  "https://thomas.$MARKET.k8s.dev.nos.ci",
       "logs": true
     },
     "mainnet": {
-      "endpoint": "https://thomas.k8s.prd.nos.ci",
+      "endpoint": "https://thomas.$MARKET.k8s.prd.nos.ci",
       "logs": true
     }
   },
   "nodU2eSVwJSP8LtQJ9wTLrsTxYmYQNS8tiFEh6axhKN": {
     "devnet": {
-      "endpoint": "https://jones.k8s.dev.nos.ci",
+      "endpoint": "https://jones.$MARKET.k8s.dev.nos.ci",
       "logs": true
     },
     "mainnet": {
-      "endpoint": "https://jones.k8s.prd.nos.ci",
+      "endpoint": "https://jones.$MARKET.k8s.prd.nos.ci",
       "logs": true
     }
   },
   "nods5F6w36njKief3djjcdTsTLW4hQuXXKUxqnQpiT7": {
     "devnet": {
-      "endpoint": "https://ellen.k8s.dev.nos.ci",
+      "endpoint": "https://ellen.$MARKET.k8s.dev.nos.ci",
       "logs": true
     },
     "mainnet": {
-      "endpoint": "https://ellen.k8s.prd.nos.ci",
+      "endpoint": "https://ellen.$MARKET.k8s.prd.nos.ci",
       "logs": true
     }
   },
   "nodCMAdrGT3oLduvsLMFUp7SMovyaDVJ4kVumz65j7M": {
     "devnet": {
-      "endpoint": "https://joan.k8s.dev.nos.ci",
+      "endpoint": "https://joan.$MARKET.k8s.dev.nos.ci",
       "logs": true
     },
     "mainnet": {
-      "endpoint": "https://joan.k8s.prd.nos.ci",
+      "endpoint": "https://joan.$MARKET.k8s.prd.nos.ci",
       "logs": true
     }
   },
   "nodhCkfKHpDvsSYi3eYeA2DwLnaLd43MFFt42oHXcYg": {
     "devnet": {
-      "endpoint": "https://dennis.k8s.dev.nos.ci",
+      "endpoint": "https://dennis.$MARKET.k8s.dev.nos.ci",
       "logs": true
     },
     "mainnet": {
-      "endpoint": "https://dennis.k8s.prd.nos.ci",
+      "endpoint": "https://dennis.$MARKET.k8s.prd.nos.ci",
       "logs": true
     }
   },
   "nodDWoEv546tp2dHT4C2Y3hmMfLqdVq1pQMCWWVHdby": {
     "devnet": {
-      "endpoint": "https://samuel.k8s.dev.nos.ci",
+      "endpoint": "https://samuel.$MARKET.k8s.dev.nos.ci",
       "logs": true
     },
     "mainnet": {
-      "endpoint": "https://samuel.k8s.prd.nos.ci",
+      "endpoint": "https://samuel.$MARKET.k8s.prd.nos.ci",
       "logs": true
     }
   },
   "nodd7PopriDU7TyANkNxPPVLRV2G61cVqQEmZHbpMmL": {
     "devnet": {
-      "endpoint": "https://ash.k8s.dev.nos.ci",
+      "endpoint": "https://ash.$MARKET.k8s.dev.nos.ci",
       "logs": true
     },
     "mainnet": {
-      "endpoint": "https://ash.k8s.prd.nos.ci",
+      "endpoint": "https://ash.$MARKET.k8s.prd.nos.ci",
       "logs": true
     }
   },

@@ -731,8 +731,10 @@ export default {
     async getLogs (node) {
       if (this.currentStep) {
         try {
+          const nodeUrl = node.replace('$MARKET', this.job.cache_blockchain.market.substring(0, 5));
+          console.log('node URL', nodeUrl);
           const response =
-          await fetch(`${node}/nosana/logs/${this.job.address}/${this.currentStep}`);
+          await fetch(`${nodeUrl}/nosana/logs/${this.job.address}/${this.currentStep}`);
           if (response.status !== 200 && response.status !== 206) {
             throw new Error('Log error status ' + response.status);
           }
