@@ -567,8 +567,7 @@ export default {
         'Running',
         'Done',
         'Stopped'
-      ],
-      nodeLogSignature: null
+      ]
     };
   },
   computed: {
