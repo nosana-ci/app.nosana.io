@@ -732,8 +732,17 @@ export default {
     async getLogs (node) {
       if (this.currentStep) {
         try {
+          // + if logs are private
+          if (!this.$store.state.secretsToken.logSignature) {
+            console.log('get log signature');
+            await this.getLogSignature();
+          }
           const response =
-          await fetch(`${node}/nosana/logs/${this.job.address}/${this.currentStep}`);
+          await fetch(`${node}/nosana/logs/${this.job.address}/${this.currentStep}`, {
+            headers: {
+              Authorization: this.$store.state.secretsToken.logSignature
+            }
+          });
           if (response.status !== 200 && response.status !== 206) {
             throw new Error('Log error status ' + response.status);
           }
@@ -813,17 +822,7 @@ export default {
           }
         }
         this.job = job;
-        if (!this.nodeLogSignature) {
-          try {
-            const response = await this.$axios.$get('/user/log-signature');
-            console.log('response log signature', response);
-            this.nodeLogSignature = response.signature;
-          } catch (error) {
-            console.error('cannot get signature for logs', error);
-          }
-        }
         if (this.job.status === 'RUNNING') {
-          // place here
           if (!this.logInterval && this.job.cache_run_account) {
             const node = nodes[this.job.cache_run_account.account.node];
             const network = process.env.NUXT_ENV_SOL_NETWORK_NAME;
@@ -897,6 +896,14 @@ export default {
         });
       }
       this.loadingJob = false;
+    },
+    async getLogSignature () {
+      try {
+        const response = await this.$axios.$get('/user/log-signature');
+        this.$store.dispatch('secretsToken/addLogSignature', response.signature);
+      } catch (error) {
+        console.error('cannot get signature for logs', error);
+      }
     }
   }
 };
