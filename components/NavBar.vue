@@ -34,7 +34,7 @@
             Staking <i class="ml-1 fa-solid fa-arrow-up" style="transform: rotate(45deg);" />
           </a>
           <div class="navbar-item ml-4 has-dropdown is-hoverable">
-            <a class="navbar-link">
+            <nuxt-link to="/account/edit" class="navbar-link">
               <figure class="image is-32x32 mr-2">
                 <img v-if="$auth.user.image" :src="$auth.user.image" class="is-rounded has-border">
                 <img
@@ -67,7 +67,7 @@
               >
                 {{ $auth.user.address }}
               </span>
-            </a>
+            </nuxt-link>
 
             <div class="navbar-dropdown py-0">
               <nuxt-link to="/account/edit" class="navbar-item py-3">
