@@ -176,7 +176,7 @@
                     </div>
                     <div>
                       <template
-                        v-if="job.job_content.pipeline.jobs"
+                        v-if="job.job_content.pipeline && job.job_content.pipeline.jobs"
                       >
                         <div
                           v-for="jobName in (job.job_content.pipeline.jobs
@@ -567,7 +567,8 @@ export default {
         'Running',
         'Done',
         'Stopped'
-      ]
+      ],
+      logSignature: null
     };
   },
   computed: {
@@ -731,10 +732,20 @@ export default {
     async getLogs (node) {
       if (this.currentStep) {
         try {
+          // + if logs are private
+          if (!this.logSignature) {
+            await this.getLogSignature();
+          }
           const nodeUrl = node.replace('$MARKET', this.job.cache_blockchain.market.substring(0, 5));
           console.log('node URL', nodeUrl);
+
           const response =
-          await fetch(`${nodeUrl}/nosana/logs/${this.job.address}/${this.currentStep}`);
+          await fetch(`${nodeUrl}/nosana/logs/${this.job.address}/${this.currentStep}`, {
+            headers: {
+              Authorization: this.$store.state.secretsToken.logSignature
+            }
+          });
+
           if (response.status !== 200 && response.status !== 206) {
             throw new Error('Log error status ' + response.status);
           }
@@ -888,6 +899,15 @@ export default {
         });
       }
       this.loadingJob = false;
+    },
+    async getLogSignature () {
+      try {
+        console.log('this.job.address', this.job.address);
+        const response = await this.$axios.$get(`/user/log-signature/${this.job.address}`);
+        this.logSignature = response.signature;
+      } catch (error) {
+        console.error('cannot get signature for logs', error);
+      }
     }
   }
 };
