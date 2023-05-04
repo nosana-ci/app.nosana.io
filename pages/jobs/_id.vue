@@ -567,7 +567,8 @@ export default {
         'Running',
         'Done',
         'Stopped'
-      ]
+      ],
+      logSignature: null
     };
   },
   computed: {
@@ -732,8 +733,7 @@ export default {
       if (this.currentStep) {
         try {
           // + if logs are private
-          if (!this.$store.state.secretsToken.logSignature) {
-            console.log('get log signature');
+          if (!this.logSignature) {
             await this.getLogSignature();
           }
           const nodeUrl = node.replace('$MARKET', this.job.cache_blockchain.market.substring(0, 5));
@@ -902,8 +902,9 @@ export default {
     },
     async getLogSignature () {
       try {
-        const response = await this.$axios.$get('/user/log-signature');
-        this.$store.dispatch('secretsToken/addLogSignature', response.signature);
+        console.log('this.job.address', this.job.address);
+        const response = await this.$axios.$get(`/user/log-signature/${this.job.address}`);
+        this.logSignature = response.signature;
       } catch (error) {
         console.error('cannot get signature for logs', error);
       }
