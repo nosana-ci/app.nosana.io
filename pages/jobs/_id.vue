@@ -738,11 +738,10 @@ export default {
           }
           const nodeUrl = node.replace('$MARKET', this.job.cache_blockchain.market.substring(0, 5));
           console.log('node URL', nodeUrl);
-
           const response =
           await fetch(`${nodeUrl}/nosana/logs/${this.job.address}/${this.currentStep}`, {
             headers: {
-              Authorization: this.$store.state.secretsToken.logSignature
+              Authorization: this.logSignature
             }
           });
 
