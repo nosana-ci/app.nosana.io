@@ -34,7 +34,8 @@
               <b class="has-text-accent is-size-5">{{ parseInt(repository.marketAccount.jobPrice, 16) / 1e6 }} NOS</b>
             </div>
             <p
-              v-if="repository && user && repository.user_id === user.user_id"
+              v-if="repository && user && repository.user_id === user.user_id && repository.github_installation_id &&
+                permissionFound !== null"
               class="my-4"
             >
               <nuxt-link

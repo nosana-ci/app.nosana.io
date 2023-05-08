@@ -375,9 +375,10 @@ export default {
         await this.getPipeline(this.editBranch);
         this.loading = false;
       } catch (error) {
+        this.$router.push(`/repositories/${this.id}`);
         this.$modal.show({
           color: 'danger',
-          text: error,
+          text: 'Cannot get all repository info.\nProbably because there\'s something wrong with the Github Connection.',
           title: 'Error'
         });
       }
