@@ -33,7 +33,7 @@
           <a class="navbar-item mr-4" href="https://app.nosana.io/stake" target="_blank">
             Staking <i class="ml-1 fa-solid fa-arrow-up" style="transform: rotate(45deg);" />
           </a>
-          <div class="navbar-item ml-4 has-dropdown is-hoverable">
+          <div v-if="$auth.user" class="navbar-item ml-4 has-dropdown is-hoverable">
             <nuxt-link to="/account/edit" class="navbar-link">
               <figure class="image is-32x32 mr-2">
                 <img v-if="$auth.user.image" :src="$auth.user.image" class="is-rounded has-border">
