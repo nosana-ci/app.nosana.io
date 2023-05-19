@@ -38,8 +38,6 @@ html {
 .sidebar {
   position: sticky;
   top: 0;
-  height: fit-content;
-  min-height: 100vh;
 }
 @include mobile {
   .sidebar {
