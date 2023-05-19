@@ -305,15 +305,48 @@
                         </div>
                       </template>
                       <template v-else-if="!job.cache_result && (logs[jobName] || currentStep === jobName)">
-                        <div class="row-count has-text-link">
+                        <div
+                          v-if="currentStep === jobName && jobName === showLogsOfStep"
+                          class="row-count has-text-link"
+                        >
                           <span
-                            :class="{'loading-text-link': currentStep === jobName}"
-                          >- Execut<span v-if="currentStep === jobName">ing</span>
-                            <span v-else>ed</span> step '{{ jobName }}'</span>
+                            class="loading-text-link"
+                          >- Executing step '{{ jobName }}'</span>
                         </div>
                         <template v-if="logs[jobName] && jobName === showLogsOfStep">
                           <div class="row-count">
                             <span class="pre" v-html="logs[jobName].slice(0, 10000)" />
+                          </div>
+                          <!-- Show step status for running logs-->
+                          <div
+                            v-if="
+                              job.job_content.pipeline &&
+                                job.job_content.pipeline.jobs &&
+                                job.job_content.pipeline.jobs.find(item => item.name === jobName
+                                  || item.id === jobName).step_status
+                                && job.job_content.pipeline.jobs.find(item => item.name === jobName
+                                  || item.id === jobName).step_status === ('success' || 'failed')
+                            "
+                            class="row-count"
+                          >
+                            <span
+                              class="tag is-small"
+                              :class="{
+                                'is-accent': job.job_content.pipeline.jobs.find(item => item.name === jobName
+                                  || item.id === jobName).step_status === 'success',
+                                'is-danger': job.job_content.pipeline.jobs.find(item => item.name === jobName
+                                  || item.id === jobName).step_status === ('nos/error' || 'nos/cmd-err'),
+                              }"
+                            >
+                              <b>STEP <span
+                                v-if="job.job_content.pipeline.jobs.find(item => item.name === jobName
+                                  || item.id === jobName).step_status === 'success'"
+                              >
+                                COMPLETED
+                              </span><span v-else>
+                                FAILED
+                              </span></b>
+                            </span>
                           </div>
                         </template>
                       </template>
