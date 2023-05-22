@@ -31,9 +31,17 @@
             <div>
               <span
                 class="tag is-outlined is-light"
-                :class="{'is-success': repository.status !== 'DEACTIVATED',
-                         'is-danger': repository.status === 'DEACTIVATED'}"
-              >{{ repository.status !== 'DEACTIVATED' ? 'ACTIVE' : repository.status }}</span>
+                :class="{'is-success': repository.status !== 'DEACTIVATED' || repository.status !== 'INACTIVE',
+                         'is-danger': repository.status === 'DEACTIVATED' || !repository.github_installation_id}"
+              >
+                <span v-if="!repository.github_installation_id">
+                  INACTIVE
+                </span>
+                <span v-else>
+                  {{ repository.status !== 'DEACTIVATED' ?
+                    'ACTIVE' : repository.status }}
+                </span>
+              </span>
             </div>
           </td>
 
