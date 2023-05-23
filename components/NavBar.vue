@@ -120,7 +120,7 @@
               <a
                 href="https://docs.nosana.io"
                 target="_blank"
-                @click.native="mobileMenu = false;"
+                @click="mobileMenu = false;"
               >
                 <span class="icon is-medium p-1 m-1 has-radius">
                   <i class="fa-solid fa-arrow-up" style="transform: rotate(45deg);" />
@@ -132,7 +132,7 @@
               <a
                 href="https://app.nosana.io/stake"
                 target="_blank"
-                @click.native="mobileMenu = false;"
+                @click="mobileMenu = false;"
               >
                 <span class="icon is-medium p-1 m-1 has-radius">
                   <i class="fa-solid fa-arrow-up" style="transform: rotate(45deg);" />
