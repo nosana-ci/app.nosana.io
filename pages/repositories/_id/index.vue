@@ -101,7 +101,7 @@
         Loading...
       </div>
 
-      <div class="table-container mt-6">
+      <div class="table-container mt-6" style="overflow-y: visible;">
         <table class="table is-striped is-bordered  is-fullwidth is-hoverable">
           <thead>
             <tr class="has-background-light">
@@ -136,8 +136,12 @@
             <tr
               v-for="(job, index) in jobs"
               :key="job.uuid"
-              class="is-clickable"
-              @click="$router.push(`/jobs/${job.uuid}`)"
+              :class="{
+                'has-tooltip disabled': job.status === 'YAML_ERROR',
+                'is-clickable': job.status !== 'YAML_ERROR',
+              }"
+              data-tooltip="Could not create job for this commit: Error when parsing nosana-ci.yml file."
+              @click="job.status !== 'YAML_ERROR' ? $router.push(`/jobs/${job.uuid}`) : null"
             >
               <td>
                 <div>
@@ -165,7 +169,7 @@
                     'is-accent': job.status === 'COMPLETED',
                     'is-info': job.status === 'RUNNING',
                     'is-warning': job.status === 'QUEUED',
-                    'is-danger': job.status === ('FAILED' || 'STOPPED'),
+                    'is-danger': job.status === 'FAILED' || job.status === 'STOPPED' || job.status === 'YAML_ERROR',
                   }"
                 >
                   {{ job.status }}
@@ -437,4 +441,25 @@ td {
 .table td, .table th {
   border-color: $grey-darker;
 }
+
+tr.is-clickable:not(.disabled) {
+  &::before {
+    visibility: hidden;
+    content: ""
+  }
+}
+tr.disabled {
+  cursor: not-allowed;
+  td {
+    opacity: .2;
+    &:last-child{
+      opacity: 1;
+    }
+  }
+}
+
+table thead tr::before {
+    content: "";
+}
+
 </style>
