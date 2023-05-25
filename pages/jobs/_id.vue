@@ -12,17 +12,18 @@
             class="has-text-accent has-text-weight-semibold"
             @click.prevent="goBack"
           >
-            <i class="fas fa-chevron-left" /> Back
+            <i class="fas fa-chevron-left pr-1" /><span v-if="showLogsOfStep">Back</span>
+            <span v-else>Overview</span>
           </a>
         </div>
         <div class="mr-4">
           <div
-            class="tag is-small"
+            class="tag is-outlined is-light"
             :class="{
               'is-accent': job.status === 'COMPLETED' || job.state === 2,
-              'is-info': job.status === 'RUNNING' || (!job.status && job.cache_run_account),
+              'is-info': job.status === 'RUNNING' || job.status === 'PENDING' || (!job.status && job.cache_run_account),
               'is-warning': job.status === 'QUEUED' || (!job.status && job.state === 0 && !job.cache_run_account),
-              'is-danger': job.status === ('FAILED' || 'STOPPED') || job.state === 3
+              'is-danger': job.status === 'FAILED' || job.status === 'STOPPED' || job.state === 3
             }"
           >
             <span v-if="job.status">{{ job.status }}</span>
@@ -50,7 +51,7 @@
             class="box is-flex is-flex-wrap-nowrap px-5"
             style="background-color: #F7F9F6; border: none; height: 100%; overflow-x: auto;"
           >
-            <div class="step-columns is-flex">
+            <div class="step-columns is-flex" v-if="job.job_content.pipeline && job.job_content.pipeline.jobs">
               <div
                 v-for="(jobStep, index) in job.job_content.pipeline.jobs"
                 :key="index"
@@ -286,14 +287,16 @@
                         <div class="row-count" />
                         <div
                           v-if="job.cache_result.results[jobName][0] === 'success' ||
-                            job.cache_result.results[jobName][0] === ('nos/error' || 'nos/cmd-err')"
+                            job.cache_result.results[jobName][0] === 'nos/error' ||
+                            job.cache_result.results[jobName][0] === 'nos/cmd-error'"
                           class="row-count"
                         >
                           <span
                             class="tag is-small"
                             :class="{
                               'is-accent': job.cache_result.results[jobName][0] === 'success',
-                              'is-danger': job.cache_result.results[jobName][0] === ('nos/error' || 'nos/cmd-err'),
+                              'is-danger': job.cache_result.results[jobName][0] === 'nos/error' ||
+                                job.cache_result.results[jobName][0] === 'nos/cmd-error',
                             }"
                           >
                             <b>STEP <span v-if="job.cache_result.results[jobName][0] === 'success'">
@@ -444,7 +447,7 @@
                 </div>
               </div>
               <div
-                v-if="job.repository && job.commit"
+                v-if="job.repository && job.commit && job.address"
                 class="has-overflow-ellipses is-flex is-align-items-flex-start"
                 :class="{ 'is-justify-content-center is-align-items-center has-tooltip-left': minimizeSideBar}"
                 :data-tooltip="'Pipeline \n' + `${job.address.substring(0, 10) + '...'}`"
@@ -704,6 +707,16 @@ export default {
       } else {
         this.autoScroll = false;
       }
+    },
+    '$route.query': {
+      handler: function (newValue) {
+        if (newValue.step && this.job.job_content.pipeline.jobs &&
+            this.job.job_content.pipeline.jobs.find(e => e.id === this.$route.query.step)) {
+          this.showLogsOfStep = this.$route.query.step;
+        } else {
+          this.showLogsOfStep = null;
+        }
+      }
     }
   },
   beforeDestroy () {
@@ -840,7 +853,7 @@ export default {
       }
 
       if (this.$route.query.step && this.job.job_content.pipeline.jobs &&
-        this.job.job_content.pipeline.jobs.find(e => e.id === this.$route.query.step && e.step_status)) {
+        this.job.job_content.pipeline.jobs.find(e => e.id === this.$route.query.step)) {
         this.showLogsOfStep = this.$route.query.step;
       }
 
@@ -1010,11 +1023,9 @@ export default {
           }
           delete this.displayInfo.ipfsJob;
           delete this.displayInfo.ipfsResult;
+        } else if (this.job.job_content.ops) {
+          this.$set(this.job.job_content, 'pipeline', { jobs: this.job.job_content.ops });
         }
-
-        // if (this.job.cache_result) {
-        //   this.
-        // }
 
         if (this.job.ipfsJob) {
           await this.getJobInfo(this.job.ipfsJob);

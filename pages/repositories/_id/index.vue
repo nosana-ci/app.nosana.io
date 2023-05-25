@@ -164,10 +164,10 @@
               <td>{{ $moment(job.created_at).fromNow() }}</td>
               <td class="py-4">
                 <div
-                  class="tag is-small"
+                  class="tag is-outlined is-light"
                   :class="{
                     'is-accent': job.status === 'COMPLETED',
-                    'is-info': job.status === 'RUNNING',
+                    'is-info': job.status === 'RUNNING' || job.status === 'PENDING',
                     'is-warning': job.status === 'QUEUED',
                     'is-danger': job.status === 'FAILED' || job.status === 'STOPPED' || job.status === 'YAML_ERROR',
                   }"
