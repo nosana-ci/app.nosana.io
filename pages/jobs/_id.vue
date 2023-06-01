@@ -51,7 +51,7 @@
             class="box is-flex is-flex-wrap-nowrap px-5"
             style="background-color: #F7F9F6; border: none; height: 100%; overflow-x: auto;"
           >
-            <div class="step-columns is-flex" v-if="job.job_content.pipeline && job.job_content.pipeline.jobs">
+            <div v-if="job.job_content.pipeline && job.job_content.pipeline.jobs" class="step-columns is-flex">
               <div
                 v-for="(jobStep, index) in job.job_content.pipeline.jobs"
                 :key="index"
@@ -902,8 +902,9 @@ export default {
           if (response.status !== 200 && response.status !== 206) {
             throw new Error('Log error status ' + response.status);
           }
-          this.logs[this.currentStep] = await response.text();
-          this.logs[this.currentStep] = ansi.ansi_to_html(this.logs[this.currentStep].replace(String.fromCharCode(26), ''));
+
+          this.$set(this.logs, [this.currentStep], await response.text());
+          this.$set(this.logs, [this.currentStep], ansi.ansi_to_html(this.logs[this.currentStep].replace(String.fromCharCode(26), '')));
           if (this.autoScroll && !this.disableAutoScroll) {
             this.$nextTick(() => {
               if (document) {
