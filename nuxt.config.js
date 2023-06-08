@@ -156,7 +156,9 @@ export default {
       '@solana/wallet-adapter-tokenpocket',
       '@solana/wallet-adapter-torus',
       '@solana/wallet-adapter-coin98',
-      '@solana/wallet-adapter-slope'
+      '@solana/wallet-adapter-slope',
+      '@solana/wallet-adapter-backpack',
+      '@solana/wallet-adapter-brave'
     ],
     loaders: {
       scss: {

@@ -1,9 +1,12 @@
 import Vue from 'vue';
 import {
   PhantomWalletAdapter,
-  SolflareWalletAdapter,
-  SlopeWalletAdapter
+  SolflareWalletAdapter
 } from '@solana/wallet-adapter-wallets';
+import { BackpackWalletAdapter }
+  from '@solana/wallet-adapter-backpack';
+import { BraveWalletAdapter }
+  from '@solana/wallet-adapter-brave';
 import { clusterApiUrl, Connection, PublicKey } from '@solana/web3.js';
 import { Metaplex } from '@metaplex-foundation/js';
 import { commitment, sendTransaction } from '@/utils/web3';
@@ -25,8 +28,9 @@ const metaplex = new Metaplex(web3);
 // Only the wallets you configure here will be compiled into your application
 const wallets = [
   new PhantomWalletAdapter(),
-  new SolflareWalletAdapter(),
-  new SlopeWalletAdapter()
+  new BackpackWalletAdapter(),
+  new BraveWalletAdapter(),
+  new SolflareWalletAdapter()
 ];
 let connectingAdapter;
 let wallet;
