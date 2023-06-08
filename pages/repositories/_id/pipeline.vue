@@ -124,7 +124,17 @@
                 <p class="is-size-6 has-text-weight-semibold">
                   Pipeline syntax error
                 </p>
-                <span v-if="validation.errors">{{ validation.errors[0].message }}</span>
+                <p v-for="error in validation.errors" :key="error">
+                  <!-- {{ error }} -->
+                  -
+                  <span v-if="validation.errors">
+                    {{ error.instancePath }}
+                    {{ error.message }}
+                    <span v-if="error.keyword === 'additionalProperties'">
+                      : {{ error.params.additionalProperty }}
+                    </span>
+                  </span>
+                </p>
               </div>
             </div>
           </div>
@@ -274,19 +284,6 @@ export default {
       try {
         this.saving = true;
         const pipeline = parseYaml(this.pipeline);
-        // TODO: change for nice yaml scheme checker
-        if (!pipeline.global) {
-          throw new Error('Your yaml does not include a `global` config');
-        }
-        if (!pipeline.nosana) {
-          throw new Error('Your yaml does not include a `nosana` config');
-        }
-        if (!pipeline.jobs || !Array.isArray(pipeline.jobs) || !pipeline.jobs.length) {
-          throw new Error('Your yaml does not include a array `jobs` config');
-        }
-        if (!pipeline.nosana.description) {
-          throw new Error('Your yaml does not include a `nosana.description` config');
-        }
         pipeline.jobs.forEach((job, index) => {
           if (!job.name) {
             throw new Error(`Job ${index + 1} does not include a 'name'`);
