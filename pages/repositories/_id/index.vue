@@ -169,7 +169,8 @@
                     'is-accent': job.status === 'COMPLETED',
                     'is-info': job.status === 'RUNNING' || job.status === 'PENDING',
                     'is-warning': job.status === 'QUEUED',
-                    'is-danger': job.status === 'FAILED' || job.status === 'STOPPED' || job.status === 'YAML_ERROR',
+                    'is-danger': job.status === 'FAILED' || job.status === 'STOPPED' || job.status === 'YAML_ERROR'
+                      || job.status === 'NOT_POSTED',
                   }"
                 >
                   {{ job.status }}

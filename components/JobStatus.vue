@@ -21,7 +21,7 @@ export default {
       icon = require('@/assets/img/icons/running.svg');
     } else if (this.status === 'COMPLETED') {
       icon = require('@/assets/img/icons/done.svg');
-    } else if (this.status === ('FAILED' || 'STOPPED')) {
+    } else if (this.status === 'FAILED' || this.status === 'STOPPED' || this.status === 'NOT_POSTED') {
       icon = require('@/assets/img/icons/failed.svg');
     } else if (this.status === 'CANCELLED') {
       icon = require('@/assets/img/icons/pending.svg');
