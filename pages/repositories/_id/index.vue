@@ -176,10 +176,10 @@
               v-if="!jobs || !jobs.length"
               class="has-text-centered has-text-weight-bold"
             >
-              <td v-if="!jobs" colspan="5">
+              <td v-if="!jobs" colspan="6">
                 Loading jobs...
               </td>
-              <td v-else colspan="5">
+              <td v-else colspan="6">
                 No jobs
               </td>
             </tr>
