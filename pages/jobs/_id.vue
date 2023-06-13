@@ -65,22 +65,32 @@
                 <div class="step-items">
                   <div
                     class="step-item has-background-white"
-                    :class="{'disabled-step': !jobStep.step_status}"
-                    @click="jobStep.step_status ? showLogs(jobStep.id) : null"
+                    :class="{'disabled-step':
+                      !stepPhases.find(s => s.id === jobStep.id)
+                      || stepPhases.find(s => s.id === jobStep.id).status === -1}"
+                    @click="
+                      stepPhases.find(s => s.id === jobStep.id) &&
+                        stepPhases.find(s => s.id === jobStep.id).status !== -1
+                        ? showLogs(jobStep.id) : null"
                   >
                     <div class="is-flex is-align-items-center">
                       <img
-                        v-if="jobStep.step_status && jobStep.step_status === 'success'"
+                        v-if="stepPhases.find(s => s.id === jobStep.id) &&
+                          stepPhases.find(s => s.id === jobStep.id).status === 'success'"
                         :src="require('@/assets/img/icons/done.svg')"
                         class="mr-2"
                       >
                       <img
-                        v-else-if="jobStep.step_status && jobStep.step_status === 'failed'"
+                        v-else-if="stepPhases.find(s => s.id === jobStep.id) &&
+                          stepPhases.find(s => s.id === jobStep.id).status === 'failed'"
                         :src="require('@/assets/img/icons/failed.svg')"
                         class="mr-2"
                       >
                       <img
-                        v-else-if="jobStep.step_status && jobStep.step_status === 'running'"
+                        v-else-if="
+                          stepPhases.find(s => s.id === jobStep.id) && !job.cache_result &&
+                            (Number.isInteger(stepPhases.find(s => s.id === jobStep.id).status) &&
+                              stepPhases.find(s => s.id === jobStep.id).status !== -1 )"
                         :src="require('@/assets/img/icons/running.svg')"
                         class="mr-2"
                       >
@@ -102,7 +112,7 @@
             class="box px-5 content-block has-background-black terminal"
             @scroll.prevent="handleScroll"
           >
-            <div v-if="showLogsOfStep === 'checkout'">
+            <!-- <div v-if="showLogsOfStep === 'checkout'">
               <div class="row-count has-text-link">
                 <span>Posting job to the blockchain</span>
               </div>
@@ -208,7 +218,7 @@
                   </div>
                 </div>
               </template>
-            </div>
+            </div> -->
             <template
               v-if="job.cache_blockchain &&
                 (job.cache_blockchain.state > 0 || job.cache_run_account)"
@@ -307,44 +317,102 @@
                           </span>
                         </div>
                       </template>
-                      <template v-else-if="!job.cache_result && (logs[jobName] || currentStep === jobName)">
+                      <template v-else-if="!job.cache_result">
                         <div
-                          v-if="currentStep === jobName && jobName === showLogsOfStep"
+                          v-if="jobName === showLogsOfStep
+                            && stepPhases.find(s => s.id === jobName)
+                            && (stepPhases.find(s => s.id === jobName).status === 0
+                              || stepPhases.find(s => s.id === jobName).status === 1 )"
                           class="row-count has-text-link"
                         >
                           <span
                             class="loading-text-link"
                           >- Executing step '{{ jobName }}'</span>
                         </div>
-                        <template v-if="logs[jobName] && jobName === showLogsOfStep">
-                          <div class="row-count">
+                        <template v-if="jobName === showLogsOfStep">
+                          <!-- pre logs -->
+                          <div
+                            v-if="!stepPhases.find(s => s.id === jobName) || (stepPhases.find(s => s.id === jobName) &&
+                              stepPhases.find(s => s.id === jobName).status === 0)"
+                            class="row-count"
+                          >
+                            Preparing environment
+                          </div>
+                          <div
+                            v-else-if="stepPhases.find(s => s.id === jobName) &&
+                              stepPhases.find(s => s.id === jobName).status === 1"
+                            class="row-count"
+                          >
+                            Environment is ready
+                          </div>
+
+                          <!-- results from resultjson checkout -->
+                          <div
+                            v-if="logs[jobName + '-checkout'] && stepPhases.find(s => s.id === jobName)
+                              && Array.isArray(logs[jobName + '-checkout'])"
+                          >
+                            <div
+                              v-for="(log, ik) in logs[jobName + '-checkout']"
+                              :key="ik"
+                              class="row-count"
+                              :class="{'has-text-danger':
+                                log[0] === 2
+                                && stepPhases.find(s => s.id === jobName).status === 'failed'}"
+                            >
+                              <span class="pre" v-html="log[1].slice(0, 10000)" />
+                            </div>
+                          </div>
+
+                          <!-- streaming logs checkout -->
+                          <div
+                            v-else-if="logs[jobName + '-checkout'] && stepPhases.find(s => s.id === jobName)"
+                            class="row-count"
+                          >
+                            <span class="pre" v-html="logs[jobName + '-checkout'].slice(0, 10000)" />
+                          </div>
+
+                          <!-- results from resultjson step -->
+                          <div
+                            v-if="logs[jobName] && stepPhases.find(s => s.id === jobName)
+                              && Array.isArray(logs[jobName])"
+                          >
+                            <div
+                              v-for="(log, ik) in logs[jobName]"
+                              :key="ik"
+                              class="row-count"
+                              :class="{'has-text-danger':
+                                log[0] === 2
+                                && stepPhases.find(s => s.id === jobName).status === 'failed'}"
+                            >
+                              <span class="pre" v-html="log[1].slice(0, 10000)" />
+                            </div>
+                          </div>
+                          <!-- streaming logs -->
+                          <div
+                            v-else-if="logs[jobName] && stepPhases.find(s => s.id === jobName)"
+                            class="row-count"
+                          >
                             <span class="pre" v-html="logs[jobName].slice(0, 10000)" />
                           </div>
-                          <!-- Show step status for running logs-->
+
+                          <!-- Step status -->
                           <div
-                            v-if="
-                              job.job_content.pipeline &&
-                                job.job_content.pipeline.jobs &&
-                                job.job_content.pipeline.jobs.find(item => item.name === jobName
-                                  || item.id === jobName).step_status
-                                && job.job_content.pipeline.jobs.find(item => item.name === jobName
-                                  || item.id === jobName).step_status === ('success' || 'failed')
-                            "
+                            v-if="stepPhases.find(s => s.id === jobName)
+                              && (stepPhases.find(s => s.id === jobName).status === 'success'
+                                || stepPhases.find(s => s.id === jobName).status === 'failed' )"
                             class="row-count"
                           >
                             <span
+                              v-if="stepPhases.find(s => s.id === jobName)
+                                && (stepPhases.find(s => s.id === jobName).status === 'success'
+                                  || stepPhases.find(s => s.id === jobName).status === 'failed' )"
                               class="tag is-small"
                               :class="{
-                                'is-accent': job.job_content.pipeline.jobs.find(item => item.name === jobName
-                                  || item.id === jobName).step_status === 'success',
-                                'is-danger': job.job_content.pipeline.jobs.find(item => item.name === jobName
-                                  || item.id === jobName).step_status === ('nos/error' || 'nos/cmd-err'),
+                                'is-accent': stepPhases.find(s => s.id === jobName).status === 'success',
+                                'is-danger': stepPhases.find(s => s.id === jobName).status === 'failed',
                               }"
                             >
-                              <b>STEP <span
-                                v-if="job.job_content.pipeline.jobs.find(item => item.name === jobName
-                                  || item.id === jobName).step_status === 'success'"
-                              >
+                              <b>STEP <span v-if="stepPhases.find(s => s.id === jobName).status === 'success'">
                                 COMPLETED
                               </span><span v-else>
                                 FAILED
@@ -588,6 +656,15 @@
               >
                 Rerun the job
               </button>
+              <button
+                v-if="user && ((user.roles && user.roles.includes('admin')) || user.user_id === job.user_id) &&
+                  (job.status === 'PENDING' || job.status === 'NOT_POSTED')"
+                class="button is-accent is-outlined is-small is-fullwidth mt-2"
+                :class="{'is-loading': loading}"
+                @click="postJob(job.commit_id)"
+              >
+                Post manually
+              </button>
             </div>
           </div>
 
@@ -649,7 +726,6 @@
 
 <script>
 import bs58 from 'bs58';
-import { parse } from 'yaml';
 import AnsiUp from 'ansi_up';
 const ansi = new AnsiUp();
 const nodes = require('../../utils/nodes.json');
@@ -678,7 +754,7 @@ export default {
       clockInterval: null,
       nowSeconds: null,
       logs: {},
-      currentStep: null,
+      currentStep: 0,
       hideResults: {},
       displayInfo: null,
       autoScroll: true,
@@ -686,6 +762,8 @@ export default {
       minimizeSideBar: false,
       lastScrollPosition: null,
       showLogsOfStep: null,
+      stepPhase: 0,
+      stepPhases: [],
       stateMap: [
         'Queued',
         'Running',
@@ -838,18 +916,12 @@ export default {
       const json = await response.json();
       return json;
     },
-    async getJobInfo (ipfsJob) {
+    getJobInfo (ipfsJob) {
       const hash = this.solHashToIpfsHash(ipfsJob);
       this.$set(this.job, 'jobIpfsHash', hash);
-      if (!this.job.job_content) {
-        this.$set(this.job, 'job_content', await this.retrieveIpfsContent(hash));
-      }
-      if (this.job.job_content.pipeline) {
-        this.$set(this.job.job_content, 'pipeline', parse(this.job.job_content.pipeline));
-      } else if (this.job.job_content.jobs) {
-        this.$set(this.job.job_content, 'pipeline', { jobs: this.job.job_content.jobs });
-      } else if (this.job.job_content.ops) {
-        this.$set(this.job.job_content, 'pipeline', { jobs: this.job.job_content.ops });
+
+      if (this.stepPhases.length === 0) {
+        this.stepPhases = this.job.job_content.pipeline.jobs.map(s => ({ ...s, status: -1 }));
       }
 
       if (this.$route.query.step && this.job.job_content.pipeline.jobs &&
@@ -860,9 +932,9 @@ export default {
       if (this.job.cache_result) {
         for (const key in this.job.cache_result.results) {
           const results = this.job.cache_result.results[key];
-          this.job.job_content.pipeline.jobs = this.job.job_content.pipeline.jobs.map((e) => {
+          this.stepPhases = this.stepPhases.map((e) => {
             if (e.id === key) {
-              e.step_status = results[0] === 'success' ? 'success' : 'failed';
+              e.status = results[0] === 'success' ? 'success' : 'failed';
             }
             return e;
           });
@@ -877,34 +949,64 @@ export default {
       // this.result = await this.retrieveIpfsContent(hash)
     },
     async getLogs (node) {
-      if (this.currentStep) {
-        try {
-          // + if logs are private
-          if (!this.logSignature) {
-            await this.getLogSignature();
-          }
-          const nodeUrl = node.replace('$MARKET', this.job.cache_blockchain.market.substring(0, 5));
-          const currentStepIndex = this.job.job_content.pipeline.jobs
-            .findIndex(item => item.name === this.currentStep ||
-              item.id === this.currentStep);
+      try {
+        // + if logs are private
+        if (!this.logSignature && this.$auth && this.$auth.loggedIn) {
+          await this.getLogSignature();
+        }
 
-          if (this.job.job_content.pipeline.jobs) {
-            this.$set(this.job.job_content.pipeline.jobs[currentStepIndex], 'step_status', 'running');
-          }
+        const step = this.stepPhases.find(s => s.id === this.currentStep);
+        let logPath = this.currentStep;
+        if (step.status === -1) {
+          const index = this.stepPhases.findIndex(s => s.id === this.currentStep);
+          this.$set(this.stepPhases[index], 'status', 0);
+        }
 
-          const response =
-          await fetch(`${nodeUrl}/nosana/logs/${this.job.address}/${this.currentStep}`, {
-            headers: {
-              Authorization: this.logSignature
+        logPath = step.status === 0 ? logPath += '-checkout' : logPath;
+
+        const nodeUrl = node.replace('$MARKET', this.job.cache_blockchain.market.substring(0, 5));
+        const headers = this.logSignature
+          ? {
+              headers: {
+                Authorization: this.logSignature
+              }
+            }
+          : null;
+        const response = await fetch(`${nodeUrl}/nosana/logs/${this.job.address}/${logPath}`, headers);
+
+        if (response.status !== 200 && response.status !== 206) {
+          throw new Error('Log error status ' + response.status);
+        }
+
+        this.$set(this.logs, [logPath], await response.text());
+        this.$set(this.logs, [logPath], ansi.ansi_to_html(this.logs[logPath].replace(String.fromCharCode(26), '')));
+        if (this.autoScroll && !this.disableAutoScroll) {
+          this.$nextTick(() => {
+            if (document) {
+              const terminal = document.getElementById('terminal');
+              if (terminal) {
+                terminal.scrollTop = terminal.scrollHeight;
+              }
             }
           });
-
-          if (response.status !== 200 && response.status !== 206) {
-            throw new Error('Log error status ' + response.status);
+        }
+        // When status code = 200 the log/step is finished
+        if (response.status === 200) {
+          const index = this.stepPhases.findIndex(s => s.id === this.currentStep);
+          this.$set(this.stepPhases[index], 'status', 1);
+          if (this.job.job_content.pipeline.jobs) {
+            const i = this.job.job_content.pipeline.jobs.findIndex(item => item.id === this.currentStep) + 1;
+            if (i >= this.job.job_content.pipeline.jobs.length) {
+              // if theres no more steps, clear
+              this.currentStep = null;
+              clearInterval(this.logInterval);
+              this.logInterval = null;
+            }
+          } else {
+            this.currentStep = null;
+            clearInterval(this.logInterval);
+            this.logInterval = null;
           }
-
-          this.$set(this.logs, [this.currentStep], await response.text());
-          this.$set(this.logs, [this.currentStep], ansi.ansi_to_html(this.logs[this.currentStep].replace(String.fromCharCode(26), '')));
           if (this.autoScroll && !this.disableAutoScroll) {
             this.$nextTick(() => {
               if (document) {
@@ -915,43 +1017,11 @@ export default {
               }
             });
           }
-          // When status code = 200 the log is finished
-          if (response.status === 200) {
-            if (this.job.job_content.pipeline.jobs) {
-              const i = this.job.job_content.pipeline.jobs.findIndex(item => item.name === this.currentStep ||
-              item.id === this.currentStep) + 1;
-              if (i < this.job.job_content.pipeline.jobs.length) {
-                this.currentStep = this.job.job_content.pipeline.jobs[i].name ||
-                this.job.job_content.pipeline.jobs[i].id;
-
-                // set this step to complete and the next step to running
-                this.$set(this.job.job_content.pipeline.jobs[currentStepIndex], 'step_status', 'success');
-                this.$set(this.job.job_content.pipeline.jobs[i], 'step_status', 'running');
-              } else {
-                this.currentStep = null;
-                clearInterval(this.logInterval);
-                this.refreshInterval = setInterval(this.getJob, parseInt(10000, 10));
-                this.logInterval = null;
-              }
-            } else {
-              this.currentStep = null;
-              this.refreshInterval = setInterval(this.getJob, parseInt(10000, 10));
-              this.logInterval = null;
-            }
-            if (this.autoScroll && !this.disableAutoScroll) {
-              this.$nextTick(() => {
-                if (document) {
-                  const terminal = document.getElementById('terminal');
-                  if (terminal) {
-                    terminal.scrollTop = terminal.scrollHeight;
-                  }
-                }
-              });
-            }
-          }
-        } catch (e) {
-          console.error(e);
+          // retrieve result json to determine status of steps
+          await this.retrieveResultJson(node);
         }
+      } catch (e) {
+        console.error(e);
       }
     },
     async getJob () {
@@ -984,12 +1054,20 @@ export default {
           }
         }
         this.job = job;
+
+        if (this.job.job_content.ops) {
+          this.job.job_content.pipeline = {};
+          this.job.job_content.pipeline.jobs = this.job.job_content.ops.filter(j => !j.id.endsWith('-checkout') && !j.id.endsWith('-volume'));
+        }
+
         if (this.job.status === 'RUNNING') {
           if (this.job.cache_run_account) {
             const node = nodes[this.job.cache_run_account.account.node];
             const network = process.env.NUXT_ENV_SOL_NETWORK_NAME;
-            if (node && node[network] && node[network].endpoint && node[network].logs && this.job.payload) {
-              this.currentStep = 'checkout';
+            if (node && node[network] && node[network].endpoint && node[network].logs && this.job.payload &&
+            !this.logInterval) {
+              this.currentStep = this.job.job_content.pipeline.jobs[0].id;
+              await this.retrieveResultJson(node[network].endpoint);
               // Refresh logs every second
               this.getLogs(node[network].endpoint);
               if (!this.destroying && !this.logInterval) {
@@ -1004,7 +1082,7 @@ export default {
         if (this.job.status === 'RUNNING' || this.job.status === 'QUEUED' || this.job.status === 'PENDING') {
           if (!this.refreshInterval && !this.destroying) {
             // Refresh status every 10 seconds
-            // this.refreshInterval = setInterval(this.getJob, parseInt(10000, 10));
+            this.refreshInterval = setInterval(this.getJob, parseInt(10000, 10));
           }
         } else if (this.refreshInterval) {
           clearInterval(this.refreshInterval);
@@ -1024,8 +1102,6 @@ export default {
           }
           delete this.displayInfo.ipfsJob;
           delete this.displayInfo.ipfsResult;
-        } else if (this.job.job_content.ops) {
-          this.$set(this.job.job_content, 'pipeline', { jobs: this.job.job_content.ops });
         }
 
         if (this.job.ipfsJob) {
@@ -1061,9 +1137,67 @@ export default {
       }
       this.loadingJob = false;
     },
+    async retrieveResultJson (node) {
+      try {
+        // first lets see if there's already a result json and determine at what step we are at
+        const nodeUrl = node.replace('$MARKET', this.job.cache_blockchain.market.substring(0, 5));
+        const response =
+          await fetch(`${nodeUrl}/nosana/logs/${this.job.address}`, {
+            headers: {
+              Authorization: this.logSignature
+            }
+          });
+
+        const jsonResult = await response.json();
+        if (jsonResult && jsonResult.results) {
+          // fill logs[] with results from resultJson so we also have access to the logs when step is finished
+          for (const key in jsonResult.results) {
+            const results = jsonResult.results[key];
+            if (Array.isArray(results)) {
+              if (results[1]) {
+                if (Array.isArray(results[1]) || Array.isArray(results[2])) {
+                  const resultsArray = Array.isArray(results[1]) ? results[1] : results[2][1];
+                  if (resultsArray) {
+                    for (let i = 0; i < resultsArray.length; i++) {
+                      const step = resultsArray[i];
+                      if (step.log && Array.isArray(step.log)) {
+                        this.$set(this.logs, [key], step.log
+                          .reduce((str, log) => str.concat(log[1]), '')
+                          .split('\n')
+                          .map(l => [1, ansi.ansi_to_html(l)]));
+                      }
+                    }
+                  }
+                }
+              }
+            }
+
+            const indexOfOp = this.stepPhases.findIndex(e => e.id === key);
+            if (indexOfOp > -1) {
+            // is found in results and status is success, set step phase on completed
+              if (Array.isArray(jsonResult.results[key]) && jsonResult.results[key][0] === 'success') {
+                this.$set(this.stepPhases[indexOfOp], 'status', 'success');
+              } else {
+                this.$set(this.stepPhases[indexOfOp], 'status', 'failed');
+              }
+
+              if (indexOfOp >= this.stepPhases.findIndex(e => e.id === this.currentStep)) {
+                this.currentStep = this.stepPhases[indexOfOp + 1] ? this.stepPhases[indexOfOp + 1].id : null;
+                console.log('this.currentStep update', this.currentStep);
+              }
+            }
+          }
+        } else {
+          // no result yet, so current step is the first op.id
+          this.currentStep = this.job.job_content.pipeline.jobs[0].id;
+        }
+      } catch (error) {
+        console.log('cannot retrieve or process result json', error);
+        this.currentStep = this.job.job_content.pipeline.jobs[0].id;
+      }
+    },
     async getLogSignature () {
       try {
-        console.log('this.job.address', this.job.address);
         const response = await this.$axios.$get(`/user/log-signature/${this.job.address}`);
         this.logSignature = response.signature;
       } catch (error) {
