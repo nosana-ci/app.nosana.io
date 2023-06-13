@@ -658,7 +658,7 @@
               </button>
               <button
                 v-if="user && ((user.roles && user.roles.includes('admin')) || user.user_id === job.user_id) &&
-                  (job.status === 'PENDING' || job.status === 'NOT_POSTED')"
+                  job.status === 'NOT_POSTED'"
                 class="button is-accent is-outlined is-small is-fullwidth mt-2"
                 :class="{'is-loading': loading}"
                 @click="postJob(job.commit_id)"
@@ -887,7 +887,7 @@ export default {
       try {
         this.loading = true;
         const createdJobId = await this.$axios.$post(`/commits/${id}/job`, {
-          jobUuid: this.job.status === ('NOT_POSTED' || 'PENDING') ? this.job.uuid : null
+          jobUuid: this.job.status === 'NOT_POSTED' || this.job.status === 'PENDING' ? this.job.uuid : null
         });
         if (createdJobId) {
           this.$router.push(`/jobs/${createdJobId.uuid}`);
