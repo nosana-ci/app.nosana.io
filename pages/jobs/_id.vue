@@ -895,7 +895,7 @@ export default {
     async postJob (uuid) {
       try {
         this.loading = true;
-        const createdJobId = await this.$axios.$post(`/job/${uuid}`, {
+        const createdJobId = await this.$axios.$post(`/jobs/${uuid}`, {
           jobUuid: this.job.status === 'NOT_POSTED' || this.job.status === 'PENDING' ? this.job.uuid : null
         });
         if (createdJobId) {
