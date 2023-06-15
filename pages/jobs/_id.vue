@@ -60,6 +60,7 @@
             class="box is-flex is-flex-wrap-nowrap px-5"
             style="background-color: #F7F9F6; border: none; height: 100%; overflow-x: auto;"
           >
+            {{ stepPhases }}
             <div v-if="job.job_content.pipeline && job.job_content.pipeline.jobs" class="step-columns is-flex">
               <div
                 v-for="(jobStep, index) in job.job_content.pipeline.jobs"
@@ -661,7 +662,7 @@
                   (job.status !== 'PENDING' && job.status !== 'NOT_POSTED' && job.status !== 'QUEUED')"
                 class="button is-accent is-outlined is-small is-fullwidth mt-2"
                 :class="{'is-loading': loading}"
-                @click="postJob(job.commit_id)"
+                @click="postJob(job.uuid)"
               >
                 Rerun the job
               </button>
@@ -670,7 +671,7 @@
                   job.status === 'NOT_POSTED'"
                 class="button is-accent is-outlined is-small is-fullwidth mt-2"
                 :class="{'is-loading': loading}"
-                @click="postJob(job.commit_id)"
+                @click="postJob(job.uuid)"
               >
                 Post manually
               </button>
@@ -892,10 +893,10 @@ export default {
         });
       }
     },
-    async postJob (id) {
+    async postJob (uuid) {
       try {
         this.loading = true;
-        const createdJobId = await this.$axios.$post(`/commits/${id}/job`, {
+        const createdJobId = await this.$axios.$post(`/job/${uuid}`, {
           jobUuid: this.job.status === 'NOT_POSTED' || this.job.status === 'PENDING' ? this.job.uuid : null
         });
         if (createdJobId) {
