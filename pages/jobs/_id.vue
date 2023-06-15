@@ -43,6 +43,15 @@
         <span v-if="job.payload && job.payload.title">{{ job.payload.title }}</span>
         <span v-else-if="!job.payload">External Job</span>
       </h1>
+      <h2
+        v-if="(showLogsOfStep && job.cache_result && job.cache_result.results
+          && job.cache_result.results[showLogsOfStep] && job.cache_result.results[showLogsOfStep][1][1]
+          && job.cache_result.results[showLogsOfStep][1][1]['end-time'])"
+        class="subtitle"
+      >
+        Duration: {{ job.cache_result.results[showLogsOfStep][1][1]['end-time']
+          - job.cache_result.results[showLogsOfStep][1][1]['start-time'] }} seconds
+      </h2>
       <div class="columns">
         <div class="column" :class="{ 'is-9': !minimizeSideBar, 'is-11 sidebar-is-minimized pl-0': minimizeSideBar}">
           <div
