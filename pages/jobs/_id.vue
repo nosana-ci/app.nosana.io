@@ -60,7 +60,6 @@
             class="box is-flex is-flex-wrap-nowrap px-5"
             style="background-color: #F7F9F6; border: none; height: 100%; overflow-x: auto;"
           >
-            {{ stepPhases }}
             <div v-if="job.job_content.pipeline && job.job_content.pipeline.jobs" class="step-columns is-flex">
               <div
                 v-for="(jobStep, index) in job.job_content.pipeline.jobs"
