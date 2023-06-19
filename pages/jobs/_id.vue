@@ -60,7 +60,11 @@
             class="box is-flex is-flex-wrap-nowrap px-5"
             style="background-color: #F7F9F6; border: none; height: 100%; overflow-x: auto;"
           >
-            <div v-if="job.job_content.pipeline && job.job_content.pipeline.jobs" class="step-columns is-flex">
+            <div
+              v-if="
+                job.job_content && job.job_content.pipeline && job.job_content.pipeline.jobs"
+              class="step-columns is-flex"
+            >
               <div
                 v-for="(jobStep, index) in job.job_content.pipeline.jobs"
                 :key="index"
@@ -661,7 +665,7 @@
                   (job.status !== 'PENDING' && job.status !== 'NOT_POSTED' && job.status !== 'QUEUED')"
                 class="button is-accent is-outlined is-small is-fullwidth mt-2"
                 :class="{'is-loading': loading}"
-                @click="postJob(job.uuid)"
+                @click="postJob(job.uuid, true)"
               >
                 Rerun the job
               </button>
@@ -892,11 +896,11 @@ export default {
         });
       }
     },
-    async postJob (uuid) {
+    async postJob (uuid, rerun = false) {
       try {
         this.loading = true;
         const createdJobId = await this.$axios.$post(`/jobs/${uuid}`, {
-          jobUuid: this.job.status === 'NOT_POSTED' || this.job.status === 'PENDING' ? this.job.uuid : null
+          rerun
         });
         if (createdJobId) {
           this.$router.push(`/jobs/${createdJobId.uuid}`);
