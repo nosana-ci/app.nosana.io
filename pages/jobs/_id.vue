@@ -24,6 +24,7 @@
               'is-info': job.status === 'RUNNING' || job.status === 'PENDING' || (!job.status && job.cache_run_account),
               'is-warning': job.status === 'QUEUED' || (!job.status && job.state === 0 && !job.cache_run_account),
               'is-danger': job.status === 'FAILED' || job.status === 'STOPPED' || job.state === 3
+                || job.status === 'YAML_ERROR'
             }"
           >
             <span v-if="job.status">{{ job.status }}</span>
@@ -52,7 +53,20 @@
         Duration: {{ job.cache_result.results[showLogsOfStep][1][1]['end-time']
           - job.cache_result.results[showLogsOfStep][1][1]['start-time'] }} seconds
       </h2>
-      <div class="columns">
+      <div
+        v-if="job.status === 'YAML_ERROR' ||
+          (job.cache_result && job.cache_result.results && job.cache_result.results['nosana/error'])"
+      >
+        <h2 v-if="job.status === 'YAML_ERROR'">
+          Something went wrong when parsing your <code>nosana-ci.yml</code>
+        </h2>
+        <div class="notification is-danger column is-light is-9 mt-3 px-4">
+          <span v-if="job.cache_result && job.cache_result.message">{{ job.cache_result.message }}</span>
+          <span v-else-if="job.cache_result.results && job.cache_result.results['nosana/error']">
+            {{ job.cache_result.results['nosana/error'] }}</span>
+        </div>
+      </div>
+      <div v-else class="columns">
         <div class="column" :class="{ 'is-9': !minimizeSideBar, 'is-11 sidebar-is-minimized pl-0': minimizeSideBar}">
           <div
             v-if="!showLogsOfStep"
@@ -1068,7 +1082,7 @@ export default {
         }
         this.job = job;
 
-        if (this.job.job_content.ops) {
+        if (this.job.job_content && this.job.job_content.ops) {
           this.job.job_content.pipeline = {};
           this.job.job_content.pipeline.jobs = this.job.job_content.ops.filter(j => !j.id.endsWith('-checkout') && !j.id.endsWith('-volume'));
         }

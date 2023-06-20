@@ -136,12 +136,7 @@
             <tr
               v-for="(job, index) in jobs"
               :key="job.uuid"
-              :class="{
-                'has-tooltip disabled': job.status === 'YAML_ERROR',
-                'is-clickable': job.status !== 'YAML_ERROR',
-              }"
-              data-tooltip="Could not create job for this commit: Error when parsing nosana-ci.yml file."
-              @click="job.status !== 'YAML_ERROR' ? $router.push(`/jobs/${job.uuid}`) : null"
+              @click="$router.push(`/jobs/${job.uuid}`)"
             >
               <td>
                 <div>
@@ -441,26 +436,6 @@ td {
 }
 .table td, .table th {
   border-color: $grey-darker;
-}
-
-tr.is-clickable:not(.disabled) {
-  &::before {
-    visibility: hidden;
-    content: ""
-  }
-}
-tr.disabled {
-  cursor: not-allowed;
-  td {
-    opacity: .2;
-    &:last-child{
-      opacity: 1;
-    }
-  }
-}
-
-table thead tr::before {
-    content: "";
 }
 
 </style>
