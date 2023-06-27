@@ -122,6 +122,11 @@
               </th>
               <th class="py-2 px-5">
                 <div class="px-3">
+                  Trigger
+                </div>
+              </th>
+              <th class="py-2 px-5">
+                <div class="px-3">
                   Created
                 </div>
               </th>
@@ -155,6 +160,11 @@
                 <a :href="job.payload.html_url || job.payload.url" target="_blank" @click.stop>{{
                   job.commit | shortenHashes
                 }}</a>
+              </td>
+              <td>
+                <div v-if="job.trigger" class="tag">
+                  {{ job.trigger }}
+                </div>
               </td>
               <td>{{ $moment(job.created_at).fromNow() }}</td>
               <td class="py-4">

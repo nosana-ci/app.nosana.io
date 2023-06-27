@@ -542,6 +542,26 @@
                 </div>
               </div>
               <div
+                v-if="job.trigger"
+                class="has-overflow-ellipses is-flex is-align-items-flex-start mb-3"
+                :class="{ 'is-justify-content-center is-align-items-center has-tooltip-left': minimizeSideBar}"
+                :data-tooltip="'Trigger \n' + `${job.trigger}`"
+              >
+                <img
+                  :class="{ 'mr-2': !minimizeSideBar}"
+                  :src="require('@/assets/img/icons/sidebar/github.svg')"
+                  style="width: 19px;"
+                >
+                <div :class="{ 'minimized': minimizeSideBar}" class="pr-4" style="max-width: 100%; margin-top: -4px;">
+                  <span class="is-size-6 ">Trigger</span><a
+                    :href="job.payload.html_url || job.payload.url"
+                    class="blockchain-address-inline"
+                    target="_blank"
+                    @click.stop
+                  >{{ job.trigger }}</a>
+                </div>
+              </div>
+              <div
                 v-if="job.repository && job.commit && job.address"
                 class="has-overflow-ellipses is-flex is-align-items-flex-start"
                 :class="{ 'is-justify-content-center is-align-items-center has-tooltip-left': minimizeSideBar}"
