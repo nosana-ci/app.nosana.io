@@ -11,7 +11,7 @@
   },
   "nodQBcRj6LbvseV1AGrSDNz7JdLuyosGzCdVyAc2Md9": {
     "devnet": {
-      "endpoint":  "https://thomas.$MARKET.k8s.dev.nos.ci",
+      "endpoint": "https://thomas.$MARKET.k8s.dev.nos.ci",
       "logs": true
     },
     "mainnet": {
@@ -86,6 +86,126 @@
     },
     "mainnet": {
       "endpoint": "https://dbritt.nl",
+      "logs": true
+    }
+  },
+  "nNFCmEHRs9mdt77MRCU2grLDB5c4qHePkTJS9EZNhtm": {
+    "devnet": {
+      "endpoint": null,
+      "logs": false
+    },
+    "mainnet": {
+      "endpoint": "https://ship000.$MARKET.k8s.prd.nos.ci",
+      "logs": true
+    }
+  },
+  "niH3QuC33ft8E9Ss41ZeJcTnNckxQpfc53QdkhqSovw": {
+    "devnet": {
+      "endpoint": null,
+      "logs": false
+    },
+    "mainnet": {
+      "endpoint": "https://ship001.$MARKET.k8s.prd.nos.ci",
+      "logs": true
+    }
+  },
+  "nvjWscRFxuZY7jJbDroyeg3s3ZPD1Tu4tCVKNgc3Sk1": {
+    "devnet": {
+      "endpoint": null,
+      "logs": false
+    },
+    "mainnet": {
+      "endpoint": "https://ship002.$MARKET.k8s.prd.nos.ci",
+      "logs": true
+    }
+  },
+  "nbhKjcYqkV1qJG8VB5zpNEUzdh1ychskFhKNUSDU5VV": {
+    "devnet": {
+      "endpoint": null,
+      "logs": false
+    },
+    "mainnet": {
+      "endpoint": "https://ship003.$MARKET.k8s.prd.nos.ci",
+      "logs": true
+    }
+  },
+  "neJyyrFE3Esc8MKCJpqEWApNBRyRN82jaLj2Ss1PeD5": {
+    "devnet": {
+      "endpoint": null,
+      "logs": false
+    },
+    "mainnet": {
+      "endpoint": "https://ship004.$MARKET.k8s.prd.nos.ci",
+      "logs": true
+    }
+  },
+  "nGKMtqJTS8xarqZeBQogwDfssuAvF7NFxgTJBSUWSf4": {
+    "devnet": {
+      "endpoint": null,
+      "logs": false
+    },
+    "mainnet": {
+      "endpoint": "https://ship005.$MARKET.k8s.prd.nos.ci",
+      "logs": true
+    }
+  },
+  "nTMoHcKuiPBzUoMXDM6toEzNPFMwveBxaiSpDomwj87": {
+    "devnet": {
+      "endpoint": null,
+      "logs": false
+    },
+    "mainnet": {
+      "endpoint": "https://ship006.$MARKET.k8s.prd.nos.ci",
+      "logs": true
+    }
+  },
+  "n5ABDH4v48kc83qaQqj9ZsVTNFo1uC19y2HKPGTtRQB": {
+    "devnet": {
+      "endpoint": null,
+      "logs": false
+    },
+    "mainnet": {
+      "endpoint": "https://ship007.$MARKET.k8s.prd.nos.ci",
+      "logs": true
+    }
+  },
+  "nFrVze7jMUDVigwi7k2qKyRkki8zmSVdu6vPMkAqKso": {
+    "devnet": {
+      "endpoint": null,
+      "logs": false
+    },
+    "mainnet": {
+      "endpoint": "https://ship008.$MARKET.k8s.prd.nos.ci",
+      "logs": true
+    }
+  },
+  "nqXQ3KWftVPpeyq85fFikB2yidNoSxaxBjESPHxE9vP": {
+    "devnet": {
+      "endpoint": null,
+      "logs": false
+    },
+    "mainnet": {
+      "endpoint": "https://ship009.$MARKET.k8s.prd.nos.ci",
+      "logs": true
+    }
+  },
+  "nvnDMJuBoV4HvWzJ1End5P15XZTeWjk4sLggnoHJ85V": {
+    "devnet": {
+      "endpoint": null,
+      "logs": false
+    },
+    "mainnet": {
+      "endpoint": "https://ship010.$MARKET.k8s.prd.nos.ci",
+      "logs": true
+    }
+  },
+  "n9YdThY25tPYCJEDak4mB4u97okJVTK73frnZtHgbDZ": {
+    "devnet": {
+      "endpoint": null,
+      "logs": false
+    },
+    "mainnet": {
+      "endpoint": "https://ship011.$MARKET.k8s.prd.nos.ci",
       "logs": true
     }
   }
