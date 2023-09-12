@@ -24,23 +24,10 @@
                 v-model="market.jobPrice"
                 required
                 class="input is-primary"
+                min="0"
+                step="0.000001"
                 type="number"
                 placeholder="Price in NOS "
-              >
-            </div>
-          </div>
-          <div class="field">
-            <label class="label mb-0">Job Timeout</label>
-            <p class="is-size-7 mb-2">
-              Job timeout in seconds
-            </p>
-            <div class="control is-expanded">
-              <input
-                v-model="market.jobTimeout"
-                required
-                class="input is-primary"
-                type="number"
-                placeholder="Timeout in seconds"
               >
             </div>
           </div>
@@ -200,7 +187,6 @@ export default {
             // job expiration days to seconds
             new anchor.BN(this.market.jobExpiration * 24 * 60 * 60),
             new anchor.BN(this.market.jobPrice * 1e6),
-            new anchor.BN(this.market.jobTimeout),
             parseInt(this.market.jobType),
             new anchor.BN(this.market.nodeStakeMinimum * 1e6)
           ).accounts({

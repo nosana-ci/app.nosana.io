@@ -16,6 +16,8 @@
               required
               class="input is-primary"
               type="number"
+              min="0"
+              step="0.000001"
               placeholder="Price in NOS "
             >
           </div>
