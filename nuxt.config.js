@@ -16,7 +16,7 @@ export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     titleTemplate: '%s - Nosana Network',
-    title: 'Nosana Network',
+    title: 'Nosana - The Future of GPU Compute',
     htmlAttrs: {
       lang: 'en'
     },
@@ -27,12 +27,12 @@ export default {
       {
         hid: 'og:title',
         property: 'og:title',
-        content: 'Nosana Network'
+        content: 'Nosana - The Future of GPU Compute'
       },
       {
         hid: 'og:description',
         property: 'og:description',
-        content: 'Run your CI/CD pipelines on The Network Network or stake your tokens to earn rewards'
+        content: 'The most cost-effective GPU grid, with zero lock-in. Developed and customized for AI inference workloads. Consumers, miners, and businesses can monetize their idle hardware by becoming a Nosana Node. Powered by Solana and the $NOS token.'
       },
       {
         hid: 'og:image',
