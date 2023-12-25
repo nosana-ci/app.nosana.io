@@ -79,7 +79,7 @@
               required
               class="input is-primary"
               type="text"
-              placeholder="Address of acces key"
+              placeholder="Address of access key"
             >
           </div>
         </div>
