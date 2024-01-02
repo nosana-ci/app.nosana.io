@@ -522,7 +522,7 @@
               </h3>
               <p>
                 Be aware that after you unstake,
-                you will have to wait untill your unstake period ends to claim your tokens<br><br>
+                you will have to wait until your unstake period ends to claim your tokens<br><br>
                 If you were to unstake now, you can claim your tokens on:
               </p>
               <h1 class="subtitle is-5 mt-4">
@@ -886,7 +886,7 @@ export default {
       this.$modal.show({
         color: 'info',
         text:
-          'Are you aware you will not have acces to your tokens untill you unstake AND the unstake duration has passed?\n\n' +
+          'Are you aware you will not have access to your tokens until you unstake AND the unstake duration has passed?\n\n' +
           'For more information about Nosana staking click <a class="has-text-accent" href="https://nosana.io/stake" target="_blank">here</a>.',
         title: 'Are you sure you want to stake?',
         onConfirm: () => {
