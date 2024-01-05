@@ -845,15 +845,23 @@ export default {
         this.loading = true;
         const decimals = 1e6;
         const stakeAmount = this.amount * decimals;
+        const preInstructions = [];
+
+        preInstructions.push(await this.$stake.poolProgram.methods
+          .claimFee()
+          .accounts(this.$stake.poolAccounts).instruction());
+
+        // if reward account doesn't exists yet, create it
+        if (!this.$stake.rewardInfo || !this.$stake.rewardInfo.rewardAccount) {
+          preInstructions.push(await this.$stake.rewardsProgram.methods
+            .enter().accounts(this.$stake.accounts).instruction()
+          );
+        }
 
         const response = await this.$stake.program.methods
           .topup(new anchor.BN(stakeAmount))
           .accounts(this.$stake.accounts)
-          .preInstructions([
-            await this.$stake.poolProgram.methods
-              .claimFee()
-              .accounts(this.$stake.poolAccounts).instruction()
-          ])
+          .preInstructions(preInstructions)
           .postInstructions([
             await this.$stake.rewardsProgram.methods
               .sync().accounts({ ...this.$stake.accounts, vault: this.$stake.rewardVault }).instruction()])
