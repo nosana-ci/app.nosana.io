@@ -195,11 +195,15 @@ export default {
     },
     expectedRewards () {
       if (!this.totals) { return null; }
-      let totalXnos = parseFloat(this.totals.xnos);
-      if (this.stakeData && this.stakeData.amount) {
-        totalXnos -= this.stakeData.amount;
+      if (this.poolInfo) {
+        let totalXnos = parseFloat(this.totals.xnos);
+        if (this.stakeData && this.stakeData.amount) {
+          totalXnos -= this.stakeData.amount;
+        }
+        return ((this.xnos * 1e6) / (totalXnos + (this.xnos * 1e6))) * ((this.poolInfo.emission / 1e6) * 60 * 60 * 24);
+      } else {
+        return null;
       }
-      return ((this.xnos * 1e6) / (totalXnos + (this.xnos * 1e6))) * (8000000 / 365);
     },
     loggedIn () {
       return this.$sol && this.$sol.publicKey;
