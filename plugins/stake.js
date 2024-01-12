@@ -72,8 +72,7 @@ export default (context, inject) => {
         const programId = new anchor.web3.PublicKey(process.env.NUXT_ENV_STAKE_PROGRAM_ID);
         const rewardsProgramId = new anchor.web3.PublicKey(process.env.NUXT_ENV_REWARD_PROGRAM_ID);
         const poolProgramId = new anchor.web3.PublicKey(process.env.NUXT_ENV_POOL_PROGRAM_ID);
-        const poolId = new anchor.web3.PublicKey(process.env.NUXT_ENV_POOL_ID);
-
+        const poolId = new anchor.web3.PublicKey((Date.now() / 1000 > 1705051800 ? '9k6rgFGZ7posuu9jgnqSmHkcBCE9cw9hWZNeowjhasjW' : process.env.NUXT_ENV_POOL_ID));
         const mint = new anchor.web3.PublicKey(process.env.NUXT_ENV_NOS_TOKEN);
         const accounts = {
           // solana native
@@ -146,7 +145,7 @@ export default (context, inject) => {
         const globalReflection = await this.rewardsProgram.account.reflectionAccount.fetch(this.accounts.reflection);
         let rewardAccount;
         try {
-          const poolInfo = await this.poolProgram.account.poolAccount.fetch(process.env.NUXT_ENV_POOL_ID);
+          const poolInfo = await this.poolProgram.account.poolAccount.fetch((Date.now() / 1000 > 1705051800 ? '9k6rgFGZ7posuu9jgnqSmHkcBCE9cw9hWZNeowjhasjW' : process.env.NUXT_ENV_POOL_ID));
           this.poolInfo = poolInfo;
           this.poolInfo.balance = await this.getBalance(this.poolVault);
           rewardAccount = await this.rewardsProgram.account.rewardAccount.fetch(this.accounts.reward);

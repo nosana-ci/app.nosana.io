@@ -326,7 +326,10 @@ export default {
         const secondsBetween = parseInt(now / 1000) - parseInt(this.poolInfo.startTime);
 
         const fees =
-          new BN(parseInt(secondsBetween) * parseInt(this.poolInfo.emission) - parseInt(this.poolInfo.claimedTokens));
+          new BN(
+            Math.max(parseInt(secondsBetween), 0) * parseInt(this.poolInfo.emission) -
+            parseInt(this.poolInfo.claimedTokens)
+          );
         const newTotalXnos = this.rewardInfo.global.totalXnos.add(fees);
         if (this.poolInfo.balance > 0) {
           this.rate = new BN(this.rewardInfo.global.totalReflection / newTotalXnos);
