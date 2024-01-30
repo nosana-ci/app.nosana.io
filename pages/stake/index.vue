@@ -32,14 +32,12 @@
 <script>
 import StakingForm from '../../components/Staking/StakingForm.vue';
 import RewardCountdown from '../../components/Staking/RewardCountdown.vue';
-import SubscribeView from '../../components/Staking/SubscribeView.vue';
 import TierView from '../../components/Staking/TierView.vue';
 
 export default {
   components: {
     StakingForm,
     RewardCountdown,
-    SubscribeView,
     TierView
   },
   auth: false,
