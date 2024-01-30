@@ -390,6 +390,7 @@
                   >
                     <small>Nosana staking audit report</small>
                   </a>
+                  <br><small>For more information visit <a target="_blank" href="https://nosana.io/stake/">FAQ</a></small>
                 </div>
               </div>
             </form>
@@ -510,6 +511,7 @@
                 >
                   <small>Nosana staking audit report</small>
                 </a>
+                <br><small>For more information visit <a target="_blank" href="https://nosana.io/stake/">FAQ</a></small>
               </div>
             </div>
           </div>
