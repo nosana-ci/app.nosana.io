@@ -25,7 +25,6 @@
 
       <div class="tile is-vertical is-parent">
         <tier-view class="tile is-child" :xnos="xNOS" @rxnos="fillStake" />
-        <subscribe-view style="flex-grow: 0" class="tile is-child" />
       </div>
     </div>
   </section>
