@@ -12,13 +12,13 @@
               <ICountUp
                 class="is-family-monospace"
                 :end-val="parseFloat(expectedRewards)"
-                :options="{ decimalPlaces: 0, duration:0.1 }"
+                :options="{ decimalPlaces: 4, duration:0.1 }"
                 style="opacity:0"
               />
               <ICountUp
                 class="is-family-monospace"
                 :end-val="parseFloat(expectedRewards)"
-                :options="{ decimalPlaces: 0 }"
+                :options="{ decimalPlaces: 4 }"
                 style="position:absolute;width: 100%;text-align: center;left: 0;"
               />
             </h2>
