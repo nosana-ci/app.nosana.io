@@ -60,7 +60,6 @@
             <th>Place</th>
             <th>Address</th>
             <th>Unstake days</th>
-            <th>xNOS</th>
           </tr>
         </thead>
         <tbody>
@@ -77,9 +76,6 @@
             </td>
             <td class="is-family-monospace">
               {{ parseInt(userInfo.duration/(3600*24)) }}
-            </td>
-            <td class="is-family-monospace">
-              {{ parseFloat(userInfo.xnos / 1e6).toFixed() | formatNumber }}
             </td>
           </tr>
           <template
@@ -123,9 +119,6 @@
               <td class="is-family-monospace">
                 {{ parseInt(user.duration/(3600*24)) }}
               </td>
-              <td class="is-family-monospace">
-                {{ parseFloat(user.xnos / 1e6).toFixed() | formatNumber }}
-              </td>
             </tr>
           </template>
           <tr
@@ -155,9 +148,6 @@
             </td>
             <td class="is-family-monospace">
               {{ parseInt(userInfo.duration/(3600*24)) }}
-            </td>
-            <td class="is-family-monospace">
-              {{ parseFloat(userInfo.xnos / 1e6).toFixed() | formatNumber }}
             </td>
           </tr>
         </tbody>
@@ -222,7 +212,6 @@ export default {
           for (let i = 0; i + 2 < tier.tier; i++) {
             requiredRank += tierUsers[i].users;
           }
-          console.log(tier.tier, requiredRank);
           // const percentage = this.tiers.filter(s => s.tier !== tier.tier && s.tier < tier.tier)
           //   .reduce((a, o) => a + (o.percentage ? o.percentage : 0), 0) / 100;
           // const top = this.tiers.find(t => t.tier === 1).number;

@@ -35,24 +35,6 @@
                     parseInt($parent.$refs.stakingForm.amount) : 0)) * 100).toFixed(1) }}%
             </p>
           </div>
-          <div v-if="rewardInfo && rewardInfo.rewardAccount" class="is-size-6">
-            <div class="is-flex is-align-items-center">
-              <span class="">Current xNOS score</span>
-              <b class="ml-auto">{{ parseInt(rewardInfo.rewardAccount.xnos/1e6) }}</b>
-            </div>
-            <hr class="my-2">
-            <div class="is-flex is-align-items-center">
-              <span class="">Total xNOS score</span>
-              <b class="ml-auto ">{{ parseInt(rewardInfo.global.totalXnos/1e6) }}</b>
-            </div>
-            <hr class="my-2">
-            <div class="is-flex is-align-items-center">
-              <span class="">Your percentage</span>
-              <b class="ml-auto">
-                {{ (rewardInfo.rewardAccount.xnos/rewardInfo.global.totalXnos * 100).toFixed(2) }}%</b>
-            </div>
-            <hr class="my-2">
-          </div>
         </div>
         <div class="column">
           <!-- <h2 v-if="!countdownFinished" class="subtitle">
@@ -113,8 +95,8 @@
                       <p>NOS</p>
                     </div>
                     <p class="is-size-7">
-                      You can either restake your pending rewards to increase your xNOS score
-                      and earn even more rewards, or you can claim your pending rewards immediately to your wallet.
+                      You can either restake your pending rewards to earn even more rewards,
+                      or you can claim your pending rewards immediately to your wallet.
                     </p>
                     <button
                       v-if="!loggedIn"
