@@ -45,7 +45,7 @@
                     </span>
                   </span>
                 </div>
-              </div>
+                              </div>
               <div class="column is-8 tier-image">
                 <img v-if="activeTier === slide.tier" :src="require(`@/assets/img/tiers/tier${slide.tier}_active.svg`)">
                 <img v-else :src="require(`@/assets/img/tiers/tier${slide.tier}.svg`)">
@@ -54,6 +54,43 @@
           </slide>
         </carousel-3d>
       </client-only>
+      <div
+        v-if="stakeData &&
+          stakeData.tierInfo && !stakeEndDate"
+        class="next-tier-wrap has-shadow box has-background-light has-text-centered mb-6 p-0"
+      >
+        <div class="next-tier py-2" @click="requiredXnos(nextTier)">
+          <div class="tier-bg tier-bg-prev">
+            <span>
+              {{ expectedTier }}
+            </span>
+          </div>
+          <div class="has-text-weight-semibold is-size-5 mb-0">
+            <div
+              v-if="stakeData.tierInfo.userTier && stakeData.tierInfo.userTier.tier === 1 || expectedTier === 1"
+              class="py-4"
+            >
+              Top {{ stakeData.tierInfo.tiers.find(t => t.tier === 1).number }}
+            </div>
+            <span v-else>Next tier</span>
+          </div>
+          <span v-if="nextTier" class="has-text-accent is-size-5">
+            <span v-if="nextTier.tier !== 5">
+              {{
+                ((parseFloat(
+                  nextTier.requiredXNOS)
+                  - parseFloat(xnos)*1e6) / 1e6).toFixed()
+              }}
+            </span>
+            <span v-else>{{ ((1000*1e6 - parseFloat(xnos)*1e6) / 1e6).toFixed() }}</span>
+            <small class="has-text-black-ter">xNOS needed</small>
+          </span>
+
+          <div v-if="nextTier" class="tier-bg tier-bg-next">
+            <span>{{ nextTier.tier }}</span>
+          </div>
+        </div>
+      </div>
 
       <div
         v-if="leaderboard && leaderboard.length > 0"
@@ -82,6 +119,7 @@
               <th>Place</th>
               <th>Address</th>
               <th>Unstake days</th>
+              <th>xNOS</th>
             </tr>
           </thead>
           <tbody>
@@ -98,6 +136,9 @@
               </td>
               <td class="is-family-monospace">
                 {{ parseInt(user.duration/(3600*24)) }}
+              </td>
+              <td class="is-family-monospace">
+                {{ parseFloat(user.xnos / 1e6).toFixed() | formatNumber }}
               </td>
             </tr>
             <tr
@@ -124,6 +165,9 @@
               </td>
               <td class="is-family-monospace">
                 {{ parseInt(userInfo.duration/(3600*24)) }}
+              </td>
+              <td class="is-family-monospace">
+                {{ parseFloat(userInfo.xnos / 1e6).toFixed() | formatNumber }}
               </td>
             </tr>
           </tbody>

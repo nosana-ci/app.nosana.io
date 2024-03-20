@@ -35,6 +35,24 @@
                     parseInt($parent.$refs.stakingForm.amount) : 0)) * 100).toFixed(1) }}%
             </p>
           </div>
+          <div v-if="rewardInfo && rewardInfo.rewardAccount" class="is-size-6">
+            <div class="is-flex is-align-items-center">
+              <span class="">Current xNOS score</span>
+              <b class="ml-auto">{{ parseInt(rewardInfo.rewardAccount.xnos/1e6) }}</b>
+            </div>
+            <hr class="my-2">
+            <div class="is-flex is-align-items-center">
+              <span class="">Total xNOS score</span>
+              <b class="ml-auto ">{{ parseInt(rewardInfo.global.totalXnos/1e6) }}</b>
+            </div>
+            <hr class="my-2">
+            <div class="is-flex is-align-items-center">
+              <span class="">Your percentage</span>
+              <b class="ml-auto">
+                {{ (rewardInfo.rewardAccount.xnos/rewardInfo.global.totalXnos * 100).toFixed(2) }}%</b>
+            </div>
+            <hr class="my-2">
+          </div>
         </div>
         <div class="column">
           <!-- <h2 v-if="!countdownFinished" class="subtitle">
