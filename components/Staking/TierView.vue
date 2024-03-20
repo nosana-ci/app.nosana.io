@@ -45,27 +45,7 @@
                     </span>
                   </span>
                 </div>
-                <div
-                  :class="['tier-' + slide.tier]"
-                  class="has-text-accent subtitle mt-auto is-size-7-touch has-border-accent p-1 has-radius"
-                >
-                  <span v-if="slide.tier === 1">
-                    <b>Guaranteed</b><br>NFT mint token
-                  </span>
-                  <span v-else-if="slide.tier === 2">
-                    <b class="title has-text-accent is-size-5-touch">15</b> Tickets
-                  </span>
-                  <span v-else-if="slide.tier === 3">
-                    <b class="title has-text-accent is-size-5-touch">6</b> Tickets
-                  </span>
-                  <span v-else-if="slide.tier === 4">
-                    <b class="title has-text-accent is-size-5-touch">3</b> Tickets
-                  </span>
-                  <span v-else-if="slide.tier === 5">
-                    <b class="title has-text-accent is-size-5-touch">1</b> Ticket
-                  </span>
-                </div>
-              </div>
+                              </div>
               <div class="column is-8 tier-image">
                 <img v-if="activeTier === slide.tier" :src="require(`@/assets/img/tiers/tier${slide.tier}_active.svg`)">
                 <img v-else :src="require(`@/assets/img/tiers/tier${slide.tier}.svg`)">

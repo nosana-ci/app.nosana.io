@@ -49,17 +49,11 @@
             </div>
             <div class="column is-3 is-full-mobile scores">
               <div class="has-background-grey-lighter has-radius-medium">
-                <div class="box has-text-centered mb-3 p-2">
+                <div class="box has-text-centered p-2">
                   <h2 class="title is-4 has-text-success mb-0">
                     <ICountUp :end-val="parseFloat(multiplier)" :options="{ decimalPlaces: 2, prefix: 'x' }" />
                   </h2>
                   <p>multiplier</p>
-                </div>
-                <div class="box has-text-centered p-2">
-                  <h2 class="title is-4 has-text-success mb-0">
-                    <ICountUp :end-val="parseFloat(xNOS)" :options="{ decimalPlaces: 2 }" />
-                  </h2>
-                  <p>xNOS score</p>
                 </div>
               </div>
             </div>
@@ -182,17 +176,11 @@
               </div>
               <div class="column is-3 is-full-mobile scores">
                 <div class="has-background-grey-lighter has-radius-medium">
-                  <div class="box has-text-centered mb-3 p-2">
+                  <div class="box has-text-centered">
                     <h2 class="title is-4 has-text-success mb-0">
                       <ICountUp :end-val="parseFloat(NOS)" :options="{ decimalPlaces: 2 }" />
                     </h2>
                     <p>NOS</p>
-                  </div>
-                  <div class="box has-text-centered p-2">
-                    <h2 class="title is-4 has-text-success mb-0">
-                      <ICountUp :end-val="parseFloat(xNOS)" :options="{ decimalPlaces: 2 }" />
-                    </h2>
-                    <p>xNOS score</p>
                   </div>
                 </div>
               </div>
@@ -330,22 +318,7 @@
                   <div
                     class="has-background-grey-lighter has-radius-medium p-3"
                   >
-                    <div class="box has-text-centered" style="min-width: 149px">
-                      <h2 class="title is-3 has-text-success mb-0">
-                        <ICountUp
-                          :end-val="parseFloat(xNOS)"
-                          :options="{ decimalPlaces: 0, duration:0.1 }"
-                          style="opacity:0"
-                        />
-                        <ICountUp
-                          :end-val="parseFloat(xNOS)"
-                          :options="{ decimalPlaces: 0 }"
-                          style="position:absolute;width: 100%;text-align: center;left: 0;"
-                        />
-                      </h2>
-                      <p>xNOS score</p>
-                    </div>
-                    <div class="box has-text-centered mb-3" style="min-width: 149px">
+                    <div class="box has-text-centered mt-2 p-4" style="min-width: 149px">
                       <h2 class="title is-4 has-text-success mb-0">
                         <ICountUp
                           :end-val="parseFloat(multiplier)"
@@ -432,21 +405,6 @@
                       />
                     </h2>
                     <p>multiplier</p>
-                  </div>
-                  <div class="box has-text-centered m-2">
-                    <h2 class="title is-4 mb-0">
-                      <ICountUp
-                        :end-val="parseFloat(xNOS)"
-                        :options="{ decimalPlaces: 0, duration:0.1 }"
-                        style="opacity:0"
-                      />
-                      <ICountUp
-                        :end-val="parseFloat(xNOS)"
-                        :options="{ decimalPlaces: 0 }"
-                        style="position:absolute;width: 100%;text-align: center;left: 0;"
-                      />
-                    </h2>
-                    <p>xNOS</p>
                   </div>
                 </div>
               </div>

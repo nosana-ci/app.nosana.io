@@ -222,7 +222,6 @@ export default {
           for (let i = 0; i + 2 < tier.tier; i++) {
             requiredRank += tierUsers[i].users;
           }
-          console.log(tier.tier, requiredRank);
           // const percentage = this.tiers.filter(s => s.tier !== tier.tier && s.tier < tier.tier)
           //   .reduce((a, o) => a + (o.percentage ? o.percentage : 0), 0) / 100;
           // const top = this.tiers.find(t => t.tier === 1).number;

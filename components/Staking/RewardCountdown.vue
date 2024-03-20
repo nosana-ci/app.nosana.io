@@ -113,8 +113,8 @@
                       <p>NOS</p>
                     </div>
                     <p class="is-size-7">
-                      You can either restake your pending rewards to increase your xNOS score
-                      and earn even more rewards, or you can claim your pending rewards immediately to your wallet.
+                      You can either restake your pending rewards to earn even more rewards,
+                      or you can claim your pending rewards immediately to your wallet.
                     </p>
                     <button
                       v-if="!loggedIn"
