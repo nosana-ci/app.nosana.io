@@ -1,5 +1,7 @@
 <template>
   <div class="stake-block">
+    <!-- needed to trigger computation of xNOS -->
+    <span class="is-hidden">{{ xNOS }}</span>
     <!-- Extend popup -->
     <div class="modal stake-popup" :class="{ 'is-active': extendPopup }">
       <div class="modal-background" @click="extendPopup = false, amount = 0, extraUnstakeDays = 0" />
