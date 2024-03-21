@@ -481,8 +481,8 @@
                 Unstake your<br>tokens here.
               </h3>
               <p>
-                Be aware that after you unstake,
-                you will have to wait until your unstake period ends to claim your tokens<br><br>
+                Be aware that after you unstake, your tokens will be released linearly over the duration
+                of your unstaking period, and you will not receive any rewards during this time.<br><br>
                 If you were to unstake now, you can claim your tokens on:
               </p>
               <h1 class="subtitle is-5 mt-4">
