@@ -154,7 +154,9 @@
 <script>
 import ICountUp from 'vue-countup-v2';
 import { BN } from '@project-serum/anchor';
+import { PublicKey } from '@solana/web3.js';
 const anchor = require('@project-serum/anchor');
+const { createAssociatedTokenAccountInstruction } = require('@solana/spl-token');
 
 let node = process.env.NUXT_ENV_SOL_NETWORK;
 if (!node.includes('http')) {
@@ -238,10 +240,27 @@ export default {
     async claimRewards () {
       this.loading = true;
       try {
+        const preInstructions = [];
+        const nosAta = await this.$sol.getNosATA(this.$sol.publicKey);
+        if (!nosAta.exists) {
+          console.log('create ata');
+          try {
+            preInstructions.push(createAssociatedTokenAccountInstruction(
+              new PublicKey(this.$sol.publicKey),
+              nosAta.ata,
+              new PublicKey(this.$sol.publicKey),
+              new PublicKey(process.env.NUXT_ENV_NOS_TOKEN)
+            ));
+          } catch (e) {
+            console.log('createAssociatedTokenAccountInstruction', e);
+          }
+        }
+
         const response = await this.$stake.rewardsProgram.methods
           .claim()
           .accounts({ ...this.$stake.accounts, vault: this.$stake.rewardVault })
           .preInstructions([
+            ...preInstructions,
             await this.$stake.poolProgram.methods
               .claimFee()
               .accounts(this.$stake.poolAccounts).instruction()

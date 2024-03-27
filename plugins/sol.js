@@ -10,6 +10,7 @@ import { BraveWalletAdapter }
 import { clusterApiUrl, Connection, PublicKey } from '@solana/web3.js';
 import { Metaplex } from '@metaplex-foundation/js';
 import { commitment, sendTransaction } from '@/utils/web3';
+const { TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID, getAccount } = require('@solana/spl-token');
 const nacl = require('tweetnacl');
 
 const network = process.env.NUXT_ENV_SOL_NETWORK;
@@ -221,6 +222,22 @@ export default (context, inject) => {
         if (wallet && wallet.connected) {
           this.balance = await web3.getBalance(wallet.publicKey, commitment);
           this.balance = 0;
+        }
+      },
+
+      async getNosATA (address) {
+        const ata = await PublicKey.findProgramAddress([
+          new PublicKey(address).toBuffer(),
+          TOKEN_PROGRAM_ID.toBuffer(),
+          new PublicKey(new PublicKey(NOS_TOKEN_PROGRAM_ID)).toBuffer()
+        ], ASSOCIATED_TOKEN_PROGRAM_ID);
+        try {
+          await getAccount(web3, ata[0]);
+          console.log('found ata', ata[0].toString());
+          return { ata: ata[0], exists: true };
+        } catch (error) {
+          console.log('ata doesnt exists', ata[0]);
+          return { ata: ata[0], exists: false };
         }
       },
 
