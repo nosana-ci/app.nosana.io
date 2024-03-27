@@ -248,7 +248,7 @@ export default {
         const preInstructions = [];
         if (this.enablePrioFee) {
           const addPriorityFee = ComputeBudgetProgram.setComputeUnitPrice({
-            microLamports: 500000
+            microLamports: 200000
           });
           preInstructions.push(addPriorityFee);
         }
