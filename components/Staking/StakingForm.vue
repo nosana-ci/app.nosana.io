@@ -635,8 +635,9 @@
 
 <script>
 import ICountUp from 'vue-countup-v2';
+import { PublicKey } from '@solana/web3.js';
 const anchor = require('@project-serum/anchor');
-
+const { createAssociatedTokenAccountInstruction } = require('@solana/spl-token');
 const SECONDS_PER_DAY = 24 * 60 * 60;
 
 class FakeWallet {
@@ -1038,20 +1039,26 @@ export default {
     async close () {
       try {
         this.loading = true;
-        // const response = await this.$stake.program.methods
-        //   .close()
-        //   .preInstructions([
-        //     await this.$stake.program.methods
-        //       .withdraw()
-        //       .accounts(this.$stake.accounts)
-        //       .instruction()
-        //   ])
-        //   .accounts(this.$stake.accounts)
-        //   .rpc();
+        const preInstructions = [];
+        const nosAta = await this.$sol.getNosATA(this.$sol.publicKey);
+        if (!nosAta.exists) {
+          console.log('create ata');
+          try {
+            preInstructions.push(createAssociatedTokenAccountInstruction(
+              new PublicKey(this.$sol.publicKey),
+              nosAta.ata,
+              new PublicKey(this.$sol.publicKey),
+              new PublicKey(process.env.NUXT_ENV_NOS_TOKEN)
+            ));
+          } catch (e) {
+            console.log('createAssociatedTokenAccountInstruction', e);
+          }
+        }
 
         await this.$stake.program.methods
           .withdraw()
           .accounts(this.$stake.accounts)
+          .preInstructions(preInstructions)
           .rpc();
         const response = await this.$stake.program.methods
           .close()
