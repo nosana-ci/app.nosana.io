@@ -198,14 +198,21 @@
               >
                 Connect wallet
               </button>
-              <button
-                v-else
-                type="submit"
-                class="button is-accent is-fullwidth mt-5 has-text-weight-semibold"
-                :class="{'is-loading': loading}"
-              >
-                Increase stake
-              </button>
+              <template v-else>
+                <button
+                  type="submit"
+                  class="button is-accent is-fullwidth mt-5 has-text-weight-semibold"
+                  :class="{'is-loading': loading}"
+                >
+                  Increase stake
+                </button>
+                <div class="has-text-centered mt-2" style="width: 100%">
+                  <label class="checkbox">
+                    <input v-model="enablePrioFee" type="checkbox">
+                    Enable Priority Fee
+                  </label>
+                </div>
+              </template>
             </div>
           </form>
         </div>
@@ -352,9 +359,17 @@
                 >
                   Connect wallet
                 </button>
-                <button v-else type="submit" class="button is-accent" :class="{'is-loading': loading}">
-                  Stake NOS
-                </button>
+                <template v-else>
+                  <button type="submit" class="button is-accent" :class="{'is-loading': loading}">
+                    Stake NOS
+                  </button>
+                  <div class="has-text-centered mt-2" style="width: 100%">
+                    <label class="checkbox">
+                      <input v-model="enablePrioFee" type="checkbox">
+                      Enable Priority Fee
+                    </label>
+                  </div>
+                </template>
                 <br>
                 <br>
                 <div class="has-text-centered">
@@ -635,7 +650,7 @@
 
 <script>
 import ICountUp from 'vue-countup-v2';
-import { PublicKey } from '@solana/web3.js';
+import { ComputeBudgetProgram, PublicKey } from '@solana/web3.js';
 const anchor = require('@project-serum/anchor');
 const { createAssociatedTokenAccountInstruction } = require('@solana/spl-token');
 const SECONDS_PER_DAY = 24 * 60 * 60;
@@ -657,6 +672,7 @@ export default {
   data () {
     return {
       loading: false,
+      enablePrioFee: false,
       balance: null,
       amount: null,
       unstakeDays: 14,
@@ -809,6 +825,12 @@ export default {
         const decimals = 1e6;
         const stakeAmount = this.amount * decimals;
         const preInstructions = [];
+        if (this.enablePrioFee) {
+          const addPriorityFee = ComputeBudgetProgram.setComputeUnitPrice({
+            microLamports: 200000
+          });
+          preInstructions.push(addPriorityFee);
+        }
 
         preInstructions.push(await this.$stake.poolProgram.methods
           .claimFee()
@@ -877,10 +899,19 @@ export default {
         const decimals = 1e6;
         const stakeAmount = this.amount * decimals;
 
+        const preInstructions = [];
+        if (this.enablePrioFee) {
+          const addPriorityFee = ComputeBudgetProgram.setComputeUnitPrice({
+            microLamports: 200000
+          });
+          preInstructions.push(addPriorityFee);
+        }
+
         const response = await this.$stake.program.methods
           .stake(new anchor.BN(stakeAmount), new anchor.BN(stakeDurationSeconds))
           .accounts(this.$stake.accounts)
           .preInstructions([
+            ...preInstructions,
             await this.$stake.poolProgram.methods
               .claimFee()
               .accounts(this.$stake.poolAccounts).instruction()
