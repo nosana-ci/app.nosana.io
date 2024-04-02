@@ -641,6 +641,12 @@
             >
               Withdraw released tokens
             </button>
+            <div class="has-text-centered mt-2" style="width: 100%">
+              <label class="checkbox">
+                <input v-model="enablePrioFee" type="checkbox">
+                Enable Priority Fee
+              </label>
+            </div>
           </div>
         </div>
       </div>
@@ -1121,8 +1127,16 @@ export default {
     async withdraw () {
       try {
         this.loading = true;
+        const preInstructions = [];
+        if (this.enablePrioFee) {
+          const addPriorityFee = ComputeBudgetProgram.setComputeUnitPrice({
+            microLamports: 200000
+          });
+          preInstructions.push(addPriorityFee);
+        }
         const response = await this.$stake.program.methods
           .withdraw()
+          .preInstructions(preInstructions)
           .accounts(this.$stake.accounts)
           .rpc();
         console.log(response);
