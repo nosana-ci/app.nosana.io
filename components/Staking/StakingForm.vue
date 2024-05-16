@@ -1091,12 +1091,19 @@ export default {
             console.log('createAssociatedTokenAccountInstruction', e);
           }
         }
-
-        await this.$stake.program.methods
-          .withdraw()
-          .accounts(this.$stake.accounts)
-          .preInstructions(preInstructions)
-          .rpc();
+        try {
+          await this.$stake.program.methods
+            .withdraw()
+            .accounts(this.$stake.accounts)
+            .preInstructions(preInstructions)
+            .rpc();
+        } catch (e) {
+          if (e.message.includes('VaultEmpty')) {
+            console.log('vault already empty, skipping withdraw');
+          } else {
+            throw e;
+          }
+        }
         const response = await this.$stake.program.methods
           .close()
           .accounts(this.$stake.accounts)
